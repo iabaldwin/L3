@@ -91,7 +91,8 @@ class SE3 : public Pose
 
 struct LIDAR : Base
 {
-    uint64_t timestamp;
+    //uint64_t timestamp;
+    float timestamp;
     unsigned int num_scans;
     std::vector<float> reflectances;
     std::vector<float> ranges;
@@ -109,14 +110,16 @@ struct LMS151 : LIDAR
 
     LMS151( std::vector<double> vec )  
     {
+        timestamp = vec[0];
+
         ranges.resize( LMS151::NUM_ELEMENTS ); 
-   
-        ranges[0] = vec[0];
+  
+        ranges.assign( ++vec.begin(), vec.end() );
     }
 
     void print( std::ostream& o ) const {
-            o << ranges[0];
-        }
+        o << ranges[0];
+    }
 
 };
 }
