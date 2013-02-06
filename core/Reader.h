@@ -15,6 +15,12 @@ class Reader {
 
     public:
 
+        virtual ~Reader()
+        {
+            if (stream.is_open())
+                stream.close();
+        }
+
         bool open( const std::string& f )
         {
             stream.open( f.c_str(), std::ios::in );
@@ -55,7 +61,7 @@ struct Extractor
 
     ~Extractor()
     {
-        //Memory leak
+        //Memory leak?
     }
 
     
