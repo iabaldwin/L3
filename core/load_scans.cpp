@@ -10,8 +10,7 @@ int main()
     reader->read();
 
     if ( reader->extract( scans ) )
-        std::cout << "HI" << std::endl;
-        //for( std::vector<L3::LMS151*>::iterator it=scans.begin(); it!= scans.end(); it++ )
-            //std::cout << *(*it) << std::endl;
+        for( std::vector<L3::LMS151*>::iterator it=scans.begin(); it!= scans.end(); it++ )
+            std::cout << *(*it) << std::endl;
 }
 

@@ -89,10 +89,8 @@ class SE3 : public Pose
 
 };
 
-struct LIDAR
+struct LIDAR : Base
 {
-    const static int NUM_ELEMENTS = 542;
-
     uint64_t timestamp;
     unsigned int num_scans;
     std::vector<float> reflectances;
@@ -102,19 +100,23 @@ struct LIDAR
 
 struct LMS151 : LIDAR
 {
+    const static int NUM_ELEMENTS = 542;
 
     LMS151() 
     {
-        //reflectances.reserve( num_scans ); 
-        //ranges.reserve( num_scans ); 
+        ranges.resize( LMS151::NUM_ELEMENTS ); 
     }
 
     LMS151( std::vector<double> vec )  
     {
-        //reflectances.reserve( num_scans ); 
-        //ranges.reserve( num_scans ); 
+        ranges.resize( LMS151::NUM_ELEMENTS ); 
+   
+        ranges[0] = vec[0];
     }
 
+    void print( std::ostream& o ) const {
+            o << ranges[0];
+        }
 
 };
 }
