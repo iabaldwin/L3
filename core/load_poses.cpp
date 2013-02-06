@@ -1,8 +1,5 @@
 #include <iostream>
 #include "Reader.h"
-#include "Poses.h"
-//#include <sstream>
-//#include <vector>
 
 int main()
 {
@@ -12,7 +9,7 @@ int main()
     std::vector<L3::Pose*> poses;
     reader->read();
 
-    if ( reader->extractPoses( poses ) )
+    if ( reader->extract( poses ) )
         for( std::vector<L3::Pose*>::iterator it=poses.begin(); it!= poses.end(); it++ )
             std::cout << *(*it) << std::endl;
 }

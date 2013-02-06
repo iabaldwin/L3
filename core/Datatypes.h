@@ -11,23 +11,27 @@
 namespace L3
 {
 
-class Pose
+struct Base 
 {
 
+    friend std::ostream& operator<<( std::ostream& o, const Base& b )
+    {
+        b.print( o );
+        return o;
+    }
+        
+    virtual void print( std::ostream& o ) const = 0;
+
+};
+
+class Pose : public Base
+{
     public:
+        
         Pose(){}
         virtual ~Pose(){}
 
-        friend std::ostream& operator<<( std::ostream& o, const Pose& p )
-        {
-            p.print( o );
-            return o;
-        }
-
-
     protected:
-
-        virtual void print( std::ostream& o ) const = 0;
 
         std::stringstream ss;
 };
@@ -37,7 +41,7 @@ class SE2 : public Pose
 
     public:
     
-        const static int NUM_ELEMENTS = 7;
+        const static int NUM_ELEMENTS = 4;
 
         SE2( double X, double Y, double Q ) : x(X), y(Y), q(Q)
         {
@@ -87,7 +91,7 @@ class SE3 : public Pose
 
 struct LIDAR
 {
-    const static int NUM_ELEMENTS = 541;
+    const static int NUM_ELEMENTS = 542;
 
     uint64_t timestamp;
     unsigned int num_scans;
@@ -104,6 +108,13 @@ struct LMS151 : LIDAR
         //reflectances.reserve( num_scans ); 
         //ranges.reserve( num_scans ); 
     }
+
+    LMS151( std::vector<double> vec )  
+    {
+        //reflectances.reserve( num_scans ); 
+        //ranges.reserve( num_scans ); 
+    }
+
 
 };
 }

@@ -44,13 +44,12 @@ struct Extractor
 {
     std::vector<T*> elements;
 
-    int mod, counter; 
+    int counter; 
     
     std::vector<double> buffer;
 
     Extractor() : counter(0)
     {
-        //std::cout << T::ELEMENTS << std::endl;
         buffer.resize(T::NUM_ELEMENTS);
     }
 
@@ -63,7 +62,7 @@ struct Extractor
     void operator()( double d )
     {
         buffer[counter] = d;
-        if( ++counter % mod == 0 )
+        if( ++counter % T::NUM_ELEMENTS == 0 )
         {
             counter = 0;
             elements.push_back( new T( buffer ) );
@@ -75,7 +74,7 @@ class PoseReader : public Reader
 {
     public:
         
-        bool extractPoses( std::vector<L3::Pose*>& poses )
+        bool extract( std::vector<L3::Pose*>& poses )
         {
             Extractor<L3::SE3> e;
        
@@ -96,9 +95,20 @@ class LIDARReader : public Reader
 {
     public:
 
-        bool extractLIDAR(  std::vector<L3::LIDAR*>& scans )
+        bool extract(  std::vector<L3::LMS151*>& scans )
         {
-            Extractor<L3::LIDAR> p;
+            Extractor<L3::LMS151> e;
+            
+            e = std::for_each( raw.begin(), raw.end(), e );
+
+            if ( e.counter == 0 )
+            {
+                scans.assign( e.elements.begin(), e.elements.end() );
+                return true;
+            }
+            else
+                return false;
+       
             return true;
         }
 
