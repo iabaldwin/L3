@@ -1,9 +1,9 @@
 #include <iostream>
 #include "renderer.h"
 
-struct Scene : glv::View3D{
+struct Renderer : glv::View3D{
 
-    Scene()
+    Renderer()
     {
         stretch(1,1); 
     }
