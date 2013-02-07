@@ -28,17 +28,22 @@ int main (int argc, char ** argv){
     if ( !reader->extract( poses ) )
         throw std::exception();
 
-    //L3::UTILS::localisePoseChain( poses, L3::UTILS::BEGBROKE() );
     L3::UTILS::localisePoseChainToOrigin( poses );
-    
-    // DBG
-    //L3::IO::Writer w; 
-    //if ( w.open( "test.txt" ) )
-        //w << poses;
+
+    glv::Grid grid(glv::Rect(0,0));
+
+    grid.range(1);            // set plot region
+    grid.major(1);            // set major tick mark placement
+    grid.minor(2);            // number of divisions per major ticks
+    grid.equalizeAxes(true);
+    grid.stretch(1,.2);
+
 
     L3::Visual::PoseChain chain(poses);
+    //top << chain << grid;
     top << chain;
- 
+
+    chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
         
     win.setGLV(top);
     glv::Application::run();

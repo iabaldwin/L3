@@ -63,9 +63,11 @@ struct PoseChain : Component
     }
 
     std::vector<L3::Pose*>& poses;
-    
+   
     void onDraw3D(glv::GLV& g)
     {
+        static int k = 0;
+        glv::draw::rotateZ( k++ );
         glv::draw::translateZ( -190 );
         glv::draw::paint( glv::draw::Points, vertices, colors, poses.size() );
     }
