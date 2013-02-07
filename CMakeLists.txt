@@ -14,6 +14,7 @@ endif()
 message( ${Boost_INCLUDE_DIRS} )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 
 # Core
 add_subdirectory( core )

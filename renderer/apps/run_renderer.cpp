@@ -16,8 +16,8 @@ int main (int argc, char ** argv){
     //Scene scene;
     //top << scene;
 
-    L3::PoseChain chain;
-    top << chain;
+    //L3::PoseChain chain;
+    //top << chain;
 
     win.setGLV(top);
     glv::Application::run();
