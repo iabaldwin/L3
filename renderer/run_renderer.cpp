@@ -1,6 +1,10 @@
-#include "renderer.h"
-#include "scene.h"
+#include "Components.h"
 #include <iostream>
+
+#include <GLV/glv.h>
+#include <GLV/glv_binding.h>
+#include <GLV/glv_util.h>
+
 
 int main (int argc, char ** argv){
 
@@ -9,8 +13,11 @@ int main (int argc, char ** argv){
 	
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
-    Scene scene;
-    top << scene;
+    //Scene scene;
+    //top << scene;
+
+    L3::PoseChain chain;
+    top << chain;
 
     win.setGLV(top);
     glv::Application::run();
