@@ -14,36 +14,24 @@ namespace L3
 namespace UTILS
 {
 
-
+boost::filesystem::path configurationDirectory( void );
 
 struct Locale 
 {
     std::string name;
 
-    float x,y,z;
-};
-
-void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l );
-
-boost::filesystem::path configurationDirectory( void );
-
-
-struct BEGBROKE : Locale
-{
-    FILE* f;
-
-    BEGBROKE()  
+    Locale( const std::string& target )
     {
-        libconfig::Config config;
 
         boost::filesystem::path p = L3::UTILS::configurationDirectory();
 
-        p /= "begbroke_datum.config";
-
-        f = fopen( p.string().c_str(), "r"  );
+        p /= target;
 
         try
         {
+            libconfig::Config config;
+        
+            f = fopen( p.string().c_str(), "r"  );
 
             config.read( f );
 
@@ -63,14 +51,34 @@ struct BEGBROKE : Locale
 
         }
 
+
+    }
+
+    FILE* f;
+    float x,y,z;
+
+};
+
+void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l );
+
+struct BEGBROKE : Locale
+{
+    BEGBROKE() : Locale("begbroke_datum.config") 
+    {
+    }
+
+};
+
+struct WOODSTOCK : Locale
+{
+    WOODSTOCK() : Locale("woodstock_datum.config") 
+    {
     }
 
 };
 
 
 }
-
-
 }
 
 #endif

@@ -18,9 +18,9 @@ void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l )
 
 boost::filesystem::path configurationDirectory( void )
 {
-    
     char * pPath;
     pPath = getenv ("HOME");
+    
     if (pPath==NULL)
         return boost::filesystem::path();
 
