@@ -28,16 +28,18 @@ int main (int argc, char ** argv){
     if ( !reader->extract( poses ) )
         throw std::exception();
 
-    L3::UTILS::localisePoseChain( poses, L3::UTILS::BEGBROKE() );
+    //L3::UTILS::localisePoseChain( poses, L3::UTILS::BEGBROKE() );
+    L3::UTILS::localisePoseChainToOrigin( poses );
     
-    L3::Visual::PoseChain chain(poses);
-    top << chain;
- 
     // DBG
     //L3::IO::Writer w; 
     //if ( w.open( "test.txt" ) )
         //w << poses;
-    
+
+    L3::Visual::PoseChain chain(poses);
+    top << chain;
+ 
+        
     win.setGLV(top);
     glv::Application::run();
 }

@@ -22,8 +22,11 @@ struct Component : glv::View3D{
 	
 	virtual void onDraw3D(glv::GLV& g)
     {
-        std::cout << "FUCK" << std::endl;
     }
+	virtual void onDraw2D(glv::GLV& g)
+    {
+    }
+
 
 };
 
@@ -32,43 +35,45 @@ typedef std::vector<L3::Pose*>::iterator POSE_CHAIN_ITERATOR;
 struct PoseChain : Component
 {
 
-    glv::Color colors[20];
-    glv::Point3 vertices[20];
+    glv::Color* colors;
+    glv::Point3* vertices;
 
     PoseChain( std::vector<L3::Pose*>& POSES ) : poses(POSES)
     {
+        colors = new glv::Color[poses.size()];
+        vertices = new glv::Point3[poses.size()];
+
+        int counter = 0;
+        for( POSE_CHAIN_ITERATOR it=poses.begin(); it < poses.end(); it++ )
+        {
+            vertices[counter]( (*it)->x, (*it)->y, 0 );
+            colors[counter] = glv::HSV(0.6, .1, 0.45+0.55);
+
+            counter++;
+        }
+
+        // Far clip
+        far( 200 );
+    }
+
+    ~PoseChain()
+    {
+        delete [] colors;
+        delete [] vertices;
     }
 
     std::vector<L3::Pose*>& poses;
     
-    virtual void onDraw3D(glv::GLV& g)
+    void onDraw3D(glv::GLV& g)
     {
-        int counter = 0;
-        for( POSE_CHAIN_ITERATOR it=poses.begin(); it < poses.end(); it++ )
-        {
-            //std::cout << *(*it) << std::endl;
-            //if ( counter++ == 20 )
-                //break;
-        }
-
-        //for ( unsigned int i=0; i<20; i++ )
-        //{
-            //float x = random() % 10;
-            //float y = random() % 10;
-            //float z = random() % 10;
-
-            //vertices[i]( x, y, z );
-
-             //colors[i] = glv::HSV(0.6, .1, z*0.45+0.55);
-       
-             //glv::draw::translateZ( -4 );
-        //}
-   
-        //glv::draw::paint( glv::draw::Points, vertices, colors, 20 );
-   
+        glv::draw::translateZ( -190 );
+        glv::draw::paint( glv::draw::Points, vertices, colors, poses.size() );
     }
 
-    
+    void onDraw2D(glv::GLV& g)
+    {
+    }
+
 };
 
 }

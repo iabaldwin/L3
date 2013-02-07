@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Reader.h"
+#include "Writer.h"
 #include "Datatypes.h"
 #include "Utils.h"
 
@@ -13,6 +14,12 @@ int main()
 
     if ( reader->extract( poses ) )
     {
-        L3::UTILS::localisePoseChain( poses, L3::UTILS::BEGBROKE() );
+        //L3::UTILS::localisePoseChain( poses, L3::UTILS::BEGBROKE() );
+   
+        L3::UTILS::localisePoseChainToOrigin( poses );
+
+        L3::IO::Writer w;
+        if( w.open( "test.txt" ))
+            w << poses; 
     }
 }

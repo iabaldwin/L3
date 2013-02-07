@@ -16,6 +16,24 @@ void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l )
 
 }
 
+void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses )
+{
+    //L3::Pose* origin = poses.front();
+    double origin_x = poses.front()->x;
+    double origin_y = poses.front()->y;
+
+    std::vector<L3::Pose*>::iterator it=poses.begin();
+
+    while( it != poses.end() )
+    {
+        (*it)->x -= origin_x;
+        (*it)->y -= origin_y;
+   
+        it++;
+    }
+
+}
+
 boost::filesystem::path configurationDirectory( void )
 {
     char * pPath;

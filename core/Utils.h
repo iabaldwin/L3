@@ -59,8 +59,6 @@ struct Locale
 
 };
 
-void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l );
-
 struct BEGBROKE : Locale
 {
     BEGBROKE() : Locale("begbroke_datum.config") 
@@ -76,6 +74,10 @@ struct WOODSTOCK : Locale
     }
 
 };
+
+void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l );
+void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses );
+
 
 
 }
