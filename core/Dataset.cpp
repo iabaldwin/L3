@@ -74,8 +74,6 @@ bool Dataset::load()
 
     // Load INS
     std::auto_ptr<L3::IO::PoseReader> pose_reader( new L3::IO::PoseReader() );
-
-    //std::cout << boost::filesystem::path( OxTS ) << std::endl;
     pose_reader->open( OxTS.path().string() );
     
     if( !pose_reader->read() )
@@ -86,11 +84,21 @@ bool Dataset::load()
         for( std::vector<L3::Pose*>::iterator it=poses.begin(); it!= poses.end(); it++ )
             std::cout << *(*it) << std::endl;
 
-    // Load LIDAR
+    // Load LIDARs
     std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();
 
+    std::auto_ptr<L3::IO::LIDARReader> scan_reader( new L3::IO::LIDARReader() );
+    
     while ( it != LIDARs.end() )
     {
+        scan_reader->open( (*it).path().string() );
+
+        std::vector<L3::LMS151*> scans;
+        scan_reader->read();
+
+        if ( scan_reader->extract( scans ) )
+            for( std::vector<L3::LMS151*>::iterator it=scans.begin(); it!= scans.end(); it++ )
+                std::cout << *(*it) << std::endl;
 
         it++;
     }
