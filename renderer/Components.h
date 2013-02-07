@@ -9,6 +9,7 @@
 
 namespace L3
 {
+
 struct Component : glv::View3D{
 
     Component()
@@ -29,6 +30,10 @@ struct PoseChain : Component
     PoseChain()
     {
 
+    }
+
+    virtual void onDraw3D(glv::GLV& g)
+    {
     }
 
 };

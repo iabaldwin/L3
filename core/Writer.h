@@ -24,17 +24,13 @@ class Writer
 
         bool open( const std::string& f )
         {
-            stream.open( f.c_str(), std::ios::in );
+            stream.open( f.c_str(), std::ios::out );
             return stream.good();
         }
 
         size_t write()
         {
-            std::copy( std::istream_iterator<double>( stream ),
-                        std::istream_iterator<double>(),
-                        std::back_inserter( raw ) );
-
-            return raw.size();
+        
         }
 
 

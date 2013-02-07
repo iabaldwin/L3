@@ -15,11 +15,11 @@ class Reader {
 
     public:
 
-        virtual ~Reader()
-        {
-            if (stream.is_open())
-                stream.close();
-        }
+        virtual ~Reader();
+        //{
+            //if (stream.is_open())
+                //stream.close();
+        //}
 
         bool open( const std::string& f )
         {
