@@ -11,40 +11,6 @@ namespace L3
 namespace IO
 {
 
-class Reader {
-
-    public:
-
-        virtual ~Reader();
-        //{
-            //if (stream.is_open())
-                //stream.close();
-        //}
-
-        bool open( const std::string& f )
-        {
-            stream.open( f.c_str(), std::ios::in );
-            return stream.good();
-        }
-
-        size_t read()
-        {
-            std::copy( std::istream_iterator<double>( stream ),
-                        std::istream_iterator<double>(),
-                        std::back_inserter( raw ) );
-
-            return raw.size();
-        }
-
-        std::vector<double> raw;
-
-    protected:
-
-        std::ifstream stream;
-
-    private:
-};
-
 template <typename T>
 struct Extractor
 {
@@ -74,6 +40,36 @@ struct Extractor
             elements.push_back( new T( buffer ) );
         }
     }
+};
+
+class Reader {
+
+    public:
+
+        virtual ~Reader();
+
+        bool open( const std::string& f )
+        {
+            stream.open( f.c_str(), std::ios::in );
+            return stream.good();
+        }
+
+        size_t read()
+        {
+            std::copy( std::istream_iterator<double>( stream ),
+                        std::istream_iterator<double>(),
+                        std::back_inserter( raw ) );
+
+            return raw.size();
+        }
+
+        std::vector<double> raw;
+
+    protected:
+
+        std::ifstream stream;
+
+    private:
 };
 
 class PoseReader : public Reader

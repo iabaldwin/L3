@@ -65,6 +65,37 @@ bool Dataset::validate()
         it++;
     }
 
+    // Validate logic
+    return true;
 }
+
+bool Dataset::load()
+{
+
+    // Load INS
+    std::auto_ptr<L3::IO::PoseReader> pose_reader( new L3::IO::PoseReader() );
+
+    //std::cout << boost::filesystem::path( OxTS ) << std::endl;
+    pose_reader->open( OxTS.path().string() );
+    
+    if( !pose_reader->read() )
+        throw std::exception();
+
+    std::vector<L3::Pose*> poses;
+    if ( pose_reader->extract( poses ) )
+        for( std::vector<L3::Pose*>::iterator it=poses.begin(); it!= poses.end(); it++ )
+            std::cout << *(*it) << std::endl;
+
+    // Load LIDAR
+    std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();
+
+    while ( it != LIDARs.end() )
+    {
+
+        it++;
+    }
+
+}
+
 
 }

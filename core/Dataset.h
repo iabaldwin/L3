@@ -1,5 +1,5 @@
-#ifndef L3_DATATYPES_H
-#define L3_DATATYPES_H
+#ifndef L3_DATASET_H
+#define L3_DATASET_H
 
 #include <iostream>
 #include <vector>
@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <boost/filesystem.hpp>
 
+#include "Reader.h"
 
 namespace L3
 {
@@ -25,6 +26,7 @@ enum  extensionType { INS, LIDAR };
             Dataset& list();
 
             bool validate();
+            bool load();
 
         protected:
 
