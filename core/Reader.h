@@ -6,6 +6,8 @@
 #include <fstream>
 #include "Datatypes.h"
 
+#include <boost/shared_ptr.hpp>
+
 namespace L3
 {
 namespace IO
@@ -15,6 +17,7 @@ template <typename T>
 struct Extractor
 {
     std::vector<T*> elements;
+    //std::vector<boost::shared_ptr<T> > elements;
 
     int counter; 
     
@@ -38,6 +41,7 @@ struct Extractor
         {
             counter = 0;
             elements.push_back( new T( buffer ) );
+            //elements.push_back( boost::shared_ptr<T>( new T( buffer ) ) );
         }
     }
 };

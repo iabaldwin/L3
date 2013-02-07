@@ -22,7 +22,6 @@ struct Base
         
     virtual void print( std::ostream& o ) const = 0;
 
-    virtual std::pair<char*, size_t> serialize() = 0;
 };
 
 class Pose : public Base
@@ -31,6 +30,10 @@ class Pose : public Base
         
         Pose(){}
         virtual ~Pose(){}
+
+        double x,y;
+
+        float time;
 
     protected:
 
@@ -44,21 +47,17 @@ class SE2 : public Pose
     
         const static int NUM_ELEMENTS = 4;
 
-        SE2( double X, double Y, double Q ) : x(X), y(Y), q(Q)
+        SE2( double X, double Y, double Q ) : q(Q)
         {
+            x = X;
+            y = Y;
+
         }
         
         void print( std::ostream& o ) const {
             o << x << "," << y << ","  << q;
         }
       
-        std::pair<char*, size_t> serialize() 
-        {
-
-        }
-
-        double x;
-        double y;
         double q;
 
 };
@@ -71,8 +70,11 @@ class SE3 : public Pose
         const static int NUM_ELEMENTS = 7;
 
         SE3( double X, double Y, double Z, double R, double P, double Q) 
-            : x(X), y(Y), z(Z), r(R), p(P), q(Q)
+            : z(Z), r(R), p(P), q(Q)
         {
+            x = X;
+            y = Y;
+
         }
 
         SE3( const std::vector<double> v ) 
@@ -90,11 +92,7 @@ class SE3 : public Pose
             o << x << "," << y << ","  << q;
         }
         
-        std::pair<char*, size_t> serialize() 
-        {
-        }
-
-        double x,y,z;
+        double z;
         double r,p,q;
 
 };
@@ -131,10 +129,7 @@ struct LMS151 : LIDAR
         o << ranges[0];
     }
 
-    std::pair<char*, size_t> serialize() 
-    {
-
-    }
+    
 };
 }
 

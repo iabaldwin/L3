@@ -32,8 +32,26 @@ struct PoseChain : Component
 
     }
 
+    glv::Point3 vertices[20];
+    glv::Color colors[20];
+
     virtual void onDraw3D(glv::GLV& g)
     {
+        for ( unsigned int i=0; i<20; i++ )
+        {
+            float x = random() % 10;
+            float y = random() % 10;
+            float z = random() % 10;
+
+            vertices[i]( x, y, z );
+
+             colors[i] = glv::HSV(0.6, .1, z*0.45+0.55);
+       
+             glv::draw::translateZ( -4 );
+        }
+   
+        glv::draw::paint( glv::draw::Points, vertices, colors, 20 );
+   
     }
 
 };

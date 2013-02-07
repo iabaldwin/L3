@@ -2,13 +2,12 @@
 #define L3_DATASET_H
 
 #include <iostream>
-#include <vector>
 #include <iterator>
+#include <vector>
 #include <map>
 #include <list>
 #include <assert.h>
 #include <boost/filesystem.hpp>
-
 #include "Reader.h"
 
 namespace L3
@@ -23,12 +22,14 @@ enum  extensionType { INS, LIDAR };
             Dataset();
             Dataset( const std::string& target );
 
-            Dataset& list();
-
             bool validate();
             bool load();
 
+            std::vector<L3::Pose*> poses;
+
         protected:
+            
+            friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
 
             boost::filesystem::directory_entry OxTS;
             std::list<boost::filesystem::directory_entry> LIDARs;

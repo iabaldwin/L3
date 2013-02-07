@@ -5,6 +5,10 @@ int main()
 {
     L3::Dataset d( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
 
-    if( d.list().validate() )
+    if( d.validate() )
         d.load();
+
+    std::cout << d << std::endl;
+
+    std::cout << *d.poses[0] << std::endl;
 }

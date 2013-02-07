@@ -23,13 +23,13 @@ Dataset::Dataset( const std::string& target )
 
 }
 
-Dataset& Dataset::list()
+std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
 {
-    //std::copy(boost::filesystem::directory_iterator( root_path ), 
-            //boost::filesystem::directory_iterator(), 
-            //std::ostream_iterator<boost::filesystem::directory_entry>(std::cout, "\n")); 
+    std::copy(boost::filesystem::directory_iterator( dataset.root_path ), 
+            boost::filesystem::directory_iterator(), 
+            std::ostream_iterator<boost::filesystem::directory_entry>(o, "\n")); 
 
-    return *this;
+    return o;
 }
 
 bool Dataset::validate()
@@ -79,10 +79,8 @@ bool Dataset::load()
     if( !pose_reader->read() )
         throw std::exception();
 
-    std::vector<L3::Pose*> poses;
-    if ( pose_reader->extract( poses ) )
-        for( std::vector<L3::Pose*>::iterator it=poses.begin(); it!= poses.end(); it++ )
-            std::cout << *(*it) << std::endl;
+    if ( !pose_reader->extract( poses ) )
+        throw std::exception();
 
     // Load LIDARs
     std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();
@@ -96,9 +94,10 @@ bool Dataset::load()
         std::vector<L3::LMS151*> scans;
         scan_reader->read();
 
-        if ( scan_reader->extract( scans ) )
-            for( std::vector<L3::LMS151*>::iterator it=scans.begin(); it!= scans.end(); it++ )
-                std::cout << *(*it) << std::endl;
+        if ( !scan_reader->extract( scans ) )
+            throw std::exception();
+            //for( std::vector<L3::LMS151*>::iterator it=scans.begin(); it!= scans.end(); it++ )
+                //std::cout << *(*it) << std::endl;
 
         it++;
     }
