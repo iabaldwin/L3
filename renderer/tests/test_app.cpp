@@ -7,6 +7,7 @@
 #include "Datatypes.h"
 #include "Utils.h"
 #include "Reader.h"
+#include "Writer.h"
 #include "Components.h"
 
 int main (int argc, char ** argv){
@@ -31,7 +32,12 @@ int main (int argc, char ** argv){
     
     L3::Visual::PoseChain chain(poses);
     top << chain;
-   
+ 
+    // DBG
+    //L3::IO::Writer w; 
+    //if ( w.open( "test.txt" ) )
+        //w << poses;
+    
     win.setGLV(top);
     glv::Application::run();
 }

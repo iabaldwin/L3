@@ -1,5 +1,5 @@
-#ifndef L3_IO_H
-#define L3_IO_H
+#ifndef L3_IO_READER_H
+#define L3_IO_READER_H
 
 #include <vector>
 #include <iterator>

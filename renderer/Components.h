@@ -46,9 +46,9 @@ struct PoseChain : Component
         int counter = 0;
         for( POSE_CHAIN_ITERATOR it=poses.begin(); it < poses.end(); it++ )
         {
-            std::cout << *(*it) << std::endl;
-            if ( counter++ == 20 )
-                break;
+            //std::cout << *(*it) << std::endl;
+            //if ( counter++ == 20 )
+                //break;
         }
 
         //for ( unsigned int i=0; i<20; i++ )
