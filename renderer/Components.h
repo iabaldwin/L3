@@ -1,11 +1,11 @@
 #ifndef L3_COMPONENTS_H
 #define L3_COMPONENTS_H
 
-#include <iostream>
 #include <GLV/glv.h>
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
+#include <iostream>
 #include "Datatypes.h"
 
 namespace L3

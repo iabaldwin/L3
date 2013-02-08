@@ -13,11 +13,16 @@ int main (int argc, char ** argv){
 	
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
-    //Scene scene;
-    //top << scene;
+    glv::Grid grid(glv::Rect(0,0));
 
-    //L3::PoseChain chain;
-    //top << chain;
+    grid.range(1);            // set plot region
+    grid.major(1);            // set major tick mark placement
+    grid.minor(2);            // number of divisions per major ticks
+    grid.equalizeAxes(true);
+    grid.stretch(1,.2);
+
+
+    top << grid;
 
     win.setGLV(top);
     glv::Application::run();

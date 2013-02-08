@@ -7,7 +7,6 @@
 #include <vector>
 #include <assert.h>
 
-
 namespace L3
 {
 
@@ -99,7 +98,6 @@ class SE3 : public Pose
 
 struct LIDAR : Base
 {
-    //uint64_t timestamp;
     float timestamp;
     unsigned int num_scans;
     std::vector<float> reflectances;

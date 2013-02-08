@@ -10,7 +10,8 @@
 #include "Writer.h"
 #include "Components.h"
 
-int main (int argc, char ** argv){
+int main (int argc, char ** argv)
+{
 
     glv::GLV top;
     glv::Window win(1200, 600, "Soaring");
