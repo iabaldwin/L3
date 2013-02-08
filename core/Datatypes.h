@@ -32,6 +32,7 @@ class Pose : public Base
         Pose()
         {
         }
+       
         virtual ~Pose(){}
 
         double x,y;
@@ -53,7 +54,7 @@ class SE2 : public Pose
 {
 
     public:
-    
+
         const static int NUM_ELEMENTS = 4;
 
         SE2( double X, double Y, double Q ) : q(Q)
@@ -95,6 +96,7 @@ class SE3 : public Pose
         SE3( const std::vector<double> v ) 
         {
             assert( v.size() == 7 );
+            time = v[0]; 
             x = v[1];
             y = v[2];
             z = v[3];
@@ -106,7 +108,7 @@ class SE3 : public Pose
         }
 
         void print( std::ostream& o ) const {
-            o << x << "," << y << ","  << z << "," << r << "," << p << "," << q;
+            o << time << ":" << x << "," << y << ","  << z << "," << r << "," << p << "," << q;
         }
         
         double z;
@@ -148,7 +150,7 @@ class SE3 : public Pose
 
 struct LIDAR : Base
 {
-    float timestamp;
+    float time;
     unsigned int num_scans;
     std::vector<float> reflectances;
     std::vector<float> ranges;
@@ -166,7 +168,7 @@ struct LMS151 : LIDAR
 
     LMS151( std::vector<double> vec )  
     {
-        timestamp = vec[0];
+        time = vec[0];
 
         ranges.resize( LMS151::NUM_ELEMENTS ); 
 

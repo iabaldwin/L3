@@ -33,11 +33,10 @@ struct Extractor
         //Memory leak?
     }
 
-    
     void operator()( double d )
     {
         buffer[counter] = d;
-        if( ++counter % T::NUM_ELEMENTS == 0 )
+        if( ++counter % T::NUM_ELEMENTS == 0 ) 
         {
             counter = 0;
             elements.push_back( new T( buffer ) );
@@ -86,12 +85,13 @@ class PoseReader : public Reader
        
             e = std::for_each( raw.begin(), raw.end(), e );
 
-            if ( e.counter == 0 && e.elements.size() > 0 )
+            if ( e.counter == 0 && (e.elements.size() > 0 ) )
             {
                 poses.assign( e.elements.begin(), e.elements.end() );
                 return true;
             }
-            return false;
+            else
+                return false;
         }
 
 };

@@ -6,7 +6,6 @@ namespace L3
 
 Dataset::Dataset() 
 {
-
 }
 
 Dataset::Dataset( const std::string& target ) 
@@ -20,7 +19,6 @@ Dataset::Dataset( const std::string& target )
 
     lookup[".ins"] = INS;
     lookup[".lidar"] = LIDAR;
-
 }
 
 std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
@@ -75,11 +73,8 @@ bool Dataset::load()
     // Load INS
     std::auto_ptr<L3::IO::PoseReader> pose_reader( new L3::IO::PoseReader() );
     pose_reader->open( OxTS.path().string() );
-    
-    if( !pose_reader->read() )
-        throw std::exception();
-
-    if ( !pose_reader->extract( poses ) )
+   
+    if( !(pose_reader->read() && pose_reader->extract( poses ) ) )
         throw std::exception();
 
     // Load LIDARs
@@ -90,19 +85,59 @@ bool Dataset::load()
     while ( it != LIDARs.end() )
     {
         scan_reader->open( (*it).path().string() );
-
-        std::vector<L3::LMS151*> scans;
         scan_reader->read();
+        
+        std::vector<L3::LMS151*> raw_scans;
 
-        if ( !scan_reader->extract( scans ) )
+        if ( !scan_reader->extract( raw_scans ) )
             throw std::exception();
-            //for( std::vector<L3::LMS151*>::iterator it=scans.begin(); it!= scans.end(); it++ )
-                //std::cout << *(*it) << std::endl;
-
+        else
+        {
+            std::string raw_name = (*it).path().leaf().string();
+            std::string LIDAR_name( raw_name.begin(), raw_name.begin()+15); 
+            LIDAR_names.push_back( LIDAR_name );
+            LIDAR_data[LIDAR_name] = raw_scans; 
+        }
+        
         it++;
     }
 
 }
+struct Comparator
+{
 
+    Comparator()
+    {
+
+    }
+
+    bool operator()( L3::LMS151* l, const float f )
+    {
+        return (f < l->time);
+    }
+
+
+};
+
+
+L3::Pose* Dataset::getPoseAtTime( float time, const std::string& name )
+{
+    assert( poses.size() > 0 );
+    std::vector<L3::LMS151*>::iterator it;
+
+    L3::Pose* p;
+
+    L3::Comparator c;
+
+    //it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
+    //it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
+
+    if( it != LIDAR_data[name].end() )
+    {
+        p = &*it;     
+    }
+
+    return p;
+}
 
 }

@@ -27,6 +27,11 @@ enum  extensionType { INS, LIDAR };
 
             std::vector<L3::Pose*> poses;
 
+            std::vector<std::string> LIDAR_names;
+            std::map< std::string, std::vector<L3::LMS151*> > LIDAR_data;
+
+            L3::Pose* getPoseAtTime( float time, const std::string& name );
+
         protected:
             
             friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
