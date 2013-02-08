@@ -14,7 +14,7 @@ int main (int argc, char ** argv)
 {
 
     glv::GLV top;
-    glv::Window win(1200, 600, "Soaring");
+    glv::Window win(1400, 800, "Soaring");
 
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
@@ -39,10 +39,12 @@ int main (int argc, char ** argv)
     grid.equalizeAxes(true);
     grid.stretch(1,.2);
 
+    double d = 800;
+    glv::Plot v1__( glv::Rect(    0,0*d/8, d,  d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
     L3::Visual::PoseChain chain(poses);
     //top << chain << grid;
-    top << chain;
+    top << chain << v1__ ;
 
     chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
         
