@@ -7,14 +7,24 @@ int main()
 
     d.validate();
     d.load();
-    //if( !( d.validate() && d.load() ) )
-        //std::cout << "err" << std::endl;
 
-    //std::cout << d..size() << std::endl;
+    std::cout.precision( 20 );
 
-    //std::cout << d.LIDAR_names[0] << std::endl;
+    //for ( std::vector<L3::Pose*>::iterator it = d.poses.begin(); it != d.poses.end(); it++ )
+        //std::cout << (*it)->time << std::endl;
 
-    d.getPoseAtTime( d.poses[0]->time, d.LIDAR_names[0] );
+    L3::Pose* p =  d.getPoseAtTime( (d.poses[20]->time)+2.0f );
 
+    std::cout << p->time << std::endl;
+
+    //L3::LMS151* s = d.getScanAtTime( p->time, d.LIDAR_names[0] );
+    //std::cout << s << std::endl;
+
+    //std::cout << p->time << std::endl;
+    //std::cout << s->time << std::endl;
+    //std::cout << p->time - s->time << std::endl;
+
+    std::cout << p->time - d.poses[0]->time << std::endl;
+    std::cout << d.poses[0]->time << std::endl;
 }
 

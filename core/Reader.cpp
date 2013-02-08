@@ -7,7 +7,7 @@ namespace IO
 Reader::~Reader()
 {
     if (stream.is_open())
-                stream.close();
+        stream.close();
 
 }
 

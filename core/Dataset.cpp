@@ -103,41 +103,58 @@ bool Dataset::load()
     }
 
 }
+
+template <typename T>
 struct Comparator
 {
-
-    Comparator()
+    bool operator()( T* t, const double f )
+    //bool operator()( const double f, T* t  )
     {
-
+        return (f > t->time);
+        //return (f < t->time);
     }
-
-    bool operator()( L3::LMS151* l, const float f )
-    {
-        return (f < l->time);
-    }
-
-
 };
 
 
-L3::Pose* Dataset::getPoseAtTime( float time, const std::string& name )
+
+L3::Pose* Dataset::getPoseAtTime( double time )
 {
     assert( poses.size() > 0 );
-    std::vector<L3::LMS151*>::iterator it;
+    std::vector<L3::Pose*>::iterator it;
 
-    L3::Pose* p;
+    Comparator<L3::Pose> c;
 
-    L3::Comparator c;
+    it = std::lower_bound( poses.begin(), poses.end(), time, c );
+    //it = std::upper_bound( poses.begin(), poses.end(), time, c );
 
-    //it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
-    //it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
+    L3::Pose* p = 0;
 
-    if( it != LIDAR_data[name].end() )
+    if( it != poses.end() )
     {
-        p = &*it;     
+        p = &*(*it);     
     }
 
     return p;
 }
+
+L3::LMS151* Dataset::getScanAtTime( double time, const std::string& name )
+{
+    //assert( poses.size() > 0 );
+    //std::vector<L3::LMS151*>::iterator it;
+
+    L3::LMS151* l = 0;
+
+    //Comparator<L3::LMS151> c;
+
+    //it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
+
+    //if( it != LIDAR_data[name].end() )
+    //{
+        //l = &*(*it);     
+    //}
+
+    return l;
+}
+
 
 }

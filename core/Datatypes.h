@@ -35,9 +35,7 @@ class Pose : public Base
        
         virtual ~Pose(){}
 
-        double x,y;
-
-        float time;
+        double x, y, time;
 
         Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
 
@@ -150,7 +148,7 @@ class SE3 : public Pose
 
 struct LIDAR : Base
 {
-    float time;
+    double time;
     unsigned int num_scans;
     std::vector<float> reflectances;
     std::vector<float> ranges;

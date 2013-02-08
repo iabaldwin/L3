@@ -30,7 +30,8 @@ enum  extensionType { INS, LIDAR };
             std::vector<std::string> LIDAR_names;
             std::map< std::string, std::vector<L3::LMS151*> > LIDAR_data;
 
-            L3::Pose* getPoseAtTime( float time, const std::string& name );
+            Pose*   getPoseAtTime( double time );
+            LMS151* getScanAtTime( double time, const std::string& name );
 
         protected:
             
