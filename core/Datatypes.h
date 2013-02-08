@@ -7,6 +7,8 @@
 #include <vector>
 #include <assert.h>
 
+#include <Eigen/core>
+
 namespace L3
 {
 
@@ -27,16 +29,24 @@ class Pose : public Base
 {
     public:
         
-        Pose(){}
+        Pose()
+        {
+        }
         virtual ~Pose(){}
 
         double x,y;
 
         float time;
 
+
+
     protected:
 
+        virtual void updateHomogeneous() = 0;
+
         std::stringstream ss;
+        Eigen::Matrix4f homogeneous;
+
 };
 
 class SE2 : public Pose
@@ -59,6 +69,12 @@ class SE2 : public Pose
       
         double q;
 
+    private:
+
+        void updateHomogeneous() 
+        {
+
+        }
 };
 
 class SE3 : public Pose
@@ -93,6 +109,13 @@ class SE3 : public Pose
         
         double z;
         double r,p,q;
+
+    private:
+    
+        void updateHomogeneous() 
+        {
+
+        }
 
 };
 
