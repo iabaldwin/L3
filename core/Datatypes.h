@@ -135,9 +135,13 @@ class SE3 : public Pose
             Rz(1,0) = sin( q );
             Rz(1,1) = cos( q );
 
+            // SO3
             homogeneous = Rz*Ry*Rx;
-
-            std::cout << homogeneous << std::endl;
+            
+            // E3
+            homogeneous(0,3) = x;
+            homogeneous(1,3) = y;
+            homogeneous(2,3) = z;
         }
 
 };
