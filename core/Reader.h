@@ -86,13 +86,12 @@ class PoseReader : public Reader
        
             e = std::for_each( raw.begin(), raw.end(), e );
 
-            if ( e.counter == 0 )
+            if ( e.counter == 0 && e.elements.size() > 0 )
             {
                 poses.assign( e.elements.begin(), e.elements.end() );
                 return true;
             }
-            else
-                return false;
+            return false;
         }
 
 };
@@ -107,13 +106,11 @@ class LIDARReader : public Reader
             
             e = std::for_each( raw.begin(), raw.end(), e );
 
-            if ( e.counter == 0 )
+            if ( e.counter == 0 && e.elements.size() > 0 )
             {
                 scans.assign( e.elements.begin(), e.elements.end() );
                 return true;
             }
-            else
-                return false;
        
             return true;
         }
