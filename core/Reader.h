@@ -16,8 +16,8 @@ namespace IO
 template <typename T>
 struct Extractor
 {
-    std::vector<T*> elements;
     //std::vector<boost::shared_ptr<T> > elements;
+    std::vector<T*> elements;
 
     int counter; 
     

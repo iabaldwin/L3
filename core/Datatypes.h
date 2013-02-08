@@ -38,8 +38,6 @@ class Pose : public Base
 
         float time;
 
-
-
     protected:
 
         virtual void updateHomogeneous() = 0;
@@ -60,7 +58,6 @@ class SE2 : public Pose
         {
             x = X;
             y = Y;
-
         }
         
         void print( std::ostream& o ) const {
@@ -114,7 +111,28 @@ class SE3 : public Pose
     
         void updateHomogeneous() 
         {
+            Eigen::Matrix4f Rx = Eigen::Matrix4f::Identity();
+            Rx(1,1) = cos( r );
+            Rx(1,2) = -1*sin( r );
+            Rx(2,1) = sin( r );
+            Rx(2,2) = cos( r );
 
+            Eigen::Matrix4f Ry = Eigen::Matrix4f::Identity();
+            Ry(0,0) = cos( p );
+            Ry(0,2) = sin( p );
+            Ry(2,0) = -1*sin( p );
+            Ry(2,2) = cos( p );
+
+
+            Eigen::Matrix4f Rz = Eigen::Matrix4f::Identity();
+            Rz(0,0) = cos( q );
+            Rz(0,1) = -1*sin( q );
+            Rz(1,0) = sin( q );
+            Rz(1,1) = cos( q );
+
+            homogeneous = Rz*Ry*Rx;
+
+            std::cout << homogeneous << std::endl;
         }
 
 };
@@ -152,8 +170,6 @@ struct LMS151 : LIDAR
 
     
 };
-
-
 
 }
 
