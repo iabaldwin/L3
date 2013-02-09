@@ -1,25 +1,34 @@
 #include <iostream>
 #include <fstream>
 
+namespace L3
+{
+
 class Iterator
 {
 
     public:
     
-        Iterator()
+        Iterator( L3::Dataset* DATASET ) : dataset(DATASET)
         {
-
         }
 
+    private:
 
-        bool open( const std::string filename )
-        {
-            std::ifstream input(filename.c_str() );
-       
+        L3::Dataset* dataset;
 
-            return input.good();
-        }
 
 };
 
+class ConstantTime : public Iterator
+{
 
+    ConstantTime( L3::Dataset* DATASET ) : Iterator( DATASET )
+    {
+    }
+
+}
+
+
+
+} // L3

@@ -13,53 +13,37 @@
 namespace L3
 {
 
-enum  extensionType { INS, LIDAR };
+enum extensionType { INS, LIDAR };
 
-    class Dataset
-    {
+class Dataset
+{
 
-        public:
-            Dataset();
-            Dataset( const std::string& target );
+    public:
+        Dataset();
+        Dataset( const std::string& target );
 
-            bool validate();
-            bool load();
+        bool validate();
+        bool load();
 
-            std::vector<L3::Pose*> poses;
+        // Scans & poses
+        std::vector<L3::Pose*>                              poses;
+        std::vector<std::string>                            LIDAR_names;
+        std::map< std::string, std::vector<L3::LMS151*> >   LIDAR_data;
 
-            std::vector<std::string> LIDAR_names;
-            std::map< std::string, std::vector<L3::LMS151*> > LIDAR_data;
+        // Helper functions
+        Pose*   getPoseAtTime( double time );
+        LMS151* getScanAtTime( double time, const std::string& name );
 
-            Pose*   getPoseAtTime( double time );
-            LMS151* getScanAtTime( double time, const std::string& name );
+    protected:
+        
+        friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
 
-            //DBG
-            bool    isSorted()
-            {
-           
-                std::vector<L3::Pose*>::iterator it = poses.begin();
-
-                it++;
-                while( it != poses.end() )
-                {
-                if ( (*(it-1))->time > (*it)->time )
-                        return false;
-                    it++;
-                }
-                return true;
-
-            };
-
-        protected:
-            
-            friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
-
-            boost::filesystem::directory_entry OxTS;
-            std::list<boost::filesystem::directory_entry> LIDARs;
-            
-            boost::filesystem::path root_path;
-            std::map< std::string, extensionType > lookup;
-    };
+        boost::filesystem::directory_entry OxTS;
+        std::list<boost::filesystem::directory_entry> LIDARs;
+        
+        boost::filesystem::path root_path;
+        std::map< std::string, extensionType > lookup;
+};
 
 };
 
