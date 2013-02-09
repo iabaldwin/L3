@@ -21,6 +21,8 @@ class Iterator
         {
         }
 
+        virtual void update( double dt ) = 0;
+
     protected:
 
         std::list< std::pair< L3::Pose*, L3::LMS151* > > swathe; 
@@ -40,11 +42,16 @@ class ConstantTimeIterator : public Iterator
                 initialise();
             }
 
+        void update( dt )
+        {
+
+
+        }
+
     protected:
 
         void initialise()
         {
-
             std::vector<L3::Pose*>::iterator it = dataset->poses.begin();
 
             L3::Pose*   root_pose = dataset->poses[0];
