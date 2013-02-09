@@ -25,5 +25,8 @@ int main()
     std::cout << p->time - s->time << std::endl;
 
     std::cout << p->time - d.poses[0]->time << std::endl;
+
+    std::cout << std::distance( d.poses.begin(), std::find( d.poses.begin(), d.poses.end(), p ) ) << std::endl;
+
 }
 
