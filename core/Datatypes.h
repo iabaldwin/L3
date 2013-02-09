@@ -163,6 +163,7 @@ struct LIDAR : Base
     double angle_end;
     double angle_spacing;
 
+    int num_scans;
 };
 
 struct LMS151 : LIDAR
@@ -171,23 +172,29 @@ struct LMS151 : LIDAR
 
     LMS151() : LIDAR( M_PI/4, M_PI+(M_PI/4))
     {
-        angle_spacing = (angle_end - angle_spacing) / LMS151::NUM_ELEMENTS; 
+        angle_spacing = (angle_end - angle_spacing) / (double)LMS151::NUM_ELEMENTS; 
         ranges.resize( LMS151::NUM_ELEMENTS ); 
+   
+        num_scans = 541;
     }
 
     LMS151( std::vector<double> vec )  : LIDAR( M_PI/4, M_PI+(M_PI/4)) 
     {
         time = vec[0];
 
+        angle_spacing = (angle_end - angle_spacing) / (double)LMS151::NUM_ELEMENTS; 
         ranges.resize( LMS151::NUM_ELEMENTS ); 
         ranges.assign( ++vec.begin(), vec.end() );
     
+        num_scans = 541;
     }
 
     void print( std::ostream& o ) const {
+      
+        o << angle_start << ":" << angle_end << ":" << angle_spacing;
+        o << std::endl;
         std::copy( ranges.begin(), ranges.end(), std::ostream_iterator<double>( o, " " ) );
     }
-
     
 };
 

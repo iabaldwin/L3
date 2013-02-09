@@ -4,7 +4,7 @@
 int main()
 {
     std::auto_ptr<L3::IO::LIDARReader> reader( new L3::IO::LIDARReader() );
-    reader->open( "/Users/ian/code/python/tools/LMS1xx_10420001_192.168.0.51/ranges.txt" );
+    reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/LMS1xx_10420001_192.168.0.51.lidar" );
    
     std::vector<L3::LMS151*> scans;
     reader->read();
