@@ -145,19 +145,19 @@ L3::Pose* Dataset::getPoseAtTime( double time )
 
 L3::LMS151* Dataset::getScanAtTime( double time, const std::string& name )
 {
-    //assert( poses.size() > 0 );
-    //std::vector<L3::LMS151*>::iterator it;
+    assert( poses.size() > 0 );
+    std::vector<L3::LMS151*>::iterator it;
 
     L3::LMS151* l = 0;
 
-    //Comparator<L3::LMS151> c;
+    Comparator<L3::LMS151> c;
 
-    //it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
+    it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
 
-    //if( it != LIDAR_data[name].end() )
-    //{
-        //l = &*(*it);     
-    //}
+    if( it != LIDAR_data[name].end() )
+    {
+        l = &*(*it);     
+    }
 
     return l;
 }
