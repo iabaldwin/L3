@@ -108,13 +108,20 @@ template <typename T>
 struct Comparator
 {
     bool operator()( T* t, const double f )
-    //bool operator()( const double f, T* t  )
     {
-        return (f > t->time);
         //return (f < t->time);
+        return (t->time < f);
     }
 };
 
+template <typename T>
+struct Sorter
+{
+    bool operator()( T* t1,  T* t2 )
+    {
+        return ( t1->time > t2->time );
+    }
+};
 
 
 L3::Pose* Dataset::getPoseAtTime( double time )
@@ -125,7 +132,6 @@ L3::Pose* Dataset::getPoseAtTime( double time )
     Comparator<L3::Pose> c;
 
     it = std::lower_bound( poses.begin(), poses.end(), time, c );
-    //it = std::upper_bound( poses.begin(), poses.end(), time, c );
 
     L3::Pose* p = 0;
 

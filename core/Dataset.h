@@ -33,6 +33,23 @@ enum  extensionType { INS, LIDAR };
             Pose*   getPoseAtTime( double time );
             LMS151* getScanAtTime( double time, const std::string& name );
 
+            //DBG
+            bool    isSorted()
+            {
+           
+                std::vector<L3::Pose*>::iterator it = poses.begin();
+
+                it++;
+                while( it != poses.end() )
+                {
+                if ( (*(it-1))->time > (*it)->time )
+                        return false;
+                    it++;
+                }
+                return true;
+
+            };
+
         protected:
             
             friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );

@@ -13,9 +13,12 @@ int main()
     //for ( std::vector<L3::Pose*>::iterator it = d.poses.begin(); it != d.poses.end(); it++ )
         //std::cout << (*it)->time << std::endl;
 
-    L3::Pose* p =  d.getPoseAtTime( (d.poses[20]->time)+2.0f );
+    double time = d.poses[20]->time;
+    L3::Pose* p =  d.getPoseAtTime( time  );
 
+    std::cout << time << std::endl;
     std::cout << p->time << std::endl;
+    std::cout << d.poses[0]->time << std::endl;
 
     //L3::LMS151* s = d.getScanAtTime( p->time, d.LIDAR_names[0] );
     //std::cout << s << std::endl;
@@ -24,7 +27,7 @@ int main()
     //std::cout << s->time << std::endl;
     //std::cout << p->time - s->time << std::endl;
 
-    std::cout << p->time - d.poses[0]->time << std::endl;
-    std::cout << d.poses[0]->time << std::endl;
+    //std::cout << p->time - d.poses[0]->time << std::endl;
+    //std::cout << d.poses[20]->time << std::endl;
 }
 
