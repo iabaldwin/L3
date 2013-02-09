@@ -23,13 +23,20 @@ int main (int argc, char ** argv)
     std::vector<L3::Pose*> poses;
     std::auto_ptr<L3::IO::PoseReader> reader( new L3::IO::PoseReader() );
     
-    reader->open( "/Users/ian/code/python/tools/test/OxTS.ins" );
+    reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" );
     reader->read();
 
     if ( !reader->extract( poses ) )
         throw std::exception();
 
     L3::UTILS::localisePoseChainToOrigin( poses );
+
+    std::vector<L3::Pose*>::iterator it = poses.begin(); 
+    while( it != poses.end() )
+    {
+        std::cout << *(*it) << std::endl;
+        it++;
+    }
 
     glv::Grid grid(glv::Rect(0,0));
 
@@ -44,7 +51,7 @@ int main (int argc, char ** argv)
 
     L3::Visual::PoseChain chain(poses);
     //top << chain << grid;
-    top << chain << v1__ ;
+    top << chain << v1__ << grid;
 
     chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
         
