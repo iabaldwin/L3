@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <list>
+#include <iterator>
 #include <assert.h>
 
 #include <Eigen/core>
@@ -149,9 +151,17 @@ class SE3 : public Pose
 struct LIDAR : Base
 {
     double time;
-    unsigned int num_scans;
-    std::vector<float> reflectances;
     std::vector<float> ranges;
+    std::vector<float> reflectances;
+
+    LIDAR( double start, double end ) : 
+        angle_start(start), angle_end(end)
+    {}
+
+
+    double angle_start;
+    double angle_end;
+    double angle_spacing;
 
 };
 
@@ -159,22 +169,23 @@ struct LMS151 : LIDAR
 {
     const static int NUM_ELEMENTS = 542;
 
-    LMS151() 
+    LMS151() : LIDAR( M_PI/4, M_PI+(M_PI/4))
     {
+        angle_spacing = (angle_end - angle_spacing) / LMS151::NUM_ELEMENTS; 
         ranges.resize( LMS151::NUM_ELEMENTS ); 
     }
 
-    LMS151( std::vector<double> vec )  
+    LMS151( std::vector<double> vec )  : LIDAR( M_PI/4, M_PI+(M_PI/4)) 
     {
         time = vec[0];
 
         ranges.resize( LMS151::NUM_ELEMENTS ); 
-
         ranges.assign( ++vec.begin(), vec.end() );
+    
     }
 
     void print( std::ostream& o ) const {
-        o << ranges[0];
+        std::copy( ranges.begin(), ranges.end(), std::ostream_iterator<double>( o, " " ) );
     }
 
     

@@ -4,19 +4,15 @@
 namespace L3
 {
 
-class PointCloud
+struct PointCloud
 {
 
-    public:
-
-        PointCloud()
-        {
-
-
-        }
+    PointCloud()
+    {
+    }
 
 
-}
+};
 
 } // L3
 

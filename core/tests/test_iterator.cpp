@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "Definitions.h"
 #include "Iterator.h"
 #include "Dataset.h"
 
@@ -14,4 +15,16 @@ int main()
 
     std::auto_ptr< L3::ConstantTimeIterator > iterator( new L3::ConstantTimeIterator( &dataset, LIDAR_name, 10.0 ) );
 
+    SWATHE* s = iterator->getSwathe();
+
+    SWATHE::iterator it = s->begin();
+
+    while( it != s->end() )
+    {
+        //std::cout << (*it).first << std::endl;
+        //std::cout << (*it).second << std::endl;
+        //std::cout << *((*it).second) << std::endl;
+        
+        it++;
+    }
 }

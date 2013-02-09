@@ -8,6 +8,7 @@
 #include "Tools.h"
 #include "Dataset.h"
 #include "Datatypes.h"
+#include "Definitions.h"
 
 namespace L3
 {
@@ -23,9 +24,14 @@ class Iterator
 
         virtual void update( double dt ) = 0;
 
+        SWATHE* getSwathe()
+        {
+            return &swathe;
+        }
+
     protected:
 
-        std::list< std::pair< L3::Pose*, L3::LMS151* > > swathe; 
+        SWATHE swathe;
 
         L3::Dataset* dataset;
 
@@ -42,7 +48,7 @@ class ConstantTimeIterator : public Iterator
                 initialise();
             }
 
-        void update( dt )
+        void update( double dt )
         {
 
 
@@ -82,7 +88,6 @@ class ConstantTimeIterator : public Iterator
 
         std::string LIDAR_name;
         double swathe_length;
-
 };
 
 
