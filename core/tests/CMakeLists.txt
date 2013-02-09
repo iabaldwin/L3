@@ -13,3 +13,6 @@ target_link_libraries( test_pose_homogeneous  config L3 boost_system boost_files
 add_executable( test_find_closest test_find_closest.cpp )
 target_link_libraries( test_find_closest  config L3 boost_system boost_filesystem )
 
+add_executable( test_iterator test_iterator.cpp )
+target_link_libraries( test_iterator  config L3 boost_system boost_filesystem )
+

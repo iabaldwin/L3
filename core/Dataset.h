@@ -43,8 +43,8 @@ class Dataset
         
         boost::filesystem::path root_path;
         std::map< std::string, extensionType > lookup;
-};
 
 };
 
+} // L3
 #endif
