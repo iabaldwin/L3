@@ -3,7 +3,7 @@
 namespace L3
 {
 
-namespace UTILS
+namespace Utils
 {
 
 void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l )

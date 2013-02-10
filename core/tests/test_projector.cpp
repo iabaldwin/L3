@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "Iterator.h"
+#include "Utils.h"
 #include "Dataset.h"
 #include "Projector.h"
 
@@ -16,8 +17,14 @@ int main()
 
     std::auto_ptr< L3::ConstantTimeIterator > iterator( new L3::ConstantTimeIterator( &dataset, LIDAR_name, 10.0 ) );
 
+    L3::Utils::localisePoseChainToOrigin( dataset.poses );
+
     // Project swathe
     std::auto_ptr<L3::Projector> projector( new L3::Projector() );
 
-    projector->project( iterator->getSwathe() );
+    L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
+
+    //std::cout << static_cast<L3::PointCloudXYZ>(cloud) << std::endl;
+
+    std::cout << cloud << std::endl;
 }

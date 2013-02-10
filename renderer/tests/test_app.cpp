@@ -29,7 +29,7 @@ int main (int argc, char ** argv)
     if ( !reader->extract( poses ) )
         throw std::exception();
 
-    L3::UTILS::localisePoseChainToOrigin( poses );
+    L3::Utils::localisePoseChainToOrigin( poses );
 
     std::vector<L3::Pose*>::iterator it = poses.begin(); 
     while( it != poses.end() )

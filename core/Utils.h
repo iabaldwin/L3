@@ -11,7 +11,7 @@
 namespace L3
 {
 
-namespace UTILS
+namespace Utils
 {
 
 boost::filesystem::path configurationDirectory( void );
@@ -23,7 +23,7 @@ struct Locale
     Locale( const std::string& target )
     {
 
-        boost::filesystem::path p = L3::UTILS::configurationDirectory();
+        boost::filesystem::path p = L3::Utils::configurationDirectory();
 
         p /= target;
 

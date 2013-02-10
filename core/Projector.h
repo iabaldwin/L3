@@ -12,6 +12,7 @@ namespace L3
 template <typename T>
 struct XYToXYZ
 {
+    
     XYToXYZ( L3::Pose* p ) : pose(p)
     {
         pt = Eigen::Matrix4f::Identity();
@@ -80,10 +81,12 @@ class Projector
 
         }
 
-        PointCloud project( SWATHE* swathe )
+        PointCloudXYZ<double> project( SWATHE* swathe )
         {
             SWATHE::iterator it = swathe->begin();
-      
+    
+            L3::PointCloudXYZ<double> cloud;
+
             L3::Tools::Timer t;
             while( it != swathe->end() )
             {
@@ -102,13 +105,16 @@ class Projector
                 std::transform(  (*it).second->ranges.begin(), (*it).second->ranges.end(), std::back_inserter( XY ), p );
 
                 // Project xy to XYZ@Pose
-                //L3::XYToXYZ<double> p2( (*it).first ); 
+                L3::XYToXYZ<double> p2( (*it).first ); 
                 //std::vector< std::vector<double> > XYZ;
+                //XYZ.resize( 541 );
                 //std::transform( XY.begin(), XY.end(), std::back_inserter( XYZ ), p2 );
+                std::transform( XY.begin(), XY.end(), std::back_inserter( cloud.data ), p2 );
 
                 it++;
-                std::cout << t.end() << std::endl;
             }
+       
+            return cloud;
         }
 };
 

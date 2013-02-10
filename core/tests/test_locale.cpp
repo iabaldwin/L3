@@ -14,9 +14,9 @@ int main()
 
     if ( reader->extract( poses ) )
     {
-        //L3::UTILS::localisePoseChain( poses, L3::UTILS::BEGBROKE() );
+        //L3::UTILS::localisePoseChain( poses, L3::Utils::BEGBROKE() );
    
-        L3::UTILS::localisePoseChainToOrigin( poses );
+        L3::Utils::localisePoseChainToOrigin( poses );
 
         L3::IO::Writer w;
         if( w.open( "test.txt" ))
