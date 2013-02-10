@@ -8,7 +8,6 @@
 #include <list>
 #include <iterator>
 #include <assert.h>
-
 #include <Eigen/core>
 
 namespace L3
@@ -197,6 +196,30 @@ struct LMS151 : LIDAR
     }
     
 };
+
+//struct PoseChain
+//{
+
+    //PoseChain( std::vector<L3::Pose*>& seq) : sequence(seq)
+    //{
+
+    //}
+
+    //std::vector<L3::Pose*> sequence;
+//};
+
+//std::ostream& operator<<( std::ostream& o, const PoseChain& chain )
+//{
+    ////std::vector<L3::Pose*>::iterator it = chain.sequence.begin();
+    ////while( it != chain.sequence.end() )
+    ////{
+        ////std::cout << *(*it ) << std::endl;
+    ////}
+
+    //return o;
+//}
+
+
 
 }
 

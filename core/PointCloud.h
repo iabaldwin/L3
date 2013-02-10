@@ -15,7 +15,6 @@ struct Writer
 
     Writer( std::ostream& o ) : output(o)
     {
-
     }
 
     std::ostream& output;
@@ -23,6 +22,7 @@ struct Writer
     void operator()( std::vector<T> t )
     {
         std::copy( t.begin(), t.end(), std::ostream_iterator<T>( output, " " ) );
+        output << std::endl; 
     }
 };
 
@@ -32,7 +32,6 @@ struct PointCloudXYZ : PointCloud
 
     PointCloudXYZ()
     {
-
     }
 
     // Data

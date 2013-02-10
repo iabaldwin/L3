@@ -71,14 +71,10 @@ class Projector
 
         Projector()
         {
-
-
         }
 
         PointCloud project( const POSE_SEQUENCE& poses, const LIDAR_SEQUENCE& lidar )
         {
-
-
         }
 
         PointCloudXYZ<double> project( SWATHE* swathe )
