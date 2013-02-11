@@ -7,10 +7,12 @@
 
 #include <iostream>
 #include "Datatypes.h"
+#include "Definitions.h"
+#include "Iterator.h"
 
 namespace L3
 {
-namespace Visual
+namespace Visualisers
 {
 
 struct Component : glv::View3D{
@@ -32,13 +34,60 @@ struct Component : glv::View3D{
 
 typedef std::vector<L3::Pose*>::iterator POSE_CHAIN_ITERATOR;
 
-struct PoseChain : Component
+/*
+ *Iterator renderer
+ */
+struct IteratorRenderer : Component
+{
+
+    IteratorRenderer( L3::Iterator* ITERATOR )  : iterator(ITERATOR )
+    {
+    }
+
+    void onDraw3D( glv::GLV& g )
+    {
+        // Update the iterator
+        iterator->update( 1.0 );
+
+        // Get the swathe
+        SWATHE* swathe = iterator->getSwathe();
+
+        // Reserve
+        glv::Color* colors = new glv::Color[iterator->numScans()];
+        glv::Point3* vertices = new glv::Point3[iterator->numScans()];;
+
+        SWATHE::iterator it = swathe->begin();
+
+        int counter = 0;
+        while( it != swathe->end() )
+        {
+            vertices[counter]( (*it).first->x, (*it).first->y, 0 );
+            it++; counter++;
+        }
+        
+        glv::draw::translateZ( -190 );
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+
+        delete [] colors;
+        delete [] vertices;
+    }
+
+
+    L3::Iterator* iterator;
+};
+
+
+/*
+ *Pose chain renderer
+ */
+
+struct PoseChainRenderer : Component
 {
 
     glv::Color* colors;
     glv::Point3* vertices;
 
-    PoseChain( std::vector<L3::Pose*>& POSES ) : poses(POSES)
+    PoseChainRenderer( std::vector<L3::Pose*>& POSES ) : poses(POSES)
     {
         colors = new glv::Color[poses.size()];
         vertices = new glv::Point3[poses.size()];
@@ -56,7 +105,7 @@ struct PoseChain : Component
         far( 200 );
     }
 
-    ~PoseChain()
+    ~PoseChainRenderer()
     {
         delete [] colors;
         delete [] vertices;

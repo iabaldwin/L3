@@ -5,6 +5,8 @@
 #include <GLV/glv_util.h>
 
 #include "Datatypes.h"
+#include "Dataset.h"
+#include "Iterator.h"
 #include "Utils.h"
 #include "Reader.h"
 #include "Writer.h"
@@ -20,23 +22,13 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     // Pose sequence
-    std::vector<L3::Pose*> poses;
-    std::auto_ptr<L3::IO::PoseReader> reader( new L3::IO::PoseReader() );
+    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    assert( dataset.validate() && dataset.load() );
     
-    reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" );
-    reader->read();
+    std::string LIDAR_name = dataset.LIDAR_names[0];
+    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 10.0 );
 
-    if ( !reader->extract( poses ) )
-        throw std::exception();
-
-    L3::Utils::localisePoseChainToOrigin( poses );
-
-    std::vector<L3::Pose*>::iterator it = poses.begin(); 
-    while( it != poses.end() )
-    {
-        std::cout << *(*it) << std::endl;
-        it++;
-    }
+    L3::Utils::localisePoseChainToOrigin( dataset.poses );
 
     glv::Grid grid(glv::Rect(0,0));
 
@@ -49,12 +41,16 @@ int main (int argc, char ** argv)
     double d = 800;
     glv::Plot v1__( glv::Rect(    0,0*d/8, d,  d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
-    L3::Visualisers::PoseChainRenderer chain(poses);
-    //top << chain << grid;
-    top << chain << v1__ << grid;
 
-    chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
-        
+    L3::Visualisers::IteratorRenderer iterator_renderer( iterator  );
+
+    //L3::Visual::PoseChain chain(poses);
+    //top << chain << grid;
+    //top << chain << v1__ << grid;
+    //chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
+    
+    top << iterator_renderer;
+
     win.setGLV(top);
     glv::Application::run();
 }

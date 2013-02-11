@@ -24,6 +24,8 @@ class Iterator
 
         virtual bool update( double dt ) = 0;
 
+        virtual int numScans() = 0;
+
         SWATHE* getSwathe()
         {
             return &swathe;
@@ -32,6 +34,8 @@ class Iterator
     protected:
 
         SWATHE swathe;
+        POSE_SEQUENCE::iterator head;
+        POSE_SEQUENCE::iterator tail;
 
         L3::Dataset* dataset;
 
@@ -72,7 +76,9 @@ class ConstantTimeIterator : public Iterator
                 tail++;
             }
 
+            #ifdef DEBUG
             std::cout << (*head)->time - (*tail)->time << std::endl;
+            #endif
 
             return true;
 
@@ -90,8 +96,6 @@ class ConstantTimeIterator : public Iterator
 
     protected:
 
-        POSE_SEQUENCE::iterator head;
-        POSE_SEQUENCE::iterator tail;
 
         void initialise()
         {
