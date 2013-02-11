@@ -12,12 +12,24 @@ struct Point
 
     T x,y,z;
 
+    Point() 
+    {
+    }
+
+
     Point( T X, T Y, T Z ) : x(X), y(Y), z(Z)
     {
     }
 
 
 };
+
+template< typename T>
+std::ostream& operator<<( std::ostream& o, const L3::Point<T>& p )
+{
+    o << p.x << "," << p.y << "," << p.z;
+    return o;
+}
 
 template< typename T>
 struct PointCloud
@@ -35,38 +47,21 @@ struct PointCloud
 };
 
 template <typename T>
-struct Writer
-{
-
-    Writer( std::ostream& o ) : output(o)
-    {
-    }
-
-    std::ostream& output;
-
-    void operator()( std::vector<T> t )
-    {
-        std::copy( t.begin(), t.end(), std::ostream_iterator<T>( output, " " ) );
-        output << std::endl; 
-    }
-
-};
-
-template <typename T>
 struct PointCloudXYZ : PointCloud<T>
 {
 
     PointCloudXYZ()
     {
     }
-    
+
 };
 
 template <typename T>
-std::ostream& operator<<( std::ostream& o, PointCloudXYZ<T> cloud)
+std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud)
 {
-        Writer<T> w( std::cout );
-        std::for_each( cloud.data.begin(), cloud.data.end(), w );
+        std::copy( cloud.data.begin(), 
+                cloud.data.end(), 
+                std::ostream_iterator< Point<T> >( std::cout, "\n" ) );
         return o; 
 }
 

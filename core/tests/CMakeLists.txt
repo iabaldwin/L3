@@ -16,6 +16,9 @@ target_link_libraries( test_find_closest  config L3 boost_system boost_filesyste
 add_executable( test_iterator test_iterator.cpp )
 target_link_libraries( test_iterator  config L3 boost_system boost_filesystem )
 
-add_executable( test_projector test_projector.cpp )
-target_link_libraries( test_projector  config L3 boost_system boost_filesystem )
+#add_executable( test_projector test_projector.cpp )
+#target_link_libraries( test_projector  config L3 boost_system boost_filesystem )
+
+add_executable( test_point_cloud test_point_cloud.cpp )
+target_link_libraries( test_point_cloud  config L3 boost_system boost_filesystem )
 

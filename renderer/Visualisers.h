@@ -55,15 +55,16 @@ struct CloudRenderer : Component
         vertices = new glv::Point3[cloud->size()];
    
         // Build the cloud
-        typedef typename L3::PointCloud<T>::PointCloudIterator it; 
-        //typename std::vector<T>::iterator it = cloud->data.begin();
-        //std::vector<T>::iterator it 
+        
+        typename std::vector< Point<T> >::iterator it;
+        it = cloud->data.begin();
 
-        //while( it != cloud->data.end() )
-        //{
-            //vertices[counter]( (*it)[0], (*it)[1], (*it)[2]); 
-            //it++;
-        //}
+        int counter = 0;
+        while( it != cloud->data.end() )
+        {
+            vertices[counter]( (*it).x, (*it).y, (*it).z); 
+            it++;
+        }
     
     };
 
@@ -75,8 +76,9 @@ struct CloudRenderer : Component
 
     void onDraw3D( glv::GLV& g )
     {
-        //What is the type?
-        std::cout << cloud->size() << std::endl; 
+        far( 200 );
+        glv::draw::translateZ( -190 );
+        glv::draw::paint( glv::draw::Points, vertices, colors, cloud->size());
     }
     
     glv::Color* colors;

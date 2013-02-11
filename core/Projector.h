@@ -22,7 +22,7 @@ struct XYToXYZ
     Eigen::Matrix4f pt;
     Eigen::Matrix4f result;
 
-    std::vector<T> operator()( std::pair<T,T> t )
+    Point<T> operator()( std::pair<T,T> t )
     {
         pt( 0, 3 ) = t.first;
         pt( 1, 3 ) = t.second;
@@ -30,11 +30,11 @@ struct XYToXYZ
 
         result = pose->getHomogeneous() * pt;
 
-        std::vector<T> point(3);
+        Point<T> point;
 
-        point[0] = result(0,3);
-        point[1] = result(1,3);
-        point[2] = result(2,3);
+        point.x = result(0,3);
+        point.x = result(1,3);
+        point.z = result(2,3);
 
         return point;
     }
@@ -98,9 +98,6 @@ class Projector
 
                 // Project xy to XYZ@Pose
                 L3::XYToXYZ<double> p2( (*it).first ); 
-                //std::vector< std::vector<double> > XYZ;
-                //XYZ.resize( 541 );
-                //std::transform( XY.begin(), XY.end(), std::back_inserter( XYZ ), p2 );
                 std::transform( XY.begin(), XY.end(), std::back_inserter( cloud.data ), p2 );
 
                 it++;
