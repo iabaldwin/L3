@@ -77,8 +77,7 @@ struct WOODSTOCK : Locale
 
 void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l );
 void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses );
-
-
+void localisePoseChainToMean( std::vector<L3::Pose*>& poses );
 
 }
 }

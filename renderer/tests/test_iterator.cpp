@@ -28,7 +28,7 @@ int main (int argc, char ** argv)
     std::string LIDAR_name = dataset.LIDAR_names[0];
     L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 10.0 );
 
-    L3::Utils::localisePoseChainToOrigin( dataset.poses );
+    L3::Utils::localisePoseChainToMean( dataset.poses );
 
     glv::Grid grid(glv::Rect(0,0));
 

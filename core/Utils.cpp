@@ -35,6 +35,53 @@ void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses )
     }
 
 }
+struct accumulator
+{
+    accumulator() : counter(0), x(0.0), y(0.0), z(0.0)
+    {
+    }
+
+    int counter;
+    double x, y, z;
+    void operator()( L3::Pose* p )
+    {
+        x += p->x;
+        y += p->y;
+   
+        counter++;
+    }
+
+    std::vector<double> centroid()
+    {
+        std::vector<double> res(2);
+        res[0] = x/counter;
+        res[1] = y/counter;
+
+        return res;
+    }
+};
+
+void localisePoseChainToMean( std::vector<L3::Pose*>& poses )
+{
+    // Average 
+    accumulator a;
+    a = std::for_each( poses.begin(), poses.end(), a );
+    std::vector<double> centroid = a.centroid();
+
+    std::vector<L3::Pose*>::iterator it = poses.begin();
+
+    while( it != poses.end() )
+    {
+        (*it)->x -= centroid[0];
+        (*it)->y -= centroid[1];
+       
+        // Regenerate homogeneous - this is poor
+        (*it)->_update();
+   
+        it++;
+    }
+
+}
 
 boost::filesystem::path configurationDirectory( void )
 {

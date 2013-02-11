@@ -68,6 +68,8 @@ struct IteratorRenderer : Component
         glv::draw::translateZ( -190 );
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
 
+
+        far( 200 );
         delete [] colors;
         delete [] vertices;
     }
