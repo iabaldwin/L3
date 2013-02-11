@@ -22,7 +22,7 @@ class Iterator
         {
         }
 
-        virtual void update( double dt ) = 0;
+        virtual bool update( double dt ) = 0;
 
         SWATHE* getSwathe()
         {
@@ -48,18 +48,59 @@ class ConstantTimeIterator : public Iterator
                 initialise();
             }
 
-        void update( double dt )
+        bool update( double dt )
         {
+            if( head == dataset->poses.end() )
+                return false;
 
+            double previous_head_time = (*head)->time;
+
+            // Advance the head pointer by dt
+            while( (*head)->time - previous_head_time < dt )
+            {
+                swathe.push_front( std::make_pair( (*head), dataset->getScanAtTime( (*head)->time, LIDAR_name ) ) ) ;
+                head++;
+
+                if ( head == dataset->poses.end() )
+                    return false;
+            }
+          
+            // Advance the tail, such that we preserve swathe length
+            while( ((*head)->time - (*tail)->time ) > swathe_length )
+            {
+                swathe.pop_back();
+                tail++;
+            }
+
+            std::cout << (*head)->time - (*tail)->time << std::endl;
+
+            return true;
 
         }
 
+        int numScans()
+        {
+            return std::distance( tail, head ); 
+        }
+
+        double relativeTime() 
+        {
+            return (*head)->time - dataset->poses[0]->time;
+        }
+
     protected:
+
+        POSE_SEQUENCE::iterator head;
+        POSE_SEQUENCE::iterator tail;
 
         void initialise()
         {
             std::vector<L3::Pose*>::iterator it = dataset->poses.begin();
 
+            // Set tail
+            tail = it;
+
+            // Get first pose & associated scan
             L3::Pose*   root_pose = dataset->poses[0];
             L3::LMS151* root_scan = dataset->getScanAtTime( root_pose->time, LIDAR_name );
 
@@ -84,6 +125,8 @@ class ConstantTimeIterator : public Iterator
                 it++;
             }
 
+            // Set head
+            head = it; 
         }
 
         std::string LIDAR_name;

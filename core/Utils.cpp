@@ -28,7 +28,9 @@ void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses )
     {
         (*it)->x -= origin_x;
         (*it)->y -= origin_y;
-   
+
+        (*it)->_update();
+
         it++;
     }
 

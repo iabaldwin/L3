@@ -49,6 +49,5 @@ std::ostream& operator<<( std::ostream& o, PointCloudXYZ<T> cloud)
 
 } // L3
 
-
 #endif
 

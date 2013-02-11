@@ -63,6 +63,10 @@ class Reader {
                         std::istream_iterator<double>(),
                         std::back_inserter( raw ) );
 
+            #ifdef DEBUG
+            std::cout << raw.size() << " elements read" << std::endl;
+            #endif
+
             return raw.size();
         }
 
@@ -81,6 +85,7 @@ class PoseReader : public Reader
         
         bool extract( std::vector<L3::Pose*>& poses )
         {
+            // TODO: Pass in a reference to an external vector, avoid memory leak
             Extractor<L3::SE3> e;
        
             e = std::for_each( raw.begin(), raw.end(), e );

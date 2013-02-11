@@ -94,6 +94,17 @@ bool Dataset::load()
         else
         {
             std::string raw_name = (*it).path().leaf().string();
+          
+            /*
+             *Logging always used to be:
+             *  -> LMS_XXX_XXXX
+             *  but then at some stage, the 
+             *  logger started reporting
+             *  IP addresses as well, so 
+             *  we have to cull the string
+             *  so that we obtain only 
+             *  the LIDAR name and serial.
+             */
             std::string LIDAR_name( raw_name.begin(), raw_name.begin()+15); 
             LIDAR_names.push_back( LIDAR_name );
             LIDAR_data[LIDAR_name] = raw_scans; 
@@ -109,7 +120,6 @@ struct Comparator
 {
     bool operator()( T* t, const double f )
     {
-        //return (f < t->time);
         return (t->time < f);
     }
 };

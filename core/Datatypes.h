@@ -40,6 +40,12 @@ class Pose : public Base
 
         Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
 
+        virtual void _update()
+        {
+
+        }
+
+
     protected:
 
         virtual void updateHomogeneous() = 0;
@@ -107,12 +113,18 @@ class SE3 : public Pose
         }
 
         void print( std::ostream& o ) const {
-            o << time << ":" << x << "," << y << ","  << z << "," << r << "," << p << "," << q;
+            o << time << "," << x << "," << y << ","  << z << "," << r << "," << p << "," << q;
         }
-        
+      
+        void _update()
+        {
+            updateHomogeneous();
+        }
+
         double z;
         double r,p,q;
 
+        
     private:
     
         void updateHomogeneous() 

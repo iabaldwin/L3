@@ -16,8 +16,7 @@ int main()
   
     // Build iterator
     std::string LIDAR_name = dataset.LIDAR_names[0];
-    std::auto_ptr< L3::ConstantTimeIterator > iterator( new L3::ConstantTimeIterator( &dataset, LIDAR_name, 10.0 ) );
-
+    std::auto_ptr< L3::ConstantTimeIterator > iterator( new L3::ConstantTimeIterator( &dataset, LIDAR_name, 60.0 ) );
 
     POSE_SEQUENCE::iterator it = dataset.poses.begin();
 
@@ -35,10 +34,10 @@ int main()
 
     while( it2!=swathe->end() )
     {
-        std::cout << *((*it2).first) << std::endl;
+        //std::cout << *((*it2).first) << std::endl;
         it2++;
     }
 
-    //L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
-    //std::cout << cloud << std::endl;
+    L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
+    std::cout << cloud << std::endl;
 }

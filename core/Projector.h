@@ -26,6 +26,7 @@ struct XYToXYZ
     {
         pt( 0, 3 ) = t.first;
         pt( 1, 3 ) = t.second;
+        pt( 2, 3 ) = 0;
 
         result = pose->getHomogeneous() * pt;
 
@@ -86,14 +87,15 @@ class Projector
             L3::Tools::Timer t;
             while( it != swathe->end() )
             {
-                t.begin();
                 // Is there an associated scan?
                 if (!(*it).second)
                 {
                     it++;
                     continue;
                 }
-       
+     
+                //std::cout << *((*it).first) << std::endl;
+
                 // Project rtheta to xy
                 L3::LMS151 L;
                 L3::RThetaToXY<float> p( &L );
