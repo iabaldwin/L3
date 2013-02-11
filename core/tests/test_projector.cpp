@@ -19,7 +19,7 @@ int main()
     std::auto_ptr< L3::ConstantTimeIterator > iterator( new L3::ConstantTimeIterator( &dataset, LIDAR_name, 60.0 ) );
 
     // Projector  
-    std::auto_ptr<L3::Projector> projector( new L3::Projector() );
+    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>() );
 
     // Get swathe
     SWATHE* swathe = iterator->getSwathe();

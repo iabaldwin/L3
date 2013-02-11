@@ -3,3 +3,6 @@ target_link_libraries( test_app GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boo
 
 add_executable( test_iterator_visual test_iterator.cpp )
 target_link_libraries( test_iterator_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)
+
+add_executable( test_point_clouds test_point_clouds.cpp )
+target_link_libraries( test_point_clouds GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)

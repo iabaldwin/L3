@@ -64,7 +64,7 @@ struct RThetaToXY
     }
 };
 
-
+template <typename T>
 class Projector
 {
 
@@ -74,15 +74,11 @@ class Projector
         {
         }
 
-        PointCloud project( const POSE_SEQUENCE& poses, const LIDAR_SEQUENCE& lidar )
-        {
-        }
-
-        PointCloudXYZ<double> project( SWATHE* swathe )
+        PointCloudXYZ<T> project( SWATHE* swathe )
         {
             SWATHE::iterator it = swathe->begin();
     
-            L3::PointCloudXYZ<double> cloud;
+            L3::PointCloudXYZ<T> cloud;
 
             L3::Tools::Timer t;
             while( it != swathe->end() )
@@ -94,8 +90,6 @@ class Projector
                     continue;
                 }
      
-                //std::cout << *((*it).first) << std::endl;
-
                 // Project rtheta to xy
                 L3::LMS151 L;
                 L3::RThetaToXY<float> p( &L );

@@ -9,6 +9,7 @@
 #include "Datatypes.h"
 #include "Definitions.h"
 #include "Iterator.h"
+#include "Pointcloud.h"
 
 namespace L3
 {
@@ -19,6 +20,14 @@ struct Component : glv::View3D{
 
     Component()
     {
+        /*
+         *If you don't have an active
+         *    view, then the onDraw
+         *    methods are not called. 
+         *    However, this stretches
+         *    to the full size of the
+         *    element.
+         */
         stretch(1,1); 
     }
 	
@@ -33,6 +42,48 @@ struct Component : glv::View3D{
 };
 
 typedef std::vector<L3::Pose*>::iterator POSE_CHAIN_ITERATOR;
+
+/*
+ *Cloud Renderer
+ */
+template <typename T>
+struct CloudRenderer : Component
+{
+    CloudRenderer( L3::PointCloud<T>* CLOUD ) : cloud(CLOUD)
+    {
+        colors = new glv::Color[cloud->size()];
+        vertices = new glv::Point3[cloud->size()];
+   
+        // Build the cloud
+        typedef typename L3::PointCloud<T>::PointCloudIterator it; 
+        //typename std::vector<T>::iterator it = cloud->data.begin();
+        //std::vector<T>::iterator it 
+
+        //while( it != cloud->data.end() )
+        //{
+            //vertices[counter]( (*it)[0], (*it)[1], (*it)[2]); 
+            //it++;
+        //}
+    
+    };
+
+    ~CloudRenderer()
+    {
+        delete [] colors;
+        delete [] vertices;
+    }
+
+    void onDraw3D( glv::GLV& g )
+    {
+        //What is the type?
+        std::cout << cloud->size() << std::endl; 
+    }
+    
+    glv::Color* colors;
+    glv::Point3* vertices;
+    L3::PointCloud<T>* cloud;
+
+};
 
 /*
  *Iterator renderer
