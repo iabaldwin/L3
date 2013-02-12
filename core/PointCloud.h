@@ -61,7 +61,7 @@ std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud)
 {
         std::copy( cloud.data.begin(), 
                 cloud.data.end(), 
-                std::ostream_iterator< Point<T> >( std::cout, "\n" ) );
+                std::ostream_iterator< Point<T> >( o, "\n" ) );
         return o; 
 }
 

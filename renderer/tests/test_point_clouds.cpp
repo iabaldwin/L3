@@ -13,6 +13,8 @@
 #include "Writer.h"
 #include "Visualisers.h"
 
+#include <fstream>
+
 int main (int argc, char ** argv)
 {
     /*
@@ -23,7 +25,7 @@ int main (int argc, char ** argv)
     assert( dataset.validate() && dataset.load() );
     
     std::string LIDAR_name = dataset.LIDAR_names[0];
-    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 100.0 );
+    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 60.0 );
 
     L3::Utils::localisePoseChainToMean( dataset.poses );
 
@@ -36,13 +38,26 @@ int main (int argc, char ** argv)
     // Do Projection
     L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
 
-    std::cout <<  cloud << std::endl;
+    std::ofstream cloud_writer( "cloud.dat" );
+    cloud_writer << cloud;
+    cloud_writer.close();
+
+    std::ofstream pose_writer( "poses.dat" );
+    std::vector< L3::Pose* > dbg_poses = L3::Utils::posesFromSwathe( iterator->getSwathe() );
+    std::vector< L3::Pose* >::iterator it = dbg_poses.begin();
+    while( it != dbg_poses.end() )
+    {
+
+        pose_writer << *(*it) << std::endl;
+        it++;
+    }
+    pose_writer.close();
 
     /*
      *Visualisation
      */
     glv::GLV top;
-    glv::Window win(1400, 800, "Soaring");
+    glv::Window win(1400, 800, "Visualisation::PointCloud");
 
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
@@ -59,17 +74,12 @@ int main (int argc, char ** argv)
 
     // Point cloud renderer
     L3::Visualisers::CloudRenderer<double> cloud_renderer( &cloud );
-    //top << cloud_renderer;
-
     // Pose chain renderer
     std::vector<L3::Pose*> poses = L3::Utils::posesFromSwathe( iterator->getSwathe() );
     L3::Visualisers::PoseChainRenderer pose_chain_renderer( poses );  
     
-    //top << pose_chain_renderer;
     L3::Visualisers::Composite composite_view;
-    composite_view.addChild( &pose_chain_renderer );
-    composite_view.addChild( &cloud_renderer );
-
+    composite_view << pose_chain_renderer << cloud_renderer;
     top << composite_view;
 
     win.setGLV(top);

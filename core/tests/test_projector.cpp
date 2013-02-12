@@ -21,9 +21,6 @@ int main()
     // Projector  
     std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>() );
 
-    // Get swathe
-    SWATHE* swathe = iterator->getSwathe();
-
     // Do Projection
     L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
     std::cout << cloud << std::endl;

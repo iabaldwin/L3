@@ -72,8 +72,11 @@ struct CloudRenderer : Leaf
         int counter = 0;
         while( it != cloud->data.end() )
         {
+            std::cout << (*it).x << ',' << (*it).y << "," << (*it).z << std::endl; 
+            
             vertices[counter]( (*it).x, (*it).y, (*it).z); 
-            it++;
+            colors[counter] = glv::HSV(0.6, .1, 0.45+0.55);
+            it++; counter++;
         }
     
     };
@@ -123,7 +126,8 @@ struct IteratorRenderer : Leaf
         while( it != swathe->end() )
         {
             vertices[counter]( (*it).first->x, (*it).first->y, 0 );
-            it++; counter++;
+            it++; 
+            counter++;
         }
         
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
@@ -159,7 +163,6 @@ struct PoseChainRenderer : Leaf
         {
             vertices[counter]( (*it)->x, (*it)->y, 0 );
             colors[counter] = glv::HSV(0.6, .1, 0.45+0.55);
-
             counter++;
         }
 
@@ -189,13 +192,13 @@ struct Composite : glv::View3D{
     Composite()
     {
         stretch(1,1); 
-        far( 200 );
+        far( 300 );
     }
 
     virtual void onDraw3D(glv::GLV& g)
     {
         std::list<Leaf*>::iterator it = components.begin();
-        glv::draw::translateZ( -190 );
+        glv::draw::translateZ( -250 );
 
         while( it != components.end() )
         {
@@ -209,13 +212,14 @@ struct Composite : glv::View3D{
     {
     }
 
-    void addChild( Leaf* c )
+    Composite& operator<<( Leaf& leaf )
     {
-        components.push_back( c );
+        components.push_back( &leaf );
+        return *this;
     }
 
-
     std::list<Leaf*> components; 
+
 };
 
 

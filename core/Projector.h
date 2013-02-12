@@ -33,7 +33,7 @@ struct XYToXYZ
         Point<T> point;
 
         point.x = result(0,3);
-        point.x = result(1,3);
+        point.y = result(1,3);
         point.z = result(2,3);
 
         return point;
