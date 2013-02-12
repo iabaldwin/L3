@@ -72,10 +72,8 @@ struct CloudRenderer : Leaf
         int counter = 0;
         while( it != cloud->data.end() )
         {
-            std::cout << (*it).x << ',' << (*it).y << "," << (*it).z << std::endl; 
-            
             vertices[counter]( (*it).x, (*it).y, (*it).z); 
-            colors[counter] = glv::HSV(0.6, .1, 0.45+0.55);
+            colors[counter] = glv::HSV(0.6, .1, (*it).z*0.45+0.55);
             it++; counter++;
         }
     

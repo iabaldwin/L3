@@ -57,8 +57,15 @@ class Reader {
             return stream.good();
         }
 
+        size_t bytes;
+
         size_t read()
         {
+
+            stream.seekg (0, std::ios::end);
+            bytes = stream.tellg();
+            stream.seekg (0, std::ios::beg); 
+
             std::copy( std::istream_iterator<double>( stream ),
                         std::istream_iterator<double>(),
                         std::back_inserter( raw ) );
@@ -117,8 +124,31 @@ class LIDARReader : public Reader
                 return true;
             }
        
-            return true;
+            return false;
         }
+
+};
+
+class LHLVReader : public Reader
+{
+
+    public:
+
+        bool extract( std::vector<L3::LHLV*>& lhlv )
+        {
+            Extractor<L3::LHLV> e;
+            
+            e = std::for_each( raw.begin(), raw.end(), e );
+
+            if ( e.counter == 0 && e.elements.size() > 0 )
+            {
+                lhlv.assign( e.elements.begin(), e.elements.end() );
+                return true;
+            }
+       
+            return false;
+        }
+
 
 };
 

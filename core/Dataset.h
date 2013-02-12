@@ -13,7 +13,7 @@
 namespace L3
 {
 
-enum extensionType { INS, LIDAR };
+enum extensionType { INS, LIDAR, LHLV };
 
 class Dataset
 {
@@ -38,7 +38,8 @@ class Dataset
         
         friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
 
-        boost::filesystem::directory_entry OxTS;
+        boost::filesystem::directory_entry OxTS_ins;
+        boost::filesystem::directory_entry OxTS_lhlv;
         std::list<boost::filesystem::directory_entry> LIDARs;
         
         boost::filesystem::path root_path;

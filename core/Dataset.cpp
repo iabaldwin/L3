@@ -18,6 +18,7 @@ Dataset::Dataset( const std::string& target )
         throw std::exception();
 
     lookup[".ins"] = INS;
+    lookup[".lhlv"] = LHLV;
     lookup[".lidar"] = LIDAR;
 }
 
@@ -36,8 +37,8 @@ bool Dataset::validate()
     /*
      *For any dataset, there should be:
      *  1.  1 x INS file
-     *  2.  N x LIDAR files 
-     *
+     *  2.  1 X LHLV file
+     *  3.  N x LIDAR files 
      *
      */
 
@@ -48,13 +49,17 @@ bool Dataset::validate()
         switch ( lookup[boost::filesystem::extension( *it )])
         {
             case INS:
-                OxTS = *it;
+                OxTS_ins = *it;
                 break;
             
             case LIDAR:
                 LIDARs.push_front( *it );
                 break;
-            
+       
+            case LHLV:
+                OxTS_lhlv = *it;
+                break;
+
             default:
                 break;
         
@@ -72,9 +77,15 @@ bool Dataset::load()
 
     // Load INS
     std::auto_ptr<L3::IO::PoseReader> pose_reader( new L3::IO::PoseReader() );
-    pose_reader->open( OxTS.path().string() );
-   
+    pose_reader->open( OxTS_ins.path().string() );
+  
     if( !(pose_reader->read() && pose_reader->extract( poses ) ) )
+        throw std::exception();
+
+    std::auto_ptr<L3::IO::LHLVReader> lhlv_reader( new L3::IO::LHLVReader() );
+    lhlv_reader->open( OxTS_lhlv.path().string() );
+  
+    if( !(lhlv_reader->read()  ) )
         throw std::exception();
 
     // Load LIDARs

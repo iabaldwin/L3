@@ -9,6 +9,4 @@ int main()
         d.load();
 
     std::cout << d << std::endl;
-
-    std::cout << *d.poses[0] << std::endl;
 }

@@ -30,10 +30,6 @@ class Pose : public Base
 {
     public:
         
-        Pose()
-        {
-        }
-       
         virtual ~Pose(){}
 
         double x, y, time;
@@ -42,16 +38,14 @@ class Pose : public Base
 
         virtual void _update()
         {
-
         }
-
 
     protected:
 
         virtual void updateHomogeneous() = 0;
 
-        std::stringstream ss;
-        Eigen::Matrix4f homogeneous;
+        std::stringstream   ss;
+        Eigen::Matrix4f     homogeneous;
 
 };
 
@@ -159,6 +153,22 @@ class SE3 : public Pose
 
 };
 
+struct LHLV : Base
+{
+
+        const static int NUM_ELEMENTS = 12;
+        
+        LHLV( const std::vector<double> v ) 
+        {
+            data.push_back( v );
+        }
+
+        void print( std::ostream& o ) const {
+        }
+
+        std::vector< std::vector<double> > data;
+};
+
 struct LIDAR : Base
 {
     double time;
@@ -208,6 +218,7 @@ struct LMS151 : LIDAR
     }
     
 };
+
 
 //struct PoseChain
 //{
