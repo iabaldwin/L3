@@ -155,18 +155,17 @@ class SE3 : public Pose
 
 struct LHLV : Base
 {
-
         const static int NUM_ELEMENTS = 12;
         
         LHLV( const std::vector<double> v ) 
         {
-            data.push_back( v );
+            data.assign( v.begin(), v.end() );
         }
 
         void print( std::ostream& o ) const {
         }
 
-        std::vector< std::vector<double> > data;
+        std::vector< double > data;
 };
 
 struct LIDAR : Base

@@ -7,6 +7,8 @@ int main()
 
     if( d.validate() )
         d.load();
+    else
+        std::cerr << "Could not load " << d.path() << std::endl;
 
     std::cout << d << std::endl;
 }

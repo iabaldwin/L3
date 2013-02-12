@@ -8,7 +8,9 @@
 #include <list>
 #include <assert.h>
 #include <boost/filesystem.hpp>
+
 #include "Reader.h"
+#include "Tools.h"
 
 namespace L3
 {
@@ -22,8 +24,9 @@ class Dataset
         Dataset();
         Dataset( const std::string& target );
 
-        bool validate();
-        bool load();
+        bool        validate();
+        bool        load();
+        std::string path(){ return root_path.string(); };
 
         // Scans & poses
         std::vector<L3::Pose*>                              poses;

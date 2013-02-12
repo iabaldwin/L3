@@ -1,6 +1,5 @@
 #include "Dataset.h"
 
-
 namespace L3
 {
 
@@ -69,11 +68,18 @@ bool Dataset::validate()
     }
 
     // Validate logic
+    if ( !( boost::filesystem::exists( OxTS_ins )) || 
+            !( boost::filesystem::exists( OxTS_lhlv) ) || 
+                (LIDARs.size()) == 0 ) 
+            return false;
+
     return true;
 }
 
 bool Dataset::load()
 {
+    L3::Tools::Timer t;
+    t.begin();
 
     // Load INS
     std::auto_ptr<L3::IO::PoseReader> pose_reader( new L3::IO::PoseReader() );
@@ -124,6 +130,7 @@ bool Dataset::load()
         it++;
     }
 
+    std::cout << "Loaded: " << t.end() << "s" << std::endl;
 }
 
 template <typename T>

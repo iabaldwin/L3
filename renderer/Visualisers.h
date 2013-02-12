@@ -1,5 +1,5 @@
-#ifndef L3_COMPONENTS_H
-#define L3_COMPONENTS_H
+#ifndef L3_VISUAL_COMPONENTS_H
+#define L3_VISUAL_COMPONENTS_H
 
 #include <GLV/glv.h>
 #include <GLV/glv_binding.h>

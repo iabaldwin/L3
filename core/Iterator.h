@@ -22,9 +22,8 @@ class Iterator
         {
         }
 
-        virtual bool update( double dt ) = 0;
-
-        virtual int numScans() = 0;
+        virtual int     numScans()          = 0;
+        virtual bool    update( double dt ) = 0;
 
         SWATHE* getSwathe()
         {

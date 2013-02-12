@@ -1,10 +1,10 @@
-#include "Components.h"
 #include <iostream>
 
 #include <GLV/glv.h>
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
+#include "Visualisers.h"
 
 int main (int argc, char ** argv){
 
