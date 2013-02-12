@@ -41,15 +41,13 @@ int main (int argc, char ** argv)
     double d = 800;
     glv::Plot v1__( glv::Rect(    0,0*d/8, d,  d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
-
     L3::Visualisers::IteratorRenderer iterator_renderer( iterator  );
 
     //L3::Visual::PoseChain chain(poses);
     //top << chain << grid;
     //top << chain << v1__ << grid;
     //chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
-    
-    top << iterator_renderer;
+    //top << iterator_renderer;
 
     win.setGLV(top);
     glv::Application::run();

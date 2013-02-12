@@ -24,9 +24,9 @@ struct XYToXYZ
 
     Point<T> operator()( std::pair<T,T> t )
     {
-        pt( 0, 3 ) = t.first;
-        pt( 1, 3 ) = t.second;
-        pt( 2, 3 ) = 0;
+        pt( 0, 3 ) = t.first;   // X
+        pt( 1, 3 ) = t.second;  // Y
+        pt( 2, 3 ) = 0;         // Z
 
         result = pose->getHomogeneous() * pt;
 

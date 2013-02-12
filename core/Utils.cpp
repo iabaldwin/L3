@@ -83,6 +83,23 @@ void localisePoseChainToMean( std::vector<L3::Pose*>& poses )
 
 }
 
+std::vector< L3::Pose* > posesFromSwathe( SWATHE* s )
+{
+    std::vector< L3::Pose* > poses;
+
+    SWATHE::iterator it = s->begin();
+
+    while( it != s->end() )
+    {
+        poses.push_back( (*it).first );
+   
+        it++;
+    }
+
+    return poses;
+}
+
+
 boost::filesystem::path configurationDirectory( void )
 {
     char * pPath;

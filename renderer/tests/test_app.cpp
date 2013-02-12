@@ -52,9 +52,8 @@ int main (int argc, char ** argv)
 
     L3::Visualisers::PoseChainRenderer chain(poses);
     //top << chain << grid;
-    top << chain << v1__ << grid;
-
-    chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
+    //top << chain << v1__ << grid;
+    //chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
         
     win.setGLV(top);
     glv::Application::run();

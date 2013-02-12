@@ -28,9 +28,10 @@ struct Component : glv::View3D{
          *    to the full size of the
          *    element.
          */
-        stretch(1,1); 
+        //stretch(1,1); 
     }
-	
+
+
 	virtual void onDraw3D(glv::GLV& g)
     {
     }
@@ -41,13 +42,23 @@ struct Component : glv::View3D{
 
 };
 
-typedef std::vector<L3::Pose*>::iterator POSE_CHAIN_ITERATOR;
+struct Leaf 
+{
+
+    virtual void onDraw3D( glv::GLV& g )
+    {}
+
+    virtual void onDraw2D( glv::GLV& g )
+    {}
+
+};
+
 
 /*
  *Cloud Renderer
  */
 template <typename T>
-struct CloudRenderer : Component
+struct CloudRenderer : Leaf
 {
     CloudRenderer( L3::PointCloud<T>* CLOUD ) : cloud(CLOUD)
     {
@@ -55,7 +66,6 @@ struct CloudRenderer : Component
         vertices = new glv::Point3[cloud->size()];
    
         // Build the cloud
-        
         typename std::vector< Point<T> >::iterator it;
         it = cloud->data.begin();
 
@@ -76,8 +86,6 @@ struct CloudRenderer : Component
 
     void onDraw3D( glv::GLV& g )
     {
-        far( 200 );
-        glv::draw::translateZ( -190 );
         glv::draw::paint( glv::draw::Points, vertices, colors, cloud->size());
     }
     
@@ -90,7 +98,7 @@ struct CloudRenderer : Component
 /*
  *Iterator renderer
  */
-struct IteratorRenderer : Component
+struct IteratorRenderer : Leaf
 {
 
     IteratorRenderer( L3::Iterator* ITERATOR )  : iterator(ITERATOR )
@@ -118,25 +126,24 @@ struct IteratorRenderer : Component
             it++; counter++;
         }
         
-        glv::draw::translateZ( -190 );
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
 
 
-        far( 200 );
+        //far( 200 );
         delete [] colors;
         delete [] vertices;
     }
 
-
     L3::Iterator* iterator;
+
 };
 
 
 /*
  *Pose chain renderer
  */
-
-struct PoseChainRenderer : Component
+typedef std::vector<L3::Pose*>::iterator POSE_CHAIN_ITERATOR;
+struct PoseChainRenderer : Leaf
 {
 
     glv::Color* colors;
@@ -156,8 +163,6 @@ struct PoseChainRenderer : Component
             counter++;
         }
 
-        // Far clip
-        far( 200 );
     }
 
     ~PoseChainRenderer()
@@ -170,9 +175,6 @@ struct PoseChainRenderer : Component
    
     void onDraw3D(glv::GLV& g)
     {
-        static int k = 0;
-        glv::draw::rotateZ( k++ );
-        glv::draw::translateZ( -190 );
         glv::draw::paint( glv::draw::Points, vertices, colors, poses.size() );
     }
 
@@ -181,6 +183,41 @@ struct PoseChainRenderer : Component
     }
 
 };
+
+struct Composite : glv::View3D{
+
+    Composite()
+    {
+        stretch(1,1); 
+        far( 200 );
+    }
+
+    virtual void onDraw3D(glv::GLV& g)
+    {
+        std::list<Leaf*>::iterator it = components.begin();
+        glv::draw::translateZ( -190 );
+
+        while( it != components.end() )
+        {
+            (*it)->onDraw3D( g );
+            it++;
+        }
+    
+    }
+
+	virtual void onDraw2D( glv::GLV& g)
+    {
+    }
+
+    void addChild( Leaf* c )
+    {
+        components.push_back( c );
+    }
+
+
+    std::list<Leaf*> components; 
+};
+
 
 }
 }

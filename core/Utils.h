@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <boost/filesystem.hpp>
 #include "Datatypes.h"
+#include "Definitions.h"
 #include <libconfig.h++>
 
 namespace L3
@@ -78,6 +79,7 @@ struct WOODSTOCK : Locale
 void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l );
 void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses );
 void localisePoseChainToMean( std::vector<L3::Pose*>& poses );
+std::vector< L3::Pose* > posesFromSwathe( SWATHE* s );
 
 }
 }

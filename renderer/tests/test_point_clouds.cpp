@@ -23,7 +23,7 @@ int main (int argc, char ** argv)
     assert( dataset.validate() && dataset.load() );
     
     std::string LIDAR_name = dataset.LIDAR_names[0];
-    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 10.0 );
+    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 100.0 );
 
     L3::Utils::localisePoseChainToMean( dataset.poses );
 
@@ -35,6 +35,8 @@ int main (int argc, char ** argv)
 
     // Do Projection
     L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
+
+    std::cout <<  cloud << std::endl;
 
     /*
      *Visualisation
@@ -53,11 +55,22 @@ int main (int argc, char ** argv)
     grid.stretch(1,.2);
 
     double d = 800;
-    glv::Plot v1__( glv::Rect(    0,0*d/8, d,  d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
+    glv::Plot v1__( glv::Rect( 0,0*d/8, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
+    // Point cloud renderer
     L3::Visualisers::CloudRenderer<double> cloud_renderer( &cloud );
+    //top << cloud_renderer;
 
-    top << cloud_renderer;
+    // Pose chain renderer
+    std::vector<L3::Pose*> poses = L3::Utils::posesFromSwathe( iterator->getSwathe() );
+    L3::Visualisers::PoseChainRenderer pose_chain_renderer( poses );  
+    
+    //top << pose_chain_renderer;
+    L3::Visualisers::Composite composite_view;
+    composite_view.addChild( &pose_chain_renderer );
+    composite_view.addChild( &cloud_renderer );
+
+    top << composite_view;
 
     win.setGLV(top);
     glv::Application::run();
