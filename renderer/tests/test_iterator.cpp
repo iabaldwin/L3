@@ -4,12 +4,7 @@
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
-#include "Datatypes.h"
-#include "Dataset.h"
-#include "Iterator.h"
-#include "Utils.h"
-#include "Reader.h"
-#include "Writer.h"
+#include "L3.h"
 #include "Visualisers.h"
 
 int main (int argc, char ** argv)

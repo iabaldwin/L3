@@ -1,19 +1,12 @@
 #include <iostream>
+#include <fstream>
 
 #include <GLV/glv.h>
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
-#include "Datatypes.h"
-#include "Dataset.h"
-#include "Iterator.h"
-#include "Projector.h"
-#include "Utils.h"
-#include "Reader.h"
-#include "Writer.h"
+#include "L3.h"
 #include "Visualisers.h"
-
-#include <fstream>
 
 int main (int argc, char ** argv)
 {

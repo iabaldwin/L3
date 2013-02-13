@@ -1,5 +1,6 @@
 #ifndef L3_TOOLS_H
 #define L3_TOOLS_H
+
 #include <sys/time.h>
 #include <ctime>
 
@@ -26,6 +27,5 @@ namespace Tools
 
 } // Tools  
 } // L3
-
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef L3_IO_WRITER_H
-#define L3_IO_WRITER_H
+#ifndef L3_WRITER_H
+#define L3_WRITER_H
 
 #include <vector>
 #include <iterator>

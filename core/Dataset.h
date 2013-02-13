@@ -9,11 +9,14 @@
 #include <assert.h>
 #include <boost/filesystem.hpp>
 
-#include "Reader.h"
+#include "Datatypes.h"
 #include "Tools.h"
+#include "Reader.h"
 
 namespace L3
 {
+
+enum extensionType { INS_file, LIDAR_file, LHLV_file };
 
 class Dataset
 {
@@ -49,4 +52,5 @@ class Dataset
 };
 
 } // L3
+
 #endif

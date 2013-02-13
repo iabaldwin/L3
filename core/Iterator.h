@@ -139,4 +139,4 @@ class ConstantTimeIterator : public Iterator
 
 } // L3
 
-#endif 
+#endif

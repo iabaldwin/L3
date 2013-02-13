@@ -1,12 +1,13 @@
-#ifndef L3_IO_READER_H
-#define L3_IO_READER_H
+#ifndef L3_READER_H
+#define L3_READER_H
 
 #include <vector>
 #include <iterator>
 #include <fstream>
-#include "Datatypes.h"
 
 #include <boost/shared_ptr.hpp>
+
+#include "Datatypes.h"
 
 namespace L3
 {
@@ -129,28 +130,28 @@ class LIDARReader : public Reader
 
 };
 
-class LHLVReader : public Reader
-{
+//class LHLVReader : public Reader
+//{
 
-    public:
+    //public:
 
-        bool extract( std::vector<L3::LHLV*>& lhlv )
-        {
-            Extractor<L3::LHLV> e;
+        //bool extract( std::vector<L3::LHLV*>& lhlv )
+        //{
+            //Extractor<L3::LHLV> e;
             
-            e = std::for_each( raw.begin(), raw.end(), e );
+            //e = std::for_each( raw.begin(), raw.end(), e );
 
-            if ( e.counter == 0 && e.elements.size() > 0 )
-            {
-                lhlv.assign( e.elements.begin(), e.elements.end() );
-                return true;
-            }
+            //if ( e.counter == 0 && e.elements.size() > 0 )
+            //{
+                //lhlv.assign( e.elements.begin(), e.elements.end() );
+                //return true;
+            //}
        
-            return false;
-        }
+            //return false;
+        //}
 
 
-};
+//};
 
 }
 }

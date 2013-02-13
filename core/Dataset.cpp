@@ -3,8 +3,6 @@
 namespace L3
 {
 
-enum extensionType { INS, LIDAR, LHLV };
-
 
 Dataset::Dataset() 
 {
@@ -19,9 +17,9 @@ Dataset::Dataset( const std::string& target )
     if ( !boost::filesystem::is_directory( root_path ))
         throw std::exception();
 
-    lookup[".ins"] = INS;
-    lookup[".lhlv"] = LHLV;
-    lookup[".lidar"] = LIDAR;
+    lookup[".ins"] = INS_file;
+    lookup[".lhlv"] = LHLV_file;
+    lookup[".lidar"] = LIDAR_file;
 }
 
 std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
@@ -50,15 +48,15 @@ bool Dataset::validate()
     {
         switch ( lookup[boost::filesystem::extension( *it )])
         {
-            case INS:
+            case INS_file:
                 OxTS_ins = *it;
                 break;
             
-            case LIDAR:
+            case LIDAR_file:
                 LIDARs.push_front( *it );
                 break;
        
-            case LHLV:
+            case LHLV_file:
                 OxTS_lhlv = *it;
                 break;
 
@@ -87,15 +85,13 @@ bool Dataset::load()
     // Load INS
     std::auto_ptr<L3::IO::PoseReader> pose_reader( new L3::IO::PoseReader() );
     pose_reader->open( OxTS_ins.path().string() );
-  
     if( !(pose_reader->read() && pose_reader->extract( poses ) ) )
         throw std::exception();
 
-    std::auto_ptr<L3::IO::LHLVReader> lhlv_reader( new L3::IO::LHLVReader() );
-    lhlv_reader->open( OxTS_lhlv.path().string() );
-  
-    if( !(lhlv_reader->read()  ) )
-        throw std::exception();
+    //std::auto_ptr<L3::IO::LHLVReader> lhlv_reader( new L3::IO::LHLVReader() );
+    //lhlv_reader->open( OxTS_lhlv.path().string() );
+    //if( !(lhlv_reader->read()  ) )
+        //throw std::exception();
 
     // Load LIDARs
     std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();

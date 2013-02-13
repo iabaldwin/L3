@@ -1,7 +1,11 @@
 #ifndef L3_VISUAL_ADAPTERS_H
 #define L3_VISUAL_ADAPTERS_H
 
-#include "Datatypes.h"
+#include <GLV/glv.h>
+#include <GLV/glv_binding.h>
+#include <GLV/glv_util.h>
+
+#include "L3.h"
 
 namespace L3
 {
@@ -12,12 +16,14 @@ namespace Visualisers
 class Adapter
 {
 
-
-    //void test()
-    void test( L3::LHLV* l)
+    static glv::Data Adapt( std::vector<L3::LHLV*> lhlv )
     {
     }
 
+
+    static glv::Data Adapt( L3::LHLV* lhlv )
+    {
+    }
 
 };
 

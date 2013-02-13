@@ -8,6 +8,8 @@
 #include "Utils.h"
 #include "Reader.h"
 #include "Writer.h"
+
+#include "L3.h"
 #include "Visualisers.h"
 
 int main (int argc, char ** argv)
