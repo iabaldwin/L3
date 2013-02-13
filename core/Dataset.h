@@ -15,8 +15,6 @@
 namespace L3
 {
 
-enum extensionType { INS, LIDAR, LHLV };
-
 class Dataset
 {
 

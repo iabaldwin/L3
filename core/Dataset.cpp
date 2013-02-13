@@ -3,6 +3,9 @@
 namespace L3
 {
 
+enum extensionType { INS, LIDAR, LHLV };
+
+
 Dataset::Dataset() 
 {
 }

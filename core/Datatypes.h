@@ -153,9 +153,10 @@ class SE3 : public Pose
 
 };
 
-struct LHLV : Base
+struct LHLV 
 {
-        const static int NUM_ELEMENTS = 12;
+       
+    const static int NUM_ELEMENTS = 12;
         
         LHLV( const std::vector<double> v ) 
         {
@@ -163,6 +164,7 @@ struct LHLV : Base
         }
 
         void print( std::ostream& o ) const {
+            o << "Hello"; 
         }
 
         std::vector< double > data;
@@ -217,31 +219,6 @@ struct LMS151 : LIDAR
     }
     
 };
-
-
-//struct PoseChain
-//{
-
-    //PoseChain( std::vector<L3::Pose*>& seq) : sequence(seq)
-    //{
-
-    //}
-
-    //std::vector<L3::Pose*> sequence;
-//};
-
-//std::ostream& operator<<( std::ostream& o, const PoseChain& chain )
-//{
-    ////std::vector<L3::Pose*>::iterator it = chain.sequence.begin();
-    ////while( it != chain.sequence.end() )
-    ////{
-        ////std::cout << *(*it ) << std::endl;
-    ////}
-
-    //return o;
-//}
-
-
 
 }
 

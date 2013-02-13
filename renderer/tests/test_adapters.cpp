@@ -12,7 +12,7 @@
 #include "Reader.h"
 #include "Writer.h"
 #include "Visualisers.h"
-#include "Adapters.h"
+#include "DataAdapters.h"
 
 
 int main (int argc, char ** argv)
