@@ -8,65 +8,8 @@
 #include "Definitions.h"
 #include "Datatypes.h"
 
-typedef Eigen::Matrix<float, 3, 541> Matrix541f;
-
 namespace L3
 {
-
-//template <typename T>
-//struct XYToXYZ
-//{
-    
-    //XYToXYZ( L3::Pose* p ) : pose(p)
-    //{
-        //pt = Eigen::Matrix4f::Identity();
-    //}
-
-    //L3::Pose* pose;
-    //Eigen::Matrix4f pt;
-    //Eigen::Matrix4f result;
-
-    //Point<T> operator()( std::pair<T,T> t )
-    //{
-        //pt( 0, 3 ) = t.first;   // X
-        //pt( 1, 3 ) = t.second;  // Y
-        //pt( 2, 3 ) = 0;         // Z
-
-        //result = pose->getHomogeneous() * pt;
-
-        //Point<T> point;
-
-        //point.x = result(0,3);
-        //point.y = result(1,3);
-        //point.z = result(2,3);
-
-        //return point;
-    //}
-//};
-
-
-//template <typename T>
-//struct RThetaToXY
-//{
-    //RThetaToXY( L3::LMS151* L )
-    //{
-        //counter   = L->num_scans;
-        //angle     = L->angle_start; 
-        //increment = L->angle_spacing;  
-    //}
-
-    //int counter;
-    //double angle, increment;
-   
-    //T x,y;
-    //std::pair<T,T> operator()( T t )
-    //{
-        //x = t*cos( angle );
-        //y = t*sin( angle );
-        //angle += increment;
-        //return std::make_pair( x, y );
-    //}
-//};
 
 template <typename T>
 class Projector
@@ -76,19 +19,19 @@ class Projector
 
         PointCloudXYZ<T> project( SWATHE* swathe )
         {
-            L3::PointCloudXYZ<T> cloud;
-
 #ifndef NDEBUG
             L3::Tools::Timer t;
             t.begin();
 #endif
+
+            L3::PointCloudXYZ<T> cloud;
+
             int scan_counter, pair_counter, n; 
             double x,y;
-
-            std::vector< L3::Point<T> > points;
-            points.resize( swathe->size() * 541 );
-
             n=swathe->size();
+            
+            std::vector< L3::Point<T> > points;
+            points.resize( n * 541 );
 
             Eigen::Matrix4f tmp = Eigen::Matrix4f::Identity();
 
@@ -124,6 +67,7 @@ class Projector
                 }
             }
 
+            // Copy
             cloud.data.assign( points.begin(), points.end() );
 #ifndef NDEBUG
             std::cout << cloud.size() << " pts in " << t.end() << "s" << std::endl;
