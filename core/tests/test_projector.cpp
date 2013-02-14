@@ -21,7 +21,9 @@ int main()
     // Projector  
     std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>() );
 
-    // Do Projection
-    L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
-    std::cout << cloud << std::endl;
+    // Do Projection, & average
+    for ( int i=0; i< 1000; i++ )
+    {
+        L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
+    }
 }

@@ -31,6 +31,7 @@ class Dataset
 
         // Scans & poses
         std::vector<L3::Pose*>                              poses;
+        std::vector<L3::LHLV*>                              LHLV_data;
         std::vector<std::string>                            LIDAR_names;
         std::map< std::string, std::vector<L3::LMS151*> >   LIDAR_data;
 

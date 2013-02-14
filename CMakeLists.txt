@@ -11,9 +11,11 @@ if( Boost_FOUND)
     include_directories( ${BOOST_INCLUDE_DIRS} )
 endif()
 
+find_package( OpenMP )
+set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} )
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 find_package( Eigen3 )
-
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )

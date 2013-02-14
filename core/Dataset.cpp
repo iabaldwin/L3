@@ -28,6 +28,10 @@ std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
             boost::filesystem::directory_iterator(), 
             std::ostream_iterator<boost::filesystem::directory_entry>(o, "\n")); 
 
+    std::cout << "Poses :"  << dataset.poses.size() << std::endl;
+    std::cout << "LHLV :"   << dataset.LHLV_data.size() << std::endl;
+    std::cout << "LIDARS :" << dataset.LIDAR_data.size();
+
     return o;
 }
 
@@ -79,8 +83,11 @@ bool Dataset::validate()
 
 bool Dataset::load()
 {
+
+#ifndef NDEBUG
     L3::Tools::Timer t;
     t.begin();
+#endif
 
     // Load INS
     std::auto_ptr<L3::IO::PoseReader> pose_reader( new L3::IO::PoseReader() );
@@ -88,10 +95,10 @@ bool Dataset::load()
     if( !(pose_reader->read() && pose_reader->extract( poses ) ) )
         throw std::exception();
 
-    //std::auto_ptr<L3::IO::LHLVReader> lhlv_reader( new L3::IO::LHLVReader() );
-    //lhlv_reader->open( OxTS_lhlv.path().string() );
-    //if( !(lhlv_reader->read()  ) )
-        //throw std::exception();
+    std::auto_ptr<L3::IO::LHLVReader> lhlv_reader( new L3::IO::LHLVReader() );
+    lhlv_reader->open( OxTS_lhlv.path().string() );
+    if( !(lhlv_reader->read() && lhlv_reader->extract( LHLV_data ) ) )
+        throw std::exception();
 
     // Load LIDARs
     std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();
@@ -129,7 +136,9 @@ bool Dataset::load()
         it++;
     }
 
+#ifndef NDEBUG
     std::cout << "Loaded: " << t.end() << "s" << std::endl;
+#endif
 }
 
 template <typename T>

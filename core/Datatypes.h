@@ -155,8 +155,9 @@ class SE3 : public Pose
 
 struct LHLV  : Base
 {
-
     const static int NUM_ELEMENTS = 12;
+
+    typedef std::vector<double>::iterator ITERATOR;
 
     LHLV()
     {
@@ -169,6 +170,9 @@ struct LHLV  : Base
     }
 
     void print( std::ostream& o ) const {
+        std::copy( data.begin(), 
+                data.end(),
+                std::ostream_iterator<double>( std::cout, " " ) );
     }
 
     std::vector< double > data;
