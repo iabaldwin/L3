@@ -18,7 +18,7 @@ int main()
     // Build cloud
     std::auto_ptr<L3::PointCloudXYZ<double> > cloud ( new L3::PointCloudXYZ<double>() );
 
-    std::vector< L3::Point<double> > randoms(1000000);
+    std::vector< L3::Point<double> > randoms(2*1000000);
 
     std::generate( randoms.begin(), randoms.end(), randomate<double> );
 

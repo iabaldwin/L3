@@ -49,7 +49,6 @@ struct PointCloud
     {
         histogrammer( gsl_histogram2d* HISTOGRAM ) : histogram(HISTOGRAM)
         {
-
         }
 
         gsl_histogram2d* histogram;
@@ -70,8 +69,8 @@ struct PointCloud
         histogrammer h( hist );
 
         std::for_each( data.begin(), data.end(), h );
-       
     }
+
 };
 
 template <typename T>
