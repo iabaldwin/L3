@@ -13,12 +13,10 @@ void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l )
         (*it)->x -= l.x;
         (*it)->y -= l.y;
     }
-
 }
 
 void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses )
 {
-    //L3::Pose* origin = poses.front();
     double origin_x = poses.front()->x;
     double origin_y = poses.front()->y;
 
@@ -33,8 +31,8 @@ void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses )
 
         it++;
     }
-
 }
+
 struct accumulator
 {
     accumulator() : counter(0), x(0.0), y(0.0), z(0.0)
@@ -80,7 +78,6 @@ void localisePoseChainToMean( std::vector<L3::Pose*>& poses )
    
         it++;
     }
-
 }
 
 std::vector< L3::Pose* > posesFromSwathe( SWATHE* s )
@@ -121,6 +118,5 @@ boost::filesystem::path configurationDirectory( void )
         return p;
 }
 
-
-}
-}
+} // Utils
+} // L3

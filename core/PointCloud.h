@@ -4,6 +4,8 @@
 #include <vector>
 #include <gsl/gsl_histogram2d.h>
 
+#include "Datatypes.h"
+
 namespace L3
 {
 
@@ -40,6 +42,54 @@ struct PointCloud
     size_t size()
     {
         return data.size();
+    }
+
+    struct centroid 
+    {
+        int counter;
+        T x_mean, y_mean, z_mean; 
+        centroid() :counter(0), x_mean(0), y_mean(0), z_mean(0)
+        {
+            
+        }
+
+        void operator()( Point<T> t )
+        {
+            counter++;
+            
+            x_mean += t.x;
+            y_mean += t.y;
+            z_mean += t.z;
+   
+            x_mean /= counter;
+            y_mean /= counter;
+            z_mean /= counter;
+        }
+    };
+
+    void transform( L3::Pose* t )
+    {
+        // 1. Compute mean
+        centroid c; 
+        c = std::for_each( data.begin(), data.end(), c );
+
+        // 2. Subtract
+        typename std::vector< Point<T> >::iterator it ;
+        it = data.begin();
+        
+        while( it != data.end() )
+        {
+            (*it).x -= c.x_mean;
+            (*it).y -= c.y_mean;
+            (*it).z -= c.z_mean;
+            it++;
+        }
+
+        // 3. Rotate
+        std::cout << t->getHomogeneous() << std::endl;      
+
+        // 4. Translate
+    
     }
 
     // Data

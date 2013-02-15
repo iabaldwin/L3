@@ -32,4 +32,10 @@ int main()
     double elapsed = t.end();
 
     std::cout << cloud->size() << " pts in " << elapsed << std::endl;
+
+    t.begin();
+    L3::SE3 pose( 0, 0, 0, 0, 0, 0 );
+    cloud->transform( &pose );
+    elapsed = t.end();
+    std::cout << cloud->size() << " pts in " << elapsed << std::endl;
 }
