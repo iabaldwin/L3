@@ -35,7 +35,6 @@ class Projector
 
             Eigen::Matrix4f tmp = Eigen::Matrix4f::Identity();
 
-            /* Fork a team of threads */
 #pragma omp parallel private(pair_counter,x,y,scan_counter,tmp ) shared(n, swathe, points)
             {
                 for( pair_counter=0; pair_counter< n; pair_counter++ ) 

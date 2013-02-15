@@ -4,6 +4,8 @@
 #include <vector>
 #include <gsl/gsl_histogram2d.h>
 
+#include <omp.h>
+
 #include "Datatypes.h"
 
 namespace L3
@@ -74,7 +76,7 @@ struct PointCloud
         c = std::for_each( data.begin(), data.end(), c );
 
         // 2. Subtract
-        typename std::vector< Point<T> >::iterator it ;
+        typename std::vector< Point<T> >::iterator it;
         it = data.begin();
         
         while( it != data.end() )
