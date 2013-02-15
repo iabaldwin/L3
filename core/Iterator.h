@@ -33,6 +33,7 @@ class Iterator
     protected:
 
         SWATHE swathe;
+        
         POSE_SEQUENCE::iterator head;
         POSE_SEQUENCE::iterator tail;
 
@@ -61,7 +62,6 @@ class ConstantTimeIterator : public Iterator
             // Advance the head pointer by dt
             while( (*head)->time - previous_head_time < dt )
             {
-                //swathe.push_front( std::make_pair( (*head), dataset->getScanAtTime( (*head)->time, LIDAR_name ) ) ) ;
                 swathe.push_back( std::make_pair( (*head), dataset->getScanAtTime( (*head)->time, LIDAR_name ) ) ) ;
                 head++;
 
@@ -76,9 +76,9 @@ class ConstantTimeIterator : public Iterator
                 tail++;
             }
 
-            #ifdef DEBUG
+#ifndef NDEBUG
             std::cout << (*head)->time - (*tail)->time << std::endl;
-            #endif
+#endif
 
             return true;
 
@@ -108,7 +108,6 @@ class ConstantTimeIterator : public Iterator
             L3::Pose*   root_pose = dataset->poses[0];
             L3::LMS151* root_scan = dataset->getScanAtTime( root_pose->time, LIDAR_name );
 
-            //swathe.push_front( std::make_pair( root_pose, root_scan ) );
             swathe.push_back( std::make_pair( root_pose, root_scan ) );
 
             L3::Tools::Timer t;
@@ -122,7 +121,6 @@ class ConstantTimeIterator : public Iterator
                 
                 if ( duration <  swathe_length )
                 {
-                    //swathe.push_front( std::make_pair( (*it), dataset->getScanAtTime( (*it)->time, LIDAR_name ) ) );
                     swathe.push_back( std::make_pair( (*it), dataset->getScanAtTime( (*it)->time, LIDAR_name ) ) );
                 }
                 else

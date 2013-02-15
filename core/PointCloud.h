@@ -2,6 +2,7 @@
 #define L3_POINTCLOUD_H
 
 #include <vector>
+#include <gsl/gsl_histogram2d.h>
 
 namespace L3
 {
@@ -44,6 +45,33 @@ struct PointCloud
     // Data
     std::vector< Point<T> > data;
 
+    struct histogrammer
+    {
+        histogrammer( gsl_histogram2d* HISTOGRAM ) : histogram(HISTOGRAM)
+        {
+
+        }
+
+        gsl_histogram2d* histogram;
+
+        void operator()( Point<T> t )
+        {
+            gsl_histogram2d_increment( histogram, t.x, t.y );
+        }
+
+    };
+
+    void histogram()
+    {
+         gsl_histogram2d* hist =  gsl_histogram2d_alloc (1000, 1000);
+
+        gsl_histogram2d_set_ranges_uniform (hist, 0.0, 100.0, 0.0, 100.0);
+
+        histogrammer h( hist );
+
+        std::for_each( data.begin(), data.end(), h );
+       
+    }
 };
 
 template <typename T>
