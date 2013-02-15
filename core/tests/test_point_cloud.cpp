@@ -31,11 +31,15 @@ int main()
     cloud->histogram();
     double elapsed = t.end();
 
-    std::cout << cloud->size() << " pts in " << elapsed << std::endl;
+    std::cout << cloud->size() << " pts histogrammed in " << elapsed << std::endl;
 
-    t.begin();
-    L3::SE3 pose( 0, 0, 0, 0, 0, 0 );
-    cloud->transform( &pose );
-    elapsed = t.end();
-    std::cout << cloud->size() << " pts in " << elapsed << std::endl;
+    for ( int i = 0; i<1000; i++ )
+    {
+        t.begin();
+        L3::SE3 pose( random()%100, random()%100, random()%100, (random()%10)/1000, (random()%10)/1000, (random()%10)/100);
+        cloud->transform( &pose );
+        elapsed = t.end();
+        std::cout << cloud->size() << " pts translated/rotated in " << elapsed << std::endl;
+    }
+
 }

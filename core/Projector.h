@@ -25,12 +25,12 @@ class Projector
 #endif
 
             L3::PointCloudXYZ<T> cloud;
-
+            std::vector< L3::Point<T> > points;
+            
             int scan_counter, pair_counter, n; 
             double x,y;
             n=swathe->size();
             
-            std::vector< L3::Point<T> > points;
             points.resize( n * 541 );
 
             Eigen::Matrix4f tmp = Eigen::Matrix4f::Identity();
@@ -39,6 +39,7 @@ class Projector
             {
                 for( pair_counter=0; pair_counter< n; pair_counter++ ) 
                 {
+                    
                     // Is there an associated scan?
                     if( (*swathe)[pair_counter].second )
                     {

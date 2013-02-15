@@ -88,10 +88,41 @@ struct PointCloud
         }
 
         // 3. Rotate
-        std::cout << t->getHomogeneous() << std::endl;      
+        int point_counter, num_points = data.size();
+        std::vector< Point<T> >* tmp = &data;
+        T x,y,z;
+        Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
+
+#pragma omp parallel private(point_counter, rot) shared(num_points, tmp, t )
+        {
+            Eigen::Matrix4f XYZ = Eigen::Matrix4f::Identity();
+            
+            #pragma omp for  nowait
+            for (point_counter=0; point_counter<num_points; point_counter++) 
+            {
+                XYZ( 0, 3 ) = (*tmp)[point_counter].x;
+                XYZ( 1, 3 ) = (*tmp)[point_counter].y;
+                XYZ( 2, 3 ) = (*tmp)[point_counter].z;
+
+                rot = t->getHomogeneous()*XYZ;
+           
+                (*tmp)[point_counter].x = rot( 0, 3 );
+                (*tmp)[point_counter].y = rot( 1, 3 );
+                (*tmp)[point_counter].z = rot( 2, 3 );
+            }
+
+        }
 
         // 4. Translate
-    
+        it = data.begin();
+        
+        while( it != data.end() )
+        {
+            (*it).x -= c.x_mean;
+            (*it).y -= c.y_mean;
+            (*it).z -= c.z_mean;
+            it++;
+        }
     }
 
     // Data
