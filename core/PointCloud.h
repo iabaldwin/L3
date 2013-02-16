@@ -110,19 +110,18 @@ struct PointCloud
                 (*tmp)[point_counter].y = rot( 1, 3 );
                 (*tmp)[point_counter].z = rot( 2, 3 );
             }
-
         }
 
         // 4. Translate
-        it = data.begin();
+        //it = data.begin();
         
-        while( it != data.end() )
-        {
-            (*it).x += c.x_mean;
-            (*it).y += c.y_mean;
-            (*it).z += c.z_mean;
-            it++;
-        }
+        //while( it != data.end() )
+        //{
+            //(*it).x += c.x_mean;
+            //(*it).y += c.y_mean;
+            //(*it).z += c.z_mean;
+            //it++;
+        //}
     }
 
     // Data

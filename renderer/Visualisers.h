@@ -84,7 +84,7 @@ struct CloudRenderer : Leaf
 
     void onDraw3D( glv::GLV& g )
     {
-        L3::SE3 pose(-1,0,0,0,0,0);
+        L3::SE3 pose(1,0,0,0,0,0);
         cloud->transform( &pose );
 
         typename std::vector< Point<T> >::iterator it;
