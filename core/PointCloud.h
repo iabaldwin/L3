@@ -118,9 +118,9 @@ struct PointCloud
         
         while( it != data.end() )
         {
-            (*it).x -= c.x_mean;
-            (*it).y -= c.y_mean;
-            (*it).z -= c.z_mean;
+            (*it).x += c.x_mean;
+            (*it).y += c.y_mean;
+            (*it).z += c.z_mean;
             it++;
         }
     }
@@ -145,7 +145,7 @@ struct PointCloud
 
     void histogram()
     {
-         gsl_histogram2d* hist =  gsl_histogram2d_alloc (1000, 1000);
+        gsl_histogram2d* hist =  gsl_histogram2d_alloc (1000, 1000);
 
         gsl_histogram2d_set_ranges_uniform (hist, 0.0, 100.0, 0.0, 100.0);
 
@@ -153,7 +153,7 @@ struct PointCloud
 
         std::for_each( data.begin(), data.end(), h );
     }
-
+  
 };
 
 template <typename T>
@@ -165,6 +165,44 @@ struct PointCloudXYZ : PointCloud<T>
     }
 
 };
+
+struct randomate 
+{ 
+    randomate( int MODULO )  : modulo(MODULO)
+    {}
+
+    int modulo;
+
+    int operator()( )
+    {
+        return rand()  % modulo;
+    }
+};
+
+template <typename T>
+PointCloudXYZ<T> samplePointCloud( PointCloudXYZ<T>& cloud, int size )
+{
+        PointCloudXYZ<T> sampled_cloud;
+
+        // Generate random indices
+        std::vector<int> random_indices( size );
+
+        randomate r( cloud.size() ) ;
+
+        std::generate( random_indices.begin(),  random_indices.end(), r );
+
+        sampled_cloud.data.resize( size );
+
+        typename std::vector< Point<T> >::iterator point_iterator = sampled_cloud.data.begin();
+        typename std::vector< int >::iterator index_iterator = random_indices.begin();
+
+        while( index_iterator != random_indices.end() )
+        {
+            *point_iterator++ = cloud.data[ *index_iterator++ ];
+        }
+
+        return sampled_cloud;
+}
 
 template <typename T>
 std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud)

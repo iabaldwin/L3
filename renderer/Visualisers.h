@@ -26,7 +26,6 @@ struct Component : glv::View3D{
          *    to the full size of the
          *    element.
          */
-        //stretch(1,1); 
     }
 
 
@@ -60,8 +59,8 @@ struct CloudRenderer : Leaf
 {
     CloudRenderer( L3::PointCloud<T>* CLOUD ) : cloud(CLOUD)
     {
-        colors = new glv::Color[cloud->size()];
-        vertices = new glv::Point3[cloud->size()];
+        colors      = new glv::Color[cloud->size()];
+        vertices    = new glv::Point3[cloud->size()];
    
         // Build the cloud
         typename std::vector< Point<T> >::iterator it;
@@ -85,7 +84,22 @@ struct CloudRenderer : Leaf
 
     void onDraw3D( glv::GLV& g )
     {
+        L3::SE3 pose(-1,0,0,0,0,0);
+        cloud->transform( &pose );
+
+        typename std::vector< Point<T> >::iterator it;
+        it = cloud->data.begin();
+
+        int counter = 0;
+        while( it != cloud->data.end() )
+        {
+            vertices[counter]( (*it).x, (*it).y, (*it).z); 
+            colors[counter] = glv::HSV(0.6, .1, (*it).z*0.45+0.55);
+            it++; counter++;
+        }
+    
         glv::draw::paint( glv::draw::Points, vertices, colors, cloud->size());
+
     }
     
     glv::Color* colors;

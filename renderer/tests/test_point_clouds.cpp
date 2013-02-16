@@ -14,11 +14,18 @@ int main (int argc, char ** argv)
      *L3
      */
     // Pose sequence
+
+    L3::Tools::Timer t;
+
+    t.begin();
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
-    assert( dataset.validate() && dataset.load() );
+    if( !( dataset.validate() && dataset.load() ) )
+        throw std::exception();
     
+    std::cout << "Dataset loaded in " << t.end() << "s" << std::endl; 
+
     std::string LIDAR_name = dataset.LIDAR_names[0];
-    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 60.0 );
+    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 40.0 );
 
     L3::Utils::localisePoseChainToMean( dataset.poses );
 
@@ -30,21 +37,9 @@ int main (int argc, char ** argv)
 
     // Do Projection
     L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );
-
-    std::ofstream cloud_writer( "cloud.dat" );
-    cloud_writer << cloud;
-    cloud_writer.close();
-
-    std::ofstream pose_writer( "poses.dat" );
-    std::vector< L3::Pose* > dbg_poses = L3::Utils::posesFromSwathe( iterator->getSwathe() );
-    std::vector< L3::Pose* >::iterator it = dbg_poses.begin();
-    while( it != dbg_poses.end() )
-    {
-
-        pose_writer << *(*it) << std::endl;
-        it++;
-    }
-    pose_writer.close();
+    
+    // Sample
+    L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
 
     /*
      *Visualisation
@@ -66,7 +61,9 @@ int main (int argc, char ** argv)
     glv::Plot v1__( glv::Rect( 0,0*d/8, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
     // Point cloud renderer
-    L3::Visualisers::CloudRenderer<double> cloud_renderer( &cloud );
+    //L3::Visualisers::CloudRenderer<double> cloud_renderer( &cloud );
+    L3::Visualisers::CloudRenderer<double> cloud_renderer( &sampled_cloud );
+    
     // Pose chain renderer
     std::vector<L3::Pose*> poses = L3::Utils::posesFromSwathe( iterator->getSwathe() );
     L3::Visualisers::PoseChainRenderer pose_chain_renderer( poses );  
