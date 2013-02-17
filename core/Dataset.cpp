@@ -3,12 +3,7 @@
 namespace L3
 {
 
-
-Dataset::Dataset() 
-{
-}
-
-Dataset::Dataset( const std::string& target ) 
+Dataset::Dataset( const std::string& target ) : pose_reader(0), LHLV_reader(0) 
 {
     root_path /= target;
     root_path /= "L3";
@@ -22,16 +17,37 @@ Dataset::Dataset( const std::string& target )
     lookup[".lidar"] = LIDAR_file;
 }
 
+Dataset::~Dataset()
+{
+    pose_reader->stop();
+    LHLV_reader->stop();
+
+    for ( std::list< SlidingWindow<L3::LIDAR>*>::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
+    {
+        (*it)->stop();
+    }
+
+    for( std::list< Poco::Thread* >::iterator it= threads.begin(); it != threads.end(); it++ )
+    {
+        (*it)->join();
+        delete *it;
+    }
+
+    delete pose_reader;
+    delete LHLV_reader;
+
+    for ( std::list< SlidingWindow<L3::LIDAR>*>::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
+    {
+        delete (*it);
+    }
+
+}
+
 std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
 {
     std::copy(boost::filesystem::directory_iterator( dataset.root_path ), 
             boost::filesystem::directory_iterator(), 
             std::ostream_iterator<boost::filesystem::directory_entry>(o, "\n")); 
-
-    std::cout << "Poses :"  << dataset.poses.size() << std::endl;
-    std::cout << "LHLV :"   << dataset.LHLV_data.size() << std::endl;
-    std::cout << "LIDARS :" << dataset.LIDAR_data.size();
-
     return o;
 }
 
@@ -83,62 +99,44 @@ bool Dataset::validate()
 
 bool Dataset::load()
 {
+    pose_reader = new SlidingWindow<L3::Pose>( OxTS_ins.path().string() );
+    runnables.push_back( pose_reader );
 
-#ifndef NDEBUG
-    L3::Tools::Timer t;
-    t.begin();
-#endif
-
-    // Load INS
-    std::auto_ptr<L3::IO::PoseReader> pose_reader( new L3::IO::PoseReader() );
-    pose_reader->open( OxTS_ins.path().string() );
-    if( !(pose_reader->read() && pose_reader->extract( poses ) ) )
-        throw std::exception();
-
-    std::auto_ptr<L3::IO::LHLVReader> lhlv_reader( new L3::IO::LHLVReader() );
-    lhlv_reader->open( OxTS_lhlv.path().string() );
-    if( !(lhlv_reader->read() && lhlv_reader->extract( LHLV_data ) ) )
-        throw std::exception();
+    LHLV_reader = new SlidingWindow<L3::LHLV>( OxTS_lhlv.path().string() );
+    runnables.push_back( LHLV_reader );
 
     // Load LIDARs
     std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();
 
-    std::auto_ptr<L3::IO::LIDARReader> scan_reader( new L3::IO::LIDARReader() );
-    
     while ( it != LIDARs.end() )
     {
-        scan_reader->open( (*it).path().string() );
-        scan_reader->read();
+        SlidingWindow<L3::LIDAR>* reader = new SlidingWindow<L3::LIDAR>( (*it).path().string());
+        LIDAR_readers.push_back( reader );
+        runnables.push_back( reader );
         
-        std::vector<L3::LMS151*> raw_scans;
-
-        if ( !scan_reader->extract( raw_scans ) )
-            throw std::exception();
-        else
-        {
-            std::string raw_name = (*it).path().leaf().string();
-          
-            /*
-             *Logging always used to be:
-             *  -> LMS_XXX_XXXX
-             *  but then at some stage, the 
-             *  logger started reporting
-             *  IP addresses as well, so 
-             *  we have to cull the string
-             *  so that we obtain only 
-             *  the LIDAR name and serial.
-             */
-            std::string LIDAR_name( raw_name.begin(), raw_name.begin()+15); 
-            LIDAR_names.push_back( LIDAR_name );
-            LIDAR_data[LIDAR_name] = raw_scans; 
-        }
+        /*
+         *Logging always used to be:
+         *  -> LMS_XXX_XXXX
+         *  but then at some stage, the 
+         *  logger started reporting
+         *  IP addresses as well, so 
+         *  we have to cull the string
+         *  so that we obtain only 
+         *  the LIDAR name and serial.
+         */
+        std::string raw_name = (*it).path().leaf().string();
+        std::string LIDAR_name( raw_name.begin(), raw_name.begin()+15); 
+        LIDAR_names.push_back( LIDAR_name );
         
         it++;
     }
 
-#ifndef NDEBUG
-    std::cout << "Loaded: " << t.end() << "s" << std::endl;
-#endif
+    for( std::list< Poco::Runnable* >::iterator it = runnables.begin(); it != runnables.end(); it++ )
+    {
+        Poco::Thread* thread = new Poco::Thread();
+        thread->start( *(*it) );
+        threads.push_back( thread );
+    }
 }
 
 template <typename T>
@@ -160,43 +158,43 @@ struct Sorter
 };
 
 
-L3::Pose* Dataset::getPoseAtTime( double time )
-{
-    assert( poses.size() > 0 );
-    std::vector<L3::Pose*>::iterator it;
+//L3::Pose* Dataset::getPoseAtTime( double time )
+//{
+    //assert( poses.size() > 0 );
+    //std::vector<L3::Pose*>::iterator it;
 
-    Comparator<L3::Pose> c;
+    //Comparator<L3::Pose> c;
 
-    it = std::lower_bound( poses.begin(), poses.end(), time, c );
+    //it = std::lower_bound( poses.begin(), poses.end(), time, c );
 
-    L3::Pose* p = 0;
+    //L3::Pose* p = 0;
 
-    if( it != poses.end() )
-    {
-        p = &*(*it);     
-    }
+    //if( it != poses.end() )
+    //{
+        //p = &*(*it);     
+    //}
 
-    return p;
-}
+    //return p;
+//}
 
-L3::LMS151* Dataset::getScanAtTime( double time, const std::string& name )
-{
-    assert( poses.size() > 0 );
-    std::vector<L3::LMS151*>::iterator it;
+//L3::LMS151* Dataset::getScanAtTime( double time, const std::string& name )
+//{
+    //assert( poses.size() > 0 );
+    //std::vector<L3::LMS151*>::iterator it;
 
-    L3::LMS151* l = 0;
+    //L3::LMS151* l = 0;
 
-    Comparator<L3::LMS151> c;
+    //Comparator<L3::LMS151> c;
 
-    it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
+    //it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
 
-    if( it != LIDAR_data[name].end() )
-    {
-        l = &*(*it);     
-    }
+    //if( it != LIDAR_data[name].end() )
+    //{
+        //l = &*(*it);     
+    //}
 
-    return l;
-}
+    //return l;
+//}
 
 
 }

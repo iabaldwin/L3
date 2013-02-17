@@ -13,14 +13,18 @@ int main()
 
     // Build iterator
     std::string LIDAR_name = dataset.LIDAR_names[0];
-    std::auto_ptr< L3::ConstantTimeIterator > iterator( new L3::ConstantTimeIterator( &dataset, LIDAR_name, 100.0 ) );
+    //std::auto_ptr< L3::ConstantTimeIterator > iterator( new L3::ConstantTimeIterator( &dataset, LIDAR_name, 100.0 ) );
+
+    L3::Iterator< L3::Pose*> it( dataset.poses );
+    
+    //SEQUENCE< std::vector<L3
 
     // Localise
-    L3::Utils::localisePoseChainToOrigin( dataset.poses );
+    //L3::Utils::localisePoseChainToOrigin( dataset.poses );
 
-    // Run
-    while( iterator->update( .1 ) )
-        std::cout << iterator->relativeTime() << ":" << iterator->numScans() << std::endl;
+    //// Run
+    //while( iterator->update( .1 ) )
+        //std::cout << iterator->relativeTime() << ":" << iterator->numScans() << std::endl;
 
-    std::cout << "Done" << std::endl;
+    //std::cout << "Done" << std::endl;
 }

@@ -13,32 +13,29 @@
 namespace L3
 {
 
-struct Base 
-{
-
-    friend std::ostream& operator<<( std::ostream& o, const Base& b )
-    {
-        b.print( o );
-        return o;
-    }
-        
-    virtual void print( std::ostream& o ) const = 0;
-
-};
-
-class Pose : public Base
+class Pose 
 {
     public:
-        
+
         virtual ~Pose(){}
 
         double x, y, time;
 
         Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
 
+        //TODO
+        //This is dirty
         virtual void _update()
         {
         }
+        
+        friend std::ostream& operator<<( std::ostream& o, const Pose& p )
+        {
+            p.print( o );
+            return o;
+        }
+
+        virtual void print( std::ostream& o ) const = 0;
 
     protected:
 
@@ -153,7 +150,7 @@ class SE3 : public Pose
 
 };
 
-struct LHLV  : Base
+struct LHLV  
 {
     const static int NUM_ELEMENTS = 12;
 
@@ -178,7 +175,7 @@ struct LHLV  : Base
     std::vector< double > data;
 };
 
-struct LIDAR : Base
+struct LIDAR 
 {
     double time;
     std::vector<float> ranges;

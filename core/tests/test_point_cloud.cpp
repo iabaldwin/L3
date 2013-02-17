@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 
-#include "Iterator.h"
 #include "Utils.h"
 #include "Dataset.h"
 #include "Projector.h"

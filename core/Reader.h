@@ -14,11 +14,11 @@ namespace L3
 namespace IO
 {
 
+
 template <typename T>
 struct Extractor
 {
-    //std::vector<boost::shared_ptr<T> > elements;
-    std::vector<T*> elements;
+    std::vector< std::pair< double, T* > > elements;
 
     int counter; 
     
@@ -29,19 +29,14 @@ struct Extractor
         buffer.resize(T::NUM_ELEMENTS);
     }
 
-    ~Extractor()
-    {
-        //Memory leak?
-    }
-
     void operator()( double d )
     {
         buffer[counter] = d;
         if( ++counter % T::NUM_ELEMENTS == 0 ) 
         {
             counter = 0;
-            elements.push_back( new T( buffer ) );
-            //elements.push_back( boost::shared_ptr<T>( new T( buffer ) ) );
+            T* element = new T( buffer );
+            elements.push_back( std::make_pair( element->time, element ));
         }
     }
 };
@@ -71,9 +66,9 @@ class Reader {
                         std::istream_iterator<double>(),
                         std::back_inserter( raw ) );
 
-            #ifdef DEBUG
+#ifdef DEBUG
             std::cout << raw.size() << " elements read" << std::endl;
-            #endif
+#endif
 
             return raw.size();
         }
@@ -91,21 +86,22 @@ class PoseReader : public Reader
 {
     public:
         
-        bool extract( std::vector<L3::Pose*>& poses )
-        {
-            // TODO: Pass in a reference to an external vector, avoid memory leak
-            Extractor<L3::SE3> e;
+        //bool extract( std::vector<L3::Pose*>& poses )
+        //{
+            //// TODO: 
+            //// Pass in a reference to an external vector, avoid memory leak
+            //Extractor<L3::SE3> e;
        
-            e = std::for_each( raw.begin(), raw.end(), e );
+            //e = std::for_each( raw.begin(), raw.end(), e );
 
-            if ( e.counter == 0 && (e.elements.size() > 0 ) )
-            {
-                poses.assign( e.elements.begin(), e.elements.end() );
-                return true;
-            }
-            else
-                return false;
-        }
+            //if ( e.counter == 0 && (e.elements.size() > 0 ) )
+            //{
+                //poses.assign( e.elements.begin(), e.elements.end() );
+                //return true;
+            //}
+            //else
+                //return false;
+        //}
 
 };
 
@@ -113,20 +109,20 @@ class LIDARReader : public Reader
 {
     public:
 
-        bool extract(  std::vector<L3::LMS151*>& scans )
-        {
-            Extractor<L3::LMS151> e;
+        //bool extract(  std::vector<L3::LMS151*>& scans )
+        //{
+            //Extractor<L3::LMS151> e;
             
-            e = std::for_each( raw.begin(), raw.end(), e );
+            //e = std::for_each( raw.begin(), raw.end(), e );
 
-            if ( e.counter == 0 && e.elements.size() > 0 )
-            {
-                scans.assign( e.elements.begin(), e.elements.end() );
-                return true;
-            }
+            //if ( e.counter == 0 && e.elements.size() > 0 )
+            //{
+                //scans.assign( e.elements.begin(), e.elements.end() );
+                //return true;
+            //}
        
-            return false;
-        }
+            //return false;
+        //}
 
 };
 
@@ -135,21 +131,20 @@ class LHLVReader : public Reader
 
     public:
 
-        bool extract( std::vector<L3::LHLV*>& lhlv )
-        {
-            Extractor<L3::LHLV> e;
+        //bool extract( std::vector<L3::LHLV*>& lhlv )
+        //{
+            //Extractor<L3::LHLV> e;
             
-            e = std::for_each( raw.begin(), raw.end(), e );
+            //e = std::for_each( raw.begin(), raw.end(), e );
 
-            if ( e.counter == 0 && e.elements.size() > 0 )
-            {
-                lhlv.assign( e.elements.begin(), e.elements.end() );
-                return true;
-            }
+            //if ( e.counter == 0 && e.elements.size() > 0 )
+            //{
+                //lhlv.assign( e.elements.begin(), e.elements.end() );
+                //return true;
+            //}
        
-            return false;
-        }
-
+            //return false;
+        //}
 
 };
 

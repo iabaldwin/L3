@@ -21,8 +21,13 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 
+find_package( POCO COMPONENTS XML Net Data )
+
+INCLUDE_DIRECTORIES(${Poco_INCLUDE_DIRS})
+LINK_DIRECTORIES(${Poco_LIBRARY_DIR})
+
 # Core
 add_subdirectory( core )
 
 # Graphics
-add_subdirectory( renderer )
+#add_subdirectory( renderer )

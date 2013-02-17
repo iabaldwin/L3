@@ -1,6 +1,6 @@
 add_library( L3  Reader.cpp Dataset.cpp Utils.cpp )
 
-target_link_libraries( L3 config++ gsl )
+target_link_libraries( L3 config++ gsl PocoFoundation )
 
 add_subdirectory( tests )
 add_subdirectory( apps )

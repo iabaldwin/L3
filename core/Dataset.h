@@ -9,9 +9,12 @@
 #include <assert.h>
 #include <boost/filesystem.hpp>
 
+#include "Poco/Runnable.h"
+#include "Poco/Thread.h"
+
 #include "Datatypes.h"
 #include "Tools.h"
-#include "Reader.h"
+#include "Windower.h"
 
 namespace L3
 {
@@ -22,24 +25,32 @@ class Dataset
 {
 
     public:
-        Dataset();
         Dataset( const std::string& target );
+        ~Dataset();
 
-        bool        validate();
-        bool        load();
-        std::string path(){ return root_path.string(); };
+        bool            validate();
+        bool            load();
+        std::string     path(){ return root_path.string(); };
 
         // Scans & poses
-        std::vector<L3::Pose*>                              poses;
-        std::vector<L3::LHLV*>                              LHLV_data;
-        std::vector<std::string>                            LIDAR_names;
-        std::map< std::string, std::vector<L3::LMS151*> >   LIDAR_data;
+        //std::vector< std::pair< double, L3::Pose*> >        poses;
+        //std::vector< std::pair< double, L3::LHLV*> >        LHLV_data;
+        //std::map< std::string, std::vector<L3::LMS151*> >   LIDAR_data;
+
+        SlidingWindow<L3::Pose>*                pose_reader;
+        SlidingWindow<L3::LHLV>*                LHLV_reader;
+        std::list< SlidingWindow<L3::LIDAR>*>   LIDAR_readers;
+        std::list<std::string>                  LIDAR_names;
+
 
         // Helper functions
-        Pose*   getPoseAtTime( double time );
-        LMS151* getScanAtTime( double time, const std::string& name );
+        //Pose*   getPoseAtTime( double time );
+        //LMS151* getScanAtTime( double time, const std::string& name );
 
     protected:
+        
+        std::list< Poco::Runnable* >            runnables;
+        std::list< Poco::Thread* >              threads;
         
         friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
 
@@ -49,7 +60,6 @@ class Dataset
         
         boost::filesystem::path root_path;
         std::map< std::string, extensionType > lookup;
-
 };
 
 } // L3
