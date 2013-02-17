@@ -38,7 +38,7 @@ class Dataset
         std::list< SlidingWindow<L3::LIDAR>*>   LIDAR_readers;
        
         // Lookups
-        std::list<std::string>                  LIDAR_names;
+        std::vector<std::string>                LIDAR_names;
 
         // Helper functions
         //Pose*   getPoseAtTime( double time );

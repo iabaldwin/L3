@@ -5,30 +5,31 @@
 #include <fstream>
 #include <list>
 
-#include "Tools.h"
-#include "Dataset.h"
+#include "Core.h"
 #include "Datatypes.h"
 #include "Definitions.h"
+#include "Windower.h"
+#include "Tools.h"
 
 namespace L3
 {
 
 template <typename T>
-class Iterator
+class Iterator : public Observer
 {
-
     public:
     
-        Iterator( std::vector< std::pair< double, T> > s ) : sequence(s)
+        Iterator( L3::SlidingWindow<T>* w ) : window(w)
         {
 
         }
 
     protected:
 
-        std::vector< std::pair< double, T> > sequence;
-        typename std::vector< std::pair< double, T> >::iterator head;
-        typename std::vector< std::pair< double, T> >::iterator tail;
+        L3::SlidingWindow<T>* window;
+        //std::vector< std::pair< double, T*> > sequence;
+        //typename std::vector< std::pair< double, T*> >::iterator head;
+        //typename std::vector< std::pair< double, T*> >::iterator tail;
 
 };
 
@@ -37,14 +38,14 @@ class ConstantTimeIterator : public Iterator<T>
 {
     public:
 
-        ConstantTimeIterator( std::vector< std::pair< double, T> > sequence, double time ) 
-            : Iterator<T>( sequence ), 
+        ConstantTimeIterator( L3::SlidingWindow<T>* window, double time ) 
+            : Iterator<T>( window ), 
                 swathe_length(time)
         {
             initialise();
         }
 
-        bool update( double dt )
+        void update( double dt )
         {
             //if( head == dataset->poses.end() )
                 //return false;
@@ -72,8 +73,6 @@ class ConstantTimeIterator : public Iterator<T>
             //std::cout << (*head)->time - (*tail)->time << std::endl;
 #endif
 
-            return true;
-
         }
 
         int numScans()
@@ -91,38 +90,38 @@ class ConstantTimeIterator : public Iterator<T>
 
         void initialise()
         {
-            std::vector<L3::Pose*>::iterator it = dataset->poses.begin();
+            //std::vector<L3::Pose*>::iterator it = dataset->poses.begin();
 
-            // Set tail
-            tail = it;
+            //// Set tail
+            //tail = it;
 
-            // Get first pose & associated scan
-            L3::Pose*   root_pose = dataset->poses[0];
-            L3::LMS151* root_scan = dataset->getScanAtTime( root_pose->time, LIDAR_name );
+            //// Get first pose & associated scan
+            //L3::Pose*   root_pose = dataset->poses[0];
+            //L3::LMS151* root_scan = dataset->getScanAtTime( root_pose->time, LIDAR_name );
 
-            swathe.push_back( std::make_pair( root_pose, root_scan ) );
+            //swathe.push_back( std::make_pair( root_pose, root_scan ) );
 
-            L3::Tools::Timer t;
+            //L3::Tools::Timer t;
 
-            t.begin();
+            //t.begin();
 
-            double duration;
-            while( it!= dataset->poses.end() )
-            {
-                duration = (*it)->time - root_pose->time; 
+            //double duration;
+            //while( it!= dataset->poses.end() )
+            //{
+                //duration = (*it)->time - root_pose->time; 
 
-                if ( duration <  swathe_length )
-                {
-                    swathe.push_back( std::make_pair( (*it), dataset->getScanAtTime( (*it)->time, LIDAR_name ) ) );
-                }
-                else
-                    break;
+                //if ( duration <  swathe_length )
+                //{
+                    //swathe.push_back( std::make_pair( (*it), dataset->getScanAtTime( (*it)->time, LIDAR_name ) ) );
+                //}
+                //else
+                    //break;
 
-                it++;
-            }
+                //it++;
+            //}
 
-            // Set head
-            head = it; 
+            //// Set head
+            //head = it; 
         }
 
         std::string LIDAR_name;

@@ -1,3 +1,6 @@
+#ifndef L3_WINDOWER_H
+#define L3_WINDOWER_H
+
 #include <iostream>
 #include <fstream>
 #include <iterator>
@@ -12,15 +15,10 @@
 #include "Poco/Thread.h"
 #include "Poco/Mutex.h"
 
+#include "Core.h"
+
 namespace L3
 {
-
-struct Observer
-{
-
-    virtual void update( double ) = 0;
-
-};
 
 template <typename T>
 struct SlidingWindow : Poco::Runnable, Observer
@@ -68,9 +66,11 @@ struct SlidingWindow : Poco::Runnable, Observer
     }
 
     std::queue< std::pair< double, std::string > > stack;
-    typename std::queue< std::pair< double, T* > > stack2;
+    //typename std::queue< std::pair< double, T* > > stack;
     bool running, read_required;
-    
+
+    //std::queue< std::pair< double, std::string > > 
+
     void run()
     {
         while( running )
@@ -134,3 +134,4 @@ struct SlidingWindow : Poco::Runnable, Observer
 
 }
 
+#endif

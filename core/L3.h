@@ -1,9 +1,10 @@
 #ifndef L3_H
 #define L3_H
 
-#include "Dataset.h"
 #include "Datatypes.h"
 #include "Definitions.h"
+#include "Core.h"
+#include "Dataset.h"
 #include "Iterator.h"
 #include "PointCloud.h"
 #include "Projector.h"
