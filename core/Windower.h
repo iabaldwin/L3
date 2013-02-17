@@ -54,7 +54,7 @@ struct SlidingWindow : Poco::Runnable, Observer
         std::cout.precision(12);
         mutex.lock();
 
-        double diff = time - stack.back().first ;
+        double diff = time - window.back().first ;
 
         // Need more data?
         if ( ( diff > 0 ) && ( diff < 10 ) )
@@ -65,11 +65,16 @@ struct SlidingWindow : Poco::Runnable, Observer
         mutex.unlock();
     }
 
-    std::queue< std::pair< double, std::string > > stack;
+    std::queue< std::pair< double, std::string > > window;
     //typename std::queue< std::pair< double, T* > > stack;
     bool running, read_required;
 
-    //std::queue< std::pair< double, std::string > > 
+    std::queue< std::pair< double, std::string > > getWindow()
+    {
+        mutex.lock();
+        return window;
+        mutex.unlock();
+    }
 
     void run()
     {
@@ -105,7 +110,7 @@ struct SlidingWindow : Poco::Runnable, Observer
             double time;
             ss >> time;
 
-            stack.push( std::make_pair( time, line ) );
+            window.push( std::make_pair( time, line ) );
         }
     }
 
@@ -113,7 +118,7 @@ struct SlidingWindow : Poco::Runnable, Observer
     {
         size_t s;
         mutex.lock();
-        s = stack.size(); 
+        s = window.size(); 
         mutex.unlock();
         return s;
     }
@@ -121,7 +126,7 @@ struct SlidingWindow : Poco::Runnable, Observer
     void purge()
     {
         for ( int i=0; i< STACK_SIZE; i++ )
-            stack.pop();
+            window.pop();
     }
 
     bool good()

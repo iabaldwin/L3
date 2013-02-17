@@ -24,7 +24,7 @@ class Iterator : public Observer
 
         }
 
-    protected:
+    //protected:
 
         L3::SlidingWindow<T>* window;
         //std::vector< std::pair< double, T*> > sequence;
@@ -47,6 +47,7 @@ class ConstantTimeIterator : public Iterator<T>
 
         void update( double dt )
         {
+            this->window->getWindow();
             //if( head == dataset->poses.end() )
                 //return false;
 
