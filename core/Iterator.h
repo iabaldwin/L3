@@ -24,35 +24,28 @@ class Iterator
 
         }
 
-        //SWATHE* getSwathe()
-        //{
-            //return &swathe;
-        //}
-
     protected:
 
-        SWATHE swathe;
-        
         std::vector< std::pair< double, T> > sequence;
         typename std::vector< std::pair< double, T> >::iterator head;
         typename std::vector< std::pair< double, T> >::iterator tail;
 
 };
 
-//template <typename T>
-//class ConstantTimeIterator : public Iterator<T>
-//{
-    //public:
+template <typename T>
+class ConstantTimeIterator : public Iterator<T>
+{
+    public:
 
-        //ConstantTimeIterator( SEQUENCE<T> sequence, double time ) 
-            //: Iterator<T>( sequence ), 
-                //swathe_length(time)
-        //{
-            //initialise();
-        //}
+        ConstantTimeIterator( std::vector< std::pair< double, T> > sequence, double time ) 
+            : Iterator<T>( sequence ), 
+                swathe_length(time)
+        {
+            initialise();
+        }
 
-        //bool update( double dt )
-        //{
+        bool update( double dt )
+        {
             //if( head == dataset->poses.end() )
                 //return false;
 
@@ -75,66 +68,66 @@ class Iterator
                 //tail++;
             //}
 
-//#ifndef NDEBUG
+#ifndef NDEBUG
             //std::cout << (*head)->time - (*tail)->time << std::endl;
-//#endif
+#endif
 
-            //return true;
+            return true;
 
-        //}
+        }
 
-        //int numScans()
-        //{
+        int numScans()
+        {
             //return std::distance( tail, head ); 
-        //}
+        }
 
-        //double relativeTime() 
-        //{
+        double relativeTime() 
+        {
             //return (*head)->time - dataset->poses[0]->time;
-        //}
+        }
 
-    //protected:
+    protected:
 
 
-        //void initialise()
-        //{
-            //std::vector<L3::Pose*>::iterator it = dataset->poses.begin();
+        void initialise()
+        {
+            std::vector<L3::Pose*>::iterator it = dataset->poses.begin();
 
-            //// Set tail
-            //tail = it;
+            // Set tail
+            tail = it;
 
-            //// Get first pose & associated scan
-            //L3::Pose*   root_pose = dataset->poses[0];
-            //L3::LMS151* root_scan = dataset->getScanAtTime( root_pose->time, LIDAR_name );
+            // Get first pose & associated scan
+            L3::Pose*   root_pose = dataset->poses[0];
+            L3::LMS151* root_scan = dataset->getScanAtTime( root_pose->time, LIDAR_name );
 
-            //swathe.push_back( std::make_pair( root_pose, root_scan ) );
+            swathe.push_back( std::make_pair( root_pose, root_scan ) );
 
-            //L3::Tools::Timer t;
+            L3::Tools::Timer t;
 
-            //t.begin();
+            t.begin();
 
-            //double duration;
-            //while( it!= dataset->poses.end() )
-            //{
-                //duration = (*it)->time - root_pose->time; 
+            double duration;
+            while( it!= dataset->poses.end() )
+            {
+                duration = (*it)->time - root_pose->time; 
 
-                //if ( duration <  swathe_length )
-                //{
-                    //swathe.push_back( std::make_pair( (*it), dataset->getScanAtTime( (*it)->time, LIDAR_name ) ) );
-                //}
-                //else
-                    //break;
+                if ( duration <  swathe_length )
+                {
+                    swathe.push_back( std::make_pair( (*it), dataset->getScanAtTime( (*it)->time, LIDAR_name ) ) );
+                }
+                else
+                    break;
 
-                //it++;
-            //}
+                it++;
+            }
 
-            //// Set head
-            //head = it; 
-        //}
+            // Set head
+            head = it; 
+        }
 
-        //std::string LIDAR_name;
-        //double swathe_length;
-//};
+        std::string LIDAR_name;
+        double swathe_length;
+};
 
 
 } // L3

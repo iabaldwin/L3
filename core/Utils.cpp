@@ -6,28 +6,28 @@ namespace L3
 namespace Utils
 {
 
-void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l )
+void localisePoseChain( POSE_SEQUENCE& poses, const Locale& l )
 {
-    for( std::vector<L3::Pose*>::iterator it=poses.begin(); it!= poses.end(); it++ )
+    for( POSE_SEQUENCE_ITERATOR it=poses.begin(); it!= poses.end(); it++ )
     {
-        (*it)->x -= l.x;
-        (*it)->y -= l.y;
+        (*it).second->x -= l.x;
+        (*it).second->y -= l.y;
     }
 }
 
-void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses )
+void localisePoseChainToOrigin( POSE_SEQUENCE& poses )
 {
-    double origin_x = poses.front()->x;
-    double origin_y = poses.front()->y;
+    double origin_x = poses.front().second->x;
+    double origin_y = poses.front().second->y;
 
-    std::vector<L3::Pose*>::iterator it=poses.begin();
+    POSE_SEQUENCE_ITERATOR it = poses.begin();
 
     while( it != poses.end() )
     {
-        (*it)->x -= origin_x;
-        (*it)->y -= origin_y;
+        (*it).second->x -= origin_x;
+        (*it).second->y -= origin_y;
 
-        (*it)->_update();
+        (*it).second->_update();
 
         it++;
     }
@@ -41,10 +41,10 @@ struct accumulator
 
     int counter;
     double x, y, z;
-    void operator()( L3::Pose* p )
+    void operator()( std::pair< double, L3::Pose*>  p )
     {
-        x += p->x;
-        y += p->y;
+        x += p.second->x;
+        y += p.second->y;
    
         counter++;
     }
@@ -59,22 +59,22 @@ struct accumulator
     }
 };
 
-void localisePoseChainToMean( std::vector<L3::Pose*>& poses )
+void localisePoseChainToMean( POSE_SEQUENCE& poses )
 {
     // Average 
     accumulator a;
     a = std::for_each( poses.begin(), poses.end(), a );
     std::vector<double> centroid = a.centroid();
 
-    std::vector<L3::Pose*>::iterator it = poses.begin();
+    POSE_SEQUENCE_ITERATOR it = poses.begin();
 
     while( it != poses.end() )
     {
-        (*it)->x -= centroid[0];
-        (*it)->y -= centroid[1];
+        (*it).second->x -= centroid[0];
+        (*it).second->y -= centroid[1];
        
         // Regenerate homogeneous - this is poor
-        (*it)->_update();
+        (*it).second->_update();
    
         it++;
     }

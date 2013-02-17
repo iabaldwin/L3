@@ -86,22 +86,22 @@ class PoseReader : public Reader
 {
     public:
         
-        //bool extract( std::vector<L3::Pose*>& poses )
-        //{
-            //// TODO: 
-            //// Pass in a reference to an external vector, avoid memory leak
-            //Extractor<L3::SE3> e;
+        bool extract( std::vector< std::pair< double, L3::Pose*> >& poses )
+        {
+            // TODO: 
+            // Pass in a reference to an external vector, avoid memory leak
+            Extractor<L3::SE3> e;
        
-            //e = std::for_each( raw.begin(), raw.end(), e );
+            e = std::for_each( raw.begin(), raw.end(), e );
 
-            //if ( e.counter == 0 && (e.elements.size() > 0 ) )
-            //{
-                //poses.assign( e.elements.begin(), e.elements.end() );
-                //return true;
-            //}
-            //else
-                //return false;
-        //}
+            if ( e.counter == 0 && (e.elements.size() > 0 ) )
+            {
+                poses.assign( e.elements.begin(), e.elements.end() );
+                return true;
+            }
+            else
+                return false;
+        }
 
 };
 

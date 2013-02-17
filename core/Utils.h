@@ -76,10 +76,10 @@ struct WOODSTOCK : Locale
 
 };
 
-void localisePoseChain( std::vector<L3::Pose*>& poses, const Locale& l );
-void localisePoseChainToOrigin( std::vector<L3::Pose*>& poses );
-void localisePoseChainToMean( std::vector<L3::Pose*>& poses );
-std::vector< L3::Pose* > posesFromSwathe( SWATHE* s );
+void localisePoseChain( POSE_SEQUENCE& poses, const Locale& l );
+void localisePoseChainToOrigin( POSE_SEQUENCE& poses );
+void localisePoseChainToMean( POSE_SEQUENCE& poses );
+//std::vector< L3::Pose* > posesFromSwathe( SWATHE* s );
 
 }
 }
