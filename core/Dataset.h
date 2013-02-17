@@ -32,16 +32,13 @@ class Dataset
         bool            load();
         std::string     path(){ return root_path.string(); };
 
-        // Scans & poses
-        //std::vector< std::pair< double, L3::Pose*> >        poses;
-        //std::vector< std::pair< double, L3::LHLV*> >        LHLV_data;
-        //std::map< std::string, std::vector<L3::LMS151*> >   LIDAR_data;
-
+        // Windowers
         SlidingWindow<L3::Pose>*                pose_reader;
         SlidingWindow<L3::LHLV>*                LHLV_reader;
         std::list< SlidingWindow<L3::LIDAR>*>   LIDAR_readers;
+       
+        // Lookups
         std::list<std::string>                  LIDAR_names;
-
 
         // Helper functions
         //Pose*   getPoseAtTime( double time );
