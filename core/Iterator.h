@@ -24,7 +24,7 @@ class Iterator : public Observer
 
         }
 
-    //protected:
+    protected:
 
         L3::SlidingWindow<T>* window;
         //std::vector< std::pair< double, T*> > sequence;

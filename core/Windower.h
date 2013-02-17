@@ -86,7 +86,7 @@ struct SlidingWindow : Poco::Runnable, Observer
        
                 mutex.lock();
                 read();                 // Push new data
-                purge();                // Purge old
+                purge();                // Purge old data
                 mutex.unlock();
 
                 if ( !good())           // Is the stream finished?
