@@ -103,6 +103,21 @@ class SE3 : public Pose
             updateHomogeneous();
         }
 
+        //SE3( std::string& raw )
+        //{
+            //std::stringstream ss( raw );
+            //double tmp;
+
+            //ss >> time;
+            //ss >> x;
+            //ss >> y;
+            //ss >> z;
+            //ss >> r;
+            //ss >> p;
+            //ss >> q;
+            
+        //}
+
         void print( std::ostream& o ) const {
             o << time << "," << x << "," << y << ","  << z << "," << r << "," << p << "," << q;
         }

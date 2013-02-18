@@ -13,18 +13,6 @@
 
 namespace L3
 {
-template <typename T>
-struct Extractor
-{
-
-    T operator()( std::string& raw )
-    {
-
-    }
-
-
-};
-
 
 template <typename T>
 class Iterator : public Observer
@@ -46,8 +34,7 @@ struct Comparator
 {
     bool operator()( T t, const double f )
     {
-        //return ( t.first < f);
-        return ( f < t.first );
+        return ( t.first < f);
     }
 };
 
@@ -72,40 +59,26 @@ class ConstantTimeIterator : public Iterator<T>
 
             Comparator<std::pair< double, std::string > > c;
 
-            // Find the iterator with the closest time
+            // Find the element with the closest time to *now*
             WINDOW_ITERATOR it = std::lower_bound( current_window.begin(), current_window.end(), time, c );
 
-            std::cout.precision( 12 );
+            if ( it == current_window.end() ) // This, is bad
+                throw std::exception();
 
-            std::cout << time << "-->" << current_window.front().first << ":" << current_window.back().first << std::endl;
+            this->processed_data.clear();
 
-            //if ( it != current_window.end() )
-                //std::cout << (*it).first << ":" << (*it).first - time << std::endl;
+            double data_swathe_length = 0;
 
-            //double previous_head_time = (*head)->time;
-
-            //// Advance the head pointer by dt
-            //while( (*head)->time - previous_head_time < dt )
-            //{
-                //swathe.push_back( std::make_pair( (*head), dataset->getScanAtTime( (*head)->time, LIDAR_name ) ) ) ;
-                //head++;
-
-                //if ( head == dataset->poses.end() )
-                    //return false;
-            //}
-
-            //// Advance the tail, such that we preserve swathe length
-            //while( ((*head)->time - (*tail)->time ) > swathe_length )
-            //{
-                //swathe.pop_back();
-                //tail++;
-            //}
-
-#ifndef NDEBUG
-            //std::cout << (*head)->time - (*tail)->time << std::endl;
-#endif
+            // Working backwards, build up the data swathe
+            while( data_swathe_length < swathe_length )
+            {
+                //this->processed_data.push_front( *it );
+                data_swathe_length += current_window.back().first - (*it).first;
+            }
 
         }
+
+        typename std::deque< std::pair< double, T*> > processed_data;
 
         int numScans()
         {
