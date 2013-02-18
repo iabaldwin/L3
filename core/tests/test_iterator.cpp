@@ -18,16 +18,12 @@ int main()
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::Pose > iterator( dataset.pose_reader, 10.0 );
     
-    // Localise
-    //L3::Utils::localisePoseChainToOrigin( dataset.poses );
+    double time = 1328534146.406440019607543945;
 
     // Run
-    L3::Tools::Timer t;
     while (true)
     {
-        t.begin(); 
-        iterator.update( .1 ) ;
-        std::cout << t.end() << std::endl;
+        iterator.update( time += .1 ) ;
     } 
     
     //while( iterator.update( .1 ) )

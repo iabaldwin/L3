@@ -39,6 +39,7 @@ struct Extractor
             elements.push_back( std::make_pair( element->time, element ));
         }
     }
+
 };
 
 class Reader {
@@ -66,7 +67,7 @@ class Reader {
                         std::istream_iterator<double>(),
                         std::back_inserter( raw ) );
 
-#ifdef DEBUG
+#ifndef NDEBUG
             std::cout << raw.size() << " elements read" << std::endl;
 #endif
 

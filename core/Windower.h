@@ -5,8 +5,7 @@
 #include <fstream>
 #include <iterator>
 #include <algorithm>
-#include <vector>
-#include <queue>
+#include <deque>
 #include <sstream>
 
 #include <ctime>
@@ -65,32 +64,35 @@ struct SlidingWindow : Poco::Runnable, Observer
         mutex.unlock();
     }
 
-    std::queue< std::pair< double, std::string > > window;
-    //typename std::queue< std::pair< double, T* > > stack;
+    std::deque< std::pair< double, std::string > > window;
     bool running, read_required;
 
-    std::queue< std::pair< double, std::string > > getWindow()
+    std::deque< std::pair< double, std::string> > getWindow()
     {
+        std::deque< std::pair< double, std::string> > temp;
         mutex.lock();
-        return window;
+        temp = window;   
         mutex.unlock();
+        return temp;
     }
 
     void run()
     {
         while( running )
         {
-            if ( read_required == true )
+            if ( read_required )
             {
-                read_required = false;  // Disable read
-       
+                read_required = false;  // Disable subsequent read
+                
                 mutex.lock();
                 read();                 // Push new data
                 purge();                // Purge old data
                 mutex.unlock();
 
-                if ( !good())           // Is the stream finished?
+                if ( !good() )
+                {   // Is the stream finished?
                     stop();
+                }
             }
         }
     }
@@ -110,7 +112,7 @@ struct SlidingWindow : Poco::Runnable, Observer
             double time;
             ss >> time;
 
-            window.push( std::make_pair( time, line ) );
+            window.push_front( std::make_pair( time, line ) );
         }
     }
 
@@ -126,7 +128,7 @@ struct SlidingWindow : Poco::Runnable, Observer
     void purge()
     {
         for ( int i=0; i< STACK_SIZE; i++ )
-            window.pop();
+            window.pop_back();
     }
 
     bool good()

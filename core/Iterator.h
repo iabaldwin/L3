@@ -13,24 +13,42 @@
 
 namespace L3
 {
+template <typename T>
+struct Extractor
+{
+
+    T operator()( std::string& raw )
+    {
+
+    }
+
+
+};
+
 
 template <typename T>
 class Iterator : public Observer
 {
     public:
     
-        Iterator( L3::SlidingWindow<T>* w ) : window(w)
+        Iterator( L3::SlidingWindow<T>* w ) : windower(w)
         {
 
         }
 
     protected:
 
-        L3::SlidingWindow<T>* window;
-        //std::vector< std::pair< double, T*> > sequence;
-        //typename std::vector< std::pair< double, T*> >::iterator head;
-        //typename std::vector< std::pair< double, T*> >::iterator tail;
+        L3::SlidingWindow<T>* windower;
+};
 
+template <typename T>
+struct Comparator
+{
+    bool operator()( T t, const double f )
+    {
+        //return ( t.first < f);
+        return ( f < t.first );
+    }
 };
 
 template <typename T>
@@ -39,17 +57,26 @@ class ConstantTimeIterator : public Iterator<T>
     public:
 
         ConstantTimeIterator( L3::SlidingWindow<T>* window, double time ) 
-            : Iterator<T>( window ), 
-                swathe_length(time)
+            : Iterator<T>( window ), swathe_length(time)
         {
             initialise();
         }
 
-        void update( double dt )
+        void update( double time )
         {
-            this->window->getWindow();
-            //if( head == dataset->poses.end() )
-                //return false;
+            // Update the watcher with the new time
+            this->windower->update( time );
+           
+            // Retrive the window
+            current_window = this->windower->getWindow();
+
+            Comparator<std::pair< double, std::string > > c;
+
+            // Find the iterator with the closest time
+            WINDOW_ITERATOR it = std::lower_bound( current_window.begin(), current_window.end(), time, c );
+
+            if ( it != current_window.end() )
+                std::cout << (*it).first << ":" << (*it).first - time << std::endl;
 
             //double previous_head_time = (*head)->time;
 
@@ -88,6 +115,7 @@ class ConstantTimeIterator : public Iterator<T>
 
     protected:
 
+        WINDOW current_window;
 
         void initialise()
         {
