@@ -73,24 +73,21 @@ class ConstantTimeIterator : public Iterator<T>
 
             CURRENT_WINDOW_ITERATOR it_back_iterator = it;
 
+            std::cout.precision( 12 );
+
             // Working backwards, build up the data swathe
             while( data_swathe_length < swathe_length )
             {
                 this->processed_data.push_front( *it );
-                data_swathe_length += (*it).first - (*it_back_iterator).first ;
+                data_swathe_length = (*it).first - (*it_back_iterator).first ;
                 it_back_iterator--;
+           
+                if ( it_back_iterator == current_window.begin() )
+                    break; 
             }
-
-            std::cout << data_swathe_length << ":" << this->processed_data.size() << std::endl;
-        
         }
 
         typename std::deque< std::pair< double, T*> > processed_data;
-
-        int numScans()
-        {
-            //return std::distance( tail, head ); 
-        }
 
         double relativeTime() 
         {

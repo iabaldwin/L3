@@ -19,6 +19,7 @@ int main()
         w.update( i );
         usleep( 100000 );
         std::cout << i << "-->" << (*w.window.begin()).first << ":" << (*(w.window.end()-1)).first << "(" << w.window.size() << ")" << std::endl;
+        std::cout << w.getDuration() << std::endl; 
     }
     
     thread.join();

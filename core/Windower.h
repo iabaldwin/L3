@@ -14,6 +14,7 @@
 #include "Poco/Thread.h"
 #include "Poco/Mutex.h"
 
+#include "Tools.h"
 #include "Core.h"
 #include "Definitions.h"
 #include "AbstractFactory.h"
@@ -71,6 +72,16 @@ struct SlidingWindow : Poco::Runnable, Observer
     typename std::vector< std::pair< double, T* > > window;
     typename std::vector< std::pair< double, T* > > temp;
 
+    double getDuration()
+    {
+        double duration;
+        mutex.lock();
+        duration = window.back().first - window.front().first;
+        mutex.unlock();
+
+        return duration;
+    }
+
     std::vector< std::pair< double, T* > > getWindow()
     {
         mutex.lock();
@@ -99,7 +110,7 @@ struct SlidingWindow : Poco::Runnable, Observer
         }
     }
 
-    const static int STACK_SIZE = 100;
+    const static int STACK_SIZE = 5*100;
     int read()
     {
         int i;
@@ -131,6 +142,11 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     void initialise()
     {
+#ifndef NDEBUG
+        L3::Tools::Timer t;
+        std::cout << "Buffering...";
+        t.begin();
+#endif
         double duration = 0;
 
         while ( duration < time )
@@ -145,6 +161,10 @@ struct SlidingWindow : Poco::Runnable, Observer
 
             duration = window.back().first - window.front().first;
         }
+#ifndef NDEBUG
+        std::cout << window.size() << " entries read in " << t.end() << "s" << std::endl;
+#endif
+
     }
 
     void purge()

@@ -23,13 +23,7 @@ int main()
     // Run
     while (true)
     {
-        usleep( 10000 );
+        usleep( .2*1e6 );
         iterator.update( time += .1 ) ;
     } 
-    
-    //while( iterator.update( .1 ) )
-        ////std::cout << iterator->relativeTime() << ":" << iterator->numScans() << std::endl;
-        //std::cout << "hi" << std::endl;
-
-    //std::cout << "Done" << std::endl;
 }

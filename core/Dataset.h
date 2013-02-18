@@ -40,10 +40,6 @@ class Dataset
         // Lookups
         std::vector<std::string>                LIDAR_names;
 
-        // Helper functions
-        //Pose*   getPoseAtTime( double time );
-        //LMS151* getScanAtTime( double time, const std::string& name );
-
     protected:
         
         std::list< Poco::Runnable* >            runnables;

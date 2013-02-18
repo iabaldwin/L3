@@ -32,7 +32,6 @@ namespace L3
             
             }
 
-
             SWATHE swathe;
         
         private:
