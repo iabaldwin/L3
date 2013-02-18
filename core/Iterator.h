@@ -10,6 +10,7 @@
 #include "Definitions.h"
 #include "Windower.h"
 #include "Tools.h"
+#include "AbstractFactory.h"
 
 namespace L3
 {
@@ -57,25 +58,30 @@ class ConstantTimeIterator : public Iterator<T>
             // Retrive the window
             current_window = this->windower->getWindow();
 
-            Comparator<std::pair< double, std::string > > c;
+            Comparator<std::pair< double, T* > > c;
 
             // Find the element with the closest time to *now*
-            WINDOW_ITERATOR it = std::lower_bound( current_window.begin(), current_window.end(), time, c );
+            CURRENT_WINDOW_ITERATOR it = std::lower_bound( current_window.begin(), current_window.end(), time, c );
 
-            if ( it == current_window.end() ) // This, is bad
+            if ( it == current_window.end() ) // This, is bad - can't find the appropriate time
                 throw std::exception();
 
+            // Clear it - this needs to be pop & delete
             this->processed_data.clear();
 
             double data_swathe_length = 0;
 
+            CURRENT_WINDOW_ITERATOR it_back_iterator = it;
+
             // Working backwards, build up the data swathe
             while( data_swathe_length < swathe_length )
             {
-                //this->processed_data.push_front( *it );
-                data_swathe_length += current_window.back().first - (*it).first;
+                this->processed_data.push_front( *it );
+                data_swathe_length += (*it).first - (*it_back_iterator).first ;
+                it_back_iterator--;
             }
 
+            std::cout << data_swathe_length << ":" << this->processed_data.size() << std::endl;
         }
 
         typename std::deque< std::pair< double, T*> > processed_data;
@@ -92,7 +98,9 @@ class ConstantTimeIterator : public Iterator<T>
 
     protected:
 
-        WINDOW current_window;
+    
+        typename std::vector< std::pair< double, T* > > current_window;
+        typedef typename std::vector< std::pair< double, T* > >::iterator CURRENT_WINDOW_ITERATOR;
 
         void initialise()
         {

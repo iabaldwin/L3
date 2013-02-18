@@ -4,6 +4,7 @@
 #include "Iterator.h"
 #include "Dataset.h"
 #include "Utils.h"
+#include "SwatheBuilder.h"
 
 int main()
 {
@@ -12,19 +13,21 @@ int main()
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
 
-    // Build iterator
     std::string LIDAR_name = dataset.LIDAR_names[0];
 
-    //// Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::Pose > iterator( dataset.pose_reader, 10.0 );
+    // Constant time iterator over poses
+    L3::ConstantTimeIterator< L3::Pose >  pose_iterator( dataset.pose_reader, 10.0 );
+    L3::ConstantTimeIterator< L3::LIDAR > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
     
     double time = 1328534146.406440019607543945;
+
+    L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 
     // Run
     while (true)
     {
-        usleep( 10000 );
-        iterator.update( time += .1 ) ;
+        usleep( 1000 );
+        swathe_builder.update( time += .1 ) ;
     } 
     
     //while( iterator.update( .1 ) )

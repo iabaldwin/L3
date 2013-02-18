@@ -10,6 +10,8 @@
 #include <assert.h>
 #include <Eigen/core>
 
+#include <boost/tokenizer.hpp>
+
 namespace L3
 {
 
@@ -19,15 +21,13 @@ class Pose
 
         virtual ~Pose(){}
 
-        double x, y, time;
+        double x, y;
 
         Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
 
         //TODO
         //This is dirty
-        virtual void _update()
-        {
-        }
+        virtual void _update() = 0;
         
         friend std::ostream& operator<<( std::ostream& o, const Pose& p )
         {
@@ -39,10 +39,9 @@ class Pose
 
     protected:
 
-        virtual void updateHomogeneous() = 0;
+        Eigen::Matrix4f homogeneous;
+        virtual void updateHomogeneous()  = 0;
 
-        std::stringstream   ss;
-        Eigen::Matrix4f     homogeneous;
 
 };
 
@@ -51,19 +50,27 @@ class SE2 : public Pose
 
     public:
 
-        const static int NUM_ELEMENTS = 4;
-
         SE2( double X, double Y, double Q ) : q(Q)
         {
             x = X;
             y = Y;
         }
-        
+
+        SE2( std::vector<double> input )
+        {
+
+        }
+
         void print( std::ostream& o ) const {
             o << x << "," << y << ","  << q;
         }
       
         double q;
+
+        void _update()
+        {
+
+        }
 
     private:
 
@@ -78,8 +85,6 @@ class SE3 : public Pose
 
     public:
     
-        const static int NUM_ELEMENTS = 7;
-
         SE3( double X, double Y, double Z, double R, double P, double Q) 
             : z(Z), r(R), p(P), q(Q)
         {
@@ -91,35 +96,19 @@ class SE3 : public Pose
 
         SE3( const std::vector<double> v ) 
         {
-            assert( v.size() == 7 );
-            time = v[0]; 
-            x = v[1];
-            y = v[2];
-            z = v[3];
-            r = v[4];
-            p = v[5];
-            q = v[6];
+            assert( v.size() == 6 );
+            x = v[0];
+            y = v[1];
+            z = v[2];
+            r = v[3];
+            p = v[4];
+            q = v[5];
             
             updateHomogeneous();
         }
 
-        //SE3( std::string& raw )
-        //{
-            //std::stringstream ss( raw );
-            //double tmp;
-
-            //ss >> time;
-            //ss >> x;
-            //ss >> y;
-            //ss >> z;
-            //ss >> r;
-            //ss >> p;
-            //ss >> q;
-            
-        //}
-
         void print( std::ostream& o ) const {
-            o << time << "," << x << "," << y << ","  << z << "," << r << "," << p << "," << q;
+            o << x << "," << y << ","  << z << "," << r << "," << p << "," << q;
         }
       
         void _update()
@@ -157,7 +146,7 @@ class SE3 : public Pose
             // SO3
             homogeneous = Rz*Ry*Rx;
             
-            // E3
+            // SE3
             homogeneous(0,3) = x;
             homogeneous(1,3) = y;
             homogeneous(2,3) = z;
@@ -167,14 +156,7 @@ class SE3 : public Pose
 
 struct LHLV  
 {
-    const static int NUM_ELEMENTS = 12;
-
     typedef std::vector<double>::iterator ITERATOR;
-
-    LHLV()
-    {
-
-    }
 
     LHLV( const std::vector<double> v ) 
     {
@@ -192,14 +174,12 @@ struct LHLV
 
 struct LIDAR 
 {
-    double time;
     std::vector<float> ranges;
     std::vector<float> reflectances;
 
     LIDAR( double start, double end ) : 
         angle_start(start), angle_end(end)
     {}
-
 
     double angle_start;
     double angle_end;
@@ -222,8 +202,6 @@ struct LMS151 : LIDAR
 
     LMS151( std::vector<double> vec )  : LIDAR( M_PI/4, M_PI+(M_PI/4)) 
     {
-        time = vec[0];
-
         angle_spacing = (angle_end - angle_spacing) / (double)LMS151::NUM_ELEMENTS; 
         ranges.resize( LMS151::NUM_ELEMENTS ); 
         ranges.assign( ++vec.begin(), vec.end() );
