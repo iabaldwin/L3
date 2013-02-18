@@ -16,7 +16,7 @@ int main()
     std::string LIDAR_name = dataset.LIDAR_names[0];
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::Pose >  pose_iterator( dataset.pose_reader, 10.0 );
+    L3::ConstantTimeIterator< L3::Pose >  pose_iterator( dataset.pose_reader, 60.0 );
     L3::ConstantTimeIterator< L3::LIDAR > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
     
     double time = 1328534146.406440019607543945;
@@ -26,8 +26,8 @@ int main()
     // Run
     while (true)
     {
-        usleep( 1000 );
-        swathe_builder.update( time += .1 ) ;
+        usleep( .5*1e6 );
+        swathe_builder.update( time += .5 ) ;
     } 
     
     //while( iterator.update( .1 ) )

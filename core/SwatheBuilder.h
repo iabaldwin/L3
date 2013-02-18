@@ -14,9 +14,6 @@ namespace L3
             SwatheBuilder( L3::Iterator<L3::Pose>* poses, L3::Iterator<L3::LIDAR>* LIDARs ) :
                 pose_window( poses ), LIDAR_window( LIDARs ) 
             {
-
-
-
             }
 
             L3::Tools::Timer t;

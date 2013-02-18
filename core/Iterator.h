@@ -82,6 +82,7 @@ class ConstantTimeIterator : public Iterator<T>
             }
 
             std::cout << data_swathe_length << ":" << this->processed_data.size() << std::endl;
+        
         }
 
         typename std::deque< std::pair< double, T*> > processed_data;
