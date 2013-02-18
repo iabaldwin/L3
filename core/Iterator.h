@@ -66,7 +66,7 @@ class ConstantTimeIterator : public Iterator<T>
         {
             // Update the watcher with the new time
             this->windower->update( time );
-           
+
             // Retrive the window
             current_window = this->windower->getWindow();
 
@@ -75,8 +75,12 @@ class ConstantTimeIterator : public Iterator<T>
             // Find the iterator with the closest time
             WINDOW_ITERATOR it = std::lower_bound( current_window.begin(), current_window.end(), time, c );
 
-            if ( it != current_window.end() )
-                std::cout << (*it).first << ":" << (*it).first - time << std::endl;
+            std::cout.precision( 12 );
+
+            std::cout << time << "-->" << current_window.front().first << ":" << current_window.back().first << std::endl;
+
+            //if ( it != current_window.end() )
+                //std::cout << (*it).first << ":" << (*it).first - time << std::endl;
 
             //double previous_head_time = (*head)->time;
 

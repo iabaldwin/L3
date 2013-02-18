@@ -10,6 +10,9 @@ target_link_libraries( test_locale  config L3 boost_system boost_filesystem )
 add_executable( test_pose_homogeneous test_pose_homogeneous.cpp )
 target_link_libraries( test_pose_homogeneous  config L3 boost_system boost_filesystem )
 
+add_executable( test_windower test_windower.cpp )
+target_link_libraries( test_windower config L3 boost_system boost_filesystem )
+
 #add_executable( test_find_closest test_find_closest.cpp )
 #target_link_libraries( test_find_closest  config L3 boost_system boost_filesystem )
 

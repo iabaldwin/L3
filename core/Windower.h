@@ -15,6 +15,7 @@
 #include "Poco/Mutex.h"
 
 #include "Core.h"
+#include "Definitions.h"
 
 namespace L3
 {
@@ -23,15 +24,16 @@ template <typename T>
 struct SlidingWindow : Poco::Runnable, Observer
 {
 
-    SlidingWindow( const std::string& input ) : 
+    SlidingWindow( const std::string& input, double t ) : 
         running(true), 
-        read_required(false)
+        read_required(false),
+        time(t)
     {
         // Open file
         input_stream.open(input.c_str()); 
         
         // Fill the buffer
-        read();
+        initialise();
     }
 
     virtual ~SlidingWindow()
@@ -50,10 +52,9 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     void update( double time )
     {
-        std::cout.precision(12);
         mutex.lock();
 
-        double diff = time - window.back().first ;
+        double diff = window.back().first - time;
 
         // Need more data?
         if ( ( diff > 0 ) && ( diff < 10 ) )
@@ -64,15 +65,18 @@ struct SlidingWindow : Poco::Runnable, Observer
         mutex.unlock();
     }
 
-    std::deque< std::pair< double, std::string > > window;
+    double time;
+    WINDOW window;
     bool running, read_required;
 
-    std::deque< std::pair< double, std::string> > getWindow()
+    WINDOW getWindow()
     {
-        std::deque< std::pair< double, std::string> > temp;
+        WINDOW temp;
+        
         mutex.lock();
         temp = window;   
         mutex.unlock();
+        
         return temp;
     }
 
@@ -97,24 +101,48 @@ struct SlidingWindow : Poco::Runnable, Observer
         }
     }
 
-    const static int STACK_SIZE = 1000;
-    void read()
+    const static int STACK_SIZE = 100;
+    int read()
     {
         static int counter = 0;
         std::string line; 
-        for ( int i=0; i<STACK_SIZE; i++ )
+        int i;
+        for ( i=0; i<STACK_SIZE; i++ )
         {
+            if ( !good() )
+                break;
+
             std::getline( input_stream, line );
-    
             std::stringstream ss( line );
             ss << std::noskipws;
 
             double time;
             ss >> time;
 
-            window.push_front( std::make_pair( time, line ) );
+            window.push_back( std::make_pair( time, line ) );
+        }
+   
+        return i;
+    }
+
+    void initialise()
+    {
+        double duration = 0;
+
+        while ( duration < time )
+        {
+            int lines_read = read();
+
+            if ( lines_read != STACK_SIZE )
+            {
+                // End of stream, this is all we have
+                return;
+            }
+
+            duration = window.back().first - window.front().first;
         }
     }
+
 
     size_t size()
     {
@@ -127,8 +155,11 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     void purge()
     {
-        for ( int i=0; i< STACK_SIZE; i++ )
-            window.pop_back();
+        //WINDOW_ITERATOR current = window.begin();
+    
+        //double diff = window.back().first - (*current).first;
+
+        //std::cout << diff << std::endl;
     }
 
     bool good()

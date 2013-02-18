@@ -99,10 +99,10 @@ bool Dataset::validate()
 
 bool Dataset::load()
 {
-    pose_reader = new SlidingWindow<L3::Pose>( OxTS_ins.path().string() );
+    pose_reader = new SlidingWindow<L3::Pose>( OxTS_ins.path().string(), 30 );
     runnables.push_back( pose_reader );
 
-    LHLV_reader = new SlidingWindow<L3::LHLV>( OxTS_lhlv.path().string() );
+    LHLV_reader = new SlidingWindow<L3::LHLV>( OxTS_lhlv.path().string(), 30 );
     runnables.push_back( LHLV_reader );
 
     // Load LIDARs
@@ -110,7 +110,7 @@ bool Dataset::load()
 
     while ( it != LIDARs.end() )
     {
-        SlidingWindow<L3::LIDAR>* reader = new SlidingWindow<L3::LIDAR>( (*it).path().string());
+        SlidingWindow<L3::LIDAR>* reader = new SlidingWindow<L3::LIDAR>( (*it).path().string(), 30 );
         LIDAR_readers.push_back( reader );
         runnables.push_back( reader );
         
