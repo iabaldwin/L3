@@ -80,9 +80,9 @@ void localisePoseChainToMean( POSE_SEQUENCE& poses )
     }
 }
 
-std::vector< L3::Pose* > posesFromSwathe( SWATHE* s )
+std::vector< boost::shared_ptr<L3::Pose> > posesFromSwathe( SWATHE* s )
 {
-    std::vector< L3::Pose* > poses;
+    std::vector< boost::shared_ptr<L3::Pose> > poses;
 
     SWATHE::iterator it = s->begin();
 

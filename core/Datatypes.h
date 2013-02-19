@@ -10,8 +10,6 @@
 #include <assert.h>
 #include <Eigen/core>
 
-#include <boost/tokenizer.hpp>
-
 namespace L3
 {
 

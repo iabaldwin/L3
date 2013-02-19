@@ -22,7 +22,6 @@ class Iterator : public Observer
     
         Iterator( L3::SlidingWindow<T>* w ) : windower(w)
         {
-
         }
 
         virtual size_t size() = 0;
@@ -80,8 +79,6 @@ class ConstantTimeIterator : public Iterator<T>
             double data_swathe_length = 0;
 
             typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it_back_iterator = it;
-
-            std::cout.precision( 12 );
 
             // Working backwards, build up the data swathe
             while( data_swathe_length < swathe_length )

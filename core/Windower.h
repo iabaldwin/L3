@@ -10,8 +10,6 @@
 
 #include <ctime>
 
-#include <boost/shared_ptr.hpp>
-
 #include "Poco/Runnable.h"
 #include "Poco/Thread.h"
 #include "Poco/Mutex.h"

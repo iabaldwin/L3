@@ -10,8 +10,8 @@ struct Comparator
 {
     bool operator()( T* t, const double f )
     {
-        //return (t->first < f);
-        return ( f< t->first);
+        return (t->first < f);
+        //return ( f< t->first);
     }
 };
 
@@ -36,7 +36,7 @@ namespace L3
                 pose_iterator->update( time ); 
                 LIDAR_iterator->update( time ); 
 #ifndef NDEBUG
-                //std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << std::endl;
+                std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << std::endl;
 #endif
 
                 /*
@@ -48,34 +48,24 @@ namespace L3
 
                 std::cout.precision( 15 );
             
-                Comparator<  std::pair< double, L3::Pose* > > c;
-
                 swathe.clear();
+
+                Comparator<  std::pair< double, boost::shared_ptr<L3::Pose> > > c;
 
                 // For each lidar scan, find the nearest pose
                 while( it != LIDAR_iterator->window.end() )
                 {
                     // Nearest time
-                    //L3::Iterator<L3::Pose>::WINDOW_ITERATOR index = std::lower_bound( pose_iterator->buffered_window.begin(), pose_iterator->buffered_window.end(), it->first, c );
+                    L3::Iterator<L3::Pose>::WINDOW_ITERATOR index = std::lower_bound( pose_iterator->buffered_window.begin(), pose_iterator->buffered_window.end(), it->first, c );
              
-                    //if ( index == pose_iterator->window.end() )
-                    //{
-                        ////std::cout << it->first << ":" <<  pose_iterator->window.front().first << ":" << pose_iterator->window.back().first << std::endl;
-                        ////std::cout <<  pose_iterator->buffered_window.front().first << ":" << pose_iterator->buffered_window.back().first << std::endl;
-                       
-                        ////std::cout << "Pose window length: " << pose_iterator->window.back().first - pose_iterator->window.front().first  << std::endl;
-                        ////std::cout << "LIDAR window length: " << LIDAR_iterator->window.back().first - LIDAR_iterator->window.front().first  << std::endl;
-                        
-                        //throw std::exception(); 
-                    //}
-                    //else
-                        //swathe.push_back( std::make_pair( index->second, it->second ) );
+                    if ( index == pose_iterator->buffered_window.end() ) // Bad, bad bad bad
+                        throw std::exception(); 
+                    else
+                        swathe.push_back( std::make_pair( index->second, it->second ) );
              
                     it++;
                 }
                     
-                std::cout << "Swathe size: " << swathe.size() << " : LIDAR size: " << LIDAR_iterator->window.size() << std::endl;
-
             }
 
             SWATHE swathe;

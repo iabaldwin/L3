@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <deque>
+#include <boost/shared_ptr.hpp>
+
 #include "Datatypes.h"
 
 /*
@@ -13,7 +15,7 @@
 // Container types
 typedef std::vector< std::pair< double, L3::Pose*> >        POSE_SEQUENCE;
 typedef std::vector< std::pair< double, L3::LIDAR*> >       LIDAR_SEQUENCE;
-typedef std::vector< std::pair< L3::Pose*, L3::LIDAR* > >   SWATHE;
+typedef std::vector< std::pair< boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> > >   SWATHE;
 
 
 // Iterators
