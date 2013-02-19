@@ -14,19 +14,17 @@ int main (int argc, char ** argv)
      */
     // Pose sequence
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
-    assert( dataset.validate() && dataset.load() );
+    if ( !(dataset.validate() && dataset.load() ))
+        throw std::exception();
     
     std::string LIDAR_name = dataset.LIDAR_names[0];
-    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 60.0 );
+    L3::ConstantTimeIterator< L3::Pose > iterator( dataset.pose_reader, 20.0 );
 
     // Localise pose chain, for rendering
-    L3::Utils::localisePoseChainToMean( dataset.poses );
+    //L3::Utils::localisePoseChainToMean( dataset.poses );
 
     // Projector  
     std::auto_ptr<L3::Projector<double> > projector( new L3::Projector<double>() );
-
-    // Get swathe
-    SWATHE* swathe = iterator->getSwathe();
 
     // Do Projection
     L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );

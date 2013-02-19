@@ -111,10 +111,12 @@ struct CloudRenderer : Leaf
 /*
  *Iterator renderer
  */
+
+template <typename T>
 struct IteratorRenderer : Leaf
 {
 
-    IteratorRenderer( L3::Iterator* ITERATOR )  : iterator(ITERATOR )
+    IteratorRenderer( L3::Iterator<T>* ITERATOR )  : iterator(ITERATOR )
     {
     }
 
@@ -148,7 +150,7 @@ struct IteratorRenderer : Leaf
         delete [] vertices;
     }
 
-    L3::Iterator* iterator;
+    L3::Iterator<T>* iterator;
 
 };
 

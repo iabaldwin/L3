@@ -29,5 +29,5 @@ LINK_DIRECTORIES(${Poco_LIBRARY_DIR})
 # Core
 add_subdirectory( core )
 
-# Graphics
-#add_subdirectory( renderer )
+# Visuals
+add_subdirectory( renderer )

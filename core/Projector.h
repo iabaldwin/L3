@@ -27,7 +27,7 @@ class Projector
             L3::PointCloudXYZ<T> cloud;
             std::vector< L3::Point<T> > points;
             
-            int scan_counter, pair_counter, n = swathe.size();;  
+            int scan_counter, pair_counter, n = swathe.size();
             double x,y;
        
             points.resize( n * 541 );
