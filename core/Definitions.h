@@ -15,8 +15,6 @@ typedef std::vector< std::pair< double, L3::Pose*> >        POSE_SEQUENCE;
 typedef std::vector< std::pair< double, L3::LIDAR*> >       LIDAR_SEQUENCE;
 typedef std::vector< std::pair< L3::Pose*, L3::LIDAR* > >   SWATHE;
 
-// Data   
-typedef std::deque< std::pair< double, std::string > >      WINDOW;
 
 // Iterators
 typedef std::vector< std::pair< double, L3::Pose*> >::iterator      POSE_SEQUENCE_ITERATOR;

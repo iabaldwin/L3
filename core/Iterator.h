@@ -25,6 +25,14 @@ class Iterator : public Observer
 
         }
 
+        virtual size_t size() = 0;
+        
+        typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
+        typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator WINDOW_ITERATOR;
+        
+        typename std::deque< std::pair< double, boost::shared_ptr<T> > > buffered_window;
+        typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
+
     protected:
 
         L3::SlidingWindow<T>* windower;
@@ -56,38 +64,42 @@ class ConstantTimeIterator : public Iterator<T>
             this->windower->update( time );
 
             // Retrive the window
-            current_window = this->windower->getWindow();
+            this->buffered_window = this->windower->getWindow();
 
-            Comparator<std::pair< double, T* > > c;
+            Comparator<std::pair< double, boost::shared_ptr<T> > > c;
 
             // Find the element with the closest time to *now*
-            CURRENT_WINDOW_ITERATOR it = std::lower_bound( current_window.begin(), current_window.end(), time, c );
+            typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it = std::lower_bound( this->buffered_window.begin(), this->buffered_window.end(), time, c );
 
-            if ( it == current_window.end() ) // This, is bad - can't find the appropriate time
+            if ( it == this->buffered_window.end() ) // This, is bad - can't find the appropriate time
                 throw std::exception();
 
             // Clear it - this needs to be pop & delete
-            this->processed_data.clear();
+            this->window.clear();
 
             double data_swathe_length = 0;
 
-            CURRENT_WINDOW_ITERATOR it_back_iterator = it;
+            typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it_back_iterator = it;
 
             std::cout.precision( 12 );
 
             // Working backwards, build up the data swathe
             while( data_swathe_length < swathe_length )
             {
-                this->processed_data.push_front( *it );
+                this->window.push_front( *it_back_iterator );
                 data_swathe_length = (*it).first - (*it_back_iterator).first ;
                 it_back_iterator--;
-           
-                if ( it_back_iterator == current_window.begin() )
+          
+                // At the beginning?
+                if ( it_back_iterator == this->buffered_window.begin() )
                     break; 
             }
         }
 
-        typename std::deque< std::pair< double, T*> > processed_data;
+        size_t size()
+        {
+            return this->buffered_window.size();
+        }
 
         double relativeTime() 
         {
@@ -95,11 +107,10 @@ class ConstantTimeIterator : public Iterator<T>
         }
 
     protected:
-
-    
-        typename std::vector< std::pair< double, T* > > current_window;
-        typedef typename std::vector< std::pair< double, T* > >::iterator CURRENT_WINDOW_ITERATOR;
-
+   
+        std::string LIDAR_name;
+        double swathe_length;
+        
         void initialise()
         {
             //std::vector<L3::Pose*>::iterator it = dataset->poses.begin();
@@ -136,8 +147,7 @@ class ConstantTimeIterator : public Iterator<T>
             //head = it; 
         }
 
-        std::string LIDAR_name;
-        double swathe_length;
+        
 };
 
 

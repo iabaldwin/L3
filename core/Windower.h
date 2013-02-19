@@ -10,6 +10,8 @@
 
 #include <ctime>
 
+#include <boost/shared_ptr.hpp>
+
 #include "Poco/Runnable.h"
 #include "Poco/Thread.h"
 #include "Poco/Mutex.h"
@@ -57,8 +59,10 @@ struct SlidingWindow : Poco::Runnable, Observer
 
         double diff = window.back().first - time;
 
+        double proximity = 10.0;
+
         // Need more data?
-        if ( ( diff > 0 ) && ( diff < 10 ) )
+        if ( ( diff > 0 ) && ( diff < proximity ) )
         {
             read_required = true;
         }
@@ -69,8 +73,8 @@ struct SlidingWindow : Poco::Runnable, Observer
     Poco::Mutex mutex;
     double time;
     bool running, read_required;
-    typename std::vector< std::pair< double, T* > > window;
-    typename std::vector< std::pair< double, T* > > temp;
+    typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
+    typename std::deque< std::pair< double, boost::shared_ptr<T> > > temp;
 
     double getDuration()
     {
@@ -82,7 +86,7 @@ struct SlidingWindow : Poco::Runnable, Observer
         return duration;
     }
 
-    std::vector< std::pair< double, T* > > getWindow()
+    std::deque< std::pair< double, boost::shared_ptr<T> > > getWindow()
     {
         mutex.lock();
         temp = window;   
@@ -119,17 +123,21 @@ struct SlidingWindow : Poco::Runnable, Observer
         mutex.lock();
         for ( i=0; i<STACK_SIZE; i++ )
         {
+            // Is the stream good?
             if ( !good() )
                 break;
 
             std::getline( input_stream, line );
            
+            // Empty newlines?
             if ( line.size() == 0 )
                 break;
-            
+           
+            // Read data
             std::stringstream ss( line );
             ss << std::noskipws;
 
+            // First entry is ALWAYS time
             double time;
             ss >> time;
 
@@ -169,9 +177,10 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     void purge()
     {
-        //WINDOW_ITERATOR current = window.begin();
-        //double diff = window.back().first - (*current).first;
-        //std::cout << diff << std::endl;
+        mutex.lock(); 
+        while( window.back().first - window.front().first > time )
+            window.pop_front();
+        mutex.unlock();
     }
 
     bool good()

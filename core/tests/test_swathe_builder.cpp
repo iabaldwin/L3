@@ -24,9 +24,11 @@ int main()
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 
     // Run
+   
+    double increment = .02;
     while (true)
     {
-        usleep( .5*1e6 );
-        swathe_builder.update( time += .5 ) ;
+        usleep( increment*1e6 );
+        swathe_builder.update( time += increment ) ;
     } 
 }

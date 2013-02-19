@@ -12,15 +12,16 @@ int main()
 
     thread.start( w );
 
-    double start = 1328534146.406440019607543945;
-
-    for( double i=start; i<(start+10000); i+= 1.0 )
+    double time = 1328534146.40;
+   
+    double increment = 1;
+    while (true)
     {
-        w.update( i );
-        usleep( 100000 );
-        std::cout << i << "-->" << (*w.window.begin()).first << ":" << (*(w.window.end()-1)).first << "(" << w.window.size() << ")" << std::endl;
-        std::cout << w.getDuration() << std::endl; 
-    }
+        usleep( .1*increment*1e6 );
+        w.update( time += increment );
+        std::cout << time << "-->" << (*w.window.begin()).first << ":" << (*(w.window.end()-1)).first << "(" << w.window.size() << ")" << std::endl;
+        //std::cout << w.getDuration() << std::endl; 
+    } 
     
     thread.join();
 }

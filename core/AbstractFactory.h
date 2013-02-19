@@ -2,6 +2,9 @@
 #define L3_ABSTRACT_FACTORY
 
 #include <sstream>
+
+#include <boost/shared_ptr.hpp>
+
 #include "Datatypes.h"
 
 namespace L3
@@ -12,7 +15,7 @@ class AbstractFactory
 {
 
     public:
-        static T* fromString( std::string& str )
+        static boost::shared_ptr<T> fromString( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
@@ -24,7 +27,7 @@ class AbstractFactory
                 elements.push_back( tmp ); 
             }
 
-            return new T( elements );
+            return boost::shared_ptr<T>( new T( elements ) );
         }
 };
 
@@ -33,11 +36,10 @@ class AbstractFactory<L3::LIDAR>
 {
 
     public:
-        static L3::LIDAR* fromString( std::string& str )
+        static boost::shared_ptr<L3::LIDAR> fromString( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
-       
 
             double tmp;
             
@@ -49,11 +51,11 @@ class AbstractFactory<L3::LIDAR>
             switch (elements.size())
             {
                 case 541:
-                    return new L3::LMS151( elements );
+                    return boost::shared_ptr<L3::LMS151>( new L3::LMS151( elements ) );
 
                 case 542:
                     elements.erase( elements.begin() );
-                    return new L3::LMS151( elements );
+                    return boost::shared_ptr<L3::LMS151>( new L3::LMS151( elements ) );
 
                 default:
                     throw std::exception();
@@ -62,14 +64,11 @@ class AbstractFactory<L3::LIDAR>
         }
 };
 
-
-
 template <>
 class AbstractFactory<L3::Pose>
 {
-
     public:
-        static L3::Pose* fromString( std::string& str )
+        static boost::shared_ptr<L3::Pose> fromString( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
@@ -83,15 +82,12 @@ class AbstractFactory<L3::Pose>
 
             switch (elements.size())
             {
-                case 4:
-                    return new L3::SE2( elements );
-
                 case 6:
-                    return new L3::SE3( elements );
+                    return boost::shared_ptr<L3::SE3>( new L3::SE3( elements ) );
 
                 case 7:
                     elements.erase( elements.begin() );
-                    return new L3::SE3( elements );
+                    return boost::shared_ptr<L3::SE3>( new L3::SE3( elements ) );
            
                 default:
                     std::copy( elements.begin(), 
