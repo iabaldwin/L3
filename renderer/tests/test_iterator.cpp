@@ -21,9 +21,7 @@ int main (int argc, char ** argv)
     assert( dataset.validate() && dataset.load() );
     
     std::string LIDAR_name = dataset.LIDAR_names[0];
-    L3::ConstantTimeIterator* iterator = new L3::ConstantTimeIterator( &dataset, LIDAR_name, 10.0 );
-
-    L3::Utils::localisePoseChainToMean( dataset.poses );
+    L3::ConstantTimeIterator< L3::Pose > iterator( dataset.pose_reader, 10.0 );
 
     glv::Grid grid(glv::Rect(0,0));
 
@@ -36,13 +34,11 @@ int main (int argc, char ** argv)
     double d = 800;
     glv::Plot v1__( glv::Rect(    0,0*d/8, d,  d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
-    L3::Visualisers::IteratorRenderer iterator_renderer( iterator  );
-
-    //L3::Visual::PoseChain chain(poses);
-    //top << chain << grid;
-    //top << chain << v1__ << grid;
-    //chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
-    //top << iterator_renderer;
+    L3::Visualisers::IteratorRenderer<L3::Pose> iterator_renderer( &iterator  );
+    L3::Visualisers::Composite composite;
+ 
+    composite << iterator_renderer;
+    top << composite;
 
     win.setGLV(top);
     glv::Application::run();

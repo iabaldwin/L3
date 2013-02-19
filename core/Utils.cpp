@@ -6,15 +6,6 @@ namespace L3
 namespace Utils
 {
 
-void localisePoseChain( POSE_SEQUENCE& poses, const Locale& l )
-{
-    for( POSE_SEQUENCE_ITERATOR it=poses.begin(); it!= poses.end(); it++ )
-    {
-        (*it).second->x -= l.x;
-        (*it).second->y -= l.y;
-    }
-}
-
 void localisePoseChainToOrigin( POSE_SEQUENCE& poses )
 {
     double origin_x = poses.front().second->x;
@@ -29,53 +20,6 @@ void localisePoseChainToOrigin( POSE_SEQUENCE& poses )
 
         (*it).second->_update();
 
-        it++;
-    }
-}
-
-struct Accumulator
-{
-    Accumulator() : counter(0), x(0.0), y(0.0), z(0.0)
-    {
-    }
-
-    int counter;
-    double x, y, z;
-    void operator()( std::pair< double, boost::shared_ptr<L3::Pose > > p )
-    {
-        x += p.second->x;
-        y += p.second->y;
-   
-        counter++;
-    }
-
-    std::vector<double> centroid()
-    {
-        std::vector<double> res(2);
-        res[0] = x/counter;
-        res[1] = y/counter;
-
-        return res;
-    }
-};
-
-void localisePoseChainToMean( POSE_SEQUENCE& poses )
-{
-    // Average 
-    Accumulator a;
-    a = std::for_each( poses.begin(), poses.end(), a );
-    std::vector<double> centroid = a.centroid();
-
-    POSE_SEQUENCE_ITERATOR it = poses.begin();
-
-    while( it != poses.end() )
-    {
-        (*it).second->x -= centroid[0];
-        (*it).second->y -= centroid[1];
-       
-        // Regenerate homogeneous - this is poor
-        (*it).second->_update();
-   
         it++;
     }
 }

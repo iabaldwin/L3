@@ -63,7 +63,7 @@ struct SlidingWindow : Poco::Runnable, Observer
         running = false;
     }
 
-    void update( double time )
+    bool update( double time )
     {
         double proximity = 10.0;
         
@@ -78,6 +78,8 @@ struct SlidingWindow : Poco::Runnable, Observer
         }
        
         mutex.unlock();
+   
+        return true;
     }
 
     std::deque< std::pair< double, boost::shared_ptr<T> > > getWindow()

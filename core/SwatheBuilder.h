@@ -27,14 +27,18 @@ namespace L3
             }
 
             L3::Tools::Timer t;
-            void update( double time )
+            bool update( double time )
             {
 
 #ifndef NDEBUG
                 t.begin();
 #endif
-                pose_iterator->update( time ); 
-                LIDAR_iterator->update( time ); 
+                if (!pose_iterator->update( time ))
+                    return false;
+
+                if (!LIDAR_iterator->update( time ))
+                    return false;
+
 #ifndef NDEBUG
                 std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << std::endl;
 #endif
@@ -65,6 +69,8 @@ namespace L3
              
                     it++;
                 }
+
+                return true;
                     
             }
 

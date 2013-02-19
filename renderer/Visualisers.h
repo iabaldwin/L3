@@ -36,7 +36,6 @@ struct Component : glv::View3D{
     {
     }
 
-
 };
 
 struct Leaf 
@@ -117,34 +116,37 @@ struct IteratorRenderer : Leaf
 
     IteratorRenderer( L3::Iterator<T>* ITERATOR )  : iterator(ITERATOR )
     {
+        time = 1328534146.406440019607543945;
+        L3::Utils::BEGBROKE b;
+   
+        x = b.x + 100;
+        y = b.y + 100;
     }
+
+    double time;
+    double x,y;
 
     void onDraw3D( glv::GLV& g )
     {
         // Update the iterator
-        iterator->update( 1.0 );
-
-        // Get the swathe
-        SWATHE* swathe = iterator->getSwathe();
+        iterator->update( time += 1 );
 
         // Reserve
-        glv::Color* colors = new glv::Color[iterator->numScans()];
-        glv::Point3* vertices = new glv::Point3[iterator->numScans()];;
+        glv::Color* colors = new glv::Color[iterator->window.size()];
+        glv::Point3* vertices = new glv::Point3[iterator->window.size()];;
 
-        SWATHE::iterator it = swathe->begin();
+        typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator->window.begin();
 
         int counter = 0;
-        while( it != swathe->end() )
+        while( it != iterator->window.end() )
         {
-            vertices[counter]( (*it).first->x, (*it).first->y, 0 );
+            vertices[counter]( it->second->x - this->x , it->second->y - this->y, 0 );
             it++; 
             counter++;
         }
-        
+    
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
 
-
-        //far( 200 );
         delete [] colors;
         delete [] vertices;
     }
@@ -199,11 +201,13 @@ struct PoseChainRenderer : Leaf
 
 struct Composite : glv::View3D{
 
-    Composite()
+    Composite() : start_time(0.0)
     {
         stretch(1,1); 
         far( 300 );
     }
+
+    double start_time;
 
     virtual void onDraw3D(glv::GLV& g)
     {

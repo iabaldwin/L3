@@ -24,12 +24,10 @@ class Iterator : public Observer
         {
         }
 
-        virtual size_t size() = 0;
-        
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
-        typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator WINDOW_ITERATOR;
-        
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > buffered_window;
+        
+        typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator WINDOW_ITERATOR;
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
 
     protected:
@@ -54,26 +52,28 @@ class ConstantTimeIterator : public Iterator<T>
         ConstantTimeIterator( L3::SlidingWindow<T>* window, double time ) 
             : Iterator<T>( window ), swathe_length(time)
         {
-            initialise();
         }
 
-        void update( double time )
+        bool update( double time )
         {
             // Update the watcher with the new time
             this->windower->update( time );
 
-            // Retrive the window
+            // Retrive the buffered window
             this->buffered_window = this->windower->getWindow();
 
-            Comparator<std::pair< double, boost::shared_ptr<T> > > c;
-
             // Find the element with the closest time to *now*
+            Comparator<std::pair< double, boost::shared_ptr<T> > > c;
             typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it = std::lower_bound( this->buffered_window.begin(), this->buffered_window.end(), time, c );
 
             if ( it == this->buffered_window.end() ) // This, is bad - can't find the appropriate time
-                throw std::exception();
+            {
+                std::cout << __PRETTY_FUNCTION__ << time << ":" << this->buffered_window.front().first << ":" << this->buffered_window.back().first << std::endl;
+                //throw std::exception();
+                return false; 
+            }
 
-            // Clear it - this needs to be pop & delete
+            // Got it?
             this->window.clear();
 
             double data_swathe_length = 0;
@@ -84,67 +84,22 @@ class ConstantTimeIterator : public Iterator<T>
             while( data_swathe_length < swathe_length )
             {
                 this->window.push_front( *it_back_iterator );
+               
+                // Compute dt
                 data_swathe_length = (*it).first - (*it_back_iterator).first ;
                 it_back_iterator--;
           
-                // At the beginning?
+                // At the beginning? Is this all we have?
                 if ( it_back_iterator == this->buffered_window.begin() )
                     break; 
             }
-        }
 
-        size_t size()
-        {
-            return this->buffered_window.size();
-        }
-
-        double relativeTime() 
-        {
-            //return (*head)->time - dataset->poses[0]->time;
+            return true;
         }
 
     protected:
    
-        std::string LIDAR_name;
         double swathe_length;
-        
-        void initialise()
-        {
-            //std::vector<L3::Pose*>::iterator it = dataset->poses.begin();
-
-            //// Set tail
-            //tail = it;
-
-            //// Get first pose & associated scan
-            //L3::Pose*   root_pose = dataset->poses[0];
-            //L3::LMS151* root_scan = dataset->getScanAtTime( root_pose->time, LIDAR_name );
-
-            //swathe.push_back( std::make_pair( root_pose, root_scan ) );
-
-            //L3::Tools::Timer t;
-
-            //t.begin();
-
-            //double duration;
-            //while( it!= dataset->poses.end() )
-            //{
-                //duration = (*it)->time - root_pose->time; 
-
-                //if ( duration <  swathe_length )
-                //{
-                    //swathe.push_back( std::make_pair( (*it), dataset->getScanAtTime( (*it)->time, LIDAR_name ) ) );
-                //}
-                //else
-                    //break;
-
-                //it++;
-            //}
-
-            //// Set head
-            //head = it; 
-        }
-
-        
 };
 
 

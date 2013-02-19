@@ -27,7 +27,7 @@ int main (int argc, char ** argv)
         throw std::exception();
 
     // More sensible co-ords
-    L3::Utils::localisePoseChainToMean( poses );
+    L3::Utils::localisePoseChainToMean( poses.begin(), poses.end() );
 
     glv::Grid grid(glv::Rect(0,0));
 

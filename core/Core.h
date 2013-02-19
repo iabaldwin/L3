@@ -6,7 +6,7 @@ namespace L3
 
 struct Observer
 {
-    virtual void update( double ) = 0;
+    virtual bool update( double ) = 0;
 };
 
 }

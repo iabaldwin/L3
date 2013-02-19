@@ -18,12 +18,17 @@ int main()
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::Pose > iterator( dataset.pose_reader, 10.0 );
     
-    double time = 1328534146.406440019607543945;
+    double time = 1328534146.40;
+        
+    std::cout.precision(15);
 
     // Run
     while (true)
     {
-        usleep( .2*1e6 );
-        iterator.update( time += .1 ) ;
+        //usleep( .2*1e6 );
+        usleep( .002*1e6 );
+        iterator.update( time += 1 ) ;
+        
+        std::cout << iterator.window.back().first << ":" << iterator.window.front().first << ":" << iterator.window.back().first - iterator.window.front().first << std::endl;
     } 
 }
