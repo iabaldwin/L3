@@ -33,15 +33,15 @@ void localisePoseChainToOrigin( POSE_SEQUENCE& poses )
     }
 }
 
-struct accumulator
+struct Accumulator
 {
-    accumulator() : counter(0), x(0.0), y(0.0), z(0.0)
+    Accumulator() : counter(0), x(0.0), y(0.0), z(0.0)
     {
     }
 
     int counter;
     double x, y, z;
-    void operator()( std::pair< double, L3::Pose*>  p )
+    void operator()( std::pair< double, boost::shared_ptr<L3::Pose > > p )
     {
         x += p.second->x;
         y += p.second->y;
@@ -62,7 +62,7 @@ struct accumulator
 void localisePoseChainToMean( POSE_SEQUENCE& poses )
 {
     // Average 
-    accumulator a;
+    Accumulator a;
     a = std::for_each( poses.begin(), poses.end(), a );
     std::vector<double> centroid = a.centroid();
 

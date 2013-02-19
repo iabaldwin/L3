@@ -10,7 +10,7 @@ struct Comparator
 {
     bool operator()( T* t, const double f )
     {
-        return (t->first < f);
+        return ( t->first < f );
         //return ( f< t->first);
     }
 };

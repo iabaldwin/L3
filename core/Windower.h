@@ -37,6 +37,18 @@ struct SlidingWindow : Poco::Runnable, Observer
         // Fill the buffer
         initialise();
     }
+    
+    Poco::Mutex mutex;
+    
+    double time;
+    bool running, read_required;
+    
+    const static int STACK_SIZE = 5*100;
+    
+    std::ifstream input_stream;
+    
+    typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
+    typename std::deque< std::pair< double, boost::shared_ptr<T> > > temp;
 
     virtual ~SlidingWindow()
     {
@@ -53,11 +65,11 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     void update( double time )
     {
+        double proximity = 10.0;
+        
         mutex.lock();
 
         double diff = window.back().first - time;
-
-        double proximity = 10.0;
 
         // Need more data?
         if ( ( diff > 0 ) && ( diff < proximity ) )
@@ -66,22 +78,6 @@ struct SlidingWindow : Poco::Runnable, Observer
         }
        
         mutex.unlock();
-    }
-
-    Poco::Mutex mutex;
-    double time;
-    bool running, read_required;
-    typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
-    typename std::deque< std::pair< double, boost::shared_ptr<T> > > temp;
-
-    double getDuration()
-    {
-        double duration;
-        mutex.lock();
-        duration = window.back().first - window.front().first;
-        mutex.unlock();
-
-        return duration;
     }
 
     std::deque< std::pair< double, boost::shared_ptr<T> > > getWindow()
@@ -112,7 +108,6 @@ struct SlidingWindow : Poco::Runnable, Observer
         }
     }
 
-    const static int STACK_SIZE = 5*100;
     int read()
     {
         int i;
@@ -186,7 +181,6 @@ struct SlidingWindow : Poco::Runnable, Observer
         return input_stream.good() ? true : false; 
     };
 
-    std::ifstream input_stream;
 };
 
 }

@@ -111,7 +111,6 @@ struct CloudRenderer : Leaf
 /*
  *Iterator renderer
  */
-
 template <typename T>
 struct IteratorRenderer : Leaf
 {
@@ -158,22 +157,21 @@ struct IteratorRenderer : Leaf
 /*
  *Pose chain renderer
  */
-typedef std::vector<L3::Pose*>::iterator POSE_CHAIN_ITERATOR;
 struct PoseChainRenderer : Leaf
 {
 
     glv::Color* colors;
     glv::Point3* vertices;
 
-    PoseChainRenderer( std::vector<L3::Pose*>& POSES ) : poses(POSES)
+    PoseChainRenderer( std::vector< std::pair< double, boost::shared_ptr<L3::Pose> > >& POSES ) : poses(POSES)
     {
         colors = new glv::Color[poses.size()];
         vertices = new glv::Point3[poses.size()];
 
         int counter = 0;
-        for( POSE_CHAIN_ITERATOR it=poses.begin(); it < poses.end(); it++ )
+        for( POSE_SEQUENCE_ITERATOR it=poses.begin(); it < poses.end(); it++ )
         {
-            vertices[counter]( (*it)->x, (*it)->y, 0 );
+            vertices[counter]( it->second->x, it->second->y, 0 );
             colors[counter] = glv::HSV(0.6, .1, 0.45+0.55);
             counter++;
         }
@@ -186,7 +184,6 @@ struct PoseChainRenderer : Leaf
         delete [] vertices;
     }
 
-    std::vector<L3::Pose*>& poses;
    
     void onDraw3D(glv::GLV& g)
     {
@@ -197,6 +194,7 @@ struct PoseChainRenderer : Leaf
     {
     }
 
+    std::vector< std::pair< double, boost::shared_ptr<L3::Pose> > >& poses;
 };
 
 struct Composite : glv::View3D{

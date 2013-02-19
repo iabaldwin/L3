@@ -4,11 +4,6 @@
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
-#include "Datatypes.h"
-#include "Utils.h"
-#include "Reader.h"
-#include "Writer.h"
-
 #include "L3.h"
 #include "Visualisers.h"
 
@@ -22,24 +17,17 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     // Pose sequence
-    std::vector<L3::Pose*> poses;
-    std::auto_ptr<L3::IO::PoseReader> reader( new L3::IO::PoseReader() );
+    std::auto_ptr<L3::IO::FileReader<L3::Pose> > reader( new L3::IO::FileReader<L3::Pose>() );
     
     reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" );
     reader->read();
 
+    std::vector< std::pair< double, boost::shared_ptr<L3::Pose> > > poses;
     if ( !reader->extract( poses ) )
         throw std::exception();
 
-    //L3::Utils::localisePoseChainToOrigin( poses );
+    // More sensible co-ords
     L3::Utils::localisePoseChainToMean( poses );
-
-    std::vector<L3::Pose*>::iterator it = poses.begin(); 
-    while( it != poses.end() )
-    {
-        std::cout << *(*it) << std::endl;
-        it++;
-    }
 
     glv::Grid grid(glv::Rect(0,0));
 
@@ -53,10 +41,12 @@ int main (int argc, char ** argv)
     glv::Plot v1__( glv::Rect(    0,0*d/8, d,  d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
     L3::Visualisers::PoseChainRenderer chain(poses);
-    //top << chain << grid;
-    //top << chain << v1__ << grid;
-    //chain.addHandler(glv::Event::MouseDrag, glv::Behavior::mouseMove); 
-        
+    L3::Visualisers::Composite composite;
+   
+    composite << chain;
+  
+    top << composite;
+
     win.setGLV(top);
     glv::Application::run();
 }

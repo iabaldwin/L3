@@ -42,13 +42,13 @@ class Projector
                 {
 
                     Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();
-                    Eigen::Matrix4f c = Eigen::Matrix4f::Identity();
+                    Eigen::Matrix4f c  = Eigen::Matrix4f::Identity();
 
 #pragma omp for  nowait
                     for (scan_counter=0; scan_counter<541; scan_counter++) 
                     {
-                        x = (*swathe_ptr)[pair_counter].second->ranges[scan_counter] * cos(0.0); 
-                        y = (*swathe_ptr)[pair_counter].second->ranges[scan_counter] * sin(0.0); 
+                        x = (*swathe_ptr)[pair_counter].second->ranges[scan_counter] * cos( scan_counter*(*swathe_ptr)[pair_counter].second->angle_spacing +  (*swathe_ptr)[pair_counter].second->angle_start); 
+                        y = (*swathe_ptr)[pair_counter].second->ranges[scan_counter] * sin( scan_counter*(*swathe_ptr)[pair_counter].second->angle_spacing +  (*swathe_ptr)[pair_counter].second->angle_start); 
 
                         // Planar scan, no Z
                         XY(0,3) = x;

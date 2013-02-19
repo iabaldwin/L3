@@ -13,7 +13,6 @@ namespace L3
 template <typename T>
 class AbstractFactory
 {
-
     public:
         static boost::shared_ptr<T> fromString( std::string& str )
         {

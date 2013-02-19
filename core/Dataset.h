@@ -47,9 +47,9 @@ class Dataset
         
         friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
 
-        boost::filesystem::directory_entry OxTS_ins;
-        boost::filesystem::directory_entry OxTS_lhlv;
-        std::list<boost::filesystem::directory_entry> LIDARs;
+        boost::filesystem::directory_entry              OxTS_ins;
+        boost::filesystem::directory_entry              OxTS_lhlv;
+        std::list<boost::filesystem::directory_entry>   LIDARs;
         
         boost::filesystem::path root_path;
         std::map< std::string, extensionType > lookup;

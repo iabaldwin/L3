@@ -13,13 +13,12 @@
  */
 
 // Container types
-typedef std::vector< std::pair< double, L3::Pose*> >        POSE_SEQUENCE;
-typedef std::vector< std::pair< double, L3::LIDAR*> >       LIDAR_SEQUENCE;
+typedef std::vector< std::pair< double, boost::shared_ptr< L3::Pose > > >   POSE_SEQUENCE;
+typedef std::vector< std::pair< double, boost::shared_ptr< L3::LIDAR > > >  LIDAR_SEQUENCE;
 typedef std::vector< std::pair< boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> > >   SWATHE;
 
-
 // Iterators
-typedef std::vector< std::pair< double, L3::Pose*> >::iterator      POSE_SEQUENCE_ITERATOR;
-typedef std::deque< std::pair< double, std::string > >::iterator    WINDOW_ITERATOR;
- 
+typedef std::vector< std::pair< double, boost::shared_ptr< L3::Pose > > >::iterator     POSE_SEQUENCE_ITERATOR;
+typedef std::vector< std::pair< double, boost::shared_ptr< L3::LIDAR > > >::iterator    LIDAR_SEQUENCE_ITERATOR;
+
 #endif
