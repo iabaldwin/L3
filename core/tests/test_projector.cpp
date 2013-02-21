@@ -21,20 +21,20 @@ int main()
     
     double time = 1328534146.40;
 
-    //L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
+    L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 
-    //// Projector  
-    //std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>() );
+    // Projector  
+    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>() );
 
-    //// Run until we get a good window
-    //swathe_builder.update( time + 20 );
+    // Run until we get a good window
+    swathe_builder.update( time + 20 );
 
-    //// Do Projection, & average
-    //L3::Tools::Timer t;
-    //for ( int i=0; i< 1000; i++ )
-    //{
-        //t.begin();
-        //L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder.swathe );
-        //std::cout << cloud.size() << " pts in " << t.end() << "s" << std::endl;
-    //}
+    // Do Projection, & average
+    L3::Tools::Timer t;
+    for ( int i=0; i< 1000; i++ )
+    {
+        t.begin();
+        L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder.swathe );
+        std::cout << cloud.size() << " pts in " << t.end() << "s" << std::endl;
+    }
 }

@@ -11,7 +11,6 @@ struct Comparator
     bool operator()( T* t, const double f )
     {
         return ( t->first < f );
-        //return ( f< t->first);
     }
 };
 
@@ -21,7 +20,7 @@ namespace L3
     class SwatheBuilder : public Observer
     {
         public:
-            SwatheBuilder( L3::Iterator<L3::Pose>* pose_it, L3::Iterator<L3::LIDAR>* LIDAR_it ) :
+            SwatheBuilder( L3::Iterator<L3::Pose>* pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
                 pose_iterator( pose_it ), LIDAR_iterator( LIDAR_it ), window_duration(0.0) 
             {
             }
@@ -47,7 +46,7 @@ namespace L3
                  *  and associated pose
                  */
          
-                L3::Iterator<L3::LIDAR>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
+                L3::Iterator<L3::LMS151>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
 
                 swathe.clear();
 
@@ -68,7 +67,7 @@ namespace L3
                     it++;
                 }
 
-                std::cout << t.end() << std::endl;
+                //std::cout << t.end() << std::endl;
                 window_duration = LIDAR_iterator->window.back().first - LIDAR_iterator->window.front().first;
                
                 return true;
@@ -89,7 +88,7 @@ namespace L3
         private:
 
             L3::Iterator<L3::Pose>*     pose_iterator;
-            L3::Iterator<L3::LIDAR>*    LIDAR_iterator;
+            L3::Iterator<L3::LMS151>*    LIDAR_iterator;
 
     };
 

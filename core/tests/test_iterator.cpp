@@ -29,7 +29,7 @@ int main()
     while (true)
     {
         //usleep( .2*1e6 );
-        usleep( .002*1e6 );
+        usleep( .2*1e6 );
         iterator.update( time += 1 ) ;
         std::cout << iterator.window.back().first << ":" << iterator.window.front().first << ":" << iterator.window.back().first - iterator.window.front().first << std::endl;
     } 

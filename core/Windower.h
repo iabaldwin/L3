@@ -71,8 +71,6 @@ struct SlidingWindow : Poco::Runnable, Observer
         double diff = window.back().first - time;
         mutex.unlock();
 
-        std::cout << diff << std::endl;
-
         // Need more data?
         if ( ( diff > 0 ) && ( diff < proximity ) )
         {
@@ -236,8 +234,6 @@ struct SlidingWindowBinary : SlidingWindow<T>
         std::vector<double> entry; 
 
         int required  = L3::Sizes<T>::elements;
-
-        std::cout << required << std::endl;
 
         entry.resize( required );
         
