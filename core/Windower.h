@@ -179,10 +179,10 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     void purge()
     {
-        //mutex.lock(); 
-        //while( window.back().first - window.front().first > time )
-            //window.pop_front();
-        //mutex.unlock();
+        mutex.lock(); 
+        while( window.back().first - window.front().first > time )
+            window.pop_front();
+        mutex.unlock();
     }
 
     bool good()
