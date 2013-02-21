@@ -3,7 +3,7 @@
 namespace L3
 {
 
-Dataset::Dataset( const std::string& target ) : pose_reader(0), LHLV_reader(0) 
+Dataset::Dataset( const std::string& target ) 
 {
     root_path /= target;
     root_path /= "L3";
@@ -22,7 +22,7 @@ Dataset::~Dataset()
     pose_reader->stop();
     LHLV_reader->stop();
 
-    for ( std::list< SlidingWindow<L3::LIDAR>*>::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
+    for ( std::list< boost::shared_ptr< SlidingWindow<L3::LIDAR> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
     {
         (*it)->stop();
     }
@@ -32,15 +32,6 @@ Dataset::~Dataset()
         (*it)->join();
         delete *it;
     }
-
-    delete pose_reader;
-    delete LHLV_reader;
-
-    for ( std::list< SlidingWindow<L3::LIDAR>*>::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
-    {
-        delete (*it);
-    }
-
 }
 
 std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
@@ -99,10 +90,10 @@ bool Dataset::validate()
 
 bool Dataset::load()
 {
-    pose_reader = new SlidingWindow<L3::Pose>( OxTS_ins.path().string(), 30 );
+    pose_reader = L3::WindowerFactory<L3::Pose>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
     runnables.push_back( pose_reader );
 
-    LHLV_reader = new SlidingWindow<L3::LHLV>( OxTS_lhlv.path().string(), 30 );
+    LHLV_reader = L3::WindowerFactory<L3::LHLV>::constantTimeWindow( OxTS_lhlv.path().string(), 30 ) ;
     runnables.push_back( LHLV_reader );
 
     // Load LIDARs
@@ -110,7 +101,8 @@ bool Dataset::load()
 
     while ( it != LIDARs.end() )
     {
-        SlidingWindow<L3::LIDAR>* reader = new SlidingWindow<L3::LIDAR>( (*it).path().string(), 30 );
+        boost::shared_ptr< SlidingWindow<L3::LIDAR> > reader = L3::WindowerFactory<L3::LIDAR>::constantTimeWindow( (*it).path().string(), 30 );
+        //SlidingWindow<L3::LIDAR>* reader = new SlidingWindow<L3::LIDAR>( (*it).path().string(), 30 );
         LIDAR_readers.push_back( reader );
         runnables.push_back( reader );
         
@@ -131,7 +123,7 @@ bool Dataset::load()
         it++;
     }
 
-    for( std::list< Poco::Runnable* >::iterator it = runnables.begin(); it != runnables.end(); it++ )
+    for( std::list< boost::shared_ptr<Poco::Runnable> >::iterator it = runnables.begin(); it != runnables.end(); it++ )
     {
         Poco::Thread* thread = new Poco::Thread();
         thread->start( *(*it) );

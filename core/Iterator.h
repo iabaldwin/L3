@@ -20,7 +20,7 @@ class Iterator : public Observer
 {
     public:
     
-        Iterator( L3::SlidingWindow<T>* w ) : windower(w)
+        Iterator( boost::shared_ptr<L3::SlidingWindow<T> > w ) : windower(w)
         {
         }
 
@@ -32,7 +32,8 @@ class Iterator : public Observer
 
     protected:
 
-        L3::SlidingWindow<T>* windower;
+        //L3::SlidingWindow<T>* windower;
+        boost::shared_ptr< L3::SlidingWindow<T> > windower;
 };
 
 template <typename T>
@@ -49,7 +50,7 @@ class ConstantTimeIterator : public Iterator<T>
 {
     public:
 
-        ConstantTimeIterator( L3::SlidingWindow<T>* window, double time ) 
+        ConstantTimeIterator( boost::shared_ptr< L3::SlidingWindow<T> > window, double time ) 
             : Iterator<T>( window ), swathe_length(time)
         {
         }
