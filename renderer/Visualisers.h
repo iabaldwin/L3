@@ -279,7 +279,7 @@ struct SwatheRenderer : Leaf
         if ( !swathe_builder->update( time ))
             return;
 
-        //L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder->swathe );
+        L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder->swathe );
         //L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
         
         // Reserve
