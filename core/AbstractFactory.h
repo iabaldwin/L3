@@ -24,20 +24,16 @@ class AbstractFactory
                 elements.push_back( tmp ); 
             }
 
-            return AbstractFactory<T>::produce( elements );
 
+            return AbstractFactory<T>::produce( elements );
         }
         
-        static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double>& elements )
+        static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double> elements )
         {
             assert( elements.size() > 0 );
-            
+
             double time = elements[0];
             elements.erase( elements.begin() );
-
-            std::copy( elements.begin(), elements.end(), std::ostream_iterator<double>( std::cout, " " ) );
-
-            std::cout << std::endl;
 
             return std::make_pair( time, boost::shared_ptr<T>( new T( elements ) ) );
         }
@@ -62,7 +58,7 @@ class AbstractFactory<L3::LIDAR>
             return AbstractFactory<L3::LIDAR>::produce( elements );
         }
 
-        static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::vector<double>& elements )
+        static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::vector<double> elements )
         {
             assert( elements.size() > 0 );
 
@@ -101,7 +97,7 @@ class AbstractFactory<L3::Pose>
             return AbstractFactory<L3::Pose>::produce( elements );
         }
 
-        static std::pair< double, boost::shared_ptr<L3::Pose> > produce( std::vector<double>& elements )
+        static std::pair< double, boost::shared_ptr<L3::Pose> > produce( std::vector<double> elements )
         {
             assert( elements.size() > 0 );
             

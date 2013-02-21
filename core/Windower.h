@@ -126,19 +126,18 @@ struct SlidingWindow : Poco::Runnable, Observer
             // Empty newlines?
             if ( line.size() == 0 )
                 break;
-           
-            // Read data
-            std::stringstream ss( line );
-            ss << std::noskipws;
-
-            // First entry is ALWAYS time
-            double time;
-            ss >> time;
-
+            
             tmp.push_back( L3::AbstractFactory<T>::produce( line ) );
         }
        
         mutex.lock();
+     
+        //typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator it = window.begin();
+        //while( it!= window.end() )
+        //{
+            //std::cout  << it->first << std::endl;
+            //it++; 
+        //}
         window.insert( window.end(), tmp.begin(), tmp.end() ); 
         mutex.unlock();
         
@@ -152,6 +151,7 @@ struct SlidingWindow : Poco::Runnable, Observer
 #ifndef NDEBUG
         L3::Tools::Timer t;
         std::cout << "Buffering...";
+
         t.begin();
 #endif
         double duration = 0;
@@ -240,7 +240,6 @@ struct SlidingWindowBinary : SlidingWindow<T>
         
         for ( i=0; i< SlidingWindow<T>::STACK_SIZE; i++ )
         {
-            std::cout << i << std::endl;
             // Is the stream good?
             if ( !this->good() )
                 break;

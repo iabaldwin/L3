@@ -94,7 +94,6 @@ class SE3 : public Pose
 
         SE3( const std::vector<double> v ) 
         {
-            std::cout << v.size() << std::endl;
             assert( v.size() == 6 );
             x = v[0];
             y = v[1];
@@ -235,6 +234,13 @@ struct Sizes<L3::LMS151>
 {
     const static int elements = 541+1;
 };
+
+template <>
+struct Sizes<L3::LHLV>
+{
+    const static int elements = 541+1;
+};
+
 
 }
 
