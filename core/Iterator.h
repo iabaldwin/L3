@@ -70,7 +70,6 @@ class ConstantTimeIterator : public Iterator<T>
             {
                 std::cout.precision(15);
                 std::cout << __PRETTY_FUNCTION__ << time << ":" << this->buffered_window.front().first << ":" << this->buffered_window.back().first << std::endl;
-                //throw std::exception();
                 return false; 
             }
 

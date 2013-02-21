@@ -45,8 +45,6 @@ L3::IO::Writer& operator<<( L3::IO::Writer& o, const std::vector<Pose*>& poses )
 
     for( std::vector<L3::Pose*>::const_iterator it=poses.begin(); it!=poses.end(); it++ )
     {
-        //std::cout << o.stream << std::endl;
-        //std::cout << *(*it);
         o.stream << *(*it) << std::endl;
     }
 

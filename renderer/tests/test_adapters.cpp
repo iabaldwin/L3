@@ -31,8 +31,6 @@ int main (int argc, char ** argv)
 
     //glv::Data data = L3::Visualisers::Adapter::Adapt<L3::LHLV>( dataset.LHLV_data );
 
-    //std::cout << data.size() << std::endl;
-
     /*
      *Visualisation
      */

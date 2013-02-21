@@ -33,6 +33,6 @@ int main()
         t.begin();
         usleep( increment*1e6 );
         swathe_builder.update( time += increment ) ;
-        std::cout << t.end() << std::endl;
+        std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << std::endl;
     } 
 }

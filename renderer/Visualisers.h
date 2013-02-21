@@ -275,10 +275,9 @@ struct SwatheRenderer : Leaf
     L3::Tools::Timer t;
     void onDraw3D( glv::GLV& g )
     {
-        t.begin();
         // Update the swathe_builder
         if ( !swathe_builder->update( time ))
-            throw std::exception();
+            return;
 
         ////L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder->swathe );
         ////L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
@@ -298,7 +297,6 @@ struct SwatheRenderer : Leaf
         //}
 
         //glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-        std::cout << t.end() << std::endl;
 
         //delete [] colors;
         //delete [] vertices;

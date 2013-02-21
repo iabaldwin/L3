@@ -65,10 +65,6 @@ class Reader
             while ( std::getline( stream, line ) )
                 raw.push_back( line );
 
-#ifndef NDEBUG
-            std::cout << raw.size() << " elements read" << std::endl;
-#endif
-
             return raw.size();
         }
 

@@ -22,8 +22,6 @@ int main (int argc, char ** argv)
     //if( !( dataset.validate() && dataset.load() ) )
         //throw std::exception();
     
-    //std::cout << "Dataset loaded in " << t.end() << "s" << std::endl; 
-
     //// Constant time iterator over poses
     //L3::ConstantTimeIterator< L3::Pose >  pose_iterator( dataset.pose_reader, 10.0 );
     //// Constant time iterator over LIDAR

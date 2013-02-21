@@ -38,7 +38,6 @@ namespace L3
                     return false;
 
 #ifndef NDEBUG
-                //std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << std::endl;
 #endif
 
                 /*
@@ -53,7 +52,6 @@ namespace L3
                 Comparator<  std::pair< double, boost::shared_ptr<L3::SE3> > > c;
 
                 // For each lidar scan, find the nearest pose
-                t.begin(); 
                 while( it != LIDAR_iterator->window.end() )
                 {
                     // Nearest time
@@ -67,7 +65,6 @@ namespace L3
                     it++;
                 }
 
-                //std::cout << t.end() << std::endl;
                 window_duration = LIDAR_iterator->window.back().first - LIDAR_iterator->window.front().first;
                
                 return true;

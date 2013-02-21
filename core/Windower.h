@@ -75,7 +75,6 @@ struct SlidingWindow : Poco::Runnable, Observer
         //if ( ( diff > 0 ) && ( diff < proximity ) )
         if (  diff < proximity ) 
         {
-            std::cout << diff << std::endl;
             read_required = true;
         }
        
@@ -131,13 +130,6 @@ struct SlidingWindow : Poco::Runnable, Observer
         }
        
         mutex.lock();
-     
-        //typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator it = window.begin();
-        //while( it!= window.end() )
-        //{
-            //std::cout  << it->first << std::endl;
-            //it++; 
-        //}
         window.insert( window.end(), tmp.begin(), tmp.end() ); 
         mutex.unlock();
         

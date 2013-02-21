@@ -22,8 +22,6 @@ int main (int argc, char ** argv)
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
-    std::cout << "Dataset loaded in " << t.end() << "s" << std::endl; 
-
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 10.0 );
     // Constant time iterator over LIDAR
@@ -33,9 +31,6 @@ int main (int argc, char ** argv)
 
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 
-    while( swathe_builder.duration() < 10.0 )
-        swathe_builder.update( time += .1 );
-   
     /*
      *Visualisation
      */
