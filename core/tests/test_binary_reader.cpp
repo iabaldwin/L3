@@ -5,7 +5,6 @@
 int main()
 {
     std::cout.precision( 12 );
-    
 
     L3::Tools::Timer t;
 

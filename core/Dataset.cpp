@@ -19,8 +19,11 @@ Dataset::Dataset( const std::string& target )
 
 Dataset::~Dataset()
 {
-    pose_reader->stop();
-    LHLV_reader->stop();
+    if (pose_reader)
+        pose_reader->stop();
+   
+    if ( LHLV_reader )
+        LHLV_reader->stop();
 
     for ( std::list< boost::shared_ptr< SlidingWindow<L3::LIDAR> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
     {

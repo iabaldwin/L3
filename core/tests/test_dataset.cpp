@@ -8,5 +8,5 @@ int main()
     if( d.validate() )
         d.load();
     
-    std::cout << d << std::endl;
+    //std::cout << d << std::endl;
 }
