@@ -36,9 +36,12 @@ class Projector
 
             SWATHE* swathe_ptr = &swathe;
 
-#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp ) shared(n, swathe_ptr, points)
+            int skip = 10;
+
+#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp,skip ) shared(n, swathe_ptr, points)
             {
-                for( pair_counter=0; pair_counter < n; pair_counter++ ) 
+                //for( pair_counter=0; pair_counter < n; pair_counter++ ) 
+                for( pair_counter=0; pair_counter < n; pair_counter += 10 ) 
                 {
 
                     Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();

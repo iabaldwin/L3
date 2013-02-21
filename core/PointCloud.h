@@ -127,6 +127,18 @@ struct PointCloud
     // Data
     std::vector< Point<T> > data;
 
+    typedef typename std::vector< Point<T> >::iterator POINT_CLOUD_ITERATOR;
+
+    POINT_CLOUD_ITERATOR begin()
+    {
+        return data.begin();
+    }
+
+    POINT_CLOUD_ITERATOR end()
+    {
+        return data.end();
+    }
+
     struct histogrammer
     {
         histogrammer( gsl_histogram2d* HISTOGRAM ) : histogram(HISTOGRAM)

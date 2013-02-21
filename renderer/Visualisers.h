@@ -280,26 +280,44 @@ struct SwatheRenderer : Leaf
             return;
 
         L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder->swathe );
-        //L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
-        
+        L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
+   
         // Reserve
-        glv::Color* colors    = new glv::Color[swathe_builder->swathe.size()];
-        glv::Point3* vertices = new glv::Point3[swathe_builder->swathe.size()];;
+        glv::Color*  pose_colors   = new glv::Color[swathe_builder->swathe.size()];
+        glv::Point3* pose_vertices = new glv::Point3[swathe_builder->swathe.size()];;
 
-        SWATHE_ITERATOR it = swathe_builder->swathe.begin();
+        SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
 
         int counter = 0;
-        while( it != swathe_builder->swathe.end() )
+        while( pose_iterator != swathe_builder->swathe.end() )
         {
-            vertices[counter]( it->first->x - this->x , it->first->y - this->y, 0 );
-            it++; 
+            pose_vertices[counter]( pose_iterator->first->x - this->x , pose_iterator->first->y - this->y, 0 );
+            pose_iterator++; 
             counter++;
         }
+        glv::draw::paint( glv::draw::Points, pose_vertices, pose_colors, counter );
 
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        delete [] pose_colors;
+        delete [] pose_vertices;
 
-        delete [] colors;
-        delete [] vertices;
+        PointCloudXYZ<double>::POINT_CLOUD_ITERATOR point_iterator = sampled_cloud.begin();
+
+        counter = 0;
+        glv::Color*  point_colors   = new glv::Color[sampled_cloud.size()];
+        glv::Point3* point_vertices = new glv::Point3[sampled_cloud.size()];;
+
+        while( point_iterator != sampled_cloud.end() )
+        {
+            point_vertices[counter]( point_iterator->x - this->x , point_iterator->y - this->y, 0);
+            point_iterator++; 
+            counter++;
+        }
+        
+        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, counter );
+                
+        delete [] point_colors;
+        delete [] point_vertices;
+    
     }
 
     L3::SwatheBuilder* swathe_builder;
