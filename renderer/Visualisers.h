@@ -279,27 +279,27 @@ struct SwatheRenderer : Leaf
         if ( !swathe_builder->update( time ))
             return;
 
-        ////L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder->swathe );
-        ////L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
+        //L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder->swathe );
+        //L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
         
-        //// Reserve
-        //glv::Color* colors    = new glv::Color[swathe_builder->swathe.size()];
-        //glv::Point3* vertices = new glv::Point3[swathe_builder->swathe.size()];;
+        // Reserve
+        glv::Color* colors    = new glv::Color[swathe_builder->swathe.size()];
+        glv::Point3* vertices = new glv::Point3[swathe_builder->swathe.size()];;
 
-        //SWATHE_ITERATOR it = swathe_builder->swathe.begin();
+        SWATHE_ITERATOR it = swathe_builder->swathe.begin();
 
-        //int counter = 0;
-        //while( it != swathe_builder->swathe.end() )
-        //{
-            //vertices[counter]( it->first->x - this->x , it->first->y - this->y, 0 );
-            //it++; 
-            //counter++;
-        //}
+        int counter = 0;
+        while( it != swathe_builder->swathe.end() )
+        {
+            vertices[counter]( it->first->x - this->x , it->first->y - this->y, 0 );
+            it++; 
+            counter++;
+        }
 
-        //glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
 
-        //delete [] colors;
-        //delete [] vertices;
+        delete [] colors;
+        delete [] vertices;
     }
 
     L3::SwatheBuilder* swathe_builder;
