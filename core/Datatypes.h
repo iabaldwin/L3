@@ -230,7 +230,7 @@ struct Sizes<L3::SE3>
 };
 
 template <>
-struct Sizes<L3::LIDAR>
+struct Sizes<L3::LMS151>
 {
     const static int elements = 541+1;
 };

@@ -234,14 +234,13 @@ struct SlidingWindowBinary : SlidingWindow<T>
     {
         int i;
         std::vector<double> entry; 
-        //int required = 541 + 1;
 
         int required  = L3::Sizes<T>::elements;
 
         entry.resize( required );
         
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
-            
+        
         for ( i=0; i< SlidingWindow<T>::STACK_SIZE; i++ )
         {
             // Is the stream good?
@@ -252,6 +251,12 @@ struct SlidingWindowBinary : SlidingWindow<T>
 
             tmp.push_back( L3::AbstractFactory<T>::produce( entry ) );
         }
+
+        this->mutex.lock();
+        this->window.insert( this->window.end(), tmp.begin(), tmp.end() ); 
+        this->mutex.unlock();
+ 
+        return i;
     }
 };
 
