@@ -8,6 +8,7 @@
 #include "Iterator.h"
 #include "PointCloud.h"
 #include "Projector.h"
+#include "SwatheBuilder.h"
 #include "Reader.h"
 #include "Tools.h"
 #include "Utils.h"

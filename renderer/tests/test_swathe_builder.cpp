@@ -27,7 +27,7 @@ int main (int argc, char ** argv)
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::Pose >  pose_iterator( dataset.pose_reader, 10.0 );
     // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LIDAR > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
+    L3::ConstantTimeIterator< L3::LIDAR > LIDAR_iterator( dataset.LIDAR_readers.front(), 60.0 );
     
     double time = 1328534146.40;
 
@@ -35,16 +35,7 @@ int main (int argc, char ** argv)
 
     while( swathe_builder.duration() < 10.0 )
         swathe_builder.update( time += .1 );
-
-    // Projector  
-    std::auto_ptr<L3::Projector<double> > projector( new L3::Projector<double>() );
-
-    // Do Projection
-    L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder.swathe );
-    
-    // Sample
-    L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
-
+   
     /*
      *Visualisation
      */
@@ -65,15 +56,13 @@ int main (int argc, char ** argv)
     glv::Plot v1__( glv::Rect( 0,0*d/8, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
     // Point cloud renderer
-    L3::Visualisers::CloudRenderer<double> cloud_renderer( &sampled_cloud );
+    L3::Visualisers::SwatheRenderer swathe_renderer( &swathe_builder ); 
+    
     L3::Visualisers::Composite composite_view;
-  
-    //std::ofstream cloud_output( "cloud.dat" );
-    //cloud_output << sampled_cloud;
-    //cloud_output.close();
 
-    composite_view << cloud_renderer;
-    top << composite_view;
+    composite_view.time = time;
+
+    top << (composite_view << swathe_renderer);
 
     win.setGLV(top);
     glv::Application::run();

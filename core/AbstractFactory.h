@@ -2,9 +2,7 @@
 #define L3_ABSTRACT_FACTORY
 
 #include <sstream>
-
 #include <boost/shared_ptr.hpp>
-
 #include "Datatypes.h"
 
 namespace L3
@@ -14,7 +12,7 @@ template <typename T>
 class AbstractFactory
 {
     public:
-        static boost::shared_ptr<T> fromString( std::string& str )
+        static std::pair< double, boost::shared_ptr<T> > fromString( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
@@ -26,16 +24,16 @@ class AbstractFactory
                 elements.push_back( tmp ); 
             }
 
-            return boost::shared_ptr<T>( new T( elements ) );
+            return std::make_pair( elements[0], boost::shared_ptr<T>( new T( elements ) ) );
+
         }
 };
 
 template <>
 class AbstractFactory<L3::LIDAR>
 {
-
     public:
-        static boost::shared_ptr<L3::LIDAR> fromString( std::string& str )
+        static std::pair< double, boost::shared_ptr<L3::LIDAR> > fromString( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
@@ -46,20 +44,8 @@ class AbstractFactory<L3::LIDAR>
             {
                 elements.push_back( tmp ); 
             }
-
-            switch (elements.size())
-            {
-                case 541:
-                    return boost::shared_ptr<L3::LMS151>( new L3::LMS151( elements ) );
-
-                case 542:
-                    elements.erase( elements.begin() );
-                    return boost::shared_ptr<L3::LMS151>( new L3::LMS151( elements ) );
-
-                default:
-                    throw std::exception();
-            }
-        
+            
+            return std::make_pair( elements[0], boost::shared_ptr<L3::LIDAR>( new LMS151( elements ) ) );
         }
 };
 
@@ -67,7 +53,7 @@ template <>
 class AbstractFactory<L3::Pose>
 {
     public:
-        static boost::shared_ptr<L3::Pose> fromString( std::string& str )
+        static std::pair< double, boost::shared_ptr<L3::Pose> > fromString( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
@@ -81,12 +67,11 @@ class AbstractFactory<L3::Pose>
 
             switch (elements.size())
             {
-                case 6:
-                    return boost::shared_ptr<L3::SE3>( new L3::SE3( elements ) );
+                case 4:
+                    return std::make_pair( elements[0], boost::shared_ptr<L3::SE2>( new L3::SE2( elements ) ) );
 
                 case 7:
-                    elements.erase( elements.begin() );
-                    return boost::shared_ptr<L3::SE3>( new L3::SE3( elements ) );
+                    return std::make_pair( elements[0], boost::shared_ptr<L3::SE3>( new L3::SE3( elements ) ) );
            
                 default:
                     std::copy( elements.begin(), 

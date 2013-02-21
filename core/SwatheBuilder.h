@@ -22,14 +22,13 @@ namespace L3
     {
         public:
             SwatheBuilder( L3::Iterator<L3::Pose>* pose_it, L3::Iterator<L3::LIDAR>* LIDAR_it ) :
-                pose_iterator( pose_it ), LIDAR_iterator( LIDAR_it ) 
+                pose_iterator( pose_it ), LIDAR_iterator( LIDAR_it ), window_duration(0.0) 
             {
             }
 
             L3::Tools::Timer t;
             bool update( double time )
             {
-
 #ifndef NDEBUG
                 t.begin();
 #endif
@@ -40,7 +39,7 @@ namespace L3
                     return false;
 
 #ifndef NDEBUG
-                std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << std::endl;
+                //std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << std::endl;
 #endif
 
                 /*
@@ -50,13 +49,12 @@ namespace L3
          
                 L3::Iterator<L3::LIDAR>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
 
-                std::cout.precision( 15 );
-            
                 swathe.clear();
 
                 Comparator<  std::pair< double, boost::shared_ptr<L3::Pose> > > c;
 
                 // For each lidar scan, find the nearest pose
+                t.begin(); 
                 while( it != LIDAR_iterator->window.end() )
                 {
                     // Nearest time
@@ -66,16 +64,28 @@ namespace L3
                         throw std::exception(); 
                     else
                         swathe.push_back( std::make_pair( index->second, it->second ) );
-             
+
                     it++;
                 }
 
+                std::cout << t.end() << std::endl;
+                window_duration = LIDAR_iterator->window.back().first - LIDAR_iterator->window.front().first;
+               
                 return true;
                     
             }
 
+            double window_duration;
+
+            double duration()
+            {
+                return window_duration;
+            }
+
+
+
             SWATHE swathe;
-        
+
         private:
 
             L3::Iterator<L3::Pose>*     pose_iterator;

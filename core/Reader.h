@@ -29,7 +29,7 @@ struct Extractor
 
         std::string data_str = ss.str();
 
-        elements.push_back( std::make_pair( time, AbstractFactory<T>::fromString( data_str ) ) );
+        elements.push_back( AbstractFactory<T>::fromString( data_str ) );
     }
 
 };

@@ -23,12 +23,15 @@ int main()
 
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 
+    L3::Tools::Timer t;
+
     // Run
-   
     double increment = .02;
     while (true)
     {
-        usleep( increment*1e6 );
+        t.begin();
+        //usleep( increment*1e6 );
         swathe_builder.update( time += increment ) ;
+        //std::cout << t.end() << std::endl;
     } 
 }

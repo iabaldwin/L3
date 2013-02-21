@@ -68,6 +68,7 @@ class ConstantTimeIterator : public Iterator<T>
 
             if ( it == this->buffered_window.end() ) // This, is bad - can't find the appropriate time
             {
+                std::cout.precision(15);
                 std::cout << __PRETTY_FUNCTION__ << time << ":" << this->buffered_window.front().first << ":" << this->buffered_window.back().first << std::endl;
                 //throw std::exception();
                 return false; 

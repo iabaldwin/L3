@@ -200,6 +200,7 @@ struct LMS151 : LIDAR
 
     LMS151( std::vector<double> vec )  : LIDAR( M_PI/4, M_PI+(M_PI/4)) 
     {
+        assert( vec.size() > 0 ); 
         angle_spacing = (angle_end - angle_spacing) / (double)LMS151::NUM_ELEMENTS; 
         ranges.resize( LMS151::NUM_ELEMENTS ); 
         ranges.assign( ++vec.begin(), vec.end() );
