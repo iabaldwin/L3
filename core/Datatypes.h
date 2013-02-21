@@ -217,6 +217,24 @@ struct LMS151 : LIDAR
     
 };
 
+template <typename T>
+struct Sizes
+{
+    const static int elements = 0;
+};
+
+template <>
+struct Sizes<L3::SE3>
+{
+    const static int elements = 6+1;
+};
+
+template <>
+struct Sizes<L3::LIDAR>
+{
+    const static int elements = 541+1;
+};
+
 }
 
 #endif

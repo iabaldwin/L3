@@ -234,7 +234,9 @@ struct SlidingWindowBinary : SlidingWindow<T>
     {
         int i;
         std::vector<double> entry; 
-        int required = 541 + 1;
+        //int required = 541 + 1;
+
+        int required  = L3::Sizes<T>::elements;
 
         entry.resize( required );
         
