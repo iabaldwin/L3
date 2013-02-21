@@ -12,7 +12,7 @@ template <typename T>
 class AbstractFactory
 {
     public:
-        static std::pair< double, boost::shared_ptr<T> > fromString( std::string& str )
+        static std::pair< double, boost::shared_ptr<T> > produce( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
@@ -24,8 +24,13 @@ class AbstractFactory
                 elements.push_back( tmp ); 
             }
 
-            return std::make_pair( elements[0], boost::shared_ptr<T>( new T( elements ) ) );
+            return AbstractFactory<T>::produce( elements );
 
+        }
+        
+        static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double>& elements )
+        {
+            return std::make_pair( elements[0], boost::shared_ptr<T>( new T( elements ) ) );
         }
 };
 
@@ -33,7 +38,7 @@ template <>
 class AbstractFactory<L3::LIDAR>
 {
     public:
-        static std::pair< double, boost::shared_ptr<L3::LIDAR> > fromString( std::string& str )
+        static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
@@ -45,15 +50,30 @@ class AbstractFactory<L3::LIDAR>
                 elements.push_back( tmp ); 
             }
             
-            return std::make_pair( elements[0], boost::shared_ptr<L3::LIDAR>( new LMS151( elements ) ) );
+            return AbstractFactory<L3::LIDAR>::produce( elements );
         }
+
+        static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::vector<double>& elements )
+        {
+            switch (elements.size())
+            {
+                case 542:
+                    return std::make_pair( elements[0], boost::shared_ptr<L3::LIDAR>( new LMS151( elements ) ) );
+
+                default:
+                    throw std::exception();
+
+            }
+
+        }
+
 };
 
 template <>
 class AbstractFactory<L3::Pose>
 {
     public:
-        static std::pair< double, boost::shared_ptr<L3::Pose> > fromString( std::string& str )
+        static std::pair< double, boost::shared_ptr<L3::Pose> > produce( std::string& str )
         {
             std::stringstream ss( str );
             std::vector< double > elements;
@@ -65,6 +85,11 @@ class AbstractFactory<L3::Pose>
                 elements.push_back( tmp ); 
             }
 
+            return AbstractFactory<L3::Pose>::produce( elements );
+        }
+
+        static std::pair< double, boost::shared_ptr<L3::Pose> > produce( std::vector<double>& elements )
+        {
             switch (elements.size())
             {
                 case 4:
@@ -79,7 +104,6 @@ class AbstractFactory<L3::Pose>
                                 std::ostream_iterator<double>( std::cout, " " ) );
                     throw std::exception();
             }
-        
         }
 };
 

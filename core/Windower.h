@@ -138,8 +138,7 @@ struct SlidingWindow : Poco::Runnable, Observer
             double time;
             ss >> time;
 
-            //tmp.push_back( std::make_pair( time, L3::AbstractFactory<T>::fromString( line ) ) );
-            tmp.push_back( L3::AbstractFactory<T>::fromString( line ) );
+            tmp.push_back( L3::AbstractFactory<T>::produce( line ) );
         }
        
         mutex.lock();
@@ -235,27 +234,21 @@ struct SlidingWindowBinary : SlidingWindow<T>
     {
         int i;
         std::vector<double> entry; 
+        int required = 541 + 1;
+
+        entry.resize( required );
         
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
-                
+            
         for ( i=0; i< SlidingWindow<T>::STACK_SIZE; i++ )
         {
             // Is the stream good?
             if ( !this->good() )
                 break;
-      
-            int required = 541 + 1;
-
-            entry.resize( required*sizeof(double) );
 
             this->input_stream.read( (char*)(&entry[0]), required*sizeof(double) );
 
-            //std::copy( entry.begin(), 
-                        //entry.end(),
-                        //std::ostream_iterator<double>( std::cout, " " ) );
-
-            //tmp.push_back( std::make_pair( time, L3::AbstractFactory<T>::fromString( line ) ) );
-
+            tmp.push_back( L3::AbstractFactory<T>::produce( entry ) );
         }
     }
 };
