@@ -237,6 +237,8 @@ struct SlidingWindowBinary : SlidingWindow<T>
 
         int required  = L3::Sizes<T>::elements;
 
+        std::cout << required << std::endl;
+
         entry.resize( required );
         
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;

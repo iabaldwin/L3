@@ -25,7 +25,7 @@ Dataset::~Dataset()
     if ( LHLV_reader )
         LHLV_reader->stop();
 
-    for ( std::list< boost::shared_ptr< SlidingWindow<L3::LIDAR> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
+    for ( std::list< boost::shared_ptr< SlidingWindow<L3::LMS151> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
     {
         (*it)->stop();
     }
@@ -94,9 +94,11 @@ bool Dataset::validate()
 bool Dataset::load()
 {
     pose_reader = L3::WindowerFactory<L3::Pose>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
+    pose_reader->initialise(); 
     runnables.push_back( pose_reader );
 
     LHLV_reader = L3::WindowerFactory<L3::LHLV>::constantTimeWindow( OxTS_lhlv.path().string(), 30 ) ;
+    LHLV_reader->initialise(); 
     runnables.push_back( LHLV_reader );
 
     // Load LIDARs
@@ -104,8 +106,8 @@ bool Dataset::load()
 
     while ( it != LIDARs.end() )
     {
-        boost::shared_ptr< SlidingWindow<L3::LIDAR> > reader = L3::WindowerFactory<L3::LIDAR>::constantTimeWindow( (*it).path().string(), 30 );
-        //SlidingWindow<L3::LIDAR>* reader = new SlidingWindow<L3::LIDAR>( (*it).path().string(), 30 );
+        boost::shared_ptr< SlidingWindow<L3::LMS151> > reader = L3::WindowerFactory<L3::LMS151>::constantTimeWindow( (*it).path().string(), 30 );
+        reader->initialise(); 
         LIDAR_readers.push_back( reader );
         runnables.push_back( reader );
         
