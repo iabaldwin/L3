@@ -17,7 +17,7 @@ int main()
     std::string LIDAR_name = dataset.LIDAR_names[0];
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::Pose >  pose_iterator( dataset.pose_reader, 60.0 );
+    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 60.0 );
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
     
     double time = 1328534146.40;

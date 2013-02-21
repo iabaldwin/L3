@@ -72,9 +72,9 @@ struct Composite : glv::View3D
         std::list<Leaf*>::iterator it = components.begin();
         glv::draw::translateZ( -250 );
 
-        std::cout << time << std::endl;
-
-        time += .1;
+        //time += .1;
+        //time += 1;
+        time += 2;
         while( it != components.end() )
         {
             (*it)->time = this->time;
@@ -222,6 +222,7 @@ struct IteratorRenderer : Leaf
 
     void onDraw3D( glv::GLV& g )
     {
+
         // Update the iterator
         iterator->update( time );
 

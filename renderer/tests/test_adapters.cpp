@@ -18,7 +18,7 @@ int main (int argc, char ** argv)
         throw std::exception();
     
     std::string LIDAR_name = dataset.LIDAR_names[0];
-    L3::ConstantTimeIterator< L3::Pose > iterator( dataset.pose_reader, 20.0 );
+    L3::ConstantTimeIterator< L3::SE3 > iterator( dataset.pose_reader, 20.0 );
 
     // Localise pose chain, for rendering
     //L3::Utils::localisePoseChainToMean( dataset.poses );

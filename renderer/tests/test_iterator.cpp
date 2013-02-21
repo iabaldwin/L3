@@ -18,10 +18,13 @@ int main (int argc, char ** argv)
 
     // Pose sequence
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
-    assert( dataset.validate() && dataset.load() );
+    if ( !( dataset.validate() && dataset.load() ) )
+        throw std::exception();
     
-    std::string LIDAR_name = dataset.LIDAR_names[0];
-    L3::ConstantTimeIterator< L3::Pose > iterator( dataset.pose_reader, 10.0 );
+    //std::string LIDAR_name = *dataset.LIDAR_names.front();
+    L3::ConstantTimeIterator< L3::SE3 > iterator( dataset.pose_reader, 10.0 );
+
+    double time = 1328534146.40;
 
     glv::Grid grid(glv::Rect(0,0));
 
@@ -34,14 +37,16 @@ int main (int argc, char ** argv)
     double d = 800;
     glv::Plot v1__( glv::Rect(    0,0*d/8, d,  d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
-    L3::Visualisers::IteratorRenderer<L3::Pose> iterator_renderer( &iterator  );
+    L3::Visualisers::IteratorRenderer<L3::SE3> iterator_renderer( &iterator  );
     L3::Visualisers::Composite composite;
  
     composite << iterator_renderer;
+    composite.time = time; 
     top << composite;
 
     win.setGLV(top);
     glv::Application::run();
+
 }
 
 

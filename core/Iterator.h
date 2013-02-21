@@ -32,7 +32,6 @@ class Iterator : public Observer
 
     protected:
 
-        //L3::SlidingWindow<T>* windower;
         boost::shared_ptr< L3::SlidingWindow<T> > windower;
 };
 

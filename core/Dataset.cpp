@@ -93,7 +93,7 @@ bool Dataset::validate()
 
 bool Dataset::load()
 {
-    pose_reader = L3::WindowerFactory<L3::Pose>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
+    pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
     pose_reader->initialise(); 
     runnables.push_back( pose_reader );
 

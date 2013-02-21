@@ -30,7 +30,7 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     SlidingWindow( const std::string& input, double t ) : 
         read_required(false),
-        STACK_SIZE(100),
+        STACK_SIZE(2*100),
         target(input), 
         running(true), 
         time(t)
@@ -65,15 +65,17 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     bool update( double time )
     {
-        double proximity = 20.0;
+        double proximity = 10.0;
         
         mutex.lock();
         double diff = window.back().first - time;
         mutex.unlock();
 
         // Need more data?
-        if ( ( diff > 0 ) && ( diff < proximity ) )
+        //if ( ( diff > 0 ) && ( diff < proximity ) )
+        if (  diff < proximity ) 
         {
+            std::cout << diff << std::endl;
             read_required = true;
         }
        
@@ -98,13 +100,10 @@ struct SlidingWindow : Poco::Runnable, Observer
                 read_required = false;  
    
                 read();
-                
                 purge();
 
                 if ( !good() )
-                {   // Is the stream finished?
-                    stop();
-                }
+                    stop(); // Is the stream finished?
             }
         }
     }
@@ -115,7 +114,7 @@ struct SlidingWindow : Poco::Runnable, Observer
         std::string line; 
         
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
-                
+
         for ( i=0; i<STACK_SIZE; i++ )
         {
             // Is the stream good?
@@ -236,11 +235,12 @@ struct SlidingWindowBinary : SlidingWindow<T>
         int required  = L3::Sizes<T>::elements;
 
         entry.resize( required );
-        
+
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
         
         for ( i=0; i< SlidingWindow<T>::STACK_SIZE; i++ )
         {
+            std::cout << i << std::endl;
             // Is the stream good?
             if ( !this->good() )
                 break;

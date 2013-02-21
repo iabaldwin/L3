@@ -30,7 +30,16 @@ class AbstractFactory
         
         static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double>& elements )
         {
-            return std::make_pair( elements[0], boost::shared_ptr<T>( new T( elements ) ) );
+            assert( elements.size() > 0 );
+            
+            double time = elements[0];
+            elements.erase( elements.begin() );
+
+            std::copy( elements.begin(), elements.end(), std::ostream_iterator<double>( std::cout, " " ) );
+
+            std::cout << std::endl;
+
+            return std::make_pair( time, boost::shared_ptr<T>( new T( elements ) ) );
         }
 };
 
