@@ -6,5 +6,5 @@
 int main()
 {
     std::string input( "0 1 2 3 4 5 6" );
-    L3::PoseFactory::fromString( input );
+    //L3::PoseFactory::fromString( input );
 }

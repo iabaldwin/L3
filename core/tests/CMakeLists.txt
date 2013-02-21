@@ -28,8 +28,11 @@ target_link_libraries( test_reader_bandwidth config L3 boost_system boost_filesy
 add_executable( test_binary_reader test_binary_reader.cpp )
 target_link_libraries( test_binary_reader config L3 boost_system boost_filesystem )
 
-#add_executable( test_pose_factory test_pose_factory.cpp )
-#target_link_libraries( test_pose_factory config L3 boost_system boost_filesystem )
+add_executable( test_pose_factory test_pose_factory.cpp )
+target_link_libraries( test_pose_factory config L3 boost_system boost_filesystem )
+
+add_executable( test_windower_factory test_windower_factory.cpp )
+target_link_libraries( test_windower_factory config L3 boost_system boost_filesystem )
 
 #add_executable( test_find_closest test_find_closest.cpp )
 #target_link_libraries( test_find_closest config L3 boost_system boost_filesystem )

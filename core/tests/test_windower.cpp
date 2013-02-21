@@ -20,7 +20,6 @@ int main()
         usleep( .1*increment*1e6 );
         w.update( time += increment );
         std::cout << time << "-->" << (*w.window.begin()).first << ":" << (*(w.window.end()-1)).first << "(" << w.window.size() << ")" << std::endl;
-        //std::cout << w.getDuration() << std::endl; 
     } 
     
     thread.join();
