@@ -18,9 +18,9 @@ namespace L3
         
         writer << "VERSION .5" << std::endl;
         writer << "FIELDS x y z" << std::endl;
-        writer << "SIZE 4 4 4 4" << std::endl;
-        writer << "TYPE F F F F" << std::endl;
-        writer << "COUNT 1 1 1 1" << std::endl;
+        writer << "SIZE 4 4 4" << std::endl;
+        writer << "TYPE F F F" << std::endl;
+        writer << "COUNT 1 1 1" << std::endl;
         writer << "WIDTH " << cloud.size() << std::endl;
         writer << "HEIGHT 1" << std::endl;
         writer << "POINTS " << cloud.size() << std::endl;

@@ -6,6 +6,7 @@
 
 #include <omp.h>
 
+#include "Utils.h"
 #include "Datatypes.h"
 
 namespace L3
@@ -227,6 +228,24 @@ std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud)
                 std::ostream_iterator< Point<T> >( o, "\n" ) );
         return o; 
 }
+
+template <typename T>
+PointCloud<T>& operator>>( PointCloud<T>& cloud, L3::Utils::Locale l )
+{
+    typename PointCloud<T>::POINT_CLOUD_ITERATOR it = cloud.begin();
+
+    while( it != cloud.end() )
+    {
+        it->x -= l.x;
+        it->y -= l.y;
+        it->z -= l.z;
+   
+        it++;
+    }
+
+    return cloud;
+}
+
 
 } // L3
 

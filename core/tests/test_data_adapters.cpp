@@ -1,3 +1,4 @@
+#include "Utils.h"
 #include "Dataset.h"
 #include "Iterator.h"
 #include "Projector.h"
@@ -37,6 +38,10 @@ int main()
      *Do Projection
      */
     L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder.swathe );
+
+    L3::Utils::BEGBROKE b;
+
+    cloud >> b;
 
     L3::writePCLASCII( "test.pcd", cloud );
 }

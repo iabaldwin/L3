@@ -51,7 +51,6 @@ class Projector
 
             int skip = 10;
 
-
 #pragma omp parallel private(pair_counter,x,y,scan_counter,tmp,skip ) shared(n, swathe_ptr, points, calib )
             {
                 //for( pair_counter=0; pair_counter < n; pair_counter++ ) 
@@ -73,9 +72,8 @@ class Projector
                         XY(2,3) = 0.0;
 
                         // Project @ Pose
-                        //tmp = (*swathe_ptr)[pair_counter].first->getHomogeneous()* XY;
-                        
-                        tmp = calib* (*swathe_ptr)[pair_counter].first->getHomogeneous()* XY;
+                        tmp = (*swathe_ptr)[pair_counter].first->getHomogeneous()* XY;
+                        //tmp = calib* (*swathe_ptr)[pair_counter].first->getHomogeneous()* XY;
 
                         points[pair_counter*541+scan_counter] = L3::Point<T>( tmp(0,3), tmp(1,3), tmp(2,3) );
                     }
