@@ -78,8 +78,6 @@ namespace L3
                 return window_duration;
             }
 
-
-
             SWATHE swathe;
 
         private:
