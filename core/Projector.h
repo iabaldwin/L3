@@ -17,13 +17,25 @@ class Projector
 
     public:
 
+        Projector()
+        {
+            calibration = Eigen::Matrix4f::Identity();            
+        }
+
+        Projector( L3::SE3* calib )
+        {
+            calibration = calib->getHomogeneous(); 
+        }
+
+        Eigen::Matrix4f calibration;
+
         PointCloudXYZ<T> project( SWATHE& swathe )
         {
+
 #ifndef NDEBUG
             L3::Tools::Timer t;
             t.begin();
 #endif
-
             L3::PointCloudXYZ<T> cloud;
             std::vector< L3::Point<T> > points;
             
@@ -33,12 +45,14 @@ class Projector
             points.resize( n * 541 );
 
             Eigen::Matrix4f tmp = Eigen::Matrix4f::Identity();
+            Eigen::Matrix4f calib = this->calibration;
 
             SWATHE* swathe_ptr = &swathe;
 
             int skip = 10;
 
-#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp,skip ) shared(n, swathe_ptr, points)
+
+#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp,skip ) shared(n, swathe_ptr, points, calib )
             {
                 //for( pair_counter=0; pair_counter < n; pair_counter++ ) 
                 for( pair_counter=0; pair_counter < n; pair_counter += 10 ) 
@@ -59,10 +73,11 @@ class Projector
                         XY(2,3) = 0.0;
 
                         // Project @ Pose
-                        tmp = (*swathe_ptr)[pair_counter].first->getHomogeneous()* XY;
+                        //tmp = (*swathe_ptr)[pair_counter].first->getHomogeneous()* XY;
+                        
+                        tmp = calib* (*swathe_ptr)[pair_counter].first->getHomogeneous()* XY;
 
                         points[pair_counter*541+scan_counter] = L3::Point<T>( tmp(0,3), tmp(1,3), tmp(2,3) );
-
                     }
                 }
             }

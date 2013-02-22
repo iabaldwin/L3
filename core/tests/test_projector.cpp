@@ -24,7 +24,8 @@ int main()
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 
     // Projector  
-    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>() );
+    L3::SE3 projection(0,0,0,.1,.2,.3);
+    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection ) );
 
     // Run until we get a good window
     swathe_builder.update( time + 20 );

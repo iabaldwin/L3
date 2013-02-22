@@ -324,8 +324,6 @@ struct SwatheRenderer : Leaf
 
 };
 
-
-
 }
 }
 
