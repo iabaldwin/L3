@@ -31,15 +31,15 @@ target_link_libraries( test_pose_factory config L3 boost_system boost_filesystem
 add_executable( test_windower_factory test_windower_factory.cpp )
 target_link_libraries( test_windower_factory config L3 boost_system boost_filesystem )
 
-#add_executable( test_find_closest test_find_closest.cpp )
-#target_link_libraries( test_find_closest config L3 boost_system boost_filesystem )
-
 add_executable( test_projector test_projector.cpp )
 target_link_libraries( test_projector config L3 boost_system boost_filesystem )
 
-#add_executable( test_point_cloud test_point_cloud.cpp )
-#target_link_libraries( test_point_cloud config L3 boost_system boost_filesystem )
+add_executable( test_point_cloud test_point_cloud.cpp )
+target_link_libraries( test_point_cloud config L3 boost_system boost_filesystem )
 
-#add_executable( test_chain_builder test_chain_builder.cpp )
-#target_link_libraries( test_chain_builder config L3 boost_system boost_filesystem )
+add_executable( test_chain_builder test_chain_builder.cpp )
+target_link_libraries( test_chain_builder config L3 boost_system boost_filesystem )
+
+add_executable( test_data_adapters test_data_adapters.cpp )
+target_link_libraries( test_data_adapters config L3 boost_system boost_filesystem )
 

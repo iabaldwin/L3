@@ -13,11 +13,6 @@ int main (int argc, char ** argv)
     /*
      *L3
      */
-    // Pose sequence
-
-    L3::Tools::Timer t;
-
-    t.begin();
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
@@ -52,8 +47,7 @@ int main (int argc, char ** argv)
 
     // Point cloud renderer
     L3::Visualisers::SwatheRenderer swathe_renderer( &swathe_builder ); 
-    
-    L3::Visualisers::Composite composite_view;
+    L3::Visualisers::Composite      composite_view;
 
     composite_view.time = time;
 

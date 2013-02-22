@@ -26,7 +26,6 @@ struct Point
     {
     }
 
-
 };
 
 template< typename T>
@@ -124,7 +123,9 @@ struct PointCloud
         //}
     }
 
-    // Data
+    /*
+     *Data
+     */
     std::vector< Point<T> > data;
 
     typedef typename std::vector< Point<T> >::iterator POINT_CLOUD_ITERATOR;
@@ -139,6 +140,9 @@ struct PointCloud
         return data.end();
     }
 
+    /*
+     *Statistics
+     */
     struct histogrammer
     {
         histogrammer( gsl_histogram2d* HISTOGRAM ) : histogram(HISTOGRAM)
