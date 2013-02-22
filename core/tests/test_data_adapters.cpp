@@ -20,14 +20,15 @@ int main()
     /*
      *Constant time iterator over poses
      */
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 60.0 );
+    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 10.0 );
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 60.0 );
     
     double time = 1328534146.40;
 
+    // Run for some time
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
-    for( int i=0; i<120; i++)
-        swathe_builder.update( time + 1 );
+    for( int i=0; i<20; i++)
+        assert( swathe_builder.update( time += 2 ) );
 
     /*
      *Projector  
@@ -40,22 +41,8 @@ int main()
      */
     L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder.swathe );
 
+
     L3::Utils::BEGBROKE b;
-    //cloud >> b;
-    //L3::writePCLASCII( "test.pcd", cloud );
-
-    //DBG
-
-    SWATHE_ITERATOR it = swathe_builder.swathe.begin();
-
-    std::ofstream pose_file( "poses.dat" );
-
-    pose_file.precision( 15 );
-
-    while( it != swathe_builder.swathe.end() )
-    {
-        pose_file << (*(it->first)).x - b.x<< ","  << (*(it->first)).y -b.y<<  std::endl;
-        it++;
-    }
-
+    cloud >> b;
+    L3::writePCLASCII( "test.pcd", cloud );
 }

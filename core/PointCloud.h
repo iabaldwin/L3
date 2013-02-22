@@ -18,7 +18,7 @@ struct Point
 
     T x,y,z;
 
-    Point() 
+    Point() : x(0), y(0), z(0)
     {
     }
 
