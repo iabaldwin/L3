@@ -32,18 +32,14 @@ class Projector
 
         Eigen::Matrix4f calibration;
 
-        PointCloudXYZ<T> project( SWATHE& swathe )
+        PointCloud<T> project( SWATHE& swathe )
         {
 
 #ifndef NDEBUG
             L3::Tools::Timer t;
             t.begin();
 #endif
-            L3::PointCloudXYZ<T> cloud;
-            //std::vector< L3::Point<T> > points;
-            //points.resize( n * 541 );
-
-
+            L3::PointCloud<T> cloud;
             
             int scan_counter, pair_counter, n = swathe.size();
             double x,y;

@@ -42,7 +42,7 @@ int main()
     for ( int i=0; i< 1000; i++ )
     {
         t.begin();
-        L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder.swathe );
+        L3::PointCloud<double> cloud = projector->project( swathe_builder.swathe );
         std::cout << cloud.size() << " pts in " << t.end() << "s" << std::endl;
     }
 }

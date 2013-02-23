@@ -39,7 +39,7 @@ int main()
     /*
      *Do Projection
      */
-    L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder.swathe );
+    L3::PointCloud<double> cloud = projector->project( swathe_builder.swathe );
 
 
     L3::Utils::BEGBROKE b;

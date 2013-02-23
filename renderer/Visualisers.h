@@ -279,8 +279,8 @@ struct SwatheRenderer : Leaf
         if ( !swathe_builder->update( time ))
             return;
 
-        L3::PointCloudXYZ<double> cloud = projector->project( swathe_builder->swathe );
-        L3::PointCloudXYZ<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
+        L3::PointCloud<double> cloud = projector->project( swathe_builder->swathe );
+        L3::PointCloud<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
    
         // Reserve
         glv::Color*  pose_colors   = new glv::Color[swathe_builder->swathe.size()];
@@ -300,7 +300,7 @@ struct SwatheRenderer : Leaf
         delete [] pose_colors;
         delete [] pose_vertices;
 
-        PointCloudXYZ<double>::POINT_CLOUD_ITERATOR point_iterator = sampled_cloud.begin();
+        PointCloud<double>::POINT_CLOUD_ITERATOR point_iterator = sampled_cloud.begin();
 
         counter = 0;
         glv::Color*  point_colors   = new glv::Color[sampled_cloud.size()];

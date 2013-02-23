@@ -17,7 +17,7 @@ int main()
     /*
      *Build cloud
      */
-    std::auto_ptr<L3::PointCloudXYZ<double> > cloud ( new L3::PointCloudXYZ<double>() );
+    std::auto_ptr<L3::PointCloud<double> > cloud ( new L3::PointCloud<double>() );
 
     std::vector< L3::Point<double> > randoms(2*1000000);
 
@@ -25,7 +25,7 @@ int main()
 
     std::copy( randoms.begin(), randoms.end(), std::back_inserter( cloud->data) );
     
-    std::cout << *cloud << std::endl;
+    //std::cout << *cloud << std::endl;
 
     L3::Tools::Timer t;
     t.begin();
@@ -44,7 +44,7 @@ int main()
     }
 
     t.begin();
-    L3::PointCloudXYZ<double> sampled = L3::samplePointCloud( *cloud, 10000000 );
+    L3::PointCloud<double> sampled = L3::samplePointCloud( *cloud, 10000000 );
     std::cout << sampled.size() << " pts resampled in " << t.end() << "s" << std::endl;
 
 }

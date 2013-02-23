@@ -20,14 +20,20 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
+include_directories( "/Users/ian/code/build/include/pcl-1.6/" )
+include_directories( "/usr/local/include/vtk-5.10/" )
+
+link_directories( "/Users/ian/code/build/lib/" )
 
 find_package( POCO COMPONENTS XML Net Data )
-
-INCLUDE_DIRECTORIES(${Poco_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Poco_LIBRARY_DIR})
+include_directories(${Poco_INCLUDE_DIRS})
+link_directories(${Poco_LIBRARY_DIR})
 
 # Core
 add_subdirectory( core )
 
 # Visuals
 add_subdirectory( renderer )
+
+# Utilities
+#add_subdirectory( utils )

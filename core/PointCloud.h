@@ -9,15 +9,34 @@
 #include "Utils.h"
 #include "Datatypes.h"
 
+/*
+ *Helpers
+ */
+struct randomate 
+{ 
+    randomate( int MODULO )  : modulo(MODULO)
+    {}
+
+    int modulo;
+
+    int operator()( )
+    {
+        return rand()  % modulo;
+    }
+};
+
+/*
+ *L3
+ */
 namespace L3
 {
 
+/*
+ *Point types
+ */
 template< typename T>
 struct Point
 {
-
-    T x,y,z;
-
     Point() : x(0), y(0), z(0)
     {
     }
@@ -26,20 +45,53 @@ struct Point
     Point( T X, T Y, T Z ) : x(X), y(Y), z(Z)
     {
     }
-
+    
+    T x,y,z;
+    
+    virtual void print( std::ostream& o ) const
+    {
+        o << x << " " << y << " " << z;
+    }
 };
 
 template< typename T>
-std::ostream& operator<<( std::ostream& o, const L3::Point<T>& p )
+struct PointRGB : Point<T>
 {
-    o << p.x << "," << p.y << "," << p.z;
+
+    T x,y,z;
+    T r,g,b;
+
+    PointRGB() : Point<T>(0,0,0),  r(0), g(0), b(0)
+    {
+    }
+
+
+    PointRGB( T X, T Y, T Z, T R, T G, T B ) : Point<T>(x,y,z), r(R), g(G), b(B)
+    {
+    }
+
+    void print( std::ostream& o ) const
+    {
+        o << x << " " << y << " " << z << " " << r << " " << g << " " << b; 
+    }
+
+};
+
+
+template< typename T>
+std::ostream& operator<<( std::ostream& o, const L3::Point< T> & p )
+{
+    p.print( o ); 
     return o;
 }
 
+/*
+ *Cloud types
+ */
 template< typename T>
-struct PointCloud
+struct PointCloud 
 {
-    typedef typename std::vector< Point<T> >::iterator Iterator;
+    typedef typename std::vector< Point< T > >::iterator Iterator;
     
     size_t size()
     {
@@ -173,32 +225,9 @@ struct PointCloud
 };
 
 template <typename T>
-struct PointCloudXYZ : PointCloud<T>
+PointCloud<T> samplePointCloud( PointCloud<T>& cloud, int size )
 {
-
-    PointCloudXYZ()
-    {
-    }
-
-};
-
-struct randomate 
-{ 
-    randomate( int MODULO )  : modulo(MODULO)
-    {}
-
-    int modulo;
-
-    int operator()( )
-    {
-        return rand()  % modulo;
-    }
-};
-
-template <typename T>
-PointCloudXYZ<T> samplePointCloud( PointCloudXYZ<T>& cloud, int size )
-{
-        PointCloudXYZ<T> sampled_cloud;
+        PointCloud<T> sampled_cloud;
 
         // Generate random indices
         std::vector<int> random_indices( size );
@@ -221,12 +250,14 @@ PointCloudXYZ<T> samplePointCloud( PointCloudXYZ<T>& cloud, int size )
 }
 
 template <typename T>
-std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud)
+std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud )
 {
-        std::copy( cloud.data.begin(), 
-                cloud.data.end(), 
-                std::ostream_iterator< Point<T> >( o, "\n" ) );
-        return o; 
+    std::copy( cloud.data.begin(), 
+            cloud.data.end(), 
+            std::ostream_iterator< Point<T> >( o, "\n" ) );
+
+
+    return o; 
 }
 
 template <typename T>
