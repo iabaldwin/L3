@@ -18,7 +18,7 @@ int main()
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::LMS151 > iterator( dataset.LIDAR_readers.front(), 10.0 );
     
-    double time = 1328534146.40;
+    double time = dataset.start_time;
         
     std::cout.precision(15);
 

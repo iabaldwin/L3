@@ -192,7 +192,7 @@ struct LMS151 : LIDAR
     {
         num_scans = 541;
         
-        angle_spacing = (angle_end - angle_spacing) / (double)num_scans;
+        angle_spacing = (angle_end - angle_start ) / (double)num_scans;
             
         ranges.resize( num_scans );
    
@@ -202,7 +202,7 @@ struct LMS151 : LIDAR
     {
         num_scans = 541;
         
-        angle_spacing = (angle_end - angle_spacing) / (double)num_scans;
+        angle_spacing = (angle_end - angle_start ) / (double)num_scans;
 
         ranges.resize( num_scans );
         ranges.assign( vec.begin(), vec.end() );

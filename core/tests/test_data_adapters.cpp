@@ -16,6 +16,7 @@ int main()
         throw std::exception();
 
     std::string LIDAR_name = dataset.LIDAR_names[0];
+    //std::string LIDAR_name = dataset.LIDAR_names[1];
 
     /*
      *Constant time iterator over poses
@@ -33,7 +34,7 @@ int main()
     /*
      *Projector  
      */
-    L3::SE3 projection(0,0,0,.1,.2,.3);
+    L3::SE3 projection(0,0,0, 1.57, 0,0);
     std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection ) );
 
     /*

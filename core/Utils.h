@@ -35,6 +35,18 @@ struct Accumulator
     }
 };
 
+//std::ostream& operator<<( std::ostream& o, const SWATHE& s )
+//{
+    //SWATHE_ITERATOR_CONST it = s.begin();
+
+    //while( it != s.end() )
+    //{
+        //std::cout << (*it).first << ":" << (*it).second << std::endl;
+    //}
+
+    //return o;
+//}
+
 
 namespace L3
 {
@@ -42,7 +54,46 @@ namespace L3
 namespace Utils
 {
 
-boost::filesystem::path configurationDirectory( void );
+/*
+ *Printers
+ */
+
+void printWindow( std::deque< std::pair< double, boost::shared_ptr< L3::SE3 > > >& window )
+{
+    std::deque< std::pair< double, boost::shared_ptr< L3::SE3 > > >::const_iterator it = window.begin();
+
+    while ( it != window.end() )
+    {
+        std::cout << (*it).first << std::endl;
+   
+        it++;
+    }
+}
+
+/*
+ *Directory management
+ */
+boost::filesystem::path configurationDirectory( void )
+{
+ char * pPath;
+    pPath = getenv ("HOME");
+    
+    if (pPath==NULL)
+        return boost::filesystem::path();
+
+    boost::filesystem::path p;
+    p /= std::string( pPath );
+
+    p /= "code";
+    p /= "matlab";
+    p /= "conf";
+
+    if ( !boost::filesystem::exists(p) || !boost::filesystem::is_directory( p ) )
+        return boost::filesystem::path();
+    else
+        return p;
+   
+};
 
 struct Locale 
 {
@@ -103,7 +154,24 @@ struct WOODSTOCK : Locale
 
 };
 
-void localisePoseChainToOrigin( POSE_SEQUENCE& poses );
+void localisePoseChainToOrigin( POSE_SEQUENCE& poses )
+{
+
+    double origin_x = poses.front().second->x;
+    double origin_y = poses.front().second->y;
+
+    POSE_SEQUENCE_ITERATOR it = poses.begin();
+
+    while( it != poses.end() )
+    {
+        (*it).second->x -= origin_x;
+        (*it).second->y -= origin_y;
+
+        (*it).second->_update();
+
+        it++;
+    }
+}
 
 template <typename Iterator>
 void localisePoseChain( Iterator begin, Iterator end, const Locale& l )
@@ -170,6 +238,7 @@ void localisePoseChainToMean( Iterator input_begin, Iterator input_end, Iterator
 
 
 }
+
 }
 
 #endif

@@ -40,10 +40,10 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     Poco::Mutex mutex;
    
-    const std::string& target;
-    int STACK_SIZE;
-    bool running, read_required;
-    double time;
+    double  time;
+    int     STACK_SIZE;
+    const   std::string& target;
+    bool    running, read_required;
     
     std::ifstream input_stream;
     
@@ -72,7 +72,6 @@ struct SlidingWindow : Poco::Runnable, Observer
         mutex.unlock();
 
         // Need more data?
-        //if ( ( diff > 0 ) && ( diff < proximity ) )
         if (  diff < proximity ) 
         {
             read_required = true;

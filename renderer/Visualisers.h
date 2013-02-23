@@ -233,6 +233,9 @@ struct IteratorRenderer : Leaf
         typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator->window.begin();
 
         int counter = 0;
+
+        L3::Utils::printWindow( iterator->window );
+
         while( it != iterator->window.end() )
         {
             vertices[counter]( it->second->x - this->x , it->second->y - this->y, 0 );

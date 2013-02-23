@@ -1,7 +1,5 @@
 #include <iostream>
 #include "Reader.h"
-#include "Writer.h"
-#include "Datatypes.h"
 #include "Utils.h"
 
 int main()

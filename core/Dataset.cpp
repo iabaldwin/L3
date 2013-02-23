@@ -3,7 +3,7 @@
 namespace L3
 {
 
-Dataset::Dataset( const std::string& target ) 
+Dataset::Dataset( const std::string& target )  : start_time(0)
 {
     root_path /= target;
     root_path /= "L3";
@@ -134,6 +134,9 @@ bool Dataset::load()
         thread->start( *(*it) );
         threads.push_back( thread );
     }
+
+    // Get the dataset time - by definition, this is the time of the first pose
+    start_time = pose_reader->window.begin()->first;
 }
 
 template <typename T>

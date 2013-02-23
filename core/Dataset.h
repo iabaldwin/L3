@@ -32,14 +32,17 @@ class Dataset
         bool            load();
         std::string     path(){ return root_path.string(); };
 
-        // Windowers
-        boost::shared_ptr<SlidingWindow<L3::SE3> >                 pose_reader;
+        double          start_time;
+
+        // Lookups
+        std::vector<std::string>    LIDAR_names;
+
+        // Threaded windowers
+        boost::shared_ptr<SlidingWindow<L3::SE3> >                  pose_reader;
         boost::shared_ptr<SlidingWindow<L3::LHLV> >                 LHLV_reader;
         std::list< boost::shared_ptr< SlidingWindow<L3::LMS151> > > LIDAR_readers;
        
-        // Lookups
-        std::vector<std::string>                LIDAR_names;
-
+        
     protected:
         
         std::list< boost::shared_ptr< Poco::Runnable> >            runnables;
