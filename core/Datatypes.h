@@ -21,7 +21,7 @@ class Pose
 
         double x, y;
 
-        Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
+        Eigen::Matrix4d& getHomogeneous(){ return homogeneous; };
 
         //TODO
         //This is dirty
@@ -37,7 +37,7 @@ class Pose
 
     protected:
 
-        Eigen::Matrix4f homogeneous;
+        Eigen::Matrix4d homogeneous;
         virtual void updateHomogeneous()  = 0;
 
 
@@ -122,20 +122,20 @@ class SE3 : public Pose
     
         void updateHomogeneous() 
         {
-            Eigen::Matrix4f Rx = Eigen::Matrix4f::Identity();
+            Eigen::Matrix4d Rx = Eigen::Matrix4d::Identity();
             Rx(1,1) = cos( r );
             Rx(1,2) = -1*sin( r );
             Rx(2,1) = sin( r );
             Rx(2,2) = cos( r );
 
-            Eigen::Matrix4f Ry = Eigen::Matrix4f::Identity();
+            Eigen::Matrix4d Ry = Eigen::Matrix4d::Identity();
             Ry(0,0) = cos( p );
             Ry(0,2) = sin( p );
             Ry(2,0) = -1*sin( p );
             Ry(2,2) = cos( p );
 
 
-            Eigen::Matrix4f Rz = Eigen::Matrix4f::Identity();
+            Eigen::Matrix4d Rz = Eigen::Matrix4d::Identity();
             Rz(0,0) = cos( q );
             Rz(0,1) = -1*sin( q );
             Rz(1,0) = sin( q );
@@ -188,24 +188,24 @@ struct LIDAR
 
 struct LMS151 : LIDAR
 {
-    const static int NUM_ELEMENTS = 542;
-
-    LMS151() : LIDAR( M_PI/4, M_PI+(M_PI/4))
+    LMS151() : LIDAR( -1*M_PI/4, M_PI+(M_PI/4))
     {
-        angle_spacing = (angle_end - angle_spacing) / (double)LMS151::NUM_ELEMENTS; 
-        ranges.resize( LMS151::NUM_ELEMENTS ); 
-   
         num_scans = 541;
+        
+        angle_spacing = (angle_end - angle_spacing) / (double)num_scans;
+            
+        ranges.resize( num_scans );
+   
     }
 
-    LMS151( std::vector<double> vec )  : LIDAR( M_PI/4, M_PI+(M_PI/4)) 
+    LMS151( std::vector<double> vec )  : LIDAR( -1*M_PI/4, M_PI+(M_PI/4)) 
     {
-        assert( vec.size() > 0 ); 
-        angle_spacing = (angle_end - angle_spacing) / (double)LMS151::NUM_ELEMENTS; 
-        ranges.resize( LMS151::NUM_ELEMENTS ); 
-        ranges.assign( ++vec.begin(), vec.end() );
-    
         num_scans = 541;
+        
+        angle_spacing = (angle_end - angle_spacing) / (double)num_scans;
+
+        ranges.resize( num_scans );
+        ranges.assign( vec.begin(), vec.end() );
     }
 
     void print( std::ostream& o ) const {
@@ -238,7 +238,7 @@ struct Sizes<L3::LMS151>
 template <>
 struct Sizes<L3::LHLV>
 {
-    const static int elements = 541+1;
+    const static int elements = 12+1;
 };
 
 

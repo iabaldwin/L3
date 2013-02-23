@@ -143,11 +143,11 @@ struct PointCloud
         int point_counter, num_points = data.size();
         std::vector< Point<T> >* tmp = &data;
         T x,y,z;
-        Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
+        Eigen::Matrix4d rot = Eigen::Matrix4d::Identity();
 
 #pragma omp parallel private(point_counter, rot) shared(num_points, tmp, t )
         {
-            Eigen::Matrix4f XYZ = Eigen::Matrix4f::Identity();
+            Eigen::Matrix4d XYZ = Eigen::Matrix4d::Identity();
             
             #pragma omp for  nowait
             for (point_counter=0; point_counter<num_points; point_counter++) 
@@ -301,6 +301,8 @@ void centerPointCloud( PointCloud<T>& cloud )
     x /= (double)counter;
     y /= (double)counter;
     z /= (double)counter;
+
+    std::cout << "Mean " << x << ":" << y << ":" << z << std::endl;
 
     it = cloud.begin();
     while( it != cloud.end() )
