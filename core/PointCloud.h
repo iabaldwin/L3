@@ -277,6 +277,43 @@ PointCloud<T>& operator>>( PointCloud<T>& cloud, L3::Utils::Locale l )
     return cloud;
 }
 
+/*
+ *Center
+ */
+template <typename T>
+void centerPointCloud( PointCloud<T>& cloud )
+{
+    T x,y,z;
+
+    int counter = 0;
+
+    typename PointCloud<T>::POINT_CLOUD_ITERATOR it = cloud.begin();
+    
+    while( it != cloud.end() )
+    {
+        x += it->x;
+        y += it->y;
+        z += it->z;
+        counter++; 
+        it++;
+    }
+
+    x /= (double)counter;
+    y /= (double)counter;
+    z /= (double)counter;
+
+    it = cloud.begin();
+    while( it != cloud.end() )
+    {
+        it->x -= x;
+        it->y -= y;
+        it->z -= z;
+        it++;
+    }
+}
+
+
+
 
 } // L3
 

@@ -41,8 +41,10 @@ int main()
      */
     L3::PointCloud<double> cloud = projector->project( swathe_builder.swathe );
 
+    //L3::Utils::BEGBROKE b;
+    //cloud >> b;
+    
+    L3::centerPointCloud( cloud );
 
-    L3::Utils::BEGBROKE b;
-    cloud >> b;
     L3::writePCLASCII( "test.pcd", cloud );
 }
