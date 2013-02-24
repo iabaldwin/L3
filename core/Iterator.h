@@ -69,7 +69,7 @@ class ConstantTimeIterator : public Iterator<T>
             if ( it == this->buffered_window.end() ) // This, is bad - can't find the appropriate time
             {
                 std::cout.precision(15);
-                std::cout << __PRETTY_FUNCTION__ << time << ":" << this->buffered_window.front().first << ":" << this->buffered_window.back().first << std::endl;
+                std::cout << __PRETTY_FUNCTION__ << time << "->" << this->buffered_window.front().first << ":" << this->buffered_window.back().first << std::endl;
                 return false; 
             }
 
@@ -83,21 +83,22 @@ class ConstantTimeIterator : public Iterator<T>
             // Working backwards, build up the data swathe
             while( data_swathe_length < swathe_length )
             {
-                this->window.push_front( *it_back_iterator );
-               
-                // Compute dt
-                data_swathe_length = (*it).first - (*it_back_iterator).first ;
-                it_back_iterator--;
-          
                 // At the beginning? Is this all we have?
                 if ( it_back_iterator == this->buffered_window.begin() )
                     break; 
+
+                this->window.push_front( *it_back_iterator );
+
+                // Compute dt
+                data_swathe_length = (*it).first - (*it_back_iterator).first ;
+                it_back_iterator--;
+
             }
 
             return true;
         }
 
-    protected:
+    //protected:
    
         double swathe_length;
 };

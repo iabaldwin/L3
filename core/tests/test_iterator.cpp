@@ -25,9 +25,10 @@ int main()
     // Run
     while (true)
     {
-        //usleep( .2*1e6 );
-        usleep( .2*1e6 );
-        iterator.update( time += 1 ) ;
-        std::cout << iterator.window.back().first << ":" << iterator.window.front().first << ":" << iterator.window.back().first - iterator.window.front().first << std::endl;
+        usleep( .115*1e6 );
+        if ( !iterator.update( time += 1 ) )
+            throw std::exception();
+        
+        std::cout << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first << std::endl;
     } 
 }

@@ -73,17 +73,12 @@ namespace L3
 
             double window_duration;
 
-            double duration()
-            {
-                return window_duration;
-            }
-
             SWATHE swathe;
 
         private:
 
-            L3::Iterator<L3::SE3>*     pose_iterator;
-            L3::Iterator<L3::LMS151>*    LIDAR_iterator;
+            L3::Iterator<L3::SE3>*      pose_iterator;
+            L3::Iterator<L3::LMS151>*   LIDAR_iterator;
 
     };
 

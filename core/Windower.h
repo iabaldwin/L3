@@ -30,7 +30,8 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     SlidingWindow( const std::string& input, double t ) : 
         read_required(false),
-        STACK_SIZE(2*100),
+        STACK_SIZE(10*100),
+        proximity(10.0),
         target(input), 
         running(true), 
         time(t)
@@ -40,8 +41,8 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     Poco::Mutex mutex;
    
-    double  time;
     int     STACK_SIZE;
+    double  proximity, time;
     const   std::string& target;
     bool    running, read_required;
     
@@ -65,14 +66,13 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     bool update( double time )
     {
-        double proximity = 10.0;
         
         mutex.lock();
         double diff = window.back().first - time;
         mutex.unlock();
 
         // Need more data?
-        if (  diff < proximity ) 
+        if (  diff < this->proximity ) 
         {
             read_required = true;
         }
@@ -101,7 +101,10 @@ struct SlidingWindow : Poco::Runnable, Observer
                 purge();
 
                 if ( !good() )
+                {
                     stop(); // Is the stream finished?
+                    //std::cout << typeid( *this ).name() << " Bugging out" << std::endl;
+                }
             }
         }
     }
@@ -186,6 +189,8 @@ struct SlidingWindowBinary : SlidingWindow<T>
     SlidingWindowBinary( const std::string& input, double t ) 
         : SlidingWindow<T>( input, t )
     {
+        this->STACK_SIZE = 100;
+        this->proximity = 20.0; 
     }
  
 
@@ -204,11 +209,9 @@ struct SlidingWindowBinary : SlidingWindow<T>
         {
             int entries_read = read();
 
-            if ( entries_read != SlidingWindow<T>::STACK_SIZE )
-            {
+            if ( entries_read != this->STACK_SIZE )
                 // End of stream, this is all we have
                 return;
-            }
 
             duration = this->window.back().first - this->window.front().first;
         }
@@ -216,7 +219,6 @@ struct SlidingWindowBinary : SlidingWindow<T>
         std::cout << this->window.size() << " entries read in " << t.end() << "s" << std::endl;
 #endif
     }
-
 
     int read()
     {
@@ -229,7 +231,7 @@ struct SlidingWindowBinary : SlidingWindow<T>
 
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
         
-        for ( i=0; i< SlidingWindow<T>::STACK_SIZE; i++ )
+        for ( i=0; i< this->STACK_SIZE; i++ )
         {
             // Is the stream good?
             if ( !this->good() )

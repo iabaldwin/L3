@@ -22,7 +22,7 @@ int main (int argc, char ** argv)
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151> LIDAR_iterator( dataset.LIDAR_readers.front(), 60.0 );
     
-    double time = 1328534146.40;
+    double time = dataset.start_time;
 
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 

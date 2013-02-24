@@ -29,7 +29,7 @@ class Projector
 
         Projector()
         {
-            calibration = Eigen::Matrix4d::Identity();            
+            calibration = Eigen::Matrix4f::Identity();            
         }
 
         Projector( L3::SE3* calib )
@@ -37,7 +37,7 @@ class Projector
             calibration = calib->getHomogeneous(); 
         }
 
-        Eigen::Matrix4d calibration;
+        Eigen::Matrix4f calibration;
 
         PointCloud<T> project( SWATHE& swathe )
         {
@@ -55,9 +55,9 @@ class Projector
             
             L3::Point<T>* points = new L3::Point<T>[ n*541 ]; 
        
-            Eigen::Matrix4d tmp = Eigen::Matrix4d::Identity();
-            Eigen::Matrix4d _calib = this->calibration;
-            Eigen::Matrix4d* calib_ptr = &_calib;
+            Eigen::Matrix4f tmp = Eigen::Matrix4f::Identity();
+            Eigen::Matrix4f _calib = this->calibration;
+            Eigen::Matrix4f* calib_ptr = &_calib;
 
             // Swathe reference
             SWATHE* swathe_ptr = &swathe;
@@ -66,7 +66,7 @@ class Projector
             {
                 for( pair_counter=0; pair_counter < n; pair_counter++ ) 
                 {
-                    Eigen::Matrix4d XY = Eigen::Matrix4d::Identity();
+                    Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();
 
 #pragma omp for  nowait
                     for (scan_counter=0; scan_counter<541; scan_counter++) 
@@ -81,8 +81,8 @@ class Projector
                         XY(1,3) = y;
                         XY(2,3) = 0.0;
 
-                        //tmp = ((*swathe_ptr)[pair_counter].first->getHomogeneous()*(*calib_ptr))*XY;
-                        tmp = ((*swathe_ptr)[pair_counter].first->getHomogeneous())*XY;
+                        tmp = ((*swathe_ptr)[pair_counter].first->getHomogeneous()*(*calib_ptr))*XY;
+                        //tmp = ((*swathe_ptr)[pair_counter].first->getHomogeneous())*XY;
                         points[(pair_counter*541)+scan_counter] = L3::Point<T>( tmp(0,3), tmp(1,3), tmp(2,3) );
                     }
 

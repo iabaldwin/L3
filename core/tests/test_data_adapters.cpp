@@ -11,25 +11,24 @@ int main()
     /*
      *Dataset
      */
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
-
-    std::string LIDAR_name = dataset.LIDAR_names[0];
-    //std::string LIDAR_name = dataset.LIDAR_names[1];
 
     /*
      *Constant time iterator over poses
      */
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 10.0 );
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 60.0 );
+    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, LIDAR_iterator.swathe_length );
     
-    double time = 1328534146.40;
+    double time = dataset.start_time;
 
     // Run for some time
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
-    for( int i=0; i<20; i++)
-        assert( swathe_builder.update( time += 2 ) );
+    for( int i=0; i<5*60; i++)
+        if ( !swathe_builder.update( time += 1 ) )
+            throw std::exception();
 
     /*
      *Projector  

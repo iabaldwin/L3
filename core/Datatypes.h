@@ -21,7 +21,7 @@ class Pose
 
         double x, y;
 
-        Eigen::Matrix4d& getHomogeneous(){ return homogeneous; };
+        Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
 
         //TODO
         //This is dirty
@@ -37,7 +37,7 @@ class Pose
 
     protected:
 
-        Eigen::Matrix4d homogeneous;
+        Eigen::Matrix4f homogeneous;
         virtual void updateHomogeneous()  = 0;
 
 
@@ -122,20 +122,20 @@ class SE3 : public Pose
     
         void updateHomogeneous() 
         {
-            Eigen::Matrix4d Rx = Eigen::Matrix4d::Identity();
+            Eigen::Matrix4f Rx = Eigen::Matrix4f::Identity();
             Rx(1,1) = cos( r );
             Rx(1,2) = -1*sin( r );
             Rx(2,1) = sin( r );
             Rx(2,2) = cos( r );
 
-            Eigen::Matrix4d Ry = Eigen::Matrix4d::Identity();
+            Eigen::Matrix4f Ry = Eigen::Matrix4f::Identity();
             Ry(0,0) = cos( p );
             Ry(0,2) = sin( p );
             Ry(2,0) = -1*sin( p );
             Ry(2,2) = cos( p );
 
 
-            Eigen::Matrix4d Rz = Eigen::Matrix4d::Identity();
+            Eigen::Matrix4f Rz = Eigen::Matrix4f::Identity();
             Rz(0,0) = cos( q );
             Rz(0,1) = -1*sin( q );
             Rz(1,0) = sin( q );

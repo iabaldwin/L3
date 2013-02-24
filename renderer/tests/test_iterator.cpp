@@ -11,21 +11,18 @@ int main (int argc, char ** argv)
 {
 
     glv::GLV top;
-    glv::Window win(1400, 800, "Soaring");
+    glv::Window win(1400, 800, "Viewer::Iterator");
 
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     // Pose sequence
-    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
     //std::string LIDAR_name = *dataset.LIDAR_names.front();
     L3::ConstantTimeIterator< L3::SE3 > iterator( dataset.pose_reader, 10.0 );
-
-    double time = 1328534146.40;
 
     glv::Grid grid(glv::Rect(0,0));
 
@@ -42,8 +39,10 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite composite;
  
     composite << iterator_renderer;
-    composite.time = time; 
-    top << composite;
+    composite.time = dataset.start_time; 
+//TODO:
+    //Not working because??
+    top << grid << composite;
 
     win.setGLV(top);
     glv::Application::run();

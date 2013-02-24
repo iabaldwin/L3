@@ -62,7 +62,7 @@ struct Composite : glv::View3D
     {
         stretch(1,1); 
         
-        far( 300 );
+        far( 500 );
     }
 
     double time;
@@ -70,11 +70,12 @@ struct Composite : glv::View3D
     virtual void onDraw3D(glv::GLV& g)
     {
         std::list<Leaf*>::iterator it = components.begin();
-        glv::draw::translateZ( -250 );
+        glv::draw::translateZ( -450 );
+        glv::draw::translateY( -50 );
 
         //time += .1;
-        //time += 1;
-        time += 2;
+        time += 1;
+        //time += 2;
         while( it != components.end() )
         {
             (*it)->time = this->time;
@@ -212,35 +213,26 @@ struct IteratorRenderer : Leaf
 
     IteratorRenderer( L3::Iterator<T>* ITERATOR )  : iterator(ITERATOR )
     {
-        L3::Utils::BEGBROKE b;
-   
-        x = b.x + 100;
-        y = b.y + 100;
     }
-
-    double x,y;
 
     void onDraw3D( glv::GLV& g )
     {
-
         // Update the iterator
         iterator->update( time );
 
         // Reserve
-        glv::Color* colors = new glv::Color[iterator->window.size()];
+        glv::Color* colors    = new glv::Color[iterator->window.size()];
         glv::Point3* vertices = new glv::Point3[iterator->window.size()];;
 
         typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator->window.begin();
 
         int counter = 0;
 
-        L3::Utils::printWindow( iterator->window );
-
         while( it != iterator->window.end() )
         {
-            vertices[counter]( it->second->x - this->x , it->second->y - this->y, 0 );
-            it++; 
+            vertices[counter]( it->second->x, it->second->y, 0 );
             counter++;
+            it++; 
         }
     
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
@@ -264,10 +256,6 @@ struct SwatheRenderer : Leaf
 {
     SwatheRenderer( L3::SwatheBuilder* SWATHE_BUILDER )  : swathe_builder(SWATHE_BUILDER)
     {
-        L3::Utils::BEGBROKE b;
-        x = b.x + 100;
-        y = b.y + 100;
-        
         // Projector  
         projector.reset( new L3::Projector<double>() );
     }
@@ -294,7 +282,7 @@ struct SwatheRenderer : Leaf
         int counter = 0;
         while( pose_iterator != swathe_builder->swathe.end() )
         {
-            pose_vertices[counter]( pose_iterator->first->x - this->x , pose_iterator->first->y - this->y, 0 );
+            pose_vertices[counter]( pose_iterator->first->x, pose_iterator->first->y, 0 );
             pose_iterator++; 
             counter++;
         }
