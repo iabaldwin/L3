@@ -75,6 +75,13 @@ struct SlidingWindow : Poco::Runnable, Observer
         if (  diff < this->proximity ) 
         {
             read_required = true;
+       
+            // REALLY need data?
+            //if ( diff < .2 )
+            //{
+            //mutex.lock( 100 );
+            //mutex.unlock();
+            //}
         }
        
         return true;

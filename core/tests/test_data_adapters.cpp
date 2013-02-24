@@ -26,7 +26,7 @@ int main()
 
     // Run for some time
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
-    for( int i=0; i<5*60; i++)
+    for( int i=0; i<90; i++)
         if ( !swathe_builder.update( time += 1 ) )
             throw std::exception();
 

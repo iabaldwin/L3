@@ -25,7 +25,7 @@ int main()
     // Run
     while (true)
     {
-        usleep( .115*1e6 );
+        //usleep( .115*1e6 );
         if ( !iterator.update( time += 1 ) )
             throw std::exception();
         
