@@ -164,7 +164,9 @@ struct LHLV
     void print( std::ostream& o ) const {
         std::copy( data.begin(), 
                 data.end(),
-                std::ostream_iterator<double>( std::cout, " " ) );
+                std::ostream_iterator<double>( o, " " ) );
+       
+        o << std::endl;
     }
 
     std::vector< double > data;

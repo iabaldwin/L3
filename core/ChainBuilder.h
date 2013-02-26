@@ -8,10 +8,21 @@
 #include "Datatypes.h"
 #include "Definitions.h"
 
-typedef std::pair< double, boost::shared_ptr<L3::LHLV> > RECORD;
 
 namespace L3
 {
+
+typedef std::pair< double, boost::shared_ptr<L3::LHLV> > RECORD;
+
+std::ostream& operator<<( std::ostream& o, const RECORD& r ) 
+{
+    o<< r.first << ":";
+
+    r.second->print(o);
+
+    return o;
+}
+
 
 template <typename InputIterator, typename OutputIterator >
 void partialAccumulate( InputIterator begin, InputIterator end, OutputIterator output )
@@ -72,10 +83,17 @@ struct ChainBuilder
    
         L3::partialAccumulate( data.begin(), data.end(), trajectory.begin() );
 
-        std::copy( trajectory.begin(), 
-                trajectory.end(),
-                std::ostream_iterator<L3::element<double> >( std::cout, " " ));
-        std::cout << std::endl;
+        std::copy( data.begin(), 
+                    data.end(),
+                    std::ostream_iterator< RECORD >( std::cout, " " ));
+
+        //std::copy( trajectory.begin(), 
+                    //trajectory.end(),
+                    //std::ostream_iterator<L3::element<double> >( std::cout, " " ));
+        //std::cout << std::endl;
+ 
+
+        exit(1);
     }
 };
 
