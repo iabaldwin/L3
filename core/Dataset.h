@@ -12,8 +12,8 @@
 #include "Poco/Runnable.h"
 #include "Poco/Thread.h"
 
-#include "Datatypes.h"
 #include "Tools.h"
+#include "Datatypes.h"
 #include "WindowerFactory.h"
 
 namespace L3

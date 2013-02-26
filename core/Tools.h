@@ -18,13 +18,14 @@ namespace Tools
             tStart = clock();
         }
 
-        float end()
+        double end()
         {
             return (double)(clock() - tStart)/CLOCKS_PER_SEC;
         }
-
+        
     };
 
+    
 } // Tools  
 } // L3
 

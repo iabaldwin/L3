@@ -21,7 +21,6 @@ int main (int argc, char ** argv)
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
-    //std::string LIDAR_name = *dataset.LIDAR_names.front();
     L3::ConstantTimeIterator< L3::SE3 > iterator( dataset.pose_reader, 10.0 );
 
     glv::Grid grid(glv::Rect(0,0));
@@ -39,8 +38,9 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite composite;
  
     composite << iterator_renderer;
-    composite.time = dataset.start_time; 
-//TODO:
+    composite.current_time = dataset.start_time; 
+
+    //TODO:
     //Not working because??
     top << grid << composite;
 

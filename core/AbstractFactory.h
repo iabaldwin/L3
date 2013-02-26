@@ -40,6 +40,38 @@ class AbstractFactory
 };
 
 template <>
+class AbstractFactory<L3::SE3>
+{
+    public:
+        static std::pair< double, boost::shared_ptr<L3::SE3> > produce( std::string& str )
+        {
+            std::stringstream ss( str );
+            std::vector< double > elements;
+            
+            double tmp;
+            
+            while ( ss >> tmp )
+            {
+                elements.push_back( tmp ); 
+            }
+
+
+            return AbstractFactory<L3::SE3>::produce( elements );
+        }
+        
+        static std::pair< double, boost::shared_ptr<L3::SE3> > produce( std::vector<double> elements )
+        {
+            assert( elements.size() > 0 );
+
+            double time = elements[0];
+            elements.erase( elements.begin() );
+
+            return std::make_pair( time, boost::shared_ptr<L3::SE3>( new L3::SE3( elements ) ) );
+        }
+};
+
+
+template <>
 class AbstractFactory<L3::LIDAR>
 {
     public:

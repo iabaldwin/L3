@@ -32,10 +32,10 @@ namespace L3
                 t.begin();
 #endif
                 if (!pose_iterator->update( time ))
-                    return false;
+                    throw POSE_end();
 
                 if (!LIDAR_iterator->update( time ))
-                    return false;
+                    throw LIDAR_end(); 
 
 #ifndef NDEBUG
 #endif
@@ -58,7 +58,7 @@ namespace L3
                     L3::Iterator<L3::SE3>::WINDOW_ITERATOR index = std::lower_bound( pose_iterator->buffered_window.begin(), pose_iterator->buffered_window.end(), it->first, c );
              
                     if ( index == pose_iterator->buffered_window.end() ) // Bad, bad bad bad
-                        throw std::exception(); 
+                        throw lookup_failure();
                     else
                         swathe.push_back( std::make_pair( index->second, it->second ) );
 

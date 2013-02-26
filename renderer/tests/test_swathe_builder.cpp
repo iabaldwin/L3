@@ -20,7 +20,7 @@ int main (int argc, char ** argv)
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 10.0 );
     // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151> LIDAR_iterator( dataset.LIDAR_readers.front(), 60.0 );
+    L3::ConstantTimeIterator< L3::LMS151> LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
     
     double time = dataset.start_time;
 
@@ -49,7 +49,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::SwatheRenderer swathe_renderer( &swathe_builder ); 
     L3::Visualisers::Composite      composite_view;
 
-    composite_view.time = time;
+    composite_view.current_time = time;
 
     top << (composite_view << swathe_renderer);
 

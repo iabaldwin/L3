@@ -11,7 +11,7 @@
 //#define THRESHOLD 0.4
 #define THRESHOLD 0.0
 
-    template <typename T>
+template <typename T>
 double rad2deg( T rad )
 {
     return 180.0/M_PI*(double)rad;
@@ -50,7 +50,6 @@ class Projector
             
             int scan_counter, pair_counter;
             int n = swathe.size();
-            //int n = 100;
             double x,y;
             
             L3::Point<T>* points = new L3::Point<T>[ n*541 ]; 
@@ -91,6 +90,8 @@ class Projector
 
             // Copy
             cloud.data.assign( points, points+(n*541));
+            delete [] points;
+
 #ifndef NDEBUG
             std::cout << cloud.size() << " pts in " << t.end() << "s" << std::endl;
 #endif

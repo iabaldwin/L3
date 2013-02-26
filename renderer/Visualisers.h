@@ -45,7 +45,8 @@ struct Leaf
 
     virtual void onDraw2D( glv::GLV& g )
     {}
-
+    
+   
     double time;
 };
 
@@ -58,14 +59,15 @@ struct Leaf
 struct Composite : glv::View3D 
 {
 
-    Composite() : time(0.0)
+    Composite() : current_time(0.0), last_update(0.0), sf(1)
     {
         stretch(1,1); 
         
         far( 500 );
     }
 
-    double time;
+    int sf;
+    clock_t current, previous;
 
     virtual void onDraw3D(glv::GLV& g)
     {
@@ -73,16 +75,25 @@ struct Composite : glv::View3D
         glv::draw::translateZ( -450 );
         glv::draw::translateY( -50 );
 
-        //time += .1;
-        time += 1;
-        //time += 2;
+        // 1. Compute time since last update
+        current = clock();
+        double elapsed = double(current - previous)/CLOCKS_PER_SEC;
+
+        std::cout << 1.0/elapsed << " hz" << std::endl;
+
+        elapsed  = (elapsed > 1.0) ? 1.0 : elapsed;
+
+        // 2. Increment the *time* by this value 
+        current_time += (elapsed *= sf);
+
         while( it != components.end() )
         {
-            (*it)->time = this->time;
+            (*it)->time = this->current_time;
             (*it)->onDraw3D( g );
             it++;
         }
-    
+ 
+        previous = current;
     }
 
     virtual void onDraw2D( glv::GLV& g)
@@ -94,7 +105,8 @@ struct Composite : glv::View3D
         components.push_back( &leaf );
         return *this;
     }
-
+        
+    double current_time, last_update;
     std::list<Leaf*> components; 
 
 };
@@ -215,6 +227,7 @@ struct IteratorRenderer : Leaf
     {
     }
 
+    
     void onDraw3D( glv::GLV& g )
     {
         // Update the iterator
@@ -270,7 +283,9 @@ struct SwatheRenderer : Leaf
         if ( !swathe_builder->update( time ))
             return;
 
+        //t.begin();
         L3::PointCloud<double> cloud = projector->project( swathe_builder->swathe );
+        //std::cout << "point generation " << t.end() << std::endl;
         L3::PointCloud<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
    
         // Reserve

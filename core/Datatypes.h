@@ -238,7 +238,7 @@ struct Sizes<L3::LMS151>
 template <>
 struct Sizes<L3::LHLV>
 {
-    const static int elements = 12+1;
+    const static int elements = 11+1;
 };
 
 

@@ -44,7 +44,7 @@ struct SlidingWindow : Poco::Runnable, Observer
     int     STACK_SIZE;
     double  proximity, time;
     const   std::string& target;
-    bool    running, read_required;
+    bool    running, read_required, initialised;
     
     std::ifstream input_stream;
     
@@ -66,7 +66,8 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     bool update( double time )
     {
-        
+        assert( initialised );
+
         mutex.lock();
         double diff = window.back().first - time;
         mutex.unlock();
@@ -75,13 +76,6 @@ struct SlidingWindow : Poco::Runnable, Observer
         if (  diff < this->proximity ) 
         {
             read_required = true;
-       
-            // REALLY need data?
-            //if ( diff < .2 )
-            //{
-            //mutex.lock( 100 );
-            //mutex.unlock();
-            //}
         }
        
         return true;
@@ -96,8 +90,12 @@ struct SlidingWindow : Poco::Runnable, Observer
         return temp;
     }
 
+
     void run()
     {
+        if ( !initialised )
+            throw std::exception();
+
         while( running )
         {
             if ( read_required )
@@ -108,10 +106,7 @@ struct SlidingWindow : Poco::Runnable, Observer
                 purge();
 
                 if ( !good() )
-                {
                     stop(); // Is the stream finished?
-                    //std::cout << typeid( *this ).name() << " Bugging out" << std::endl;
-                }
             }
         }
     }
@@ -173,6 +168,7 @@ struct SlidingWindow : Poco::Runnable, Observer
         std::cout << window.size() << " entries read in " << t.end() << "s" << std::endl;
 #endif
 
+        initialised = true;
     }
 
     void purge()
@@ -198,8 +194,15 @@ struct SlidingWindowBinary : SlidingWindow<T>
     {
         this->STACK_SIZE = 100;
         this->proximity = 20.0; 
+    
+        required  = L3::Sizes<T>::elements;
+
+        entry.resize( required );
+
     }
- 
+
+    int required;
+    std::vector<double> entry; 
 
     void initialise()
     {
@@ -225,17 +228,14 @@ struct SlidingWindowBinary : SlidingWindow<T>
 #ifndef NDEBUG
         std::cout << this->window.size() << " entries read in " << t.end() << "s" << std::endl;
 #endif
+        this->initialised = true;
     }
 
     int read()
     {
         int i;
-        std::vector<double> entry; 
 
-        int required  = L3::Sizes<T>::elements;
-
-        entry.resize( required );
-
+        
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
         
         for ( i=0; i< this->STACK_SIZE; i++ )

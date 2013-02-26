@@ -43,3 +43,6 @@ target_link_libraries( test_chain_builder config L3 boost_system boost_filesyste
 add_executable( test_data_adapters test_data_adapters.cpp )
 target_link_libraries( test_data_adapters config L3 boost_system boost_filesystem )
 
+add_executable( test_pipeline test_pipeline.cpp )
+target_link_libraries( test_pipeline config L3 boost_system boost_filesystem )
+

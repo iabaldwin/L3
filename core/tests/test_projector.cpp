@@ -43,6 +43,10 @@ int main()
     {
         t.begin();
         L3::PointCloud<double> cloud = projector->project( swathe_builder.swathe );
-        std::cout << cloud.size() << " pts in " << t.end() << "s" << std::endl;
+        
+        double end_time = t.end(); 
+        std::cout << cloud.size() << " pts in " << end_time << "s" << std::endl;
+        std::cout << (double)cloud.size()/end_time << " pts/s" << std::endl;
+    
     }
 }

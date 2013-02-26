@@ -16,7 +16,7 @@ int main()
     std::string LIDAR_name = dataset.LIDAR_names[0];
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::LMS151 > iterator( dataset.LIDAR_readers.front(), 10.0 );
+    L3::ConstantTimeIterator< L3::LMS151 > iterator( dataset.LIDAR_readers.front(), 100.0 );
     
     double time = dataset.start_time;
         
@@ -25,10 +25,10 @@ int main()
     // Run
     while (true)
     {
-        //usleep( .115*1e6 );
+        usleep( .1*1e6 );
         if ( !iterator.update( time += 1 ) )
             throw std::exception();
-        
-        std::cout << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first << std::endl;
+    
+        std::cout << time << "-->" << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first <<  "(" << iterator.window.size() << ")" << std::endl;
     } 
 }

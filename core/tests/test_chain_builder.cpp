@@ -1,16 +1,34 @@
 #include "Dataset.h"
+#include "Iterator.h"
+#include "ChainBuilder.h"
 
 int main()
 {
-    L3::Dataset d( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
 
-    if( d.validate() )
-        d.load();
-    else
-        std::cerr << "Could not load " << d.path() << std::endl;
+    if( !(dataset.validate() && dataset.load() ) )
+        throw std::exception();
 
-    /*
-     *LHLV data
-     */
-    //std::cout << d.LHLV_data.size() << std::endl;  
+    // Constant time iterator over poses
+    L3::ConstantTimeIterator< L3::LHLV > iterator( dataset.LHLV_reader, 100.0 );
+
+    double time = dataset.start_time;
+        
+    std::cout.precision(15);
+
+    L3::ChainBuilder builder;
+    
+    // Run
+    while (true)
+    {
+        usleep( .1*1e6 );
+        if ( !iterator.update( time += 1 ) )
+            throw std::exception();
+
+        builder.build( iterator.window );
+
+        std::cout << time << "-->" << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first <<  "(" << iterator.window.size() << ")" << std::endl;
+    
+    } 
+
 }
