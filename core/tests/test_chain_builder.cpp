@@ -10,14 +10,16 @@ int main()
         throw std::exception();
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::LHLV > iterator( dataset.LHLV_reader, 100.0 );
+    L3::ConstantTimeIterator< L3::LHLV > iterator( dataset.LHLV_reader, 20.0 );
 
     double time = dataset.start_time;
         
     std::cout.precision(15);
 
     L3::ChainBuilder builder;
-    
+
+    int counter = 0;
+
     // Run
     while (true)
     {
@@ -25,10 +27,12 @@ int main()
         if ( !iterator.update( time += 1 ) )
             throw std::exception();
 
-        builder.build( iterator.window );
-
+        if (counter++ == 100 )
+            builder.build( iterator.window );
+            
         std::cout << time << "-->" << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first <<  "(" << iterator.window.size() << ")" << std::endl;
-    
+
     } 
+
 
 }

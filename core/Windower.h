@@ -11,15 +11,12 @@
 #include <ctime>
 
 #include "Poco/Runnable.h"
-#include "Poco/Thread.h"
 #include "Poco/Mutex.h"
 
 #include "Tools.h"
 #include "Core.h"
 #include "Definitions.h"
 #include "AbstractFactory.h"
-
-typedef char BYTE;
 
 namespace L3
 {
@@ -64,12 +61,12 @@ struct SlidingWindow : Poco::Runnable, Observer
         running = false;
     }
 
-    bool update( double time )
+    bool update( double current_time )
     {
         assert( initialised );
 
         mutex.lock();
-        double diff = window.back().first - time;
+        double diff = window.back().first - current_time;
         mutex.unlock();
 
         // Need more data?
@@ -192,13 +189,8 @@ struct SlidingWindowBinary : SlidingWindow<T>
     SlidingWindowBinary( const std::string& input, double t ) 
         : SlidingWindow<T>( input, t )
     {
-        this->STACK_SIZE = 100;
-        this->proximity = 20.0; 
-    
         required  = L3::Sizes<T>::elements;
-
         entry.resize( required );
-
     }
 
     int required;

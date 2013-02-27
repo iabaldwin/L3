@@ -79,7 +79,7 @@ struct Composite : glv::View3D
         current = clock();
         double elapsed = double(current - previous)/CLOCKS_PER_SEC;
 
-        std::cout << 1.0/elapsed << " hz" << std::endl;
+        //std::cout << 1.0/elapsed << " hz" << std::endl;
 
         elapsed  = (elapsed > 1.0) ? 1.0 : elapsed;
 

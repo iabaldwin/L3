@@ -3,6 +3,8 @@
 #include "Datatypes.h"
 #include "Definitions.h"
 
+#include "Poco/Thread.h"
+
 int main()
 {
     std::cout.precision( 12 );
