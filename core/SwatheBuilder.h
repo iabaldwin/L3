@@ -26,6 +26,9 @@ namespace L3
             }
 
             L3::Tools::Timer t;
+                
+            Comparator<  std::pair< double, boost::shared_ptr<L3::SE3> > > _comparator;
+            
             bool update( double time )
             {
 #ifndef NDEBUG
@@ -39,7 +42,6 @@ namespace L3
 
 #ifndef NDEBUG
 #endif
-
                 /*
                  *  For each LIDAR scan, find the time
                  *  and associated pose
@@ -49,13 +51,12 @@ namespace L3
 
                 swathe.clear();
 
-                Comparator<  std::pair< double, boost::shared_ptr<L3::SE3> > > c;
 
                 // For each lidar scan, find the nearest pose
                 while( it != LIDAR_iterator->window.end() )
                 {
                     // Nearest time
-                    L3::Iterator<L3::SE3>::WINDOW_ITERATOR index = std::lower_bound( pose_iterator->buffered_window.begin(), pose_iterator->buffered_window.end(), it->first, c );
+                    L3::Iterator<L3::SE3>::WINDOW_ITERATOR index = std::lower_bound( pose_iterator->buffered_window.begin(), pose_iterator->buffered_window.end(), it->first, _comparator );
              
                     if ( index == pose_iterator->buffered_window.end() ) // Bad, bad bad bad
                         throw lookup_failure();

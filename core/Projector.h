@@ -8,16 +8,6 @@
 #include "Definitions.h"
 #include "Datatypes.h"
 
-//#define THRESHOLD 0.4
-#define THRESHOLD 0.0
-
-template <typename T>
-double rad2deg( T rad )
-{
-    return 180.0/M_PI*(double)rad;
-}
-
-
 namespace L3
 {
 

@@ -8,7 +8,6 @@
 #include "Datatypes.h"
 #include "Definitions.h"
 
-
 namespace L3
 {
 
@@ -23,21 +22,6 @@ std::ostream& operator<<( std::ostream& o, const RECORD& r )
     return o;
 }
 
-typedef std::pair< double, boost::shared_ptr<L3::Pose > > ENTRY;
-
-std::ostream& operator<<( std::ostream& o, const ENTRY& e ) 
-{
-    //o<< r.first << " ";
-
-    //r.second->print(o);
-
-    o << *e.second;
-
-    return o;
-}
-
-
-
 template <typename InputIterator, typename OutputIterator >
 void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output )
 {
@@ -50,7 +34,7 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
 
     // Initialise
     double dt = 0.0;
-    //*output++ = (VAR(current_in++->second->data )*dt);
+    
     *output++ = std::make_pair( current_time, boost::shared_ptr<L3::SE3>( new L3::SE3( 0,0,0,0,0,0 ) ) );
 
     double x, y, z;
@@ -68,8 +52,11 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
         current_time = current_in->first;
 
         // Compute roll, pitch, yaw
+        //w1 = current_in->second->LHLV_iterator.window[5];
         w1 = current_in->second->data[5];
+        //w2 = current_in->second->LHLV_iterator.window[4];
         w2 = current_in->second->data[4];
+        //w3 = current_in->second->LHLV_iterator.window[3];
         w3 = current_in->second->data[3];
 
         previous_pose = boost::dynamic_pointer_cast< L3::SE3 >( (*(output-1)).second );
@@ -99,31 +86,40 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
 
 }
 
-struct ChainBuilder
+class ChainBuilder : public Observer
 {
-    L3::Tools::Timer t;
-    POSE_SEQUENCE build( std::deque< RECORD > data )
-    {
+    public:
+
+        ChainBuilder( L3::Iterator<L3::LHLV>* iterator ) : LHLV_iterator(iterator)
+        {
+
+        }
+
+        bool update( double time )
+        {
+
+            if (!LHLV_iterator->update( time ))
+                throw std::exception();
+
+            // Reset
+            trajectory.clear();
+
+            // Allocate
+            trajectory.resize( LHLV_iterator->window.size() );
+
+            // Accumulate 
+            L3::trajectoryAccumulate( LHLV_iterator->window.begin(), 
+                                        LHLV_iterator->window.end(), 
+                                        trajectory.begin() );
+
+        }
+            
         POSE_SEQUENCE trajectory;
-        trajectory.resize( data.size() );
 
-        // Accumulate the data
-        L3::trajectoryAccumulate( data.begin(), data.end(), trajectory.begin() );
+    private:
 
-        std::copy( data.begin(), 
-                    data.end(),
-                    std::ostream_iterator< RECORD >( std::cout, " " ));
-        std::cout << std::endl;
+            L3::Iterator<L3::LHLV>*      LHLV_iterator;
 
-        std::copy( trajectory.begin(), 
-                    trajectory.end(),
-                    std::ostream_iterator< ENTRY >( std::cout, " " ));
-        std::cout << std::endl;
-
-        exit(-1);
-
-        return trajectory;
-    }
 };
 
 }

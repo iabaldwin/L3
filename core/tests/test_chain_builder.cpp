@@ -2,6 +2,12 @@
 #include "Iterator.h"
 #include "ChainBuilder.h"
 
+bool operator<( const std::pair<double,int>& a, const std::pair<double,int>& b )
+{
+    return a.first < b.first;
+}
+
+
 int main()
 {
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
@@ -16,20 +22,21 @@ int main()
         
     std::cout.precision(15);
 
-    L3::ChainBuilder builder;
+    L3::ChainBuilder builder( &iterator );
 
     int counter = 0;
+
+    L3::Tools::Timer t;
+
+    std::pair<double,int> latency( 0.0, 0 );
 
     // Run
     while (true)
     {
         usleep( .1*1e6 );
-        if ( !iterator.update( time += 1 ) )
+        t.begin();
+        if ( !builder.update( time += 1 ) )
             throw std::exception();
-
-        if ( counter++ == 40 )
-            builder.build( iterator.window );
-            
         std::cout << time << "-->" << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first <<  "(" << iterator.window.size() << ")" << std::endl;
 
     } 
