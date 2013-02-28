@@ -61,10 +61,9 @@ namespace L3
                                                                                         pose_iterator->window.end(), 
                                                                                         it->first, 
                                                                                         _comparator );
-             
                     if ( index == pose_iterator->window.end() ) // Bad, bad bad bad
-                        throw lookup_failure();
-                    else
+                        index--; 
+
                         swathe.push_back( std::make_pair( index->second, it->second ) );
 
                     it++;

@@ -50,6 +50,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite      composite_view;
 
     composite_view.current_time = time;
+    composite_view.sf = 3.0;
 
     top << (composite_view << swathe_renderer);
 

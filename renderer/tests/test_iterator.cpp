@@ -36,7 +36,7 @@ int main (int argc, char ** argv)
 
     L3::Visualisers::IteratorRenderer<L3::SE3> iterator_renderer( &iterator  );
     L3::Visualisers::Composite composite;
-    composite.sf = 4.0;
+    composite.sf = 10.0;
  
     composite << iterator_renderer;
     composite.current_time = dataset.start_time; 
