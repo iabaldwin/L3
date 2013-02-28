@@ -28,10 +28,10 @@ struct SlidingWindow : Poco::Runnable, Observer
     SlidingWindow( const std::string& input, double t ) : 
         read_required(false),
         STACK_SIZE(10*100),
+        window_duration(t),
         proximity(10.0),
         target(input), 
-        running(true), 
-        time(t)
+        running(true) 
     {
     }
    
@@ -39,9 +39,9 @@ struct SlidingWindow : Poco::Runnable, Observer
     Poco::Mutex mutex;
    
     int     STACK_SIZE;
-    double  proximity, time;
     const   std::string& target;
     bool    running, read_required, initialised;
+    double  proximity, window_duration, current_time;
     
     std::ifstream input_stream;
     
@@ -61,9 +61,11 @@ struct SlidingWindow : Poco::Runnable, Observer
         running = false;
     }
 
-    bool update( double current_time )
+    bool update( double time )
     {
         assert( initialised );
+        
+        current_time = time;
 
         mutex.lock();
         double diff = window.back().first - current_time;
@@ -149,7 +151,7 @@ struct SlidingWindow : Poco::Runnable, Observer
 #endif
         double duration = 0;
 
-        while ( duration < time )
+        while ( duration < window_duration )
         {
             int entries_read = read();
 
@@ -171,7 +173,8 @@ struct SlidingWindow : Poco::Runnable, Observer
     void purge()
     {
         mutex.lock(); 
-        while( window.back().first - window.front().first > time )
+        //while( window.back().first - window.front().first > window_duration )
+        while( current_time  - window.front().first > window_duration )
             window.pop_front();
         mutex.unlock();
     }
@@ -207,7 +210,7 @@ struct SlidingWindowBinary : SlidingWindow<T>
 #endif
         double duration = 0;
 
-        while ( duration < SlidingWindow<T>::time )
+        while ( duration < SlidingWindow<T>::window_duration )
         {
             int entries_read = read();
 

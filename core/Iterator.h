@@ -52,7 +52,7 @@ class ConstantTimeIterator : public Iterator<T>
         ConstantTimeIterator( boost::shared_ptr< L3::SlidingWindow<T> > window, double time ) 
             : Iterator<T>( window ), swathe_length(time)
         {
-            this->windower->time = 4*time;
+            //this->windower->time = 4*time;
             //this->windower->time = 1.5*time;
             //this->windower->time = time+(2*this->windower->proximity);
         }

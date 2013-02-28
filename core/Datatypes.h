@@ -106,7 +106,7 @@ class SE3 : public Pose
         }
 
         void print( std::ostream& o ) const {
-            o << x << "," << y << ","  << z << "," << r << "," << p << "," << q;
+            o << x << "," << y << ","  << z << "," << r << "," << p << "," << q << std::endl;;
         }
       
         void _update()

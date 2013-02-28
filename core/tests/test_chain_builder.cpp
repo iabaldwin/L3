@@ -27,7 +27,7 @@ int main()
         if ( !iterator.update( time += 1 ) )
             throw std::exception();
 
-        if (counter++ == 100 )
+        if ( counter++ == 40 )
             builder.build( iterator.window );
             
         std::cout << time << "-->" << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first <<  "(" << iterator.window.size() << ")" << std::endl;
