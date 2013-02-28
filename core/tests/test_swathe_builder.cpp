@@ -30,8 +30,8 @@ int main()
     double increment = .02;
     while (true)
     {
-        t.begin();
         usleep( increment*1e6 );
+        t.begin();
         swathe_builder.update( time += increment ) ;
         std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << std::endl;
     } 

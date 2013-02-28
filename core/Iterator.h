@@ -42,7 +42,30 @@ struct Comparator
     {
         return ( t.first < f);
     }
+
+    bool operator()( const double f, T t )
+    {
+        return ( t.first < f);
+    }
+
 };
+
+        
+
+//template <typename Iterator, typename T>
+//Iterator getClosest(Iterator first, Iterator last, const T & value)
+//{
+
+    //Iterator before = std::lower_bound(first, last, value, _pair_comparator);
+
+    //if (before == first) return first;
+    //if (before == last)  return --last; 
+
+    //Iterator after = before;
+    //--before;
+
+    //return (*after - value) < (value - *before) ? after : before;
+//}
 
 template <typename T>
 class ConstantTimeIterator : public Iterator<T>
@@ -52,11 +75,10 @@ class ConstantTimeIterator : public Iterator<T>
         ConstantTimeIterator( boost::shared_ptr< L3::SlidingWindow<T> > window, double time ) 
             : Iterator<T>( window ), swathe_length(time)
         {
-            //this->windower->time = 4*time;
-            //this->windower->time = 1.5*time;
-            //this->windower->time = time+(2*this->windower->proximity);
         }
 
+        Comparator<std::pair< double, boost::shared_ptr<T> > > _pair_comparator;
+        
         bool update( double time )
         {
             // Update the watcher with the new time
@@ -66,8 +88,7 @@ class ConstantTimeIterator : public Iterator<T>
             this->buffered_window = this->windower->getWindow();
 
             // Find the element with the closest time to *now*
-            Comparator<std::pair< double, boost::shared_ptr<T> > > c;
-            typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it = std::lower_bound( this->buffered_window.begin(), this->buffered_window.end(), time, c );
+            typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it = std::lower_bound( this->buffered_window.begin(), this->buffered_window.end(), time, _pair_comparator );
 
             if ( it == this->buffered_window.end() ) // This, is bad - can't find the appropriate time
             {
@@ -75,6 +96,8 @@ class ConstantTimeIterator : public Iterator<T>
                 std::cout << __PRETTY_FUNCTION__ << time << "->" << this->buffered_window.front().first << ":" << this->buffered_window.back().first << std::endl;
                 return false; 
             }
+
+            it = ( fabs(( it-1 )->first - time)  ) < ( fabs(( it )->first - time)  ) ? ( it-1) : it ;
 
             // Got it?
             this->window.clear();

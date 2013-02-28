@@ -20,7 +20,8 @@ namespace L3
     class SwatheBuilder : public Observer
     {
         public:
-            SwatheBuilder( L3::Iterator<L3::SE3>* pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
+            //SwatheBuilder( L3::PoseProvider* pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
+            SwatheBuilder( L3::Iterator<L3::SE3> * pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
                 pose_iterator( pose_it ), LIDAR_iterator( LIDAR_it ), window_duration(0.0) 
             {
             }
@@ -56,9 +57,12 @@ namespace L3
                 while( it != LIDAR_iterator->window.end() )
                 {
                     // Nearest time
-                    L3::Iterator<L3::SE3>::WINDOW_ITERATOR index = std::lower_bound( pose_iterator->buffered_window.begin(), pose_iterator->buffered_window.end(), it->first, _comparator );
+                    L3::Iterator<L3::SE3>::WINDOW_ITERATOR index = std::lower_bound( pose_iterator->window.begin(), 
+                                                                                        pose_iterator->window.end(), 
+                                                                                        it->first, 
+                                                                                        _comparator );
              
-                    if ( index == pose_iterator->buffered_window.end() ) // Bad, bad bad bad
+                    if ( index == pose_iterator->window.end() ) // Bad, bad bad bad
                         throw lookup_failure();
                     else
                         swathe.push_back( std::make_pair( index->second, it->second ) );
@@ -78,6 +82,7 @@ namespace L3
 
         private:
 
+            //L3::PoseProvider*           pose_iterator;
             L3::Iterator<L3::SE3>*      pose_iterator;
             L3::Iterator<L3::LMS151>*   LIDAR_iterator;
 

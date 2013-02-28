@@ -102,19 +102,19 @@ class ChainBuilder : public Observer
                 throw std::exception();
 
             // Reset
-            trajectory.clear();
+            window.clear();
 
             // Allocate
-            trajectory.resize( LHLV_iterator->window.size() );
+            window.resize( LHLV_iterator->window.size() );
 
             // Accumulate 
             L3::trajectoryAccumulate( LHLV_iterator->window.begin(), 
                                         LHLV_iterator->window.end(), 
-                                        trajectory.begin() );
+                                        window.begin() );
 
         }
             
-        POSE_SEQUENCE trajectory;
+        POSE_SEQUENCE window;
 
     private:
 

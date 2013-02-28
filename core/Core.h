@@ -11,6 +11,10 @@ struct Observer
     virtual bool update( double ) = 0;
 };
 
+struct PoseProvider : Observer
+{
+};
+
 struct exception_base: virtual std::exception, virtual boost::exception { };
 
 struct end_of_stream: virtual exception_base { };
