@@ -286,7 +286,9 @@ struct SwatheRenderer : Leaf
             return;
 
         projector->project( swathe_builder->swathe );
-   
+ 
+        L3::histogram( point_cloud );
+
         // Reserve
         glv::Color*  pose_colors   = new glv::Color[swathe_builder->swathe.size()];
         glv::Point3* pose_vertices = new glv::Point3[swathe_builder->swathe.size()];;
