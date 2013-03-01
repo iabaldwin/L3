@@ -137,6 +137,8 @@ bool Dataset::load()
 
     // Get the dataset time - by definition, this is the time of the first pose
     start_time = pose_reader->window.begin()->first;
+
+    return true;
 }
 
 template <typename T>

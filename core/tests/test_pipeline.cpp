@@ -20,8 +20,8 @@ int main()
     /*
      *Constant time iterator over poses
      */
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 60.0 );
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, LIDAR_iterator.swathe_length );
+    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
+    L3::ConstantTimeIterator< L3::SE3 >    pose_iterator( dataset.pose_reader, LIDAR_iterator.swathe_length );
     
     double time = dataset.start_time;
 
@@ -31,7 +31,8 @@ int main()
      * Projector  
      */
     L3::SE3 projection(0,0,0,.1,.2,.3);
-    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection ) );
+    L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
+    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
 
     /*
      * Run
@@ -42,13 +43,14 @@ int main()
     {
         t.begin();
         
-        L3::PointCloud<double> cloud = projector->project( swathe_builder.swathe );
+        projector->project( swathe_builder.swathe );
       
         if ( !swathe_builder.update( time += increment ))
             throw std::exception();
 
         double end_time = t.end(); 
-        //std::cout << cloud.size() << " pts in " << end_time << "s" << "\t" << "[" << (double)cloud.size()/end_time << " pts/s" << "]" << std::endl;
-        std::cout << cloud.size() << ", " << end_time << std::endl;
+        //std::cout << cloud.size() << " pts\t " << end_time << "s" << "\t" << "[" << (double)cloud.size()/end_time << " pts/s" << "]" << " :" << swathe_builder.window_duration << std::endl;
+        std::cout << end_time << std::endl;
+    
     }
 }

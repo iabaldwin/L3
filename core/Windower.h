@@ -27,21 +27,26 @@ struct SlidingWindow : Poco::Runnable, Observer
 
     SlidingWindow( const std::string& input, double t ) : 
         read_required(false),
+        running(true),
+        initialised(false),
         STACK_SIZE(10*100),
         window_duration(t),
         proximity(10.0),
-        target(input), 
-        running(true) 
+        target(input) 
     {
     }
    
 
     Poco::Mutex mutex;
    
+    bool    read_required;
+    bool    running;
+    bool    initialised;
     int     STACK_SIZE;
+    double  window_duration;
+    double  proximity;
+    double  current_time;
     const   std::string& target;
-    bool    running, read_required, initialised;
-    double  proximity, window_duration, current_time;
     
     std::ifstream input_stream;
     

@@ -10,8 +10,6 @@ int main()
 
     for ( int i=100; i < 2000; i+= 50 )
     {
-        double time = 1328534146.40;
-
         boost::shared_ptr<L3::SlidingWindow< L3::LMS151 > > window = L3::WindowerFactory<L3::LMS151>::constantTimeWindow( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/LMS1xx_10420001_192.168.0.51.lidar", 100  );
         
         window->STACK_SIZE = i;

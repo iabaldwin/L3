@@ -50,23 +50,6 @@ struct Comparator
 
 };
 
-        
-
-//template <typename Iterator, typename T>
-//Iterator getClosest(Iterator first, Iterator last, const T & value)
-//{
-
-    //Iterator before = std::lower_bound(first, last, value, _pair_comparator);
-
-    //if (before == first) return first;
-    //if (before == last)  return --last; 
-
-    //Iterator after = before;
-    //--before;
-
-    //return (*after - value) < (value - *before) ? after : before;
-//}
-
 template <typename T>
 class ConstantTimeIterator : public Iterator<T>
 {

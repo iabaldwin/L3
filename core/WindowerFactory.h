@@ -35,7 +35,6 @@ namespace L3
                 return ( int_max > 127  || int_min< 10 ) ? 
                     boost::shared_ptr< L3::SlidingWindow<T> >( new L3::SlidingWindowBinary<T>( file, time ) ) :
                     boost::shared_ptr< L3::SlidingWindow<T> >( new L3::SlidingWindow<T>( file, time ) ) ;
-
             }
 
     };

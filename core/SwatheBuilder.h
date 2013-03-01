@@ -61,10 +61,10 @@ namespace L3
                                                                                         pose_iterator->window.end(), 
                                                                                         it->first, 
                                                                                         _comparator );
-                    if ( index == pose_iterator->window.end() ) // Bad, bad bad bad
+                    if ( index == pose_iterator->window.end() ) 
                         index--; 
 
-                        swathe.push_back( std::make_pair( index->second, it->second ) );
+                    swathe.push_back( std::make_pair( index->second, it->second ) );
 
                     it++;
                 }
@@ -75,8 +75,6 @@ namespace L3
                     
             }
 
-            double window_duration;
-
             SWATHE swathe;
 
         private:
@@ -85,6 +83,7 @@ namespace L3
             L3::Iterator<L3::SE3>*      pose_iterator;
             L3::Iterator<L3::LMS151>*   LIDAR_iterator;
 
+            double window_duration;
     };
 
 }

@@ -112,6 +112,7 @@ class ChainBuilder : public Observer
                                         LHLV_iterator->window.end(), 
                                         window.begin() );
 
+            return true;
         }
             
         POSE_SEQUENCE window;

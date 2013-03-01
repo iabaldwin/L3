@@ -24,8 +24,6 @@ int main()
 
     L3::ChainBuilder builder( &iterator );
 
-    int counter = 0;
-
     L3::Tools::Timer t;
 
     std::pair<double,int> latency( 0.0, 0 );

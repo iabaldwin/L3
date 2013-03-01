@@ -23,8 +23,10 @@ int main (int argc, char ** argv)
     // Localise pose chain, for rendering
     //L3::Utils::localisePoseChainToMean( dataset.poses );
 
-    // Projector  
-    std::auto_ptr<L3::Projector<double> > projector( new L3::Projector<double>() );
+    // Projector 
+    L3::SE3 calibration( 0, 0, 0, 0, 0, 0 );
+    L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
+    std::auto_ptr<L3::Projector<double> > projector( new L3::Projector<double>( &calibration, point_cloud ) );
 
     // Do Projection
     //L3::PointCloudXYZ<double> cloud = projector->project( iterator->getSwathe() );

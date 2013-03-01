@@ -21,9 +21,9 @@ namespace L3
         writer << "SIZE 4 4 4" << std::endl;
         writer << "TYPE F F F" << std::endl;
         writer << "COUNT 1 1 1" << std::endl;
-        writer << "WIDTH " << cloud.size() << std::endl;
+        writer << "WIDTH " << cloud.num_points << std::endl;
         writer << "HEIGHT 1" << std::endl;
-        writer << "POINTS " << cloud.size() << std::endl;
+        writer << "POINTS " << cloud.num_points << std::endl;
         writer << "DATA ascii" << std::endl;
 
         // Write cloud

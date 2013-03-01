@@ -13,6 +13,7 @@ struct Observer
 
 struct PoseProvider : Observer
 {
+
 };
 
 struct exception_base: virtual std::exception, virtual boost::exception { };

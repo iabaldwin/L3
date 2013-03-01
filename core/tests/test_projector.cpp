@@ -31,7 +31,8 @@ int main()
      *Projector  
      */
     L3::SE3 projection(0,0,0,.1,.2,.3);
-    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection ) );
+    L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
+    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
 
     swathe_builder.update( time + 20 );
 
@@ -42,11 +43,11 @@ int main()
     for ( int i=0; i< 1000; i++ )
     {
         t.begin();
-        L3::PointCloud<double> cloud = projector->project( swathe_builder.swathe );
+        projector->project( swathe_builder.swathe );
         
         double end_time = t.end(); 
-        std::cout << cloud.size() << " pts in " << end_time << "s" << std::endl;
-        std::cout << (double)cloud.size()/end_time << " pts/s" << std::endl;
+        //std::cout << cloud.size() << " pts in " << end_time << "s" << std::endl;
+        //std::cout << (double)cloud.size()/end_time << " pts/s" << std::endl;
     
     }
 }
