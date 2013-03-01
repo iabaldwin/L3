@@ -95,34 +95,76 @@ struct PointCloud
     /*
      *Data
      */
-    L3::Point<T>* points ;
+    L3::Point<T>* points;
+
+    typedef L3::Point<T>* ITERATOR;
+
+    ITERATOR begin()
+    {
+        return points;
+    }
+
+    ITERATOR end()
+    {
+        return (points+num_points);
+    }
 
     size_t num_points;
+      
+};
 
-    //struct centroid 
+template <typename T>
+PointCloud<T> samplePointCloud( PointCloud<T>& cloud, int size )
+{
+        //PointCloud<T> sampled_cloud;
+
+        //// Generate random indices
+        //std::vector<int> random_indices( size );
+
+        //randomate r( cloud.size() ) ;
+
+        //std::generate( random_indices.begin(),  random_indices.end(), r );
+
+        //sampled_cloud.data.resize( size );
+
+        //typename std::vector< Point<T> >::iterator point_iterator = sampled_cloud.data.begin();
+        //typename std::vector< int >::iterator index_iterator = random_indices.begin();
+
+        //while( index_iterator != random_indices.end() )
+        //{
+            //*point_iterator++ = cloud.data[ *index_iterator++ ];
+        //}
+
+        //return sampled_cloud;
+}
+
+template <typename T>
+std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud )
+{
+    for( size_t i=0; i<cloud.num_points; i++ )
+        o << cloud.points[i] << std::endl;
+    
+    return o; 
+}
+
+//template <typename T>
+//PointCloud<T>& operator>>( PointCloud<T>& cloud, L3::Utils::Locale l )
+//{
+    //typename PointCloud<T>::POINT_CLOUD_ITERATOR it = cloud.begin();
+
+    //while( it != cloud.end() )
     //{
-        //int counter;
-        //T x_mean, y_mean, z_mean; 
-        //centroid() :counter(0), x_mean(0), y_mean(0), z_mean(0)
-        //{
-            
-        //}
-
-        //void operator()( Point<T> t )
-        //{
-            //counter++;
-            
-            //x_mean += t.x;
-            //y_mean += t.y;
-            //z_mean += t.z;
+        //it->x -= l.x;
+        //it->y -= l.y;
+        //it->z -= l.z;
    
-            //x_mean /= counter;
-            //y_mean /= counter;
-            //z_mean /= counter;
-        //}
-    //};
+        //it++;
+    //}
 
-    //void transform( L3::Pose* t )
+    //return cloud;
+//}
+
+//void transform( L3::Pose* t )
     //{
         //// 1. Compute mean
         //centroid c; 
@@ -190,92 +232,6 @@ struct PointCloud
         //return data.end();
     //}
 
-    /*
-     *Statistics
-     */
-    //struct histogrammer
-    //{
-        //histogrammer( gsl_histogram2d* HISTOGRAM ) : histogram(HISTOGRAM)
-        //{
-        //}
-
-        //gsl_histogram2d* histogram;
-
-        //void operator()( Point<T> t )
-        //{
-            //gsl_histogram2d_increment( histogram, t.x, t.y );
-        //}
-
-    //};
-
-    //void histogram()
-    //{
-        //gsl_histogram2d* hist =  gsl_histogram2d_alloc (1000, 1000);
-
-        //gsl_histogram2d_set_ranges_uniform (hist, 0.0, 100.0, 0.0, 100.0);
-
-        //histogrammer h( hist );
-
-        //std::for_each( data.begin(), data.end(), h );
-    //}
-  
-};
-
-//template <typename T>
-//PointCloud<T> samplePointCloud( PointCloud<T>& cloud, int size )
-//{
-        //PointCloud<T> sampled_cloud;
-
-        //// Generate random indices
-        //std::vector<int> random_indices( size );
-
-        //randomate r( cloud.size() ) ;
-
-        //std::generate( random_indices.begin(),  random_indices.end(), r );
-
-        //sampled_cloud.data.resize( size );
-
-        //typename std::vector< Point<T> >::iterator point_iterator = sampled_cloud.data.begin();
-        //typename std::vector< int >::iterator index_iterator = random_indices.begin();
-
-        //while( index_iterator != random_indices.end() )
-        //{
-            //*point_iterator++ = cloud.data[ *index_iterator++ ];
-        //}
-
-        //return sampled_cloud;
-//}
-
-template <typename T>
-std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud )
-{
-    //std::copy( cloud.data.begin(), 
-            //cloud.data.end(), 
-            //std::ostream_iterator< Point<T> >( o, "\n" ) );
-
-    for( size_t i=0; i<cloud.num_points; i++ )
-        o << cloud.points[i] << std::endl;
-
-
-    return o; 
-}
-
-//template <typename T>
-//PointCloud<T>& operator>>( PointCloud<T>& cloud, L3::Utils::Locale l )
-//{
-    //typename PointCloud<T>::POINT_CLOUD_ITERATOR it = cloud.begin();
-
-    //while( it != cloud.end() )
-    //{
-        //it->x -= l.x;
-        //it->y -= l.y;
-        //it->z -= l.z;
-   
-        //it++;
-    //}
-
-    //return cloud;
-//}
 
 /*
  *Center
@@ -304,6 +260,20 @@ void centerPointCloud( PointCloud<T>* cloud )
         cloud->points[i].y -= y;
         cloud->points[i].z -= z;
     }
+}
+
+/*
+* Statistics
+*/
+template <typename T>
+void histogram( L3::PointCloud<T>* cloud )
+{
+    gsl_histogram2d* hist =  gsl_histogram2d_alloc (1000, 1000);
+
+    gsl_histogram2d_set_ranges_uniform (hist, 0.0, 100.0, 0.0, 100.0);
+
+    for( typename L3::PointCloud<T>::ITERATOR it = cloud->begin(); it != cloud->end(); it++ )
+        gsl_histogram2d_increment( hist, it->x, it->y );
 }
 
 } // L3

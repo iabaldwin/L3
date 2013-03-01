@@ -23,8 +23,6 @@ int main()
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 60.0 );
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 60.0 );
     
-    double time = dataset.start_time;
-
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 
     /*
@@ -34,7 +32,7 @@ int main()
     L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
     std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
 
-    swathe_builder.update( time + 20 );
+    swathe_builder.update( dataset.start_time + 20 );
 
     /*
      *Do Projection, & average

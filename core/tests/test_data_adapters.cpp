@@ -11,8 +11,7 @@ int main()
     /*
      *Dataset
      */
-    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
 
@@ -28,7 +27,7 @@ int main()
     L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
    
     // Go X seconds in
-    for( int i=0; i<120; i++ )
+    for( int i=0; i<40; i++ )
     {
         usleep( .02*1e6 );
         swathe_builder.update( time += 2 );
@@ -46,7 +45,7 @@ int main()
      */
     projector->project( swathe_builder.swathe );
 
-    L3::centerPointCloud( cloud );
+    //L3::centerPointCloud( cloud );
 
     L3::writePCLASCII( "test.pcd", *cloud );
 }

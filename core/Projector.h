@@ -37,10 +37,7 @@ class Projector
 
         void reallocate( size_t size )
         {
-            std::cout << "Reallocate :" << allocated_size << "->" << size << std::endl;
             delete [] cloud->points;
-    
-            // Pre-allocate
             cloud->points = new L3::Point<T>[ size*541 ]; 
             allocated_size = size;
         }
@@ -56,8 +53,8 @@ class Projector
             L3::Tools::Timer t;
             t.begin();
 #endif
-            int scan_counter, pair_counter;
-            int n = swathe.size();
+            unsigned int scan_counter, pair_counter;
+            unsigned int n = swathe.size();
           
             if ( n > allocated_size )
                 reallocate( n );
@@ -74,15 +71,13 @@ class Projector
             // Points reference
             L3::Point<T>* points_ptr = cloud->points ;
 
-#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
+//#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
             {
-
-#pragma omp for  nowait
                 for( pair_counter=0; pair_counter < n; pair_counter+=1 ) 
                 {
                     Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();
 
-#pragma omp for  nowait
+//#pragma omp for  nowait
                     for (scan_counter=0; scan_counter<541; scan_counter++) 
                     {
 
@@ -101,13 +96,12 @@ class Projector
                         //points[(pair_counter*541)+scan_counter] = L3::Point<T>( tmp(0,3), tmp(1,3), tmp(2,3) );
                         points_ptr[(pair_counter*541)+scan_counter].x = tmp(0,3);
                         points_ptr[(pair_counter*541)+scan_counter].y = tmp(1,3);
-                        points_ptr[(pair_counter*541)+scan_counter].y = tmp(2,3);
-                    
+                        points_ptr[(pair_counter*541)+scan_counter].z = tmp(2,3);
                     }
                 }
             }
         
-            cloud->num_points = n;
+            cloud->num_points = n*541;
         }
     };
 

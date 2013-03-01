@@ -59,15 +59,17 @@ struct Leaf
 struct Composite : glv::View3D 
 {
 
-    Composite() : current_time(0.0), last_update(0.0), sf(1)
+    Composite() : current_time(0.0), sf(1)
     {
         stretch(1,1); 
         
         far( 500 );
     }
 
-    int sf;
     clock_t current, previous;
+    double current_time; 
+    unsigned int sf;
+    std::list<Leaf*> components; 
 
     virtual void onDraw3D(glv::GLV& g)
     {
@@ -106,8 +108,6 @@ struct Composite : glv::View3D
         return *this;
     }
         
-    double current_time, last_update;
-    std::list<Leaf*> components; 
 
 };
 
@@ -164,20 +164,19 @@ struct CloudRenderer : Leaf
 {
     CloudRenderer( L3::PointCloud<T>* CLOUD ) : cloud(CLOUD)
     {
-        //colors   = new glv::Color[cloud->size()];
-        //vertices = new glv::Point3[cloud->size()];
+        colors   = new glv::Color[cloud->size()];
+        vertices = new glv::Point3[cloud->size()];
    
         //// Build the cloud
         //typename std::vector< Point<T> >::iterator it;
         //it = cloud->data.begin();
 
-        //int counter = 0;
         //while( it != cloud->data.end() )
-        //{
-            //vertices[counter]( (*it).x, (*it).y, (*it).z); 
-            //colors[counter] = glv::HSV(0.6, .1, (*it).z*0.45+0.55);
-            //it++; counter++;
-        //}
+        for( int i=0; i<cloud->num_points; i++) 
+        {
+            vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z); 
+            //colors[i] = glv::HSV(0.6, .1, (*it).z*0.45+0.55);
+        }
     
     };
 
@@ -271,11 +270,12 @@ struct SwatheRenderer : Leaf
     {
         // Projector  
         L3::SE3 calibration( 0, 0, 0, 0, 0, 0 ); 
-        L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
+        point_cloud = new L3::PointCloud<double>();
         projector.reset( new L3::Projector<double>( &calibration, point_cloud ) );
     }
 
     std::auto_ptr<L3::Projector<double> > projector;
+    L3::PointCloud<double>* point_cloud;
     double x,y;
 
     L3::Tools::Timer t;
@@ -285,46 +285,42 @@ struct SwatheRenderer : Leaf
         if ( !swathe_builder->update( time ))
             return;
 
-        //t.begin();
-        //L3::PointCloud<double> cloud = projector->project( swathe_builder->swathe );
-        ////std::cout << "point generation " << t.end() << std::endl;
-        //L3::PointCloud<double> sampled_cloud = L3::samplePointCloud( cloud, 10000 );
+        projector->project( swathe_builder->swathe );
    
-        //// Reserve
-        //glv::Color*  pose_colors   = new glv::Color[swathe_builder->swathe.size()];
-        //glv::Point3* pose_vertices = new glv::Point3[swathe_builder->swathe.size()];;
+        // Reserve
+        glv::Color*  pose_colors   = new glv::Color[swathe_builder->swathe.size()];
+        glv::Point3* pose_vertices = new glv::Point3[swathe_builder->swathe.size()];;
 
-        //SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
+        SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
 
-        //int counter = 0;
-        //while( pose_iterator != swathe_builder->swathe.end() )
-        //{
-            //pose_vertices[counter]( pose_iterator->first->x, pose_iterator->first->y, 0 );
-            //pose_iterator++; 
-            //counter++;
-        //}
-        //glv::draw::paint( glv::draw::Points, pose_vertices, pose_colors, counter );
+        int counter = 0;
+        while( pose_iterator != swathe_builder->swathe.end() )
+        {
+            pose_vertices[counter]( pose_iterator->first->x, pose_iterator->first->y, 0 );
+            pose_iterator++; 
+            counter++;
+        }
+        glv::draw::paint( glv::draw::Points, pose_vertices, pose_colors, counter );
 
-        //delete [] pose_colors;
-        //delete [] pose_vertices;
+        delete [] pose_colors;
+        delete [] pose_vertices;
 
-        //PointCloud<double>::POINT_CLOUD_ITERATOR point_iterator = sampled_cloud.begin();
+        PointCloud<double>::ITERATOR point_iterator = point_cloud->begin();
 
-        //counter = 0;
-        //glv::Color*  point_colors   = new glv::Color[sampled_cloud.size()];
-        //glv::Point3* point_vertices = new glv::Point3[sampled_cloud.size()];;
+        glv::Color*  point_colors   = new glv::Color[point_cloud->num_points];
+        glv::Point3* point_vertices = new glv::Point3[point_cloud->num_points];
+        counter = 0;
 
-        //while( point_iterator != sampled_cloud.end() )
-        //{
-            //point_vertices[counter]( point_iterator->x - this->x , point_iterator->y - this->y, 0);
-            //point_iterator++; 
-            //counter++;
-        //}
+        while( point_iterator != point_cloud->end() )
+        {
+            point_vertices[counter++]( point_iterator->x , point_iterator->y , point_iterator->z);
+            point_iterator++; 
+        }
         
-        //glv::draw::paint( glv::draw::Points, point_vertices, point_colors, counter );
+        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, counter );
                 
-        //delete [] point_colors;
-        //delete [] point_vertices;
+        delete [] point_colors;
+        delete [] point_vertices;
     
     }
 
