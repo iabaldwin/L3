@@ -53,8 +53,8 @@ class Projector
             L3::Tools::Timer t;
             t.begin();
 #endif
-            unsigned int scan_counter, pair_counter;
-            unsigned int n = swathe.size();
+            int scan_counter, pair_counter;
+            int n = swathe.size();
           
             if ( n > allocated_size )
                 reallocate( n );

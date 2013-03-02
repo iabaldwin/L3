@@ -30,7 +30,8 @@ int main()
 
     L3::Tools::Timer t;
     t.begin();
-    L3::histogram( cloud );
+    L3::histogram<double> hist;
+        hist( cloud );
     double elapsed = t.end();
 
     std::cout << cloud->num_points << " pts histogrammed in " << elapsed << std::endl;

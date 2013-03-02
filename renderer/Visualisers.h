@@ -302,6 +302,8 @@ struct SwatheRenderer : Leaf
     glv::Color*  point_colors  ;
     glv::Point3* point_vertices;
 
+    L3::histogram<double> hist;
+
     L3::Tools::Timer t;
     void onDraw3D( glv::GLV& g )
     {
@@ -311,7 +313,7 @@ struct SwatheRenderer : Leaf
             throw std::exception();
 
         projector->project( swathe_builder->swathe );
-        //L3::histogram( point_cloud );
+        hist( point_cloud );
 
         SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
 

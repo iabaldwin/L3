@@ -266,15 +266,30 @@ void centerPointCloud( PointCloud<T>* cloud )
 * Statistics
 */
 template <typename T>
-void histogram( L3::PointCloud<T>* cloud )
+struct histogram
 {
-    gsl_histogram2d* hist =  gsl_histogram2d_alloc (1000, 1000);
+    histogram()
+    {
+        hist =  gsl_histogram2d_alloc (1000, 1000);
 
-    gsl_histogram2d_set_ranges_uniform (hist, 0.0, 100.0, 0.0, 100.0);
+        gsl_histogram2d_set_ranges_uniform (hist, 0.0, 100.0, 0.0, 100.0);
+    }
 
-    for( typename L3::PointCloud<T>::ITERATOR it = cloud->begin(); it != cloud->end(); it++ )
-        gsl_histogram2d_increment( hist, it->x, it->y );
-}
+    ~histogram()
+    {
+        //gsl_histogram_free( hist );
+    }
+
+    gsl_histogram2d* hist;
+
+
+    void operator()( L3::PointCloud<T>* cloud )
+    {
+        for( typename L3::PointCloud<T>::ITERATOR it = cloud->begin(); it != cloud->end(); it++ )
+            gsl_histogram2d_increment( hist, it->x, it->y );
+    }
+
+};
 
 } // L3
 
