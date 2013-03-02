@@ -71,13 +71,13 @@ class Projector
             // Points reference
             L3::Point<T>* points_ptr = cloud->points ;
 
-//#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
+#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
             {
-                for( pair_counter=0; pair_counter < n; pair_counter+=10 ) 
+                for( pair_counter=0; pair_counter < n; pair_counter+=1 ) 
                 {
                     Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();
 
-//#pragma omp for  nowait
+#pragma omp for  nowait
                     for (scan_counter=0; scan_counter<541; scan_counter++) 
                     {
 
