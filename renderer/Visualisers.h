@@ -266,34 +266,57 @@ struct IteratorRenderer : Leaf
  */
 struct SwatheRenderer : Leaf
 {
-    SwatheRenderer( L3::SwatheBuilder* SWATHE_BUILDER )  : swathe_builder(SWATHE_BUILDER)
+    SwatheRenderer( L3::SwatheBuilder* SWATHE_BUILDER )  : swathe_builder(SWATHE_BUILDER), current_alloc(500)
     {
         // Projector  
         L3::SE3 calibration( 0, 0, 0, 0, 0, 0 ); 
         point_cloud = new L3::PointCloud<double>();
         projector.reset( new L3::Projector<double>( &calibration, point_cloud ) );
+    
+        pose_colors   = new glv::Color[current_alloc];
+        pose_vertices = new glv::Point3[current_alloc];
+    
+        point_colors   = new glv::Color[10*100000];
+        point_vertices = new glv::Point3[10*100000];
     }
 
-    std::auto_ptr<L3::Projector<double> > projector;
-    L3::PointCloud<double>* point_cloud;
+    int current_alloc;
+
+    void realloc( int size )
+    {
+        delete [] pose_colors;
+        delete [] pose_vertices;
+
+        pose_colors   = new glv::Color[size];
+        pose_vertices = new glv::Point3[size];
+
+        current_alloc = size;
+    }
+
     double x,y;
+    L3::PointCloud<double>* point_cloud;
+    std::auto_ptr<L3::Projector<double> > projector;
+    
+    glv::Color* pose_colors;
+    glv::Point3* pose_vertices;
+    glv::Color*  point_colors  ;
+    glv::Point3* point_vertices;
 
     L3::Tools::Timer t;
     void onDraw3D( glv::GLV& g )
     {
+        t.begin();
         // Update the swathe_builder
         if ( !swathe_builder->update( time ))
-            return;
+            throw std::exception();
 
         projector->project( swathe_builder->swathe );
- 
-        L3::histogram( point_cloud );
-
-        // Reserve
-        glv::Color*  pose_colors   = new glv::Color[swathe_builder->swathe.size()];
-        glv::Point3* pose_vertices = new glv::Point3[swathe_builder->swathe.size()];;
+        //L3::histogram( point_cloud );
 
         SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
+
+        if (swathe_builder->swathe.size() > current_alloc )
+            realloc( swathe_builder->swathe.size() );
 
         int counter = 0;
         while( pose_iterator != swathe_builder->swathe.end() )
@@ -303,16 +326,12 @@ struct SwatheRenderer : Leaf
             counter++;
         }
         glv::draw::paint( glv::draw::Points, pose_vertices, pose_colors, counter );
-
-        delete [] pose_colors;
-        delete [] pose_vertices;
-
+        
         PointCloud<double>::ITERATOR point_iterator = point_cloud->begin();
 
-        glv::Color*  point_colors   = new glv::Color[point_cloud->num_points];
-        glv::Point3* point_vertices = new glv::Point3[point_cloud->num_points];
         counter = 0;
 
+        std::cout <<  point_cloud->num_points << std::endl;
         while( point_iterator != point_cloud->end() )
         {
             point_vertices[counter++]( point_iterator->x , point_iterator->y , point_iterator->z);
@@ -321,9 +340,7 @@ struct SwatheRenderer : Leaf
         
         glv::draw::paint( glv::draw::Points, point_vertices, point_colors, counter );
                 
-        delete [] point_colors;
-        delete [] point_vertices;
-    
+        std::cout << t.end() << std::endl; 
     }
 
     L3::SwatheBuilder* swathe_builder;

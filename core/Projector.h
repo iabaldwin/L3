@@ -73,7 +73,7 @@ class Projector
 
 //#pragma omp parallel private(pair_counter,x,y,scan_counter,tmp ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
             {
-                for( pair_counter=0; pair_counter < n; pair_counter+=1 ) 
+                for( pair_counter=0; pair_counter < n; pair_counter+=10 ) 
                 {
                     Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();
 
@@ -91,6 +91,7 @@ class Projector
                         XY(1,3) = y;
                         XY(2,3) = 0.0;
 
+                        // Project 3D point 
                         tmp = ((*swathe_ptr)[pair_counter].first->getHomogeneous()*(*calib_ptr))*XY;
 
                         //points[(pair_counter*541)+scan_counter] = L3::Point<T>( tmp(0,3), tmp(1,3), tmp(2,3) );

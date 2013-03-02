@@ -13,12 +13,14 @@ int main (int argc, char ** argv)
     /*
      *L3
      */
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 10.0 );
+    
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151> LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
     
@@ -50,7 +52,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite      composite_view;
 
     composite_view.current_time = time;
-    composite_view.sf = 3.0;
+    composite_view.sf = 2.0;
 
     top << (composite_view << swathe_renderer);
 
