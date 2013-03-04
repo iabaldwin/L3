@@ -268,20 +268,36 @@ void centerPointCloud( PointCloud<T>* cloud )
 template <typename T>
 struct histogram
 {
-    histogram()
+    histogram( float x=100.0, float y=100.0, unsigned int bins=1000 ) : num_bins(bins)
     {
-        hist =  gsl_histogram2d_alloc (1000, 1000);
+        hist =  gsl_histogram2d_alloc (num_bins, num_bins);
 
-        gsl_histogram2d_set_ranges_uniform (hist, 0.0, 100.0, 0.0, 100.0);
+        gsl_histogram2d_set_ranges_uniform (hist, x-50.0, x+50.0, y-50.0, y+50.0);
+    }
+
+    unsigned int num_bins;
+
+    void reset()
+    {
+        gsl_histogram2d_reset( hist );
+    }
+
+    unsigned int bin( size_t x, size_t y  )
+    {
+        return gsl_histogram2d_get(hist,x,y); 
+    }
+
+    std::pair<float, float> coords( size_t x, size_t y  )
+    {
+        return std::make_pair( hist->xrange[x], hist->yrange[y] );
     }
 
     ~histogram()
     {
-        //gsl_histogram_free( hist );
+        gsl_histogram2d_free( hist );
     }
 
     gsl_histogram2d* hist;
-
 
     void operator()( L3::PointCloud<T>* cloud )
     {

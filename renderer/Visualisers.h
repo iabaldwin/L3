@@ -278,6 +278,9 @@ struct SwatheRenderer : Leaf
     
         point_colors   = new glv::Color[10*100000];
         point_vertices = new glv::Point3[10*100000];
+   
+        histogram_vertices = new glv::Point3[1000*1000];
+        histogram_colors = new glv::Color[1000*1000];
     }
 
     int current_alloc;
@@ -301,21 +304,26 @@ struct SwatheRenderer : Leaf
     glv::Point3* pose_vertices;
     glv::Color*  point_colors  ;
     glv::Point3* point_vertices;
+    glv::Point3* histogram_vertices;
+    glv::Color*  histogram_colors;
 
-    L3::histogram<double> hist;
 
     L3::Tools::Timer t;
     void onDraw3D( glv::GLV& g )
     {
-        t.begin();
         // Update the swathe_builder
         if ( !swathe_builder->update( time ))
             throw std::exception();
 
+        // Do projection
         projector->project( swathe_builder->swathe );
-        hist( point_cloud );
-
+     
         SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
+
+        L3::histogram<double> hist( pose_iterator->first->x, pose_iterator->first->y, 100);
+        hist( point_cloud );
+        renderHistogram( hist );
+        hist.reset(); 
 
         if (swathe_builder->swathe.size() > current_alloc )
             realloc( swathe_builder->swathe.size() );
@@ -333,7 +341,6 @@ struct SwatheRenderer : Leaf
 
         counter = 0;
 
-        std::cout <<  point_cloud->num_points << std::endl;
         while( point_iterator != point_cloud->end() )
         {
             point_vertices[counter++]( point_iterator->x , point_iterator->y , point_iterator->z);
@@ -341,8 +348,24 @@ struct SwatheRenderer : Leaf
         }
         
         glv::draw::paint( glv::draw::Points, point_vertices, point_colors, counter );
-                
-        std::cout << t.end() << std::endl; 
+    }
+
+    void renderHistogram( L3::histogram<double>& hist )
+    {
+        int counter = 0; 
+        for( unsigned int i=0; i < hist.num_bins; i++ )
+        {
+            for( unsigned int j=0; j < hist.num_bins; j++ )
+            {
+                unsigned int val = hist.bin( i, j );
+            
+                std::pair<float,float> coords = hist.coords( i, j);
+
+                histogram_vertices[counter++]( coords.first, coords.second, val );
+            }
+        }
+        
+        glv::draw::paint( glv::draw::Points, histogram_vertices, histogram_colors, counter );
     }
 
     L3::SwatheBuilder* swathe_builder;
