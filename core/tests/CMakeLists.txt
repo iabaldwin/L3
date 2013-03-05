@@ -46,3 +46,9 @@ target_link_libraries( test_data_adapters config L3 boost_system boost_filesyste
 add_executable( test_pipeline test_pipeline.cpp )
 target_link_libraries( test_pipeline config L3 boost_system boost_filesystem )
 
+add_executable( test_readers test_readers.cpp )
+target_link_libraries( test_readers config L3 boost_system boost_filesystem )
+
+add_executable( test_sequential_file_reader test_sequential_file_reader.cpp )
+target_link_libraries( test_sequential_file_reader config L3 boost_system boost_filesystem )
+

@@ -5,7 +5,7 @@
 int main()
 {
 
-    std::auto_ptr<L3::IO::FileReader<L3::Pose> > reader( new L3::IO::FileReader<L3::Pose>() );
+    std::auto_ptr<L3::IO::BulkReader<L3::Pose> > reader( new L3::IO::BulkReader<L3::Pose>() );
     
     reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" );
     reader->read();

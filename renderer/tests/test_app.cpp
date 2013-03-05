@@ -17,7 +17,7 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     // Pose sequence
-    std::auto_ptr<L3::IO::FileReader<L3::Pose> > reader( new L3::IO::FileReader<L3::Pose>() );
+    std::auto_ptr<L3::IO::BulkReader<L3::Pose> > reader( new L3::IO::BulkReader<L3::Pose>() );
     
     reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" );
     reader->read();
