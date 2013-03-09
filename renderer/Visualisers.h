@@ -46,7 +46,6 @@ struct Leaf
 
     virtual void onDraw2D( glv::GLV& g )
     {}
-    
    
     double time;
 };
@@ -96,6 +95,7 @@ struct Composite : glv::View3D
         }
  
         previous = current;
+    
     }
 
     virtual void onDraw2D( glv::GLV& g)
@@ -107,7 +107,11 @@ struct Composite : glv::View3D
         components.push_back( &leaf );
         return *this;
     }
-        
+
+    void move( double x, double y, double z)
+    {
+        glv::draw::translate( x, y, z ); 
+    }
 
 };
 

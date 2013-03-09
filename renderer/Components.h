@@ -10,6 +10,7 @@
 
 namespace L3
 {
+
 namespace Visualisers
 {
 
@@ -64,8 +65,6 @@ struct CoordinateSystem
     glv::Point3* vertices;
 
 };
-
-
 
 
 }
