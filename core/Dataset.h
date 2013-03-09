@@ -31,6 +31,7 @@ class Dataset
         bool            validate();
         bool            load();
         std::string     path(){ return root_path.string(); };
+        std::string     name(){ return dataset_name;};
 
         double          start_time;
 
@@ -45,8 +46,8 @@ class Dataset
         
     protected:
         
-        std::list< boost::shared_ptr< Poco::Runnable> >            runnables;
-        std::list< Poco::Thread* >              threads;
+        std::list< boost::shared_ptr< Poco::Runnable> >             runnables;
+        std::list< Poco::Thread* >                                  threads;
         
         friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
 
@@ -56,6 +57,8 @@ class Dataset
         
         boost::filesystem::path root_path;
         std::map< std::string, extensionType > lookup;
+
+        std::string dataset_name;
 };
 
 } // L3

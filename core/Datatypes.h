@@ -82,7 +82,12 @@ class SE3 : public Pose
 {
 
     public:
-    
+
+        static SE3 ZERO()
+        {
+            return SE3(0,0,0,0,0,0);
+        }
+
         SE3( double X, double Y, double Z, double R, double P, double Q) 
             : z(Z), r(R), p(P), q(Q)
         {

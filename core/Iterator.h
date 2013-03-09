@@ -36,21 +36,6 @@ class Iterator : public Observer
 };
 
 template <typename T>
-struct Comparator
-{
-    bool operator()( T t, const double f )
-    {
-        return ( t.first < f);
-    }
-
-    bool operator()( const double f, T t )
-    {
-        return ( t.first < f);
-    }
-
-};
-
-template <typename T>
 class ConstantTimeIterator : public Iterator<T>
 {
     public:

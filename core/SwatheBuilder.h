@@ -5,34 +5,26 @@
 #include "Definitions.h"
 #include "Core.h"
 
-template <typename T>
-struct Comparator
-{
-    bool operator()( T* t, const double f )
-    {
-        return ( t->first < f );
-    }
-};
-
 
 namespace L3
 {
+    
     class SwatheBuilder : public Observer
     {
         public:
-            //SwatheBuilder( L3::PoseProvider* pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
             SwatheBuilder( L3::Iterator<L3::SE3> * pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
-                pose_iterator( pose_it ), LIDAR_iterator( LIDAR_it ), window_duration(0.0) 
+                pose_iterator( pose_it ), 
+                LIDAR_iterator( LIDAR_it ), 
+                window_duration(0.0) 
             {
             }
-
-            L3::Tools::Timer t;
                 
-            Comparator<  std::pair< double, boost::shared_ptr<L3::SE3> > > _comparator;
+            Comparator< std::pair< double, boost::shared_ptr<L3::SE3> > > _comparator;
             
             bool update( double time )
             {
 #ifndef NDEBUG
+                L3::Tools::Timer t;
                 t.begin();
 #endif
                 if (!pose_iterator->update( time ))
@@ -61,6 +53,7 @@ namespace L3
                                                                                         pose_iterator->window.end(), 
                                                                                         it->first, 
                                                                                         _comparator );
+                    
                     if ( index == pose_iterator->window.end() ) 
                         index--; 
 

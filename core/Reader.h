@@ -17,7 +17,7 @@ namespace IO
 {
 
 template <typename T>
-struct Extractor
+struct TextExtractor
 {
     std::vector< std::pair< double, boost::shared_ptr<T> > > elements;
 
@@ -34,6 +34,38 @@ struct Extractor
 
 };
 
+template <typename T>
+struct BinaryExtractor
+{
+    std::vector< std::pair< double, boost::shared_ptr<T> > > elements;
+
+    BinaryExtractor() : counter(0)
+    {
+        buffer.resize( L3::Sizes<T>::elements, 0 );
+    }
+
+    int counter, index;
+    std::vector<double> buffer;
+
+    void operator()( double d )
+    {
+        index = (counter % L3::Sizes<T>::elements );
+        
+        counter++;
+   
+        if ( index == L3::Sizes<T>::elements -1 ) 
+        {
+            elements.push_back( AbstractFactory<T>::produce( buffer ) );
+        }
+        else
+            buffer[index] = d;
+    }
+
+};
+
+/*
+ *Readers
+ */
 class Reader
 {
 
@@ -77,18 +109,20 @@ class BinaryReader : public Reader
             return bytes.size();
         }
 
-        void extract()
+        bool extract( std::vector< std::pair< double, boost::shared_ptr<T> > >& poses ) 
         {
             // How many elements?
-            size_t numels = bytes.size()/sizeof(double)/L3::Sizes<T>::elements;
+            size_t numels = bytes.size()/sizeof(double);
             
             double* ptr = reinterpret_cast<double*>(&bytes[0]);
 
-            std::vector<double> data;
-            
-            std::copy( ptr, 
-                        ptr + numels,
-                        std::back_inserter( data ) );
+            BinaryExtractor<T> e;
+       
+            e = std::for_each( ptr, ptr+numels, e );
+
+            poses.assign( e.elements.begin(), e.elements.end() );
+        
+            return true;
         }
 
         std::vector<unsigned char> bytes;
@@ -140,7 +174,7 @@ class BulkReader : public TextReader
         
         bool extract( std::vector< std::pair< double, boost::shared_ptr<T> > >& poses )
         {
-            Extractor<T> e;
+            TextExtractor<T> e;
        
             e = std::for_each( raw.begin(), raw.end(), e );
 
@@ -176,8 +210,10 @@ class SequentialFileReader : public Reader
 
         bool extract( std::pair< double, boost::shared_ptr<T> >& pose )
         {
-            Extractor<T> e;
+            TextExtractor<T> e;
             //e = std::for_each( raw.begin(), raw.end(), e );
+       
+            return true;
         }
 
 };

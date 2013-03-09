@@ -42,10 +42,9 @@ int main()
     {
         t.begin();
         projector->project( swathe_builder.swathe );
-        
         double end_time = t.end(); 
-        //std::cout << cloud.size() << " pts in " << end_time << "s" << std::endl;
-        //std::cout << (double)cloud.size()/end_time << " pts/s" << std::endl;
+        std::cout << point_cloud->num_points << " pts in " << end_time << "s" << std::endl;
+        std::cout << (double)point_cloud->num_points/end_time << " pts/s" << std::endl;
     
     }
 }

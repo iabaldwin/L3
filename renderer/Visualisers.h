@@ -117,24 +117,26 @@ struct Composite : glv::View3D
  *      Render a static chain of poses
  *
  */
+//template <typename T>
 struct PoseChainRenderer : Leaf
 {
     glv::Color* colors;
     glv::Point3* vertices;
 
-    PoseChainRenderer( std::vector< std::pair< double, boost::shared_ptr<L3::Pose> > >& POSES ) : poses(POSES)
+    PoseChainRenderer( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* POSES ) : poses(POSES)
     {
-        colors = new glv::Color[poses.size()];
-        vertices = new glv::Point3[poses.size()];
+        colors = new glv::Color[poses->size()];
+        vertices = new glv::Point3[poses->size()];
 
         int counter = 0;
-        for( POSE_SEQUENCE_ITERATOR it=poses.begin(); it < poses.end(); it++ )
+        
+        std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it;
+        for( it=poses->begin(); it < poses->end(); it++ )
         {
             vertices[counter]( it->second->x, it->second->y, 0 );
             colors[counter] = glv::HSV(0.6, .1, 0.45+0.55);
             counter++;
         }
-
     }
 
     ~PoseChainRenderer()
@@ -146,14 +148,14 @@ struct PoseChainRenderer : Leaf
    
     void onDraw3D(glv::GLV& g)
     {
-        glv::draw::paint( glv::draw::Points, vertices, colors, poses.size() );
+        glv::draw::paint( glv::draw::Points, vertices, colors, poses->size() );
     }
 
     void onDraw2D(glv::GLV& g)
     {
     }
 
-    std::vector< std::pair< double, boost::shared_ptr<L3::Pose> > >& poses;
+    std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* poses;
 };
 
 /*
@@ -283,7 +285,8 @@ struct SwatheRenderer : Leaf
         histogram_colors = new glv::Color[1000*1000];
     }
 
-    int current_alloc;
+    L3::SwatheBuilder* swathe_builder;
+    unsigned int current_alloc;
 
     void realloc( int size )
     {
@@ -367,8 +370,6 @@ struct SwatheRenderer : Leaf
         
         glv::draw::paint( glv::draw::Points, histogram_vertices, histogram_colors, counter );
     }
-
-    L3::SwatheBuilder* swathe_builder;
 
 };
 

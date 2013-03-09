@@ -79,7 +79,7 @@ struct PointRGB : Point<T>
 
 
 template< typename T>
-std::ostream& operator<<( std::ostream& o, const L3::Point< T> & p )
+std::ostream& operator<<( std::ostream& o, const L3::Point<T>& p )
 {
     p.print( o ); 
     return o;
@@ -114,28 +114,31 @@ struct PointCloud
 };
 
 template <typename T>
-PointCloud<T> samplePointCloud( PointCloud<T>& cloud, int size )
+PointCloud<T> samplePointCloud( PointCloud<T>* cloud, int size )
 {
-        //PointCloud<T> sampled_cloud;
+        PointCloud<T> sampled_cloud;
 
-        //// Generate random indices
-        //std::vector<int> random_indices( size );
+        // Generate random indices
+        std::vector<int> random_indices( size );
 
-        //randomate r( cloud.size() ) ;
+        randomate r( cloud->num_points );
 
-        //std::generate( random_indices.begin(),  random_indices.end(), r );
+        std::generate( random_indices.begin(),  random_indices.end(), r );
 
-        //sampled_cloud.data.resize( size );
+        sampled_cloud.points = new L3::Point<T>[ size ];
 
-        //typename std::vector< Point<T> >::iterator point_iterator = sampled_cloud.data.begin();
-        //typename std::vector< int >::iterator index_iterator = random_indices.begin();
+        Point<T>* point_iterator = sampled_cloud.points;
 
-        //while( index_iterator != random_indices.end() )
-        //{
-            //*point_iterator++ = cloud.data[ *index_iterator++ ];
-        //}
+        typename std::vector< int >::iterator index_iterator = random_indices.begin();
 
-        //return sampled_cloud;
+        while( index_iterator != random_indices.end() )
+        {
+            *point_iterator++ = cloud->points[ *index_iterator++ ];
+        }
+
+        sampled_cloud.num_points = size;
+
+        return sampled_cloud;
 }
 
 template <typename T>

@@ -5,7 +5,12 @@ namespace L3
 
 Dataset::Dataset( const std::string& target )  : start_time(0)
 {
+    // From the root path
     root_path /= target;
+    // assign the dataset name 
+    dataset_name = root_path.parent_path().filename().string();
+
+    // Append the location of the binary data
     root_path /= "L3";
 
     // Does the directory exist?
@@ -140,15 +145,6 @@ bool Dataset::load()
 
     return true;
 }
-
-template <typename T>
-struct Comparator
-{
-    bool operator()( T* t, const double f )
-    {
-        return (t->time < f);
-    }
-};
 
 template <typename T>
 struct Sorter

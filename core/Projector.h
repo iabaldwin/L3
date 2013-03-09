@@ -4,6 +4,7 @@
 #include <cmath>
 #include <omp.h>
 
+#include "Tools.h"
 #include "PointCloud.h"
 #include "Definitions.h"
 #include "Datatypes.h"
@@ -53,8 +54,8 @@ class Projector
             L3::Tools::Timer t;
             t.begin();
 #endif
-            int scan_counter, pair_counter;
-            int n = swathe.size();
+            int scan_counter;
+            unsigned int pair_counter, n = swathe.size();
           
             if ( n > allocated_size )
                 reallocate( n );
