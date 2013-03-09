@@ -88,6 +88,21 @@ class SE3 : public Pose
             return SE3(0,0,0,0,0,0);
         }
 
+        static SE3 UNIT_X()
+        {
+            return SE3(1,0,0,0,0,0);
+        }
+
+        static SE3 UNIT_Y()
+        {
+            return SE3(0,1,0,0,0,0);
+        }
+
+        static SE3 UNIT_Z()
+        {
+            return SE3(0,0,1,0,0,0);
+        }
+
         SE3( double X, double Y, double Z, double R, double P, double Q) 
             : z(Z), r(R), p(P), q(Q)
         {

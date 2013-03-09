@@ -8,6 +8,7 @@
 #include <GLV/glv_util.h>
 
 #include "L3.h"
+#include "Components.h"
 
 namespace L3
 {
@@ -81,8 +82,7 @@ struct Composite : glv::View3D
         current = clock();
         double elapsed = double(current - previous)/CLOCKS_PER_SEC;
 
-        //std::cout << 1.0/elapsed << " hz" << std::endl;
-
+        // Takes care of initial inf.
         elapsed  = (elapsed > 1.0) ? 1.0 : elapsed;
 
         // 2. Increment the *time* by this value 
@@ -120,42 +120,36 @@ struct Composite : glv::View3D
 //template <typename T>
 struct PoseChainRenderer : Leaf
 {
-    glv::Color* colors;
-    glv::Point3* vertices;
+    std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* poses;
+  
+    std::deque< boost::shared_ptr<L3::Visualisers::CoordinateSystem> > coords;
 
     PoseChainRenderer( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* POSES ) : poses(POSES)
     {
-        colors = new glv::Color[poses->size()];
-        vertices = new glv::Point3[poses->size()];
-
-        int counter = 0;
-        
         std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it;
+        
         for( it=poses->begin(); it < poses->end(); it++ )
         {
-            vertices[counter]( it->second->x, it->second->y, 0 );
-            colors[counter] = glv::HSV(0.6, .1, 0.45+0.55);
-            counter++;
+            coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( (*it->second) ) ) );
         }
     }
 
     ~PoseChainRenderer()
     {
-        delete [] colors;
-        delete [] vertices;
     }
 
    
     void onDraw3D(glv::GLV& g)
-    {
-        glv::draw::paint( glv::draw::Points, vertices, colors, poses->size() );
+    { 
+         
+    for ( std::deque< boost::shared_ptr<L3::Visualisers::CoordinateSystem> >::iterator it = coords.begin(); it!= coords.end(); it++ )
+        (*it)->onDraw3D( g );
     }
 
     void onDraw2D(glv::GLV& g)
     {
     }
 
-    std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* poses;
 };
 
 /*

@@ -58,8 +58,9 @@ struct experience
         std::cout << calibration.getHomogeneous() << std::endl;
 
         //Project
+        L3::SE3 calib( 0, 0, 0, 0, -1.57, 0 ); 
         point_cloud = new L3::PointCloud<double>();
-        projector = new L3::Projector<double>( &calibration, point_cloud );
+        projector = new L3::Projector<double>( &calib, point_cloud );
         projector->project( s );
     
     }
