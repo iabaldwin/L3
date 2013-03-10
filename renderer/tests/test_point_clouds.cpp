@@ -13,18 +13,13 @@ int main (int argc, char ** argv)
     /*
      *L3
      */
-    // Pose sequence
-
-    //L3::Tools::Timer t;
-
-    //t.begin();
-    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
-    //if( !( dataset.validate() && dataset.load() ) )
-        //throw std::exception();
+    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    if( !( dataset.validate() && dataset.load() ) )
+        throw std::exception();
     
-    //// Constant time iterator over poses
+    // Constant time iterator over poses
     //L3::ConstantTimeIterator< L3::Pose >  pose_iterator( dataset.pose_reader, 10.0 );
-    //// Constant time iterator over LIDAR
+    // Constant time iterator over LIDAR
     //L3::ConstantTimeIterator< L3::LIDAR > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
     
     //double time = dataset.start_time;

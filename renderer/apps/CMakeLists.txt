@@ -7,3 +7,6 @@ target_link_libraries( plot_lhlv GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 bo
 add_executable( plot_pose_chain plot_pose_chain.cpp )
 target_link_libraries( plot_pose_chain GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)
 
+add_executable( plot_point_cloud plot_point_cloud.cpp )
+target_link_libraries( plot_point_cloud GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)
+

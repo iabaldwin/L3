@@ -36,4 +36,4 @@ add_subdirectory( core )
 add_subdirectory( renderer )
 
 # Utilities
-#add_subdirectory( utils )
+add_subdirectory( utils )
