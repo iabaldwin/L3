@@ -187,10 +187,10 @@ struct SwatheRenderer : Leaf
      
         SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
 
-        L3::histogram<double> hist( pose_iterator->first->x, pose_iterator->first->y, 100);
-        hist( point_cloud );
-        renderHistogram( hist );
-        hist.reset(); 
+        //L3::histogram<double> hist( pose_iterator->first->x, pose_iterator->first->y, 100);
+        //hist( point_cloud );
+        //renderHistogram( hist );
+        //hist.reset(); 
 
         if (swathe_builder->swathe.size() > current_alloc )
             realloc( swathe_builder->swathe.size() );

@@ -36,24 +36,20 @@ int main (int argc, char ** argv)
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
     
-    glv::Grid grid(glv::Rect(0,0));
-    grid.range(1);            // set plot region
-    grid.major(1);            // set major tick mark placement
-    grid.minor(2);            // number of divisions per major ticks
-    grid.equalizeAxes(true);
-    grid.stretch(1,.2);
-
     double d = 800;
     glv::Plot v1__( glv::Rect( 0,0*d/8, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
     // Point cloud renderer
+    L3::Visualisers::Composite      composite;
+    L3::Visualisers::Controller     controller;
+    L3::Visualisers::Grid           grid;
     L3::Visualisers::SwatheRenderer swathe_renderer( &swathe_builder ); 
-    L3::Visualisers::Composite      composite_view;
 
-    composite_view.current_time = time;
-    composite_view.sf = 2.0;
+    composite.addController( &controller );
+    composite.current_time = time;
+    composite.sf = 2.0;
 
-    top << (composite_view << swathe_renderer);
+    top << (composite << swathe_renderer << grid );
 
     win.setGLV(top);
     glv::Application::run();

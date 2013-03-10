@@ -66,8 +66,9 @@ struct Composite : glv::View3D
 
     Composite() : current_time(0.0), 
                     sf(1), 
-                    _x(0), _y(0), _z( -240.0 ), 
-                    _r(0), _p(0), _q(0)
+                    _x(0), _y(0), _z( -500.0 ), 
+                    _r(0), _p(0), _q(0),
+                    controller(NULL)
     {
         stretch(1,1); 
         
@@ -93,9 +94,9 @@ struct Composite : glv::View3D
     }
 
     bool onEvent( glv::Event::t type, glv::GLV& g )
-    {    
-        apply( controller->onEvent( type, g ) );
-    
+    {
+        if (controller)
+            apply( controller->onEvent( type, g ) );
     }
 
     L3::Visualisers::Controller* controller;
@@ -146,6 +147,11 @@ struct Composite : glv::View3D
  */
 struct Grid : Leaf
 {
+
+    int counter;
+    glv::Point3*    vertices;
+    glv::Color*     colors;
+
     Grid()
     {
         vertices = new glv::Point3[ 100*4 ];
@@ -159,34 +165,42 @@ struct Grid : Leaf
         // Add horizontal
         for ( int i=lower; i<upper; i+=spacing )
         {
+            glv::Color c = (counter % 4 == 0 ) ? glv::Color( .82 ) : glv::Color( 112.f/255.f, 138.f/255.f, 144.f/255.f ) ; 
+
+            colors[counter] = c; 
             vertices[counter++]( i, lower, 0);
+            colors[counter] = c; 
             vertices[counter++]( i, upper, 0);
         }
 
         for ( int i=lower; i<upper; i+=spacing )
         {
+            glv::Color c = (counter % 4 == 0 ) ? glv::Color( .82 ) : glv::Color( 112.f/255.f, 138.f/255.f, 144.f/255.f ) ; 
+            
+            colors[counter] = c; 
             vertices[counter++]( lower, i , 0);
+            colors[counter] = c; 
             vertices[counter++]( upper, i , 0);
         }
 
     }
 
-    int counter;
-
     ~Grid()
     {
         delete [] vertices;
     }
-        
-    glv::Point3*    vertices;
-    glv::Color*     colors;
+
 
     void onDraw3D(glv::GLV& g)
     { 
+        glv::draw::lineWidth( .1 );
         glv::draw::paint( glv::draw::Lines, vertices, colors, counter );
     }
 };
 
+/*
+ *CoordinateSystem : XYZ, RGB
+ */
 struct CoordinateSystem
 {
 
