@@ -2,60 +2,64 @@
 #define L3_CONTROLLERS_H
 
 #include <GLV/glv.h>
-
-#include "L3.h"
-
 #include <GLUT/glut.h>
 
+#include "L3.h"
 
 namespace L3
 {
 namespace Visualisers
 {
 
-struct Controller : glv::EventHandler
+struct control_t
 {
-    Controller()
+    control_t() : x(0), y(0), z(0), r(0), p(0), q(0)
+    {}
+    
+    double x,y,z,r,p,q;
+};
+
+std::ostream& operator<<( std::ostream& o, const control_t& t )
+{
+    o << t.x << ":" << t.y << ":" << t.z << ":" << t.r << ":" << t.p << ":" << t.q;
+    return o;
+}
+
+struct Controller 
+{
+    glv::space_t origin_x, origin_y;
+
+    control_t onEvent( glv::Event::t type, glv::GLV& g )
     {
-        glutIgnoreKeyRepeat(0);
-    }
-
-    bool onEvent( glv::View& v, glv::GLV& g )
-    {
-        L3::Visualisers::Composite* ptr = dynamic_cast<L3::Visualisers::Composite*>( g.child );
-
-        if (!ptr)
-            return false;
-
-        double x=0, y=0, z=0, r=0, p=0, q =0;
-
-        switch(g.keyboard().key())
+        control_t t;
+        
+        switch (type)
         {
-            case 119:   // w
-                z+=1;
+            case (glv::Event::KeyDown):
                 break;
 
-            case 115:   // s
-                z-=1;
+            case (glv::Event::KeyRepeat):
                 break;
 
-            case 97:    // a
-                x+=1;
+            case (glv::Event::MouseDown):
+                origin_x = g.mouse().x();
+                origin_y = g.mouse().y();
                 break;
 
-            case 100:   // d
-                x-=1;
+            case (glv::Event::MouseDrag):
+                t.p =  (double)(g.mouse().x() - origin_x) /100;
+                t.q =  (double)(g.mouse().y() - origin_y) /100;
+                break;
+
+            case (glv::Event::MouseUp):
                 break;
 
             default:
                 break;
+
         }
-                
-        ptr->move( x,y,z);
-        ptr->rotate( r,p,q);
 
-        return true;
-
+        return t;
     }
 
 };

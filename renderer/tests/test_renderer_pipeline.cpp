@@ -22,14 +22,13 @@ int main (int argc, char ** argv)
     
     // Renderer
     L3::Visualisers::Grid               grid;
+    L3::Visualisers::Composite          composite;
     L3::Visualisers::Controller         controller;
-    L3::Visualisers::Composite          composite_view;
 
-    top << (composite_view << grid );
+    composite.addController( &controller );
 
-    //top.addHandler( glv::Event::KeyDown, controller );
-    //top.addHandler( glv::Event::KeyRepeat, controller );
-   
+    top << (composite << grid );
+
     // Go
     win.setGLV(top);
     glv::Application::run();

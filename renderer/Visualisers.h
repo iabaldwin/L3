@@ -37,9 +37,8 @@ struct PoseChainRenderer : Leaf
 
     void onDraw3D(glv::GLV& g)
     { 
-         
-    for ( std::deque< boost::shared_ptr<L3::Visualisers::CoordinateSystem> >::iterator it = coords.begin(); it!= coords.end(); it++ )
-        (*it)->onDraw3D( g );
+        for ( std::deque< boost::shared_ptr<L3::Visualisers::CoordinateSystem> >::iterator it = coords.begin(); it!= coords.end(); it++ )
+            (*it)->onDraw3D( g );
     }
 };
 
@@ -70,7 +69,7 @@ struct CloudRenderer : Leaf
 
     void onDraw3D( glv::GLV& g )
     {
-        glv::draw::paint( glv::draw::Points, vertices, colors, cloud->num_points);
+        glv::draw::paint( glv::draw::Points, &*vertices, &*colors, cloud->num_points);
     }
     
     glv::Color*         colors;

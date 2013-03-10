@@ -6,14 +6,16 @@
 #include <GLV/glv.h>
 
 #include "L3.h"
-
+#include "Controller.h"
 
 namespace L3
 {
-
 namespace Visualisers
 {
 
+/*
+ *Single entity for 3D rendering
+ */
 struct Component : glv::View3D
 {
 
@@ -39,6 +41,9 @@ struct Component : glv::View3D
 
 };
 
+/*
+ *Leaf component for 3D rendering
+ */
 struct Leaf 
 {
     virtual void onDraw3D( glv::GLV& g )
@@ -70,25 +75,34 @@ struct Composite : glv::View3D
     }
 
     clock_t current, previous;
-    double current_time; 
     unsigned int sf;
-    std::list<Leaf*> components; 
-
-    void move( double x, double y, double z )
-    {
-        _x+=x;
-        _y+=y;
-        _z+=z;
-    }
-
-    void rotate( double r, double p, double q )
-    {
-        _r+=r;
-        _p+=p;
-        _q+=q;
-    }
+    double current_time; 
     double _x, _y, _z;
     double _r, _p, _q;
+ 
+    std::list<Leaf*> components; 
+
+    void apply( control_t t )
+    {
+        _x += t.x;
+        _y += t.y;
+        _z += t.z;
+        _r += t.r;
+        _p += t.p;
+        _q += t.q;
+    }
+
+    bool onEvent( glv::Event::t type, glv::GLV& g )
+    {    
+        apply( controller->onEvent( type, g ) );
+    
+    }
+
+    L3::Visualisers::Controller* controller;
+    void addController( L3::Visualisers::Controller* c )
+    {
+        controller = c; 
+    }
 
     virtual void onDraw3D(glv::GLV& g)
     {
@@ -116,10 +130,6 @@ struct Composite : glv::View3D
         previous = current;
     }
 
-    virtual void onDraw2D( glv::GLV& g)
-    {
-    }
-
     Composite& operator<<( Leaf& leaf )
     {
         components.push_back( &leaf );
@@ -128,25 +138,35 @@ struct Composite : glv::View3D
     
 };
 
+/*
+ *Useful components
+ *
+ *      GRID
+ *
+ */
 struct Grid : Leaf
 {
-
     Grid()
     {
         vertices = new glv::Point3[ 100*4 ];
+        colors = new glv::Color[ 100*4 ];
 
         counter = 0;
+        float spacing = 50; 
+        float lower = -500;
+        float upper = 500;
+
         // Add horizontal
-        for ( int i=0; i<100; i++ )
+        for ( int i=lower; i<upper; i+=spacing )
         {
-            vertices[counter++]( i, 0 , 0);
-            vertices[counter++]( i, 100 , 0);
+            vertices[counter++]( i, lower, 0);
+            vertices[counter++]( i, upper, 0);
         }
 
-        for ( int j=0; j<100; j++ )
+        for ( int i=lower; i<upper; i+=spacing )
         {
-            vertices[counter++]( 0, j , 0);
-            vertices[counter++]( 100, j , 0);
+            vertices[counter++]( lower, i , 0);
+            vertices[counter++]( upper, i , 0);
         }
 
     }
@@ -158,20 +178,12 @@ struct Grid : Leaf
         delete [] vertices;
     }
         
-    glv::Point3* vertices;
+    glv::Point3*    vertices;
+    glv::Color*     colors;
 
     void onDraw3D(glv::GLV& g)
     { 
-        glv::draw::push();
-        glv::draw::identity(); 
-        //glv::draw::paint( glv::draw::Points, vertices, counter );
-       
-        glv::Point3 verts[2];
-        verts[0]( 0, 0, 0 );
-        verts[1]( 100, 100, 0 );
-        glv::draw::paint( glv::draw::Lines, verts, 2 );
-
-        glv::draw::pop();
+        glv::draw::paint( glv::draw::Lines, vertices, colors, counter );
     }
 };
 
@@ -229,7 +241,6 @@ struct CoordinateSystem
     glv::Point3* vertices;
 
 };
-
 
 }
 }

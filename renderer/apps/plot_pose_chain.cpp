@@ -94,8 +94,8 @@ int main (int argc, char ** argv)
 
     top << (composite_view << pose_chain_renderer);
 
-    top.addHandler( glv::Event::KeyDown, controller );
-    top.addHandler( glv::Event::KeyRepeat, controller );
+    //top.addHandler( glv::Event::KeyDown, controller );
+    //top.addHandler( glv::Event::KeyRepeat, controller );
     
     win.setGLV(top);
     glv::Application::run();
