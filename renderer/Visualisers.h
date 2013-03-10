@@ -59,7 +59,10 @@ struct Leaf
 struct Composite : glv::View3D 
 {
 
-    Composite() : current_time(0.0), sf(1)
+    Composite() : current_time(0.0), 
+                    sf(1), 
+                    _x(0), _y(0), _z( -540.0 ), 
+                    _r(0), _p(0), _q(0)
     {
         stretch(1,1); 
         
@@ -71,11 +74,27 @@ struct Composite : glv::View3D
     unsigned int sf;
     std::list<Leaf*> components; 
 
+    void move( double x, double y, double z )
+    {
+        _x+=x;
+        _y+=y;
+        _z+=z;
+    }
+
+    void rotate( double r, double p, double q )
+    {
+        _r+=r;
+        _p+=p;
+        _q+=q;
+    }
+    double _x, _y, _z;
+    double _r, _p, _q;
+
     virtual void onDraw3D(glv::GLV& g)
     {
         std::list<Leaf*>::iterator it = components.begin();
-        glv::draw::translateZ( -450 );
-        glv::draw::translateY( -50 );
+        glv::draw::translate( _x, _y, _z );
+        glv::draw::rotate( _r, _p, _q );
 
         // 1. Compute time since last update
         current = clock();
@@ -95,7 +114,6 @@ struct Composite : glv::View3D
         }
  
         previous = current;
-    
     }
 
     virtual void onDraw2D( glv::GLV& g)
@@ -108,11 +126,7 @@ struct Composite : glv::View3D
         return *this;
     }
 
-    void move( double x, double y, double z)
-    {
-        glv::draw::translate( x, y, z ); 
-    }
-
+    
 };
 
 /*
@@ -132,7 +146,7 @@ struct PoseChainRenderer : Leaf
     {
         std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it;
         
-        for( it=poses->begin(); it < poses->end(); it++ )
+        for( it=poses->begin(); it < poses->end(); it+= 100 )
         {
             coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( (*it->second) ) ) );
         }

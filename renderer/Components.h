@@ -56,8 +56,11 @@ struct CoordinateSystem
     void onDraw3D(glv::GLV& g)
     { 
         glv::draw::push();
+
         glv::draw::translate( _pose.x, _pose.y, _pose.z );
+        glv::draw::rotate( _pose.r, _pose.q, _pose.q );
         glv::draw::paint( glv::draw::LineStrip, vertices, colors, 6 );
+        
         glv::draw::pop();
     }
 
