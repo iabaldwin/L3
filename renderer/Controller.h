@@ -47,8 +47,8 @@ struct Controller
                 break;
 
             case (glv::Event::MouseDrag):
-                t.p =  (double)(g.mouse().x() - origin_x) /100;
-                t.q =  (double)(g.mouse().y() - origin_y) /100;
+                t.q =  (double)(g.mouse().x() - origin_x) /100;
+                t.r =  (double)(g.mouse().y() - origin_y) /100;
                 break;
 
             case (glv::Event::MouseUp):
