@@ -27,8 +27,8 @@ struct Component : glv::View3D
          *    to the full size of the
          *    element.
          */
+        stretch(1,1);
     }
-
 
     virtual void onDraw3D(glv::GLV& g)
     {
@@ -66,7 +66,7 @@ struct Composite : glv::View3D
     {
         stretch(1,1); 
         
-        far( 300 );
+        far( 1000 );
     }
 
     clock_t current, previous;

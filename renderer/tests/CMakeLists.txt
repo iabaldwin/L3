@@ -16,4 +16,9 @@ target_link_libraries( test_swathe_builder_visual GLV ${GLUT_LIBRARIES} ${OPENGL
 add_executable( test_renderer_pipeline test_renderer_pipeline.cpp )
 target_link_libraries( test_renderer_pipeline GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)
 
+add_executable( test_component test_component.cpp )
+target_link_libraries( test_component GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)
+
+add_executable( test_composite test_composite.cpp )
+target_link_libraries( test_composite GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)
 
