@@ -13,7 +13,6 @@
 #include "Poco/Thread.h"
 
 #include "Tools.h"
-#include "Datatypes.h"
 #include "WindowerFactory.h"
 
 namespace L3

@@ -13,6 +13,8 @@
 namespace L3
 {
 
+    
+
 class Pose 
 {
     public:
@@ -263,7 +265,11 @@ struct Sizes<L3::LHLV>
     const static int elements = 11+1;
 };
 
+namespace Math
+{
+    double norm( const L3::SE3& a, const L3::SE3& b );
 
-}
+} //Math
+} //L3
 
 #endif

@@ -249,7 +249,6 @@ struct HistogramRenderer : Leaf
  */
 struct CoordinateSystem
 {
-
     CoordinateSystem()  : _pose( L3::SE3::ZERO() )
     {
         _init();
@@ -291,8 +290,10 @@ struct CoordinateSystem
     { 
         glv::draw::push();
 
+        // Test to see if the model matrix is consistent
         glv::draw::translate( _pose.x, _pose.y, _pose.z );
         glv::draw::rotate( _pose.r, _pose.q, _pose.q );
+       
         glv::draw::paint( glv::draw::LineStrip, vertices, colors, 6 );
         
         glv::draw::pop();

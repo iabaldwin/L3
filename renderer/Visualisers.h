@@ -138,9 +138,8 @@ struct SwatheRenderer : Leaf
         point_cloud = new L3::PointCloud<double>();
         projector.reset( new L3::Projector<double>( &calibration, point_cloud ) );
     
-        pose_colors   = new glv::Color[current_alloc];
-        pose_vertices = new glv::Point3[current_alloc];
-    
+        pose_colors    = new glv::Color[current_alloc];
+        pose_vertices  = new glv::Point3[current_alloc];
         point_colors   = new glv::Color[10*100000];
         point_vertices = new glv::Point3[10*100000];
   
@@ -186,11 +185,19 @@ struct SwatheRenderer : Leaf
         // Do histogram
         SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
 
-        // get bounds
-        std::pair<double,double> min_bound = l3::min<double>( point_cloud );
-        std::pair<double,double> max_bound = l3::min<double>( point_cloud );
+        // Get bounds
+        std::pair<double,double> min_bound = L3::min<double>( point_cloud );
+        std::pair<double,double> max_bound = L3::max<double>( point_cloud );
+        std::pair<double,double> means     = L3::mean( point_cloud );
 
-        L3::histogram<double> hist( pose_iterator->first->x, pose_iterator->first->y, 40 );
+        // Build histogram 
+        L3::histogram<double> hist( means.first, 
+                                    means.first - min_bound.first, 
+                                    max_bound.first - means.first, 
+                                    means.second, 
+                                    means.second - min_bound.second, 
+                                    max_bound.second - means.second, 
+                                    40 );
         hist( point_cloud );
         (*histogram_renderer)( &hist ) ;
         histogram_renderer->onDraw3D( g );
@@ -211,7 +218,6 @@ struct SwatheRenderer : Leaf
 
         counter = 0;
 
-        
         //while( point_iterator != point_cloud->end() )
         while( point_iterator < point_cloud->end() )
         {
@@ -226,7 +232,41 @@ struct SwatheRenderer : Leaf
 
 };
 
-}
-}
+struct ExperienceRenderer : Leaf
+{
+
+    ExperienceRenderer( L3::Experience* EXPERIENCE ) : experience(EXPERIENCE)
+    {
+        // Build the poses
+        std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it;
+        for( it = experience->poses.begin(); it != experience->poses.end(); it++ )
+            poses.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( *(it->second) ) ) );
+
+        //SWATHE_ITERATOR it; 
+        //for( it = experience->swathe.begin(); it != experience->swathe.end(); it++ )
+            //poses.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( dynamic_cast<L3::SE3*>(*(it->first) ) ) ) );
+
+
+    }
+
+    L3::Experience* experience;
+    std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > > poses;
+
+    void onDraw3D( glv::GLV& g )
+    {
+    
+        std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > >::iterator it; 
+   
+        for( it = poses.begin(); it < poses.end(); it+=100 )
+            (*it)->onDraw3D( g );
+    }
+
+
+
+
+};
+
+}   // ::Visualisers
+}   // ::L3
 
 #endif

@@ -1,3 +1,6 @@
+add_executable( test_include_order test_include_order.cpp )
+target_link_libraries( test_include_order L3 boost_system boost_filesystem boost_unit_test_framework )
+
 add_executable( test_dataset test_dataset.cpp )
 target_link_libraries( test_dataset L3 boost_system boost_filesystem boost_unit_test_framework )
 
@@ -55,6 +58,6 @@ target_link_libraries( test_sequential_file_reader config L3 boost_system boost_
 add_executable( test_experience_generator test_experience_generator.cpp )
 target_link_libraries( test_experience_generator config L3 boost_system boost_filesystem )
 
-
-
+add_executable( test_length_estimator test_length_estimator.cpp )
+target_link_libraries( test_length_estimator config L3 boost_system boost_filesystem )
 

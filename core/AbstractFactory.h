@@ -3,7 +3,6 @@
 
 #include <sstream>
 #include <boost/shared_ptr.hpp>
-#include "Datatypes.h"
 
 namespace L3
 {

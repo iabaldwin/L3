@@ -37,12 +37,12 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
     
     // Point cloud renderer
-    L3::Visualisers::Composite          composite;
-    L3::Visualisers::BasicPanController controller;
-    L3::Visualisers::Grid               grid;
-    L3::Visualisers::SwatheRenderer     swathe_renderer( &swathe_builder ); 
+    L3::Visualisers::Composite      composite;
+    L3::Visualisers::Controller     controller;
+    L3::Visualisers::Grid           grid;
+    L3::Visualisers::SwatheRenderer swathe_renderer( &swathe_builder ); 
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( &controller );
     composite.current_time = time;
     composite.sf = 2.0;
 

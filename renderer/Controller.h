@@ -23,14 +23,45 @@ std::ostream& operator<<( std::ostream& o, const control_t& t )
     return o;
 }
 
+control_t operator+( const control_t& a, const control_t& b )
+{
+    control_t retval;
+
+    retval.x = a.x + b.x;
+    retval.y = a.y + b.y;
+    retval.z = a.z + b.z;
+    retval.r = a.r + b.r;
+    retval.p = a.p + b.p;
+    retval.q = a.q + b.q;
+
+    return retval;
+}
+
+/*
+ *Core controller class
+ */
 struct Controller 
+{
+
+    virtual control_t onEvent( glv::Event::t type, glv::GLV& g ) = 0;
+
+};
+
+/*
+ *Basic panning motion
+ */
+struct BasicPanController : Controller
 {
     glv::space_t origin_x, origin_y;
 
+    control_t estimate;
+    
     control_t onEvent( glv::Event::t type, glv::GLV& g )
     {
         control_t t;
-        
+      
+        double roll;
+
         switch (type)
         {
             case (glv::Event::KeyDown):
@@ -45,8 +76,13 @@ struct Controller
                 break;
 
             case (glv::Event::MouseDrag):
+             
                 t.q =  (double)(g.mouse().x() - origin_x) /100;
-                t.r =  (double)(g.mouse().y() - origin_y) /100;
+               
+                // Clamp
+                roll = (double)(g.mouse().y() - origin_y) /100;
+                if (estimate.r > -60 || (roll > 0 ))
+                    t.r = roll;
                 break;
 
             case (glv::Event::MouseUp):
@@ -57,6 +93,48 @@ struct Controller
 
         }
 
+        estimate = estimate + t;
+        return t;
+    }
+
+};
+
+/*
+ *  FPS Motion
+ */
+struct FPSController : Controller
+{
+    glv::space_t origin_x, origin_y;
+
+    control_t estimate;
+    
+    control_t onEvent( glv::Event::t type, glv::GLV& g )
+    {
+        control_t t;
+      
+        switch (type)
+        {
+            case (glv::Event::KeyDown):
+                break;
+
+            case (glv::Event::KeyRepeat):
+                break;
+
+            case (glv::Event::MouseDown):
+                break;
+
+            case (glv::Event::MouseDrag):
+                break;
+
+            case (glv::Event::MouseUp):
+                break;
+
+            default:
+                break;
+
+        }
+
+        estimate = estimate + t;
         return t;
     }
 

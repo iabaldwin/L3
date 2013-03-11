@@ -1,9 +1,5 @@
 #include <iostream>
-#include "Reader.h"
-#include "Utils.h"
-#include "PointCloud.h"
-#include "Projector.h"
-#include "DataAdapters.h"
+#include "L3.h"
 
 int main()
 {

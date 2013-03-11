@@ -23,9 +23,9 @@ int main (int argc, char ** argv)
     // Renderer
     L3::Visualisers::Grid               grid;
     L3::Visualisers::Composite          composite;
-    L3::Visualisers::Controller         controller;
+    L3::Visualisers::BasicPanController controller;
 
-    composite.addController( &controller );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
     top << (composite << grid );
 

@@ -5,11 +5,37 @@
 #include <numeric>
 #include <iterator>
 
-#include "Datatypes.h"
-#include "Definitions.h"
-
 namespace L3
 {
+
+struct LengthEstimator 
+{
+    L3::SE3 previous;
+
+    bool initialised;
+
+    LengthEstimator() : initialised(false), previous( L3::SE3::ZERO() )
+    {
+    }
+
+    double operator()( L3::SE3 current )
+    {
+        if ( !initialised )  
+        {
+            previous = current;
+            initialised = true;
+            return 0.0;
+        }
+        else
+        {
+            double n = L3::Math::norm( previous, current );
+            previous = current;
+            return n;
+        }
+    
+    }
+
+};
 
 typedef std::pair< double, boost::shared_ptr<L3::LHLV> > RECORD;
 

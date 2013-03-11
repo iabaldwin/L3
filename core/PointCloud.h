@@ -113,13 +113,37 @@ struct PointCloud
 };
 
 template< typename T >
-std::pair<T,T> min( PointCloud<T>* cloud )
+std::pair<T,T> mean( PointCloud<T>* cloud )
 {
     typename L3::PointCloud<T>::ITERATOR it = cloud->begin();
   
     T x(0);
     T y(0);
     T z(0);
+
+    while( it != cloud->end() )
+    {
+        // X 
+        x += it->x;
+        // Y 
+        y += it->y;
+        // Z 
+        z += it->z;
+
+        it++;
+    }
+
+    return std::make_pair(x/(T)cloud->num_points,y/(T)cloud->num_points);
+}
+
+template< typename T >
+std::pair<T,T> min( PointCloud<T>* cloud )
+{
+    typename L3::PointCloud<T>::ITERATOR it = cloud->begin();
+  
+    T x = std::numeric_limits<T>::infinity();
+    T y = std::numeric_limits<T>::infinity();
+    T z = std::numeric_limits<T>::infinity();
 
     while( it != cloud->end() )
     {
@@ -140,10 +164,10 @@ template< typename T >
 std::pair<T,T> max( PointCloud<T>* cloud )
 {
     typename L3::PointCloud<T>::ITERATOR it = cloud->begin();
-  
-    T x(0);
-    T y(0);
-    T z(0);
+ 
+    T x = -1* std::numeric_limits<T>::infinity();
+    T y = -1* std::numeric_limits<T>::infinity();
+    T z = -1* std::numeric_limits<T>::infinity();
 
     while( it != cloud->end() )
     {

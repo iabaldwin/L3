@@ -25,3 +25,6 @@ target_link_libraries( test_composite GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} 
 add_executable( test_histogram_renderer test_histogram_renderer.cpp )
 target_link_libraries( test_histogram_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)
 
+add_executable( test_experience_renderer test_experience_renderer.cpp )
+target_link_libraries( test_experience_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} L3 boost_filesystem boost_system)
+
