@@ -4,22 +4,17 @@
 
 int main()
 {
-    //std::auto_ptr<L3::IO::SequentialFileReader< L3::Pose > > reader( new L3::IO::SequentialFileReader<L3::Pose>() );
-    //reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" );
+    std::auto_ptr<L3::IO::SequentialBinaryReader< L3::SE3 > > reader( new L3::IO::SequentialBinaryReader<L3::SE3>() );
+    if (!reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" ))
+        throw std::exception();
    
-    //std::vector< std::pair< double, boost::shared_ptr<L3::Pose> > > poses;
-    
-    //while( reader->read() )
-        //std::cout << reader->current_line;
-
-    //if ( reader->extract( poses ) )
-    //{
-        //L3::Utils::localisePoseChain( poses.begin(), poses.end(), L3::Utils::BEGBROKE() );
+    std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > poses;
    
-        //L3::Utils::localisePoseChainToOrigin( poses );
-
-        ////L3::IO::Writer w;
-        ////if( w.open( "test.txt" ))
-            ////w << poses; 
-    //}
+    int counter = 0;
+    std::cout.precision(15);
+    while( reader->read() )
+    {
+        reader->extract( poses );
+        std::cout << counter++ << ":" << poses[0].first << ":" <<  poses.size() << std::endl;     
+    }
 }

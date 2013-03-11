@@ -94,13 +94,17 @@ class BinaryReader : public Reader
 {
     public:
 
-        bool open( const std::string& f )
+        virtual ~BinaryReader()
+        {
+        }
+
+        virtual bool open( const std::string& f )
         {
             stream.open( f.c_str(), std::ios::in | std::ios::binary );
             return stream.good();
         }
 
-        size_t read()
+        virtual size_t read()
         {
             std::copy( std::istreambuf_iterator<char>( stream.rdbuf() ),
                         std::istreambuf_iterator<char>( ),
@@ -109,18 +113,18 @@ class BinaryReader : public Reader
             return bytes.size();
         }
 
-        bool extract( std::vector< std::pair< double, boost::shared_ptr<T> > >& poses ) 
+        virtual bool extract( std::vector< std::pair< double, boost::shared_ptr<T> > >& poses ) 
         {
             // How many elements?
             size_t numels = bytes.size()/sizeof(double);
             
             double* ptr = reinterpret_cast<double*>(&bytes[0]);
 
-            BinaryExtractor<T> e;
+            BinaryExtractor<T> extractor;
        
-            e = std::for_each( ptr, ptr+numels, e );
+            extractor = std::for_each( ptr, ptr+numels, extractor );
 
-            poses.assign( e.elements.begin(), e.elements.end() );
+            poses.assign( extractor.elements.begin(), extractor.elements.end() );
         
             return true;
         }
@@ -165,55 +169,27 @@ class TextReader : public Reader
 
 
 /*
- *File readers
+ * Sequential readers
  */
 template <typename T>
-class BulkReader : public TextReader
-{
-    public:
-        
-        bool extract( std::vector< std::pair< double, boost::shared_ptr<T> > >& poses )
-        {
-            TextExtractor<T> e;
-       
-            e = std::for_each( raw.begin(), raw.end(), e );
-
-            if ( e.elements.size() > 0 )
-            {
-                poses.assign( e.elements.begin(), e.elements.end() );
-                return true;
-            }
-            else
-                return false;
-        }
-
-};
-
-template <typename T>
-class SequentialFileReader : public Reader
+class SequentialBinaryReader : public BinaryReader<T>
 {
     public:
         
         size_t read()
         {
-            if ( stream.good() )
+            // Allocate 
+            this->bytes.resize(L3::Sizes<T>::elements*sizeof(double) );
+        
+            // Read
+            if ( this->stream.good() )
             {
-                std::getline( stream, current_line );
-                return current_line.size();
+                this->stream.read( (char*)&(this->bytes[0]), L3::Sizes<T>::elements*sizeof(double) );
+                return this->stream.gcount();
             }
                 
             else
                 return 0;
-        }
-
-        std::string current_line;
-
-        bool extract( std::pair< double, boost::shared_ptr<T> >& pose )
-        {
-            TextExtractor<T> e;
-            //e = std::for_each( raw.begin(), raw.end(), e );
-       
-            return true;
         }
 
 };

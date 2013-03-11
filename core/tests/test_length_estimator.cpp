@@ -1,17 +1,5 @@
 #include "L3.h"
 
-struct LengthEstimatorInterface : L3::LengthEstimator
-{
-    L3::LengthEstimator estimator;
-
-    double operator()( std::pair< double, boost::shared_ptr<L3::SE3> > element )
-    {
-        return estimator( *element.second );
-    }
-};
-
-
-
 int main()
 {
     std::auto_ptr<L3::IO::BinaryReader< L3::SE3 > > reader( new L3::IO::BinaryReader<L3::SE3>() );

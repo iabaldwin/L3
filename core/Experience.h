@@ -1,8 +1,54 @@
 #ifndef L3_EXPERIENCE_H
 #define L3_EXPERIENCE_H
 
+struct LengthEstimatorInterface : L3::LengthEstimator
+{
+    L3::LengthEstimator estimator;
+
+    double operator()( std::pair< double, boost::shared_ptr<L3::SE3> > element )
+    {
+        return estimator( *element.second );
+    }
+};
+
 namespace L3
 {
+struct ExperienceBuilder
+{
+
+    ExperienceBuilder( L3::Dataset& dataset )
+    {
+        std::cout.precision(15);
+        
+        pose_reader.reset( new L3::IO::SequentialBinaryReader<L3::SE3>() );
+        if (!pose_reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" ))
+            throw std::exception();
+
+        LIDAR_reader.reset( new L3::IO::SequentialBinaryReader<L3::LMS151>() );
+        if (!LIDAR_reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/LMS1xx_10420001_192.168.0.51.lidar" ) )
+            throw std::exception();
+        
+        std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >      poses;
+        std::vector< std::pair< double, boost::shared_ptr<L3::LMS151> > >   scans;
+
+        double accumulate = 0.0;
+      
+        LengthEstimatorInterface length_estimator;
+
+        while( LIDAR_reader->read() )
+        {
+            LIDAR_reader->extract( scans );
+            std::cout << scans[0].first << std::endl;
+            //std::cout << (accumulate+=length_estimator( poses[0] ) )<< std::endl;;
+        }
+
+    }
+
+    std::auto_ptr<L3::IO::SequentialBinaryReader< L3::SE3 > > pose_reader;
+    std::auto_ptr<L3::IO::SequentialBinaryReader< L3::LMS151 > > LIDAR_reader;
+
+};
+
 
 struct Experience
 {

@@ -55,9 +55,9 @@ target_link_libraries( test_readers config L3 boost_system boost_filesystem )
 add_executable( test_sequential_file_reader test_sequential_file_reader.cpp )
 target_link_libraries( test_sequential_file_reader config L3 boost_system boost_filesystem )
 
-add_executable( test_experience_generator test_experience_generator.cpp )
-target_link_libraries( test_experience_generator config L3 boost_system boost_filesystem )
-
 add_executable( test_length_estimator test_length_estimator.cpp )
 target_link_libraries( test_length_estimator config L3 boost_system boost_filesystem )
+
+add_executable( test_experience_builder test_experience_builder.cpp )
+target_link_libraries( test_experience_builder config L3 boost_system boost_filesystem )
 
