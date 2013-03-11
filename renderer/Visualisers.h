@@ -91,7 +91,6 @@ struct IteratorRenderer : Leaf
     IteratorRenderer( L3::Iterator<T>* ITERATOR )  : iterator(ITERATOR )
     {
     }
-
     
     void onDraw3D( glv::GLV& g )
     {
@@ -135,7 +134,7 @@ struct SwatheRenderer : Leaf
     SwatheRenderer( L3::SwatheBuilder* SWATHE_BUILDER )  : swathe_builder(SWATHE_BUILDER), current_alloc(500)
     {
         // Projector  
-        L3::SE3 calibration( 0, 0, 0, 0, 0, 0 ); 
+        L3::SE3 calibration( 0, 0, 0, -1.57, 0, 0 ); 
         point_cloud = new L3::PointCloud<double>();
         projector.reset( new L3::Projector<double>( &calibration, point_cloud ) );
     
