@@ -20,6 +20,7 @@ class Projector
     public:
     
         L3::PointCloud<T>* cloud;
+        size_t allocated_size;
 
         Projector( L3::SE3* calib, L3::PointCloud<T>* CLOUD ) : cloud(CLOUD), allocated_size(500)
         {
@@ -28,8 +29,6 @@ class Projector
             // Pre-allocate
             cloud->points = new L3::Point<T>[ allocated_size*541 ]; 
         }
-
-        size_t allocated_size;
 
         ~Projector()
         {

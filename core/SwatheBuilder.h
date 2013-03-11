@@ -44,7 +44,6 @@ namespace L3
 
                 swathe.clear();
 
-
                 // For each lidar scan, find the nearest pose
                 while( it != LIDAR_iterator->window.end() )
                 {

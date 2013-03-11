@@ -121,7 +121,8 @@ class BinaryReader : public Reader
             double* ptr = reinterpret_cast<double*>(&bytes[0]);
 
             BinaryExtractor<T> extractor;
-       
+      
+            // Extract
             extractor = std::for_each( ptr, ptr+numels, extractor );
 
             poses.assign( extractor.elements.begin(), extractor.elements.end() );

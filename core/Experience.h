@@ -13,6 +13,11 @@ struct LengthEstimatorInterface : L3::LengthEstimator
 
 namespace L3
 {
+
+
+/*
+ *Build an experience from a dataset
+ */
 struct ExperienceBuilder
 {
 
@@ -20,7 +25,7 @@ struct ExperienceBuilder
     {
         std::cout.precision(15);
         
-        pose_reader.reset( new L3::IO::SequentialBinaryReader<L3::SE3>() );
+        pose_reader.reset( new L3::IO::BinaryReader<L3::SE3>() );
         if (!pose_reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" ))
             throw std::exception();
 
@@ -31,21 +36,58 @@ struct ExperienceBuilder
         std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >      poses;
         std::vector< std::pair< double, boost::shared_ptr<L3::LMS151> > >   scans;
 
-        double accumulate = 0.0;
+        // Read *all* the poses
+        pose_reader->read();
+        pose_reader->extract( poses );
+
+        std::cout << poses.size() << std::endl;
+
       
         LengthEstimatorInterface length_estimator;
 
+        SWATHE swathe;
+
+        L3::SE3 projection(0,0,0,.1,.2,.3);
+        L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
+        std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
+
+        // Read data
+        double accumulate = 0.0;
         while( LIDAR_reader->read() )
         {
+            // Extract scan
             LIDAR_reader->extract( scans );
-            std::cout << scans[0].first << std::endl;
-            //std::cout << (accumulate+=length_estimator( poses[0] ) )<< std::endl;;
+            
+            // Match pose
+            std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > matched;
+            
+            L3::Utils::matcher< L3::SE3, L3::LMS151 > m( &poses, &matched );
+            m = std::for_each( scans.begin(), scans.end(),  m );
+
+            accumulate += length_estimator( matched[0] );
+  
+            swathe.push_back( std::make_pair( matched[0].second, scans[0].second ) );
+
+            if ( accumulate > 10.0 )
+            {
+                // Reset
+                accumulate = 0.0;
+
+                L3::Tools::Timer t;
+                t.begin();
+                projector->project( swathe );
+                std::cout << point_cloud->num_points << " points in " << t.end() << "s" << std::endl;
+
+                // Reset swathe
+                swathe.clear();
+            }
+
         }
 
     }
 
-    std::auto_ptr<L3::IO::SequentialBinaryReader< L3::SE3 > > pose_reader;
-    std::auto_ptr<L3::IO::SequentialBinaryReader< L3::LMS151 > > LIDAR_reader;
+    std::auto_ptr<L3::IO::BinaryReader< L3::SE3 > >                 pose_reader;
+    std::auto_ptr<L3::IO::SequentialBinaryReader< L3::LMS151 > >    LIDAR_reader;
 
 };
 
