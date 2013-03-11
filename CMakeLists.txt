@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6.4)
 
 project(L3)
 
-find_package( BOOST COMPONENTS system filesystem unit_test_framework REQUIRED )     # Filesystem, smart pointers, ...
+find_package( Boost COMPONENTS system filesystem unit_test_framework REQUIRED )     # Filesystem, smart pointers, ...
 find_package( HDF5 )                                                                # Matlab interoperability  
 find_package( GLUT )                                                                # Rendering
 find_package( OpenGL )                                                              # Rendering
