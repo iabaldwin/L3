@@ -41,7 +41,6 @@ struct Point
     {
     }
 
-
     Point( T X, T Y, T Z ) : x(X), y(Y), z(Z)
     {
     }
@@ -112,6 +111,57 @@ struct PointCloud
     size_t num_points;
       
 };
+
+template< typename T >
+std::pair<T,T> min( PointCloud<T>* cloud )
+{
+    typename L3::PointCloud<T>::ITERATOR it = cloud->begin();
+  
+    T x(0);
+    T y(0);
+    T z(0);
+
+    while( it != cloud->end() )
+    {
+        // X 
+        x = std::min( x, it->x ); 
+        // Y 
+        y = std::min( y, it->y ); 
+        // Z 
+        z = std::min( z, it->z ); 
+
+        it++;
+    }
+
+    return std::make_pair(x,y);
+}
+
+template< typename T >
+std::pair<T,T> max( PointCloud<T>* cloud )
+{
+    typename L3::PointCloud<T>::ITERATOR it = cloud->begin();
+  
+    T x(0);
+    T y(0);
+    T z(0);
+
+    while( it != cloud->end() )
+    {
+        // X 
+        x = std::max( x, it->x ); 
+        // Y 
+        y = std::max( y, it->y ); 
+        // Z 
+        z = std::max( z, it->z ); 
+
+        it++;
+    }
+
+    return std::make_pair(x,y);
+}
+
+
+
 
 template <typename T>
 PointCloud<T> samplePointCloud( PointCloud<T>* cloud, int size )
@@ -274,11 +324,21 @@ struct histogram
     float delta;
     unsigned int num_bins;
     
-    histogram( float x=0.f, float y=0.f, unsigned int bins=1000 ) : num_bins(bins)
+    histogram(  float x_centre=0.f, 
+                float x_lower=50.0f, 
+                float x_upper=50.0f, 
+                float y_centre=0.f, 
+                float y_lower=50.0f, 
+                float y_upper=50.0f, 
+                unsigned int bins=1000 ) : num_bins(bins)
     {
         hist =  gsl_histogram2d_alloc (num_bins, num_bins);
 
-        gsl_histogram2d_set_ranges_uniform (hist, x-50.0, x+50.0, y-50.0, y+50.0);
+        gsl_histogram2d_set_ranges_uniform (hist, 
+                                            x_centre-x_lower, 
+                                            x_centre+x_upper, 
+                                            y_centre-y_lower, 
+                                            y_centre+y_upper );
    
         delta = 100.0/num_bins;
     }

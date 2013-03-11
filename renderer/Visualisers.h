@@ -172,8 +172,8 @@ struct SwatheRenderer : Leaf
     glv::Color*  point_colors  ;
     glv::Point3* point_vertices;
 
-
     L3::Tools::Timer t;
+    
     void onDraw3D( glv::GLV& g )
     {
         // Update the swathe_builder
@@ -185,6 +185,10 @@ struct SwatheRenderer : Leaf
     
         // Do histogram
         SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
+
+        // get bounds
+        std::pair<double,double> min_bound = l3::min<double>( point_cloud );
+        std::pair<double,double> max_bound = l3::min<double>( point_cloud );
 
         L3::histogram<double> hist( pose_iterator->first->x, pose_iterator->first->y, 40 );
         hist( point_cloud );
@@ -203,17 +207,20 @@ struct SwatheRenderer : Leaf
         }
         glv::draw::paint( glv::draw::Points, pose_vertices, pose_colors, counter );
         
-        //PointCloud<double>::ITERATOR point_iterator = point_cloud->begin();
+        PointCloud<double>::ITERATOR point_iterator = point_cloud->begin();
 
-        //counter = 0;
+        counter = 0;
 
-        //while( point_iterator != point_cloud->end() )
-        //{
-            //point_vertices[counter++]( point_iterator->x , point_iterator->y , point_iterator->z);
-            //point_iterator++; 
-        //}
         
-        //glv::draw::paint( glv::draw::Points, point_vertices, point_colors, counter );
+        //while( point_iterator != point_cloud->end() )
+        while( point_iterator < point_cloud->end() )
+        {
+            point_vertices[counter++]( point_iterator->x , point_iterator->y , point_iterator->z);
+            //point_iterator++; 
+            point_iterator+=10; 
+        }
+        
+        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, counter );
     
     }
 
