@@ -4,8 +4,6 @@
 #include <GLV/glv.h>
 #include <GLUT/glut.h>
 
-#include "L3.h"
-
 namespace L3
 {
 namespace Visualisers

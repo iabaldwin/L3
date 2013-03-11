@@ -5,8 +5,8 @@
 
 #include <GLV/glv.h>
 
-#include "L3.h"
 #include "Controller.h"
+#include "L3.h"
 
 namespace L3
 {
@@ -143,7 +143,6 @@ struct Composite : glv::View3D
  *Useful components
  *
  *      GRID
- *
  */
 struct Grid : Leaf
 {
@@ -195,6 +194,52 @@ struct Grid : Leaf
     { 
         glv::draw::lineWidth( .1 );
         glv::draw::paint( glv::draw::Lines, vertices, colors, counter );
+    }
+};
+
+/*
+ *Histogram Renderer
+ */
+struct HistogramRenderer : Leaf
+{
+    HistogramRenderer( L3::histogram<double>* HIST ) : hist(HIST)
+    {
+    }
+    
+    L3::histogram<double>* hist;
+
+    void onDraw3D(glv::GLV& g)
+    {
+        glv::Point3 quad_vertices[4];
+        glv::Color quad_colors[4];
+
+        float delta = hist->delta;
+
+        int counter = 0; 
+        
+        for( unsigned int i=0; i < hist->num_bins; i++ )
+        {
+            for( unsigned int j=0; j < hist->num_bins; j++ )
+            {
+                unsigned int val = hist->bin( i, j );
+          
+                glv::Color c = glv::Color( val/10.0 );
+
+                std::pair<float,float> coords = hist->coords( i, j);
+
+                quad_colors[0] = c;
+                quad_vertices[0]( coords.first-delta/2.5, coords.second-delta/2.5, val );
+                quad_colors[1] = c;
+                quad_vertices[1]( coords.first-delta/2.5, coords.second+delta/2.5, val );
+                quad_colors[2] = c;
+                quad_vertices[2]( coords.first+delta/2.5, coords.second+delta/2.5, val );
+                quad_colors[3] = c;
+                quad_vertices[3]( coords.first+delta/2.5, coords.second-delta/2.5, val );
+        
+                glv::draw::paint( glv::draw::TriangleFan, quad_vertices, quad_colors, 4 );
+            
+            }
+        }
     }
 };
 
@@ -258,7 +303,5 @@ struct CoordinateSystem
 
 }
 }
-
-
 
 #endif
