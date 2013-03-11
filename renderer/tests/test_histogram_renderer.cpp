@@ -37,7 +37,9 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid               grid;
     L3::Visualisers::Composite          composite;
     L3::Visualisers::Controller         controller;
-    L3::Visualisers::HistogramRenderer  histogram_renderer( &hist );
+    L3::Visualisers::HistogramRenderer  histogram_renderer;
+
+    histogram_renderer( &hist );
 
     composite.addController( &controller );
 

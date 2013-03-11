@@ -202,11 +202,12 @@ struct Grid : Leaf
  */
 struct HistogramRenderer : Leaf
 {
-    HistogramRenderer( L3::histogram<double>* HIST ) : hist(HIST)
-    {
-    }
-    
     L3::histogram<double>* hist;
+
+    void operator()( L3::histogram<double>* HIST )
+    {
+        hist = HIST;
+    }
 
     void onDraw3D(glv::GLV& g)
     {
@@ -264,6 +265,7 @@ struct CoordinateSystem
     ~CoordinateSystem()
     {
         delete [] vertices;
+        delete [] colors;
     }
 
     void _init()
