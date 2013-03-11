@@ -43,7 +43,6 @@ struct Experience
 
         // Thread into swathe
         L3::Utils::threader<L3::SE3, L3::LMS151>  t;
-
         std::transform( matched.begin(), 
                         matched.end(), 
                         LIDAR_data.begin(), 
