@@ -45,29 +45,51 @@ bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned
 /*
  *Core experience
  */
-struct Experience : SpatialObserver
+struct Experience : SpatialObserver, Poco::Runnable
 {
 
     Experience( std::deque<experience_section>  SECTIONS, 
                 std::string& fname, 
                 unsigned int WINDOW=10
-                ) : sections(SECTIONS), window(WINDOW)
+                ) : sections(SECTIONS), 
+                    window(WINDOW),
+                    running(true)
     {
         data.open( fname.c_str(), std::ios::binary );
+   
+        thread.start( *this );
     }
     
     std::deque<experience_section>  sections;
     std::ifstream                   data;
     unsigned int                    window;
-
+    Poco::Mutex                     mutex;
+    bool                            running;
+    Poco::Thread                    thread;
     std::set<unsigned int>          resident_sections;
-
-    L3::Point<double>* ptr;
-    L3::PointCloud<double>  cloud;
 
     ~Experience()
     {
+        running = false;
+        thread.join();
         data.close();
+    }
+
+    void run()
+    {
+        while( running )
+        {
+            std::cout << "running" << std::endl;
+        }
+    }
+
+    bool getPointCloud( L3::PointCloud<double>  cloud )
+    {
+        std::set<unsigned int>::iterator it = resident_sections.begin();
+        while( it != resident_sections.end() )
+        {
+            it++;
+        }
     }
 
     bool update( double x, double y )
@@ -96,6 +118,7 @@ struct Experience : SpatialObserver
         // Read 
         data.read( tmp, sections[id].payload_size );
         // Convert 
+        L3::Point<double>* ptr;
         ptr = reinterpret_cast<L3::Point<double>* >( tmp );
 
         //std::cout << sections[id].payload_size/sizeof(L3::Point<double>) << std::endl;
