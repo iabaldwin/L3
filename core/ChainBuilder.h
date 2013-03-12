@@ -10,13 +10,13 @@ namespace L3
 
 struct LengthEstimator 
 {
-    L3::SE3 previous;
-
-    bool initialised;
-
+    
     LengthEstimator() : initialised(false), previous( L3::SE3::ZERO() )
     {
     }
+
+    bool initialised;
+    L3::SE3 previous;
 
     double operator()( L3::SE3 current )
     {

@@ -29,38 +29,90 @@ std::ostream& operator<<( std::ostream& o, experience_section section )
     return o;
 }
 
+/*
+ *Core experience
+ */
+struct Experience : SpatialObserver
+{
+
+    Experience( std::deque<experience_section>  SECTIONS, 
+                std::string& fname  
+                ) : sections(SECTIONS)
+    {
+        data.open( fname.c_str(), std::ios::binary );
+    }
+    
+    L3::Point<double>* ptr;
+
+    ~Experience()
+    {
+        data.close();
+    }
+
+    bool update( double x, double y )
+    {
+        return true;
+    }
+
+    void load( unsigned int id )
+    {
+        if( id >= sections.size() )
+            throw std::exception();
+
+        data.seekg( sections[id].stream_position, std::ios_base::beg );
+        char* tmp = new char[sections[id].payload_size];
+        
+        data.read( tmp, sections[id].payload_size );
+     
+        ptr = reinterpret_cast<L3::Point<double>* >( tmp );
+
+        std::cout << sections[id].payload_size/sizeof(L3::Point<double>) << std::endl;
+
+
+        delete [] tmp;
+    }
+
+    std::deque<experience_section>  sections;
+    std::ifstream                   data;
+
+};
 
 /*
  *Load an experience from file
  */
 struct ExperienceLoader
 {
-
-    std::vector<experience_section> sections;
+    std::deque<experience_section> sections;
 
     ExperienceLoader()
     {
  
-        std::ifstream experience_data( "experience.dat", std::ios::binary );
         std::ifstream experience_index( "experience.index", std::ios::binary );
 
         experience_section section;
 
-        while( experience_index.good() )
+        while( true )
         {
-            experience_index.read( (char*)(&section.id), sizeof(int) ); 
-            experience_index.read( (char*)(&section.x), sizeof(double) );
-            experience_index.read( (char*)(&section.y), sizeof(double) );
-            experience_index.read( (char*)(&section.stream_position), sizeof(unsigned int) );
-            experience_index.read( (char*)(&section.payload_size), sizeof(unsigned int) );
+            experience_index.read( (char*)(&section.id),                sizeof(int) ); 
+            experience_index.read( (char*)(&section.x),                 sizeof(double) );
+            experience_index.read( (char*)(&section.y),                 sizeof(double) );
+            experience_index.read( (char*)(&section.stream_position),   sizeof(unsigned int) );
+            experience_index.read( (char*)(&section.payload_size),      sizeof(unsigned int) );
 
-            sections.push_back( section );
+            if ( experience_index.good() )
+                sections.push_back( section );
+            else
+                break;
         }
 
-        experience_data.close();
         experience_index.close();
 
+        std::string experience_name( "experience.dat" );
+
+        experience.reset( new Experience( sections, experience_name ) );
     }
+        
+    boost::shared_ptr<Experience> experience;
 
 };
 
@@ -69,7 +121,7 @@ struct ExperienceLoader
  */
 struct ExperienceBuilder
 {
-    ExperienceBuilder( L3::Dataset& dataset )
+    ExperienceBuilder( L3::Dataset& dataset, double threshold=10.0 )
     {
         std::cout.precision(15);
         
@@ -88,11 +140,13 @@ struct ExperienceBuilder
         pose_reader->read();
         pose_reader->extract( poses );
 
+        // Structure for calculating pose chain length
         LengthEstimatorInterface length_estimator;
 
+        // Matched swathe
         SWATHE swathe;
 
-        // Calibration Point/generation
+        // Calibration/projection
         L3::SE3 projection(0,0,0,.1,.2,.3);
         L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
         std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
@@ -121,15 +175,19 @@ struct ExperienceBuilder
   
             swathe.push_back( std::make_pair( matched[0].second, scans[0].second ) );
 
-            if ( accumulate > 10.0 )
+            if ( accumulate > threshold )
             {
                 // Reset
                 accumulate = 0.0;
 
+#ifndef NDEBUG
                 L3::Tools::Timer t;
-                //t.begin();
+                t.begin();
+#endif
                 projector->project( swathe );
-                //std::cout << point_cloud->num_points << " points in " << t.end() << "s" << std::endl;
+#ifndef NDEBUG
+                std::cout << point_cloud->num_points << " points in " << t.end() << "s" << std::endl;
+#endif
 
                 std::pair<double,double> means = mean( point_cloud );
 
@@ -139,8 +197,6 @@ struct ExperienceBuilder
                 //  1. Write points 
                 unsigned int payload_size = point_cloud->num_points*sizeof(L3::Point<double>);
                 experience_data.write( (char*)( point_cloud->points ), payload_size );
-
-                std::cout << stream_position << std::endl;
 
                 //  Writing : INDEX
                 //  1. Write the ID
@@ -166,10 +222,10 @@ struct ExperienceBuilder
 
 };
 
-struct Experience
+struct ExperienceGenerator
 {
 
-    Experience( L3::Dataset& dataset ) : point_cloud(NULL)
+    ExperienceGenerator( L3::Dataset& dataset ) : point_cloud(NULL)
     {
 
         L3::SE3 calibration = L3::SE3::ZERO();
@@ -218,7 +274,7 @@ struct Experience
         projector->project( swathe );
     }
     
-    ~Experience()
+    ~ExperienceGenerator()
     {
         delete point_cloud;
         delete projector;

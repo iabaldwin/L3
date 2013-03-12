@@ -17,7 +17,7 @@ int main (int argc, char ** argv)
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
 
-    L3::Experience experience( dataset );
+    //L3::Experience experience( dataset );
 
     /*
      *Visualisation
@@ -33,11 +33,11 @@ int main (int argc, char ** argv)
     //L3::Visualisers::Controller*        controller = new L3::Visualisers::BasicPanController();
     L3::Visualisers::BasicPanController controller;
     L3::Visualisers::Grid               grid;
-    L3::Visualisers::ExperienceRenderer experience_renderer( &experience );
+    //L3::Visualisers::ExperienceRenderer experience_renderer( &experience );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
     
-    top << (composite << grid << experience_renderer) ;
+    //top << (composite << grid << experience_renderer) ;
 
     win.setGLV(top);
     win.fit(); 

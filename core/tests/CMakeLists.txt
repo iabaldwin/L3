@@ -64,3 +64,6 @@ target_link_libraries( test_experience_builder config L3 boost_system boost_file
 add_executable( test_experience_loader test_experience_loader.cpp )
 target_link_libraries( test_experience_loader config L3 boost_system boost_filesystem )
 
+add_executable( test_experience_pipeline test_experience_pipeline.cpp )
+target_link_libraries( test_experience_pipeline config L3 boost_system boost_filesystem )
+

@@ -75,12 +75,15 @@ struct Composite : glv::View3D
         far( 1000 );
     }
 
-    clock_t current, previous;
-    unsigned int sf;
+    
     double current_time; 
+    unsigned int sf;
     double _x, _y, _z;
     double _r, _p, _q;
+    L3::Visualisers::Controller* controller;
  
+    clock_t current, previous;
+    
     std::list<Leaf*> components; 
 
     void apply( control_t t )
@@ -97,9 +100,10 @@ struct Composite : glv::View3D
     {
         if (controller)
             apply( controller->onEvent( type, g ) );
+  
+        return true;
     }
 
-    L3::Visualisers::Controller* controller;
     void addController( L3::Visualisers::Controller* c )
     {
         controller = c; 
@@ -216,8 +220,6 @@ struct HistogramRenderer : Leaf
 
         float delta = hist->delta;
 
-        int counter = 0; 
-        
         for( unsigned int i=0; i < hist->num_bins; i++ )
         {
             for( unsigned int j=0; j < hist->num_bins; j++ )

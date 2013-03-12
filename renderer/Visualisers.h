@@ -235,31 +235,31 @@ struct SwatheRenderer : Leaf
 struct ExperienceRenderer : Leaf
 {
 
-    ExperienceRenderer( L3::Experience* EXPERIENCE ) : experience(EXPERIENCE)
-    {
-        // Build the poses
-        std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it;
-        for( it = experience->poses.begin(); it != experience->poses.end(); it++ )
-            poses.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( *(it->second) ) ) );
+    //ExperienceRenderer( L3::ExperienceGenerator* EXPERIENCE ) : experience(EXPERIENCE)
+    //{
+        //// Build the poses
+        //std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it;
+        //for( it = experience->poses.begin(); it != experience->poses.end(); it++ )
+            //poses.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( *(it->second) ) ) );
 
-        //SWATHE_ITERATOR it; 
-        //for( it = experience->swathe.begin(); it != experience->swathe.end(); it++ )
-            //poses.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( dynamic_cast<L3::SE3*>(*(it->first) ) ) ) );
+        ////SWATHE_ITERATOR it; 
+        ////for( it = experience->swathe.begin(); it != experience->swathe.end(); it++ )
+            ////poses.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( dynamic_cast<L3::SE3*>(*(it->first) ) ) ) );
 
 
-    }
+    //}
 
-    L3::Experience* experience;
-    std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > > poses;
+    //L3::Experience* experience;
+    //std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > > poses;
 
-    void onDraw3D( glv::GLV& g )
-    {
+    //void onDraw3D( glv::GLV& g )
+    //{
     
-        std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > >::iterator it; 
+        //std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > >::iterator it; 
    
-        for( it = poses.begin(); it < poses.end(); it+=100 )
-            (*it)->onDraw3D( g );
-    }
+        //for( it = poses.begin(); it < poses.end(); it+=100 )
+            //(*it)->onDraw3D( g );
+    //}
 
 
 

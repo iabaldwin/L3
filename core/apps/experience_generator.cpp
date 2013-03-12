@@ -8,7 +8,7 @@ int main()
     d.validate();
 
     // Build experience
-    L3::Experience e( d );
+    L3::ExperienceGenerator e( d );
            
     // Sample
     L3::PointCloud<double> sampled_cloud = L3::samplePointCloud( e.point_cloud, 100000 );
