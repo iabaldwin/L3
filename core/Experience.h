@@ -1,6 +1,8 @@
 #ifndef L3_EXPERIENCE_H
 #define L3_EXPERIENCE_H
 
+#include <set>
+
 struct LengthEstimatorInterface : L3::LengthEstimator
 {
     L3::LengthEstimator estimator;
@@ -10,6 +12,12 @@ struct LengthEstimatorInterface : L3::LengthEstimator
         return estimator( *element.second );
     }
 };
+
+template <typename T>
+T norm( std::pair<T,T> a, std::pair<T,T> b)
+{
+    return sqrt( pow( a.first-b.first,2) + pow( a.second - b.second, 2) );
+}
 
 namespace L3
 {
@@ -29,6 +37,11 @@ std::ostream& operator<<( std::ostream& o, experience_section section )
     return o;
 }
 
+bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned int > b )
+    {
+        return a.second < b.second;
+    }
+
 /*
  *Core experience
  */
@@ -36,13 +49,21 @@ struct Experience : SpatialObserver
 {
 
     Experience( std::deque<experience_section>  SECTIONS, 
-                std::string& fname  
-                ) : sections(SECTIONS)
+                std::string& fname, 
+                unsigned int WINDOW=10
+                ) : sections(SECTIONS), window(WINDOW)
     {
         data.open( fname.c_str(), std::ios::binary );
     }
     
+    std::deque<experience_section>  sections;
+    std::ifstream                   data;
+    unsigned int                    window;
+
+    std::set<unsigned int>          resident_sections;
+
     L3::Point<double>* ptr;
+    L3::PointCloud<double>  cloud;
 
     ~Experience()
     {
@@ -51,6 +72,16 @@ struct Experience : SpatialObserver
 
     bool update( double x, double y )
     {
+        std::vector< std::pair< double, unsigned int > > distances(sections.size());
+
+        // Calculate distances to all sections
+        for( unsigned int i=0; i<sections.size(); i++ )
+        {
+            distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( sections[i].x, sections[i].y)  ), i ) ); 
+        }
+
+        std::sort( distances.begin(), distances.end() );
+
         return true;
     }
 
@@ -59,22 +90,21 @@ struct Experience : SpatialObserver
         if( id >= sections.size() )
             throw std::exception();
 
+        // Seek
         data.seekg( sections[id].stream_position, std::ios_base::beg );
         char* tmp = new char[sections[id].payload_size];
-        
+        // Read 
         data.read( tmp, sections[id].payload_size );
-     
+        // Convert 
         ptr = reinterpret_cast<L3::Point<double>* >( tmp );
 
-        std::cout << sections[id].payload_size/sizeof(L3::Point<double>) << std::endl;
-
+        //std::cout << sections[id].payload_size/sizeof(L3::Point<double>) << std::endl;
+        //std::cout << t.end() << std::endl;
 
         delete [] tmp;
+   
     }
-
-    std::deque<experience_section>  sections;
-    std::ifstream                   data;
-
+    
 };
 
 /*
