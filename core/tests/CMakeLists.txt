@@ -43,8 +43,8 @@ target_link_libraries( test_point_cloud config L3 boost_system boost_filesystem 
 add_executable( test_chain_builder test_chain_builder.cpp )
 target_link_libraries( test_chain_builder config L3 boost_system boost_filesystem )
 
-add_executable( test_data_adapters test_data_adapters.cpp )
-target_link_libraries( test_data_adapters config L3 boost_system boost_filesystem )
+add_executable( test_library_adapters test_library_adapters.cpp )
+target_link_libraries( test_library_adapters config L3 boost_system boost_filesystem )
 
 add_executable( test_pipeline test_pipeline.cpp )
 target_link_libraries( test_pipeline config L3 boost_system boost_filesystem )
@@ -60,4 +60,7 @@ target_link_libraries( test_length_estimator config L3 boost_system boost_filesy
 
 add_executable( test_experience_builder test_experience_builder.cpp )
 target_link_libraries( test_experience_builder config L3 boost_system boost_filesystem )
+
+add_executable( test_experience_loader test_experience_loader.cpp )
+target_link_libraries( test_experience_loader config L3 boost_system boost_filesystem )
 

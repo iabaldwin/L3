@@ -22,7 +22,7 @@ namespace L3
 {
 
 template <typename T>
-struct SlidingWindow : Poco::Runnable, Observer
+struct SlidingWindow : Poco::Runnable, TemporalObserver
 {
 
     SlidingWindow( const std::string& input, double t ) : 

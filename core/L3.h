@@ -15,6 +15,6 @@
 #include "Utils.h"              // Path management, locales, etc.
 #include "ChainBuilder.h"       // Poses from rotational data
 #include "Experience.h"         // Experience generation
-#include "DataAdapters.h"       // PCL, ...
+#include "LibraryAdapters.h"    // PCL, ...
 
 #endif

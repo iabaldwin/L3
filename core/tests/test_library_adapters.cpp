@@ -1,10 +1,4 @@
-#include "Utils.h"
-#include "Dataset.h"
-#include "Iterator.h"
-#include "Projector.h"
-#include "PointCloud.h"
-#include "SwatheBuilder.h"
-#include "DataAdapters.h"
+#include "L3.h"
 
 int main()
 {

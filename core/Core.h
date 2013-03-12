@@ -8,12 +8,17 @@ namespace L3
 
 struct Observer
 {
+};
+
+
+struct TemporalObserver : Observer
+{
     virtual bool update( double ) = 0;
 };
 
-struct PoseProvider : Observer
+struct SpatialObserver : Observer
 {
-
+    virtual bool update( double, double ) = 0;
 };
 
 /*

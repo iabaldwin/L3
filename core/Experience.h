@@ -14,13 +14,61 @@ struct LengthEstimatorInterface : L3::LengthEstimator
 namespace L3
 {
 
+struct experience_section
+{
+    int id;
+    double x,y;
+    unsigned int stream_position;
+    unsigned int payload_size;
+};
+
+std::ostream& operator<<( std::ostream& o, experience_section section )
+{
+    o << section.id << ":" << section.x << "," << section.y << "(" << section.stream_position << "," << section.payload_size << ")";
+
+    return o;
+}
+
+
+/*
+ *Load an experience from file
+ */
+struct ExperienceLoader
+{
+
+    std::vector<experience_section> sections;
+
+    ExperienceLoader()
+    {
+ 
+        std::ifstream experience_data( "experience.dat", std::ios::binary );
+        std::ifstream experience_index( "experience.index", std::ios::binary );
+
+        experience_section section;
+
+        while( experience_index.good() )
+        {
+            experience_index.read( (char*)(&section.id), sizeof(int) ); 
+            experience_index.read( (char*)(&section.x), sizeof(double) );
+            experience_index.read( (char*)(&section.y), sizeof(double) );
+            experience_index.read( (char*)(&section.stream_position), sizeof(unsigned int) );
+            experience_index.read( (char*)(&section.payload_size), sizeof(unsigned int) );
+
+            sections.push_back( section );
+        }
+
+        experience_data.close();
+        experience_index.close();
+
+    }
+
+};
 
 /*
  *Build an experience from a dataset
  */
 struct ExperienceBuilder
 {
-
     ExperienceBuilder( L3::Dataset& dataset )
     {
         std::cout.precision(15);
@@ -40,19 +88,24 @@ struct ExperienceBuilder
         pose_reader->read();
         pose_reader->extract( poses );
 
-        std::cout << poses.size() << std::endl;
-
-      
         LengthEstimatorInterface length_estimator;
 
         SWATHE swathe;
 
+        // Calibration Point/generation
         L3::SE3 projection(0,0,0,.1,.2,.3);
         L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
         std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
 
-        // Read data
+        int id = 0;
         double accumulate = 0.0;
+      
+        std::ofstream experience_data( "experience.dat", std::ios::binary );
+        std::ofstream experience_index( "experience.index", std::ios::binary );
+
+        unsigned int stream_position=0;
+
+        // Read data
         while( LIDAR_reader->read() )
         {
             // Extract scan
@@ -74,23 +127,44 @@ struct ExperienceBuilder
                 accumulate = 0.0;
 
                 L3::Tools::Timer t;
-                t.begin();
+                //t.begin();
                 projector->project( swathe );
-                std::cout << point_cloud->num_points << " points in " << t.end() << "s" << std::endl;
+                //std::cout << point_cloud->num_points << " points in " << t.end() << "s" << std::endl;
 
+                std::pair<double,double> means = mean( point_cloud );
+
+                std::cout << means.first << " " << means.second << std::endl;
+              
+                //  Writing : DATA
+                //  1. Write points 
+                unsigned int payload_size = point_cloud->num_points*sizeof(L3::Point<double>);
+                experience_data.write( (char*)( point_cloud->points ), payload_size );
+
+                std::cout << stream_position << std::endl;
+
+                //  Writing : INDEX
+                //  1. Write the ID
+                experience_index.write( (char*)(&id), sizeof(int) ); id++;
+                //  2. write the x,y location
+                experience_index.write( (char*)(&means.first), sizeof(double) );
+                experience_index.write( (char*)(&means.second), sizeof(double) );
+                //  3. write the start position
+                experience_index.write( (char*)(&stream_position), sizeof(unsigned int) );
+                //  4. write the payload size
+                experience_index.write( (char*)(&payload_size), sizeof(unsigned int) );
+
+                stream_position += payload_size;
+                                
                 // Reset swathe
                 swathe.clear();
             }
-
         }
-
     }
 
     std::auto_ptr<L3::IO::BinaryReader< L3::SE3 > >                 pose_reader;
     std::auto_ptr<L3::IO::SequentialBinaryReader< L3::LMS151 > >    LIDAR_reader;
 
 };
-
 
 struct Experience
 {

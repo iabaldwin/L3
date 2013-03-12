@@ -1,10 +1,4 @@
-#include <iostream>
-#include "Reader.h"
-#include "Dataset.h"
-#include "Utils.h"
-#include "PointCloud.h"
-#include "Projector.h"
-#include "DataAdapters.h"
+#include "L3.h"
 
 #include <sstream>
 #include <libconfig.h++>

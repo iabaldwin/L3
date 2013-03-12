@@ -9,7 +9,7 @@
 namespace L3
 {
     
-    class SwatheBuilder : public Observer
+    class SwatheBuilder : public TemporalObserver
     {
         public:
             SwatheBuilder( L3::Iterator<L3::SE3> * pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :

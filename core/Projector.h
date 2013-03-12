@@ -45,7 +45,6 @@ class Projector
         /*
          *Do projection for each point
          */
-
         void project( SWATHE& swathe )
         {
 
@@ -55,7 +54,8 @@ class Projector
 #endif
             int scan_counter;
             unsigned int pair_counter, n = swathe.size();
-          
+         
+            // Enough space?
             if ( n > allocated_size )
                 reallocate( n );
             

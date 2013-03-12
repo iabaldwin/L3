@@ -112,7 +112,7 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
 
 }
 
-class ChainBuilder : public Observer
+class ChainBuilder : public TemporalObserver
 {
     public:
 

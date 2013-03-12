@@ -16,7 +16,7 @@ namespace L3
 {
 
 template <typename T>
-class Iterator : public Observer
+class Iterator : public TemporalObserver
 {
     public:
     
