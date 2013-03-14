@@ -47,11 +47,15 @@ struct Point
     
     T x,y,z;
     
-    virtual void print( std::ostream& o ) const
-    {
-        o << x << " " << y << " " << z;
-    }
 };
+
+template <typename T>
+std::ostream& operator<<( std::ostream& o, const Point<T>& point )
+{
+    o << point.x << " " << point.y << " " << point.z;
+    return o;
+}
+
 
 template< typename T>
 struct PointRGB : Point<T>
@@ -69,20 +73,8 @@ struct PointRGB : Point<T>
     {
     }
 
-    void print( std::ostream& o ) const
-    {
-        o << x << " " << y << " " << z << " " << r << " " << g << " " << b; 
-    }
-
 };
 
-
-template< typename T>
-std::ostream& operator<<( std::ostream& o, const L3::Point<T>& p )
-{
-    p.print( o ); 
-    return o;
-}
 
 /*
  *Cloud types

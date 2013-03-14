@@ -1,7 +1,9 @@
 #ifndef L3_EXPERIENCE_H
 #define L3_EXPERIENCE_H
 
-#include <set>
+#include <glog/logging.h>
+
+#include <map>
 
 struct LengthEstimatorInterface : L3::LengthEstimator
 {
@@ -11,6 +13,7 @@ struct LengthEstimatorInterface : L3::LengthEstimator
     {
         return estimator( *element.second );
     }
+
 };
 
 template <typename T>
@@ -38,9 +41,9 @@ std::ostream& operator<<( std::ostream& o, experience_section section )
 }
 
 bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned int > b )
-    {
-        return a.second < b.second;
-    }
+{
+    return a.first < b.first;
+}
 
 /*
  *Core experience
@@ -55,8 +58,10 @@ struct Experience : SpatialObserver, Poco::Runnable
                     window(WINDOW),
                     running(true)
     {
+        // Open 
         data.open( fname.c_str(), std::ios::binary );
-   
+
+        // Go
         thread.start( *this );
     }
     
@@ -66,12 +71,15 @@ struct Experience : SpatialObserver, Poco::Runnable
     Poco::Mutex                     mutex;
     bool                            running;
     Poco::Thread                    thread;
-    std::set<unsigned int>          resident_sections;
+    std::list<unsigned int>         required_sections;
+
+    std::map< unsigned int, L3::Point<double>* > resident_sections;
 
     ~Experience()
     {
         running = false;
         thread.join();
+        
         data.close();
     }
 
@@ -79,22 +87,40 @@ struct Experience : SpatialObserver, Poco::Runnable
     {
         while( running )
         {
-            std::cout << "running" << std::endl;
+            // Build up a list of required sections
+            std::list<unsigned int> required;
+            
+            mutex.lock(); 
+            std::copy( required_sections.begin(), required_sections.end(), std::inserter( required, required.begin() ) );
+            mutex.unlock(); 
+            
+            // Are these sections in the set?
+            for ( std::list<unsigned int>::iterator it = required.begin(); it != required.end(); it++ )
+            {
+                std::map<unsigned int, L3::Point<double>* >::iterator map_it = resident_sections.find( *it );
+          
+                //We need it, and don't have it
+                if ( map_it == resident_sections.end() )
+                {
+                    // Load the pair
+                    std::pair< unsigned int, L3::Point<double>* > load_result = load(*it);
+                   
+                    // Insert
+                    resident_sections.insert( std::make_pair( *it, load_result.second ) );
+       
+                }
+            }
         }
     }
 
-    bool getPointCloud( L3::PointCloud<double>  cloud )
+    bool getPointCloud( L3::PointCloud<double> cloud )
     {
-        std::set<unsigned int>::iterator it = resident_sections.begin();
-        while( it != resident_sections.end() )
-        {
-            it++;
-        }
+        return true;
     }
 
     bool update( double x, double y )
     {
-        std::vector< std::pair< double, unsigned int > > distances(sections.size());
+        std::vector< std::pair< double, unsigned int > > distances;
 
         // Calculate distances to all sections
         for( unsigned int i=0; i<sections.size(); i++ )
@@ -104,10 +130,16 @@ struct Experience : SpatialObserver, Poco::Runnable
 
         std::sort( distances.begin(), distances.end() );
 
+        mutex.lock();
+        required_sections.clear();
+        required_sections.push_front( distances.front().second);
+        required_sections.push_front( (++distances.begin())->second );
+        mutex.unlock();
+
         return true;
     }
 
-    void load( unsigned int id )
+    std::pair< long unsigned int, L3::Point<double>* > load( unsigned int id )
     {
         if( id >= sections.size() )
             throw std::exception();
@@ -115,17 +147,16 @@ struct Experience : SpatialObserver, Poco::Runnable
         // Seek
         data.seekg( sections[id].stream_position, std::ios_base::beg );
         char* tmp = new char[sections[id].payload_size];
+
         // Read 
         data.read( tmp, sections[id].payload_size );
-        // Convert 
-        L3::Point<double>* ptr;
-        ptr = reinterpret_cast<L3::Point<double>* >( tmp );
+        assert( data.good() ); 
+        assert( sections[id].payload_size == data.gcount() );
 
-        //std::cout << sections[id].payload_size/sizeof(L3::Point<double>) << std::endl;
-        //std::cout << t.end() << std::endl;
+        //L3::PointCloud<double> cloud;
+        //cloud.num_points = sections[id].payload_size/sizeof(L3::Point<double>);
 
-        delete [] tmp;
-   
+        return std::make_pair( sections[id].payload_size/sizeof(L3::Point<double>), (L3::Point<double>*)( tmp ) );
     }
     
 };
@@ -139,8 +170,8 @@ struct ExperienceLoader
 
     ExperienceLoader()
     {
- 
         std::ifstream experience_index( "experience.index", std::ios::binary );
+        std::string experience_name( "experience.dat" );
 
         experience_section section;
 
@@ -159,8 +190,6 @@ struct ExperienceLoader
         }
 
         experience_index.close();
-
-        std::string experience_name( "experience.dat" );
 
         experience.reset( new Experience( sections, experience_name ) );
     }
@@ -241,7 +270,6 @@ struct ExperienceBuilder
 #ifndef NDEBUG
                 std::cout << point_cloud->num_points << " points in " << t.end() << "s" << std::endl;
 #endif
-
                 std::pair<double,double> means = mean( point_cloud );
 
                 std::cout << means.first << " " << means.second << std::endl;

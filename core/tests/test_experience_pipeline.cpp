@@ -21,12 +21,10 @@ int main()
     for ( int i=0; i<100; i++ )
         try
         {
-        experience->load( i );
-        experience->update( random()%100, random()%100 );
+            experience->load( i );
+            experience->update( random()%100, random()%100 );
         }
         catch(...)
         {
         }
-
-
 }

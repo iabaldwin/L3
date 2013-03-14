@@ -11,6 +11,4 @@ int main()
     std::cout << dataset << std::endl;
 
     L3::ExperienceBuilder experience_builder( dataset );
-
-
 }
