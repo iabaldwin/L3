@@ -8,7 +8,7 @@
 #include <list>
 #include <iterator>
 #include <assert.h>
-#include <Eigen/core>
+#include <Eigen/Core>
 
 namespace L3
 {
