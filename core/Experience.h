@@ -73,7 +73,7 @@ struct Experience : SpatialObserver, Poco::Runnable
     Poco::Thread                    thread;
     std::list<unsigned int>         required_sections;
 
-    std::map< unsigned int, boost::shared_ptr<L3::PointCloud<double> > > resident_sections;
+    std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
     
     bool point_cloud_change;
 
@@ -84,21 +84,30 @@ struct Experience : SpatialObserver, Poco::Runnable
         data.close();           // Clean-up
     }
 
-    void run()
+    virtual void run()
     {
         while( running )
         {
             // Build up a list of required sections
             std::list<unsigned int> required;
-            
             mutex.lock(); 
             std::copy( required_sections.begin(), required_sections.end(), std::inserter( required, required.begin() ) );
-            mutex.unlock(); 
-            
-            // Are these sections in the set?
+          
+            // Mark everything as *NOT* required
+            for( std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.begin();
+                    map_it != resident_sections.end();
+                    map_it++ )
+            {
+                map_it->second.first = false;
+            }
+        
+
+            /*
+             *SEARCH
+             */
             for ( std::list<unsigned int>::iterator it = required.begin(); it != required.end(); it++ )
             {
-                std::map<unsigned int, boost::shared_ptr< L3::PointCloud<double> > >::iterator map_it = resident_sections.find( *it );
+                std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.find( *it );
           
                 //We need it, and don't have it
                 if ( map_it == resident_sections.end() )
@@ -113,11 +122,28 @@ struct Experience : SpatialObserver, Poco::Runnable
                     cloud->num_points = load_result.first;
                     cloud->points = load_result.second;
 
-                    // Insert
-                    resident_sections.insert( std::make_pair( *it, boost::shared_ptr<L3::PointCloud<double> >( cloud ) ) );
+                    // Insert, mark it as required by default
+                    resident_sections.insert( std::make_pair( *it, std::make_pair( true, boost::shared_ptr<L3::PointCloud<double> >( cloud ) ) ) );
        
                 }
+                else
+                {
+                    // We need it, and we have it
+                    map_it->second.first = true;
+                }
             }
+
+            /*
+             *Erase everything *NOT* required
+             */
+            for( std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.begin();
+                    map_it != resident_sections.end();
+                    map_it++ )
+            {
+                if( !map_it->second.first)
+                    resident_sections.erase( map_it );
+            }
+            mutex.unlock(); 
         }
     }
 
@@ -125,14 +151,15 @@ struct Experience : SpatialObserver, Poco::Runnable
     {
         std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds;
         
-        std::map< unsigned int, boost::shared_ptr<L3::PointCloud<double> > >::iterator it =  resident_sections.begin();
-      
         mutex.lock();
+        
+        std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > >::iterator it =  resident_sections.begin();
         while( it != resident_sections.end() )
         {
-            clouds.push_back( it->second ); 
+            clouds.push_back( it->second.second ); 
             it++;
         }
+        
         mutex.unlock();
 
         cloud = join( clouds );
@@ -151,11 +178,15 @@ struct Experience : SpatialObserver, Poco::Runnable
         }
 
         std::sort( distances.begin(), distances.end() );
+        
+        std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
 
         mutex.lock();
-        required_sections.clear();      // Add 2
-        required_sections.push_front( distances.front().second);
-        required_sections.push_front( (++distances.begin())->second );
+        required_sections.clear();
+        for( unsigned int i=0; i<20; i++ )
+        {
+            required_sections.push_front( distances_iterator++->second );
+        }
         mutex.unlock();
 
         return true;
@@ -254,7 +285,7 @@ struct ExperienceBuilder
         SWATHE swathe;
 
         // Calibration/projection
-        L3::SE3 projection(0,0,0,.1,.2,.3);
+        L3::SE3 projection(0,0,0,-1.57,0,0);
         L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
         std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
 

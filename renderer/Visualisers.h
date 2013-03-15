@@ -235,15 +235,9 @@ struct SwatheRenderer : Leaf
 struct ExperienceRenderer : Leaf
 {
 
-    ExperienceRenderer( boost::shared_ptr<L3::Experience> EXPERIENCE ) : experience(EXPERIENCE)
+    ExperienceRenderer( boost::shared_ptr<L3::Experience> EXPERIENCE ) : experience(EXPERIENCE), pose_provider(NULL)
     {
-        counter=0;
-        positions.resize(20);
-        query_vertices = new glv::Point3[20];
-        query_colors = new glv::Color[20];
-
-        pt_limit = 10*10000;
-
+        pt_limit = 1*10000;
 
         point_vertices = new glv::Point3[pt_limit];
         point_colors = new glv::Color[pt_limit];
@@ -251,54 +245,42 @@ struct ExperienceRenderer : Leaf
     }
 
     boost::shared_ptr<L3::Experience> experience;
-    std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > > poses;
-
-    double angle, range;
-
-    std::vector< std::pair< double, double> > positions;
-
-    int counter;
-    glv::Point3* query_vertices;
-    glv::Color*  query_colors;
-    int pt_limit; 
+    int pt_limit, pt_counter, sample_counter; 
     glv::Point3* point_vertices;
     glv::Color*  point_colors;
+    L3::Visualisers::PoseProvider<double>* pose_provider;
 
+
+    ~ExperienceRenderer()
+    {
+        delete [] point_vertices;
+        delete [] point_colors;
+    }
+
+    
+    void addPoseProvider( L3::Visualisers::PoseProvider<double>* provider )
+    {
+        pose_provider = provider;
+    }
 
     void onDraw3D( glv::GLV& g )
     {
-        range = 100;
-
-        double x = range*cos(angle);
-        double y = range*sin(angle);
-
         // Update experience
-        experience->update( x,y );
-
-        
-        positions[ counter++%(positions.size()) ] = std::make_pair( x, y );
-
-        angle+=( M_PI/180.0 )* 5;
-
-        for ( int it = 0; it <20; it++ )
+        if( pose_provider )
         {
-            query_vertices[it]( positions[it].first, positions[it].second, 0.0 );
-        }
-
-        glv::draw::paint( glv::draw::Points, query_vertices, query_colors, positions.size() );
+            std::pair<double,double> position = (*pose_provider)();
+            experience->update( position.first, position.second );
+        }   
 
         boost::shared_ptr< L3::PointCloud<double> > cloud;
-        if( experience->getExperienceCloud( cloud ) )
-            std::cout << cloud->num_points << std::endl;
+        experience->getExperienceCloud( cloud );
 
-        int pt_counter;
-
-        for( pt_counter = 0; (pt_counter < cloud->num_points) &&  ( pt_counter < pt_limit ); pt_counter++ )
+        for( pt_counter = 0, sample_counter = 0; (pt_counter < cloud->num_points) && ( sample_counter++< pt_limit ); pt_counter+=50 )
         {
-            point_vertices[pt_counter]( cloud->points[pt_counter].x, cloud->points[pt_counter].y, cloud->points[pt_counter].z );
+            point_vertices[sample_counter]( cloud->points[pt_counter].x, cloud->points[pt_counter].y, cloud->points[pt_counter].z );
         }
 
-        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, pt_counter );
+        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, sample_counter );
 
     }
 

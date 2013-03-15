@@ -37,17 +37,14 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
     
     // Point cloud renderer
-    L3::Visualisers::Composite              composite;
-    L3::Visualisers::Controller*            controller = new L3::Visualisers::BasicPanController();
-    L3::Visualisers::Grid                   grid;
-    L3::Visualisers::ArtificialPoseProvider provider;
-    L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
-
-    experience_renderer.addPoseProvider( &provider );
+    L3::Visualisers::Composite          composite;
+    L3::Visualisers::Controller*        controller = new L3::Visualisers::BasicPanController();
+    L3::Visualisers::Grid               grid;
+    L3::Visualisers::ExperienceRenderer experience_renderer( experience );
 
     composite.addController( controller );
     
-    top << (composite << grid << experience_renderer << provider ) ;
+    top << (composite << grid << experience_renderer) ;
 
     win.setGLV(top);
     win.fit(); 
