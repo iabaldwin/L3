@@ -17,7 +17,19 @@ int main (int argc, char ** argv)
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
 
-    //L3::Experience experience( dataset );
+    boost::shared_ptr<L3::Experience> experience;
+    
+    try
+    {
+        L3::ExperienceLoader experience_loader;
+    
+        experience = experience_loader.experience;
+    }
+    catch( std::exception e )
+    {
+        std::cout << e.what() << std::endl;
+        return -1;
+    }
 
     /*
      *Visualisation
@@ -30,14 +42,13 @@ int main (int argc, char ** argv)
     
     // Point cloud renderer
     L3::Visualisers::Composite          composite;
-    //L3::Visualisers::Controller*        controller = new L3::Visualisers::BasicPanController();
-    L3::Visualisers::BasicPanController controller;
+    L3::Visualisers::Controller*        controller = new L3::Visualisers::BasicPanController();
     L3::Visualisers::Grid               grid;
-    //L3::Visualisers::ExperienceRenderer experience_renderer( &experience );
+    L3::Visualisers::ExperienceRenderer experience_renderer( experience );
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( controller );
     
-    //top << (composite << grid << experience_renderer) ;
+    top << (composite << grid << experience_renderer) ;
 
     win.setGLV(top);
     win.fit(); 

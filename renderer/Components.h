@@ -196,7 +196,7 @@ struct Grid : Leaf
 
     void onDraw3D(glv::GLV& g)
     { 
-        glv::draw::lineWidth( .1 );
+        glv::draw::lineWidth( .01 );
         glv::draw::paint( glv::draw::Lines, vertices, colors, counter );
     }
 };

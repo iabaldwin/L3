@@ -70,3 +70,6 @@ target_link_libraries( test_experience_pipeline config L3 boost_system boost_fil
 add_executable( test_experience_query test_experience_query.cpp )
 target_link_libraries( test_experience_query config L3 boost_system boost_filesystem )
 
+add_executable( test_point_cloud_join test_point_cloud_join.cpp )
+target_link_libraries( test_point_cloud_join config L3 boost_system boost_filesystem )
+

@@ -34,6 +34,9 @@ struct lookup_failure: virtual exception_base { };
 
 struct calibration_failure : virtual exception_base { };
 
+struct no_such_file : virtual exception_base { };
+
+
 template <typename T>
 struct Comparator
 {

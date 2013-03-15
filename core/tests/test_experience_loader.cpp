@@ -11,9 +11,14 @@ int main()
         {
             experience->load( i );
             experience->update( random()%100, random()%100 );
+     
+            boost::shared_ptr<L3::PointCloud<double> > cloud;
+
+            experience->getExperienceCloud( cloud );
         }
         catch( std::exception& e )
         {
-            std::cout << e.what() << std::endl;
+            std::cout << i << ":" << e.what() << std::endl;
+            break;
         }
 }

@@ -235,34 +235,51 @@ struct SwatheRenderer : Leaf
 struct ExperienceRenderer : Leaf
 {
 
-    //ExperienceRenderer( L3::ExperienceGenerator* EXPERIENCE ) : experience(EXPERIENCE)
-    //{
-        //// Build the poses
-        //std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it;
-        //for( it = experience->poses.begin(); it != experience->poses.end(); it++ )
-            //poses.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( *(it->second) ) ) );
-
-        ////SWATHE_ITERATOR it; 
-        ////for( it = experience->swathe.begin(); it != experience->swathe.end(); it++ )
-            ////poses.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( dynamic_cast<L3::SE3*>(*(it->first) ) ) ) );
-
-
-    //}
-
-    //L3::Experience* experience;
-    //std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > > poses;
-
-    //void onDraw3D( glv::GLV& g )
-    //{
-    
-        //std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > >::iterator it; 
+    ExperienceRenderer( boost::shared_ptr<L3::Experience> EXPERIENCE ) : experience(EXPERIENCE)
+    {
+        counter=0;
    
-        //for( it = poses.begin(); it < poses.end(); it+=100 )
-            //(*it)->onDraw3D( g );
-    //}
+        positions.resize(20);
+    
+        query_vertices = new glv::Point3[20];
+        query_colors = new glv::Color[20];
 
+    }
 
+    boost::shared_ptr<L3::Experience> experience;
+    std::deque< boost::shared_ptr< L3::Visualisers::CoordinateSystem > > poses;
 
+    double angle, range;
+
+    std::vector< std::pair< double, double> > positions;
+
+    int counter;
+   glv::Point3* query_vertices;
+   glv::Color*  query_colors;
+
+    void onDraw3D( glv::GLV& g )
+    {
+        range = 100;
+
+        double x = range*cos(angle);
+        double y = range*sin(angle);
+
+        // Update experience
+        experience->update( x,y );
+
+        positions[ counter++%(positions.size()) ] = std::make_pair( x, y );
+
+        angle+=( M_PI/180.0 )* 5;
+   
+        for ( int it = 0; it <20; it++ )
+        {
+            query_vertices[it]( positions[it].first, positions[it].second, 0.0 );
+        }
+            
+        glv::draw::paint( glv::draw::Points, query_vertices, query_colors, positions.size() );
+            
+   
+    }
 
 };
 

@@ -83,10 +83,19 @@ template< typename T>
 struct PointCloud 
 {
 
-    /*
-     *Data
-     */
+    PointCloud() : num_points(0), points(NULL)
+    {
+    }
+
+    size_t num_points;
     L3::Point<T>* points;
+
+
+    ~PointCloud()
+    {
+        if (num_points > 0 && points )
+            delete [] points;
+    }
 
     typedef L3::Point<T>* ITERATOR;
 
@@ -99,8 +108,6 @@ struct PointCloud
     {
         return (points+num_points);
     }
-
-    size_t num_points;
       
 };
 
@@ -176,7 +183,44 @@ std::pair<T,T> max( PointCloud<T>* cloud )
     return std::make_pair(x,y);
 }
 
+template <typename T>
+boost::shared_ptr<L3::PointCloud<T> > join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds )
+{
+    long unsigned int size = 0;
 
+    L3::PointCloud<T>* resultant_cloud = new L3::PointCloud<T>();
+
+    typename std::list< boost::shared_ptr<L3::PointCloud<T> > >::iterator it = clouds.begin();
+   
+    //Calculate size
+    for( it = clouds.begin();
+            it != clouds.end();
+            it++ )
+    {
+
+        size += (*it)->num_points;
+    }
+
+    // Allocate
+    L3::Point<T>* points = new L3::Point<T>[ size ];
+
+
+    // Fill
+    L3::Point<T>* ptr = points;
+
+    for( it = clouds.begin();
+            it != clouds.end();
+            it++ )
+    {
+        std::copy( (*it)->points, (*it)->points+(*it)->num_points, ptr );
+        ptr+= (*it)->num_points;
+    }
+
+    resultant_cloud->num_points = size;
+    resultant_cloud->points     = points;
+
+    return boost::shared_ptr<L3::PointCloud<T> >( resultant_cloud );
+}
 
 
 template <typename T>
@@ -321,8 +365,6 @@ void centerPointCloud( PointCloud<T>* cloud )
     y /= (double)cloud->num_points;
     z /= (double)cloud->num_points;
 
-    std::cout << "Mean " << x << ":" << y << ":" << z << std::endl;
-    
     for( size_t i=0; i<cloud->num_points; i++)
     {
         cloud->points[i].x -= x;

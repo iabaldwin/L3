@@ -73,14 +73,15 @@ struct Experience : SpatialObserver, Poco::Runnable
     Poco::Thread                    thread;
     std::list<unsigned int>         required_sections;
 
-    std::map< unsigned int, L3::Point<double>* > resident_sections;
+    std::map< unsigned int, boost::shared_ptr<L3::PointCloud<double> > > resident_sections;
+    
+    bool point_cloud_change;
 
     ~Experience()
     {
-        running = false;
-        thread.join();
-        
-        data.close();
+        running = false;        // Disable thread
+        thread.join();          // Sync
+        data.close();           // Clean-up
     }
 
     void run()
@@ -97,25 +98,46 @@ struct Experience : SpatialObserver, Poco::Runnable
             // Are these sections in the set?
             for ( std::list<unsigned int>::iterator it = required.begin(); it != required.end(); it++ )
             {
-                std::map<unsigned int, L3::Point<double>* >::iterator map_it = resident_sections.find( *it );
+                std::map<unsigned int, boost::shared_ptr< L3::PointCloud<double> > >::iterator map_it = resident_sections.find( *it );
           
                 //We need it, and don't have it
                 if ( map_it == resident_sections.end() )
                 {
+                    point_cloud_change = true;
+
                     // Load the pair
                     std::pair< unsigned int, L3::Point<double>* > load_result = load(*it);
                    
+                    L3::PointCloud<double>* cloud = new L3::PointCloud<double>();
+                   
+                    cloud->num_points = load_result.first;
+                    cloud->points = load_result.second;
+
                     // Insert
-                    resident_sections.insert( std::make_pair( *it, load_result.second ) );
+                    resident_sections.insert( std::make_pair( *it, boost::shared_ptr<L3::PointCloud<double> >( cloud ) ) );
        
                 }
             }
         }
     }
 
-    bool getPointCloud( L3::PointCloud<double> cloud )
+    bool getExperienceCloud( boost::shared_ptr< L3::PointCloud<double> >& cloud )
     {
-        return true;
+        std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds;
+        std::map< unsigned int, boost::shared_ptr<L3::PointCloud<double> > >::iterator it =  resident_sections.begin();
+      
+        mutex.lock();
+        while( it != resident_sections.end() )
+        {
+            clouds.push_back( it->second ); 
+            std::cout << it->first << std::endl; 
+            it++;
+        }
+        mutex.unlock();
+
+        cloud = join( clouds );
+
+        return (cloud->num_points > 0);
     }
 
     bool update( double x, double y )
@@ -131,7 +153,7 @@ struct Experience : SpatialObserver, Poco::Runnable
         std::sort( distances.begin(), distances.end() );
 
         mutex.lock();
-        required_sections.clear();
+        required_sections.clear();      // Add 2
         required_sections.push_front( distances.front().second);
         required_sections.push_front( (++distances.begin())->second );
         mutex.unlock();
@@ -150,13 +172,12 @@ struct Experience : SpatialObserver, Poco::Runnable
 
         // Read 
         data.read( tmp, sections[id].payload_size );
+
+        // DBG checks
         assert( data.good() ); 
         assert( sections[id].payload_size == data.gcount() );
 
-        //L3::PointCloud<double> cloud;
-        //cloud.num_points = sections[id].payload_size/sizeof(L3::Point<double>);
-
-        return std::make_pair( sections[id].payload_size/sizeof(L3::Point<double>), (L3::Point<double>*)( tmp ) );
+        return std::make_pair( sections[id].payload_size/sizeof(L3::Point<double>), reinterpret_cast<L3::Point<double>*>( tmp ) );
     }
     
 };
@@ -171,6 +192,10 @@ struct ExperienceLoader
     ExperienceLoader()
     {
         std::ifstream experience_index( "experience.index", std::ios::binary );
+      
+        if ( !experience_index.good() )
+            throw L3::no_such_file();
+
         std::string experience_name( "experience.dat" );
 
         experience_section section;
