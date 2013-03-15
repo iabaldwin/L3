@@ -2,7 +2,11 @@
 #define L3_CONTROLLERS_H
 
 #include <GLV/glv.h>
+#ifdef __APPLE__
 #include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 
 namespace L3
 {
