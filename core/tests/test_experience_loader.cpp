@@ -9,12 +9,15 @@ int main()
     for ( int i=0; i<100; i++ )
         try
         {
-            experience->load( i );
             experience->update( random()%100, random()%100 );
      
             boost::shared_ptr<L3::PointCloud<double> > cloud;
 
-            experience->getExperienceCloud( cloud );
+            while( !experience->getExperienceCloud( cloud ))
+                continue;
+
+            std::cout << cloud->num_points << std::endl;
+               
         }
         catch( std::exception& e )
         {

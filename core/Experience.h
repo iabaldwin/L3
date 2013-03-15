@@ -124,13 +124,13 @@ struct Experience : SpatialObserver, Poco::Runnable
     bool getExperienceCloud( boost::shared_ptr< L3::PointCloud<double> >& cloud )
     {
         std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds;
+        
         std::map< unsigned int, boost::shared_ptr<L3::PointCloud<double> > >::iterator it =  resident_sections.begin();
       
         mutex.lock();
         while( it != resident_sections.end() )
         {
             clouds.push_back( it->second ); 
-            std::cout << it->first << std::endl; 
             it++;
         }
         mutex.unlock();

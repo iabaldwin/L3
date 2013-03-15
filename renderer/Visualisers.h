@@ -238,12 +238,16 @@ struct ExperienceRenderer : Leaf
     ExperienceRenderer( boost::shared_ptr<L3::Experience> EXPERIENCE ) : experience(EXPERIENCE)
     {
         counter=0;
-   
         positions.resize(20);
-    
         query_vertices = new glv::Point3[20];
         query_colors = new glv::Color[20];
 
+        pt_limit = 10*10000;
+
+
+        point_vertices = new glv::Point3[pt_limit];
+        point_colors = new glv::Color[pt_limit];
+   
     }
 
     boost::shared_ptr<L3::Experience> experience;
@@ -254,8 +258,12 @@ struct ExperienceRenderer : Leaf
     std::vector< std::pair< double, double> > positions;
 
     int counter;
-   glv::Point3* query_vertices;
-   glv::Color*  query_colors;
+    glv::Point3* query_vertices;
+    glv::Color*  query_colors;
+    int pt_limit; 
+    glv::Point3* point_vertices;
+    glv::Color*  point_colors;
+
 
     void onDraw3D( glv::GLV& g )
     {
@@ -267,22 +275,31 @@ struct ExperienceRenderer : Leaf
         // Update experience
         experience->update( x,y );
 
-        boost::shared_ptr< L3::PointCloud<double> > cloud;
-        //if( experience->getExperienceCloud( cloud ) )
-            //std::cout << cloud->num_points << std::endl;
-
+        
         positions[ counter++%(positions.size()) ] = std::make_pair( x, y );
 
         angle+=( M_PI/180.0 )* 5;
-   
+
         for ( int it = 0; it <20; it++ )
         {
             query_vertices[it]( positions[it].first, positions[it].second, 0.0 );
         }
-            
+
         glv::draw::paint( glv::draw::Points, query_vertices, query_colors, positions.size() );
-            
-   
+
+        boost::shared_ptr< L3::PointCloud<double> > cloud;
+        if( experience->getExperienceCloud( cloud ) )
+            std::cout << cloud->num_points << std::endl;
+
+        int pt_counter;
+
+        for( pt_counter = 0; (pt_counter < cloud->num_points) &&  ( pt_counter < pt_limit ); pt_counter++ )
+        {
+            point_vertices[pt_counter]( cloud->points[pt_counter].x, cloud->points[pt_counter].y, cloud->points[pt_counter].z );
+        }
+
+        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, pt_counter );
+
     }
 
 };
