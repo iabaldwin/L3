@@ -20,10 +20,13 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )
 find_package( GSL )                                                                 # Math,statistics
 include_directories( ${GSL_INCLUDE_DIRS} )
 
+
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 include_directories( "/Users/ian/code/build/include/pcl-1.6/" )
 include_directories( "/usr/local/include/vtk-5.10/" )
+
+include_directories( $ENV{HOME}/code/thirdparty/GLV )
 
 link_directories( "/Users/ian/code/build/lib/" )
 

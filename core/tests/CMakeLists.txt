@@ -38,7 +38,10 @@ add_executable( test_projector test_projector.cpp )
 target_link_libraries( test_projector config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_point_cloud test_point_cloud.cpp )
-target_link_libraries( test_point_cloud config L3 ${Boost_LIBRARIES}  )
+target_link_libraries( test_point_cloud config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
+
+add_executable( test_point_cloud_join test_point_cloud_join.cpp )
+target_link_libraries( test_point_cloud_join config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY} )
 
 add_executable( test_chain_builder test_chain_builder.cpp )
 target_link_libraries( test_chain_builder config L3 ${Boost_LIBRARIES}  )
@@ -70,6 +73,4 @@ target_link_libraries( test_experience_pipeline config L3 ${Boost_LIBRARIES}  )
 add_executable( test_experience_query test_experience_query.cpp )
 target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES}  )
 
-add_executable( test_point_cloud_join test_point_cloud_join.cpp )
-target_link_libraries( test_point_cloud_join config L3 boost_system boost_filesystem )
 
