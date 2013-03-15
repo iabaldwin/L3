@@ -1,15 +1,13 @@
-#include <iostream>
-
-#include "Definitions.h"
-#include "Iterator.h"
-#include "Dataset.h"
-#include "Utils.h"
-#include "SwatheBuilder.h"
+#include "L3.h"
 
 int main()
 {
+    // Load experience
+    L3::ExperienceLoader experience_loader;
+    boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
+
     // Load dataset
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
     
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();

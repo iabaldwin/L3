@@ -286,6 +286,31 @@ struct ExperienceRenderer : Leaf
 
 };
 
+struct PoseProviderVisualiser
+{
+    //void onDraw3D( glv::GLV& g )
+    //{
+    //range = 100;
+
+    //x = range*cos(angle);
+    //y = range*sin(angle);
+
+    //positions[ counter++%(positions.size()) ] = std::make_pair( x, y );
+
+    //angle+=( M_PI/180.0 )* 5;
+
+    //for ( int it = 0; it <20; it++ )
+    //{
+    //query_vertices[it]( positions[it].first, positions[it].second, 0.0 );
+    //}
+
+    //glv::draw::paint( glv::draw::Points, query_vertices, query_colors, positions.size() );
+
+    //}
+
+};
+
+
 }   // ::Visualisers
 }   // ::L3
 

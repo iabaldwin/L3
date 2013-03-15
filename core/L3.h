@@ -16,5 +16,6 @@
 #include "ChainBuilder.h"       // Poses from rotational data
 #include "Experience.h"         // Experience generation
 #include "LibraryAdapters.h"    // PCL, ...
+#include "PoseProvider.h"       // PCL, ...
 
 #endif

@@ -73,4 +73,6 @@ target_link_libraries( test_experience_pipeline config L3 ${Boost_LIBRARIES}  )
 add_executable( test_experience_query test_experience_query.cpp )
 target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES}  )
 
+add_executable( test_pipeline_stage_1 test_pipeline_stage_1.cpp )
+target_link_libraries( test_pipeline_stage_1 config L3 ${Boost_LIBRARIES}  )
 
