@@ -267,6 +267,10 @@ struct ExperienceRenderer : Leaf
         // Update experience
         experience->update( x,y );
 
+        boost::shared_ptr< L3::PointCloud<double> > cloud;
+        //if( experience->getExperienceCloud( cloud ) )
+            //std::cout << cloud->num_points << std::endl;
+
         positions[ counter++%(positions.size()) ] = std::make_pair( x, y );
 
         angle+=( M_PI/180.0 )* 5;
