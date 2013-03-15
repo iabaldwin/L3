@@ -15,6 +15,6 @@ int main()
     }
     catch( L3::no_such_folder& e  )
     {
-        std::cou << "Dataset does not exist" << std::endl; 
+        std::cout << "Dataset does not exist" << std::endl; 
     }
 }

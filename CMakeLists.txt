@@ -26,8 +26,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 include_directories( "/Users/ian/code/build/include/pcl-1.6/" )
 include_directories( "/usr/local/include/vtk-5.10/" )
 
-include_directories( $ENV{HOME}/code/thirdparty/GLV )
-
 link_directories( "/Users/ian/code/build/lib/" )
 
 find_package( POCO COMPONENTS XML Net Data )
