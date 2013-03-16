@@ -9,6 +9,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 find_package( HDF5 )                                                                # Matlab interoperability  
 find_package( GLUT )                                                                # Rendering
+find_package( GLEW )                                                                # Rendering
 find_package( OpenGL )                                                              # Rendering
 
 find_package( OpenMP )
@@ -20,6 +21,7 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )
 find_package( GSL )                                                                 # Math,statistics
 include_directories( ${GSL_INCLUDE_DIRS} )
 
+message(${GLEW_LIBRARIES})
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
