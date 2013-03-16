@@ -40,15 +40,20 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite              composite;
     L3::Visualisers::Controller*            controller = new L3::Visualisers::BasicPanController();
     L3::Visualisers::Grid                   grid;
-    L3::Visualisers::ArtificialPoseProvider provider;
+    L3::PoseProvider*                       pose_provider = new L3::CircularPoseProvider();
+    L3::Visualisers::PoseProviderRenderer   pose_provider_renderer( pose_provider );
     L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
 
-    experience_renderer.addPoseProvider( &provider );
+    // Associate pose provider
+    experience_renderer.addPoseProvider( pose_provider );
 
+    // Associate controller
     composite.addController( controller );
-    
-    top << (composite << grid << experience_renderer << provider ) ;
+   
+    // Combine
+    top << (composite << grid << experience_renderer << pose_provider_renderer ) ;
 
+    // Run
     win.setGLV(top);
     win.fit(); 
     glv::Application::run();

@@ -25,12 +25,12 @@ class Iterator : public TemporalObserver
         }
 
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
-        typename std::deque< std::pair< double, boost::shared_ptr<T> > > buffered_window;
-        
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator WINDOW_ITERATOR;
-        typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
 
     protected:
+        
+        typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
+        typename std::deque< std::pair< double, boost::shared_ptr<T> > > buffered_window;
 
         boost::shared_ptr< L3::SlidingWindow<T> > windower;
 };
@@ -45,6 +45,7 @@ class ConstantTimeIterator : public Iterator<T>
         {
         }
 
+        double swathe_length;
         Comparator<std::pair< double, boost::shared_ptr<T> > > _pair_comparator;
         
         bool update( double time )
@@ -94,9 +95,6 @@ class ConstantTimeIterator : public Iterator<T>
             return true;
         }
 
-    //protected:
-   
-        double swathe_length;
 };
 
 

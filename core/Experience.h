@@ -2,7 +2,8 @@
 #define L3_EXPERIENCE_H
 
 #include <glog/logging.h>
-
+//#include <boost/signals2/mutex.hpp>
+#include <boost/thread.hpp>
 #include <map>
 
 struct LengthEstimatorInterface : L3::LengthEstimator
@@ -68,15 +69,14 @@ struct Experience : SpatialObserver, Poco::Runnable
     std::deque<experience_section>  sections;
     std::ifstream                   data;
     unsigned int                    window;
-    Poco::Mutex                     mutex;
     bool                            running;
     Poco::Thread                    thread;
+    
     std::list<unsigned int>         required_sections;
+    Poco::Mutex                     mutex;
 
     std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
     
-    bool point_cloud_change;
-
     ~Experience()
     {
         running = false;        // Disable thread
@@ -84,15 +84,32 @@ struct Experience : SpatialObserver, Poco::Runnable
         data.close();           // Clean-up
     }
 
+    double _x,_y;
     virtual void run()
     {
         while( running )
         {
-            // Build up a list of required sections
-            std::list<unsigned int> required;
-            mutex.lock(); 
-            std::copy( required_sections.begin(), required_sections.end(), std::inserter( required, required.begin() ) );
-          
+            mutex.lock();
+            std::vector< std::pair< double, unsigned int > > distances;
+
+            // Calculate distances to all sections
+            for( unsigned int i=0; i<sections.size(); i++ )
+            {
+                distances.push_back( std::make_pair( norm( std::make_pair( _x, _y ), std::make_pair( sections[i].x, sections[i].y)  ), i ) ); 
+            }
+
+            std::sort( distances.begin(), distances.end() );
+            std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
+
+            required_sections.clear();
+            for( unsigned int i=0; i<2; i++ )
+            {
+                required_sections.push_front( distances_iterator++->second );
+            }
+ 
+            /*
+             *Build up a list of required sections
+             */
             // Mark everything as *NOT* required
             for( std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.begin();
                     map_it != resident_sections.end();
@@ -100,31 +117,28 @@ struct Experience : SpatialObserver, Poco::Runnable
             {
                 map_it->second.first = false;
             }
-        
 
             /*
              *SEARCH
              */
-            for ( std::list<unsigned int>::iterator it = required.begin(); it != required.end(); it++ )
+            for ( std::list<unsigned int>::iterator it = required_sections.begin(); it != required_sections.end(); it++ )
             {
                 std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.find( *it );
-          
+
                 //We need it, and don't have it
                 if ( map_it == resident_sections.end() )
                 {
-                    point_cloud_change = true;
-
-                    // Load the pair
+                    //Load the pair
                     std::pair< unsigned int, L3::Point<double>* > load_result = load(*it);
-                   
+
                     L3::PointCloud<double>* cloud = new L3::PointCloud<double>();
-                   
+
                     cloud->num_points = load_result.first;
                     cloud->points = load_result.second;
 
                     // Insert, mark it as required by default
                     resident_sections.insert( std::make_pair( *it, std::make_pair( true, boost::shared_ptr<L3::PointCloud<double> >( cloud ) ) ) );
-       
+
                 }
                 else
                 {
@@ -143,23 +157,23 @@ struct Experience : SpatialObserver, Poco::Runnable
                 if( !map_it->second.first)
                     resident_sections.erase( map_it );
             }
-            mutex.unlock(); 
+            mutex.unlock();
+
+            usleep( .1*1e6 );
         }
     }
 
     bool getExperienceCloud( boost::shared_ptr< L3::PointCloud<double> >& cloud )
     {
         std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds;
-        
+     
         mutex.lock();
-        
         std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > >::iterator it =  resident_sections.begin();
         while( it != resident_sections.end() )
         {
             clouds.push_back( it->second.second ); 
             it++;
         }
-        
         mutex.unlock();
 
         cloud = join( clouds );
@@ -169,26 +183,8 @@ struct Experience : SpatialObserver, Poco::Runnable
 
     bool update( double x, double y )
     {
-        std::vector< std::pair< double, unsigned int > > distances;
-
-        // Calculate distances to all sections
-        for( unsigned int i=0; i<sections.size(); i++ )
-        {
-            distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( sections[i].x, sections[i].y)  ), i ) ); 
-        }
-
-        std::sort( distances.begin(), distances.end() );
-        
-        std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
-
-        mutex.lock();
-        required_sections.clear();
-        for( unsigned int i=0; i<20; i++ )
-        {
-            required_sections.push_front( distances_iterator++->second );
-        }
-        mutex.unlock();
-
+        _x = x;
+        _y = y;
         return true;
     }
 

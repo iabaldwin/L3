@@ -4,12 +4,12 @@
 #include "Datatypes.h"
 #include "Definitions.h"
 #include "Core.h"
+#include "PoseProvider.h"
 
 
 namespace L3
 {
-    
-    class SwatheBuilder : public TemporalObserver
+    class SwatheBuilder : public TemporalObserver, public PoseProvider
     {
         public:
             SwatheBuilder( L3::Iterator<L3::SE3> * pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
@@ -20,7 +20,15 @@ namespace L3
             }
                 
             Comparator< std::pair< double, boost::shared_ptr<L3::SE3> > > _comparator;
-            
+
+            /*
+             *Pose provider interface
+             */
+            L3::SE3 operator()(void)
+            {
+                return *pose_iterator->window.front().second;
+            }
+
             bool update( double time )
             {
 #ifndef NDEBUG
@@ -71,7 +79,6 @@ namespace L3
 
         private:
 
-            //L3::PoseProvider*           pose_iterator;
             L3::Iterator<L3::SE3>*      pose_iterator;
             L3::Iterator<L3::LMS151>*   LIDAR_iterator;
 

@@ -232,6 +232,9 @@ struct SwatheRenderer : Leaf
 
 };
 
+/*
+ *Render experience point clouds
+ */
 struct ExperienceRenderer : Leaf
 {
 
@@ -248,8 +251,7 @@ struct ExperienceRenderer : Leaf
     int pt_limit, pt_counter, sample_counter; 
     glv::Point3* point_vertices;
     glv::Color*  point_colors;
-    L3::Visualisers::PoseProvider<double>* pose_provider;
-
+    L3::PoseProvider* pose_provider;
 
     ~ExperienceRenderer()
     {
@@ -258,7 +260,7 @@ struct ExperienceRenderer : Leaf
     }
 
     
-    void addPoseProvider( L3::Visualisers::PoseProvider<double>* provider )
+    void addPoseProvider( L3::PoseProvider* provider )
     {
         pose_provider = provider;
     }
@@ -268,9 +270,8 @@ struct ExperienceRenderer : Leaf
         // Update experience
         if( pose_provider )
         {
-            std::pair<double,double> position = (*pose_provider)();
-            experience->update( position.first, position.second );
-        }   
+            experience->update( random()%100, random()%100 );
+        }
 
         boost::shared_ptr< L3::PointCloud<double> > cloud;
         experience->getExperienceCloud( cloud );
@@ -286,27 +287,42 @@ struct ExperienceRenderer : Leaf
 
 };
 
-struct PoseProviderVisualiser
+struct PoseProviderRenderer : Leaf
 {
-    //void onDraw3D( glv::GLV& g )
-    //{
-    //range = 100;
+    PoseProviderRenderer( L3::PoseProvider* provider ) : pose_provider(provider),
+                                                        counter(0), 
+                                                        history(20)
+    {
+        positions.resize( history );
+   
+        vertices = new glv::Point3[history];
+        colors   = new glv::Color[history];
+    }
 
-    //x = range*cos(angle);
-    //y = range*sin(angle);
+        
+    glv::Point3*    vertices;
+    glv::Color*     colors;
 
-    //positions[ counter++%(positions.size()) ] = std::make_pair( x, y );
+    L3::PoseProvider* pose_provider;
 
-    //angle+=( M_PI/180.0 )* 5;
+    std::vector< std::pair<double,double> > positions;
 
-    //for ( int it = 0; it <20; it++ )
-    //{
-    //query_vertices[it]( positions[it].first, positions[it].second, 0.0 );
-    //}
+    int counter, history;
 
-    //glv::draw::paint( glv::draw::Points, query_vertices, query_colors, positions.size() );
+    void onDraw3D( glv::GLV& g )
+    {
+        L3::SE3 pose = (*pose_provider)();
 
-    //}
+        positions[ counter++%(positions.size()) ] = std::make_pair( pose.x, pose.y );
+
+        for ( int it = 0; it <history; it++ )
+        {
+            vertices[it]( positions[it].first, positions[it].second, 0.0 );
+        }
+
+        glv::draw::paint( glv::draw::Points, vertices, colors, positions.size() );
+
+    }
 
 };
 
