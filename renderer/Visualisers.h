@@ -299,15 +299,12 @@ struct PoseProviderRenderer : Leaf
         colors   = new glv::Color[history];
     }
 
-        
-    glv::Point3*    vertices;
     glv::Color*     colors;
-
-    L3::PoseProvider* pose_provider;
-
-    std::vector< std::pair<double,double> > positions;
+    glv::Point3*    vertices;
 
     int counter, history;
+    L3::PoseProvider* pose_provider;
+    std::vector< std::pair<double,double> > positions;
 
     void onDraw3D( glv::GLV& g )
     {
