@@ -10,3 +10,6 @@ target_link_libraries( plot_pose_chain GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} $
 add_executable( plot_point_cloud plot_point_cloud.cpp )
 target_link_libraries( plot_point_cloud GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3  ${Boost_LIBRARIES})
 
+add_executable( plot_experience plot_experience.cpp )
+target_link_libraries( plot_experience GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3  ${Boost_LIBRARIES})
+

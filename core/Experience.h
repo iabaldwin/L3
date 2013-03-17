@@ -68,12 +68,12 @@ struct Experience : SpatialObserver, Poco::Runnable
     
     std::deque<experience_section>  sections;
     std::ifstream                   data;
+    Poco::Thread                    thread;
+    Poco::Mutex                     mutex;
     unsigned int                    window;
     bool                            running;
-    Poco::Thread                    thread;
-    
+      
     std::list<unsigned int>         required_sections;
-    Poco::Mutex                     mutex;
 
     std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
     
@@ -82,6 +82,12 @@ struct Experience : SpatialObserver, Poco::Runnable
         running = false;        // Disable thread
         thread.join();          // Sync
         data.close();           // Clean-up
+    }
+
+    void _stop()
+    {
+        std::cerr << "Stopping..." << std::endl;
+        running = false;
     }
 
     double _x,_y;
@@ -102,7 +108,7 @@ struct Experience : SpatialObserver, Poco::Runnable
             std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
 
             required_sections.clear();
-            for( unsigned int i=0; i<2; i++ )
+            for( unsigned int i=0; i<window-1 && i<distances.size(); i++ )
             {
                 required_sections.push_front( distances_iterator++->second );
             }

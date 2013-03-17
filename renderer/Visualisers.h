@@ -270,7 +270,8 @@ struct ExperienceRenderer : Leaf
         // Update experience
         if( pose_provider )
         {
-            experience->update( random()%100, random()%100 );
+            L3::SE3 update = (*pose_provider)();
+            experience->update( update.x, update.y );
         }
 
         boost::shared_ptr< L3::PointCloud<double> > cloud;
