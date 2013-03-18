@@ -2,8 +2,6 @@
 #define L3_EXPERIENCE_H
 
 #include <glog/logging.h>
-//#include <boost/signals2/mutex.hpp>
-#include <boost/thread.hpp>
 #include <map>
 
 struct LengthEstimatorInterface : L3::LengthEstimator

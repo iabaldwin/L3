@@ -1,4 +1,4 @@
-add_library( L3 Dataset.cpp Datatypes.cpp)
+add_library( L3 Dataset.cpp Datatypes.cpp AbstractFactory.cpp Iterator.cpp PointCloud.cpp Utils.cpp )
 target_link_libraries( L3 config++ gsl PocoFoundation glog gslcblas)
 
 add_subdirectory( tests )
