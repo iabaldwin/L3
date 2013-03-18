@@ -7,21 +7,19 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 find_package( Boost COMPONENTS system filesystem unit_test_framework REQUIRED )     # Filesystem, smart pointers, ...
 include_directories(${Boost_INCLUDE_DIRS})
 
-find_package( HDF5 )                                                                # Matlab interoperability  
-find_package( GLUT )                                                                # Rendering
-find_package( GLEW )                                                                # Rendering
-find_package( OpenGL )                                                              # Rendering
+find_package( HDF5 )                                             # Matlab interoperability  
+find_package( GLUT REQUIRED )                                    # Rendering
+find_package( GLEW REQUIRED )                                    # Rendering
+find_package( OpenGL REQUIRED )                                  # Rendering
 
-find_package( OpenMP )
+find_package( OpenMP REQUIRED )
 set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} )
 
-find_package( Eigen3 )
+find_package( Eigen3 REQUIRED )
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-find_package( GSL )                                                                 # Math,statistics
+find_package( GSL REQUIRED )                                                                 # Math,statistics
 include_directories( ${GSL_INCLUDE_DIRS} )
-
-message(${GLEW_LIBRARIES})
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
