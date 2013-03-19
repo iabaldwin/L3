@@ -17,10 +17,14 @@ namespace L3
         public:
             static boost::shared_ptr<SlidingWindow<T> > constantTimeWindow( const std::string& file, float time )
             {
-                std::vector<BYTE> sample( 1024 );
-
                 std::ifstream file_input( file.c_str() );
 
+                if( !file_input.good() )
+                    throw L3::no_such_file();
+                
+                std::vector<BYTE> sample( 1024 );
+
+                
                 file_input.read( (char*)(&sample[0]), 1024 );
 
                 file_input.close();

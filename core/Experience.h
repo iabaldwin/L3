@@ -1,7 +1,7 @@
 #ifndef L3_EXPERIENCE_H
 #define L3_EXPERIENCE_H
 
-#include <glog/logging.h>
+//#include <glog/logging.h>
 #include <map>
 
 struct LengthEstimatorInterface : L3::LengthEstimator

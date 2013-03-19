@@ -12,6 +12,8 @@ double degreesToRadians( double degrees )
         return (M_PI/180.0)*degrees;
 }
 
+} // Math
+
 boost::filesystem::path configurationDirectory( void )
 {
  char * pPath;
@@ -126,6 +128,5 @@ void localisePoseChainToOrigin( POSE_SEQUENCE& poses )
 
 
 
-} // Math
 } // Utils
 } // L3

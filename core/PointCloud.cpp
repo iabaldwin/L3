@@ -280,5 +280,10 @@ void centerPointCloud( PointCloud<T>* cloud )
 template std::pair<double, double> L3::mean<double>(L3::PointCloud<double>*);
 template std::pair<float, float> L3::mean<float>(L3::PointCloud<float>*);
 template boost::shared_ptr<L3::PointCloud<double> > L3::join( std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds );
+template void L3::centerPointCloud<double>( PointCloud<double>* cloud );
+template std::ostream& L3::operator<<( std::ostream& o, L3::PointCloud<double> cloud );
 
+template L3::PointCloud<double> L3::samplePointCloud( L3::PointCloud<double>* cloud, int size );
+template std::pair<double,double> L3::max( PointCloud<double>* cloud );
+template std::pair<double,double> L3::min( PointCloud<double>* cloud );
 
