@@ -6,11 +6,16 @@
 
 #include "Visualisers.h"
 
-int main (int argc, char ** argv){
+int main (int argc, char ** argv)
+{
 
+    /*
+     *Visualisation
+     */
     glv::GLV top;
-    glv::Window win(1200, 600, "Soaring");
+    glv::Window win(1200, 600, "Apps::Renderer");
 	
+    // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     glv::Grid grid(glv::Rect(0,0));
@@ -20,7 +25,6 @@ int main (int argc, char ** argv){
     grid.minor(2);            // number of divisions per major ticks
     grid.equalizeAxes(true);
     grid.stretch(1,.2);
-
 
     top << grid;
 
