@@ -5,48 +5,28 @@
 #include <numeric>
 #include <iterator>
 
+#include <boost/shared_ptr.hpp>
+
+#include "Datatypes.h"
+#include "Core.h"
+#include "Iterator.h"
+
 namespace L3
 {
 
 struct LengthEstimator 
 {
     
-    LengthEstimator() : initialised(false), previous( L3::SE3::ZERO() )
-    {
-    }
+    LengthEstimator();
 
     bool initialised;
     L3::SE3 previous;
 
-    double operator()( L3::SE3 current )
-    {
-        if ( !initialised )  
-        {
-            previous = current;
-            initialised = true;
-            return 0.0;
-        }
-        else
-        {
-            double n = L3::Math::norm( previous, current );
-            previous = current;
-            return n;
-        }
-    
-    }
+    double operator()( L3::SE3 current );
 
 };
 
 typedef std::pair< double, boost::shared_ptr<L3::LHLV> > RECORD;
-
-std::ostream& operator<<( std::ostream& o, const RECORD& r ) 
-{
-    o<< r.first << " ";
-
-    r.second->print(o);
-
-    return o;
-}
 
 template <typename InputIterator, typename OutputIterator >
 void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output )

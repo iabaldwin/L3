@@ -12,19 +12,28 @@ struct VelocityPlotter : Poco::Runnable
 
     VelocityPlotter( glv::PlotFunction1D* plotter ) : data(plotter->data()), running(true)
     {
-        // Assign data
-        //plotter->data() = this->data;
-
+        current = 0.0;
+        // Run
         thread.start( *this );
     }
 
     bool            running;
     glv::Data&      data;
     Poco::Thread    thread;
-    
+
+    ~VelocityPlotter()
+    {
+        running = false;
+   
+        thread.join();
+    }
+
+    double current;
+
     void run()
     {
 
+        //data.resize( glv::Data::DOUBLE, 100, 1 );
         data.resize( glv::Data::DOUBLE, 1, 100 );
         //while( running )
         int runner = 0;
@@ -34,10 +43,10 @@ struct VelocityPlotter : Poco::Runnable
             
             while( i() ) 
             {
-                data.assign( (double)(random() % 5 )/5.0, i[0], i[1] );
-                //data.assign( (double)(1.0), i[0], i[1] );
-                //data.assign( (double)(0.2), i[0], i[1] );
+                data.assign( current += ((double)(random() % 5 )/5.0)-1, i[0], i[1] );
             }
+
+            usleep(.1*1e6);
         }
 
     }
@@ -52,7 +61,7 @@ int main (int argc, char ** argv)
      *Visualisation
      */
     glv::GLV top;
-    glv::Window win(1400, 800, "Soaring");
+    glv::Window win(1400, 800, "Apps::LHLV");
 
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
@@ -62,15 +71,18 @@ int main (int argc, char ** argv)
     grid.range(1);            // set plot region
     grid.major(1);            // set major tick mark placement
     grid.minor(2);            // number of divisions per major ticks
-    grid.equalizeAxes(true);
+    //grid.equalizeAxes(true);
     grid.stretch(1,.2);
 
-    double d = 800;
     glv::PlotFunction1D* plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
-    glv::Plot v( glv::Rect( 0, 0, d, d/8), *plot1 );
-    glv::Plot w( glv::Rect( 0, d/2, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
-   
-    top << v << w;
+    
+    glv::Plot v( glv::Rect( 0, 0, win.width(), win.width()/8), *plot1 );
+
+    v.range(0, 100, 0);
+
+    plot1->stroke(10);
+
+    top << v;
 
     VelocityPlotter vel( plot1 );
 
