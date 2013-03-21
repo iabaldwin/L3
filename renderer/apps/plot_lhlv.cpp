@@ -43,7 +43,7 @@ struct VelocityPlotter : Poco::Runnable
             
             while( i() ) 
             {
-                data.assign( current += ((double)(random() % 5 )/5.0)-1, i[0], i[1] );
+                data.assign( ((double)(random() % 5 )/5.0)-1, i[0], i[1] );
             }
 
             usleep(.1*1e6);
@@ -80,7 +80,7 @@ int main (int argc, char ** argv)
 
     v.range(0, 100, 0);
 
-    plot1->stroke(10);
+    plot1->stroke(2);
 
     top << v;
 

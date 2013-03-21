@@ -83,15 +83,14 @@ int main (int argc, char ** argv)
     glv::Plot v1__( glv::Rect( 0,0*d/8, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
     // Point cloud renderer
-    //TODO: What?
-    //L3::Visualisers::PoseChainRenderer  pose_chain_renderer( &poses );
-    //L3::Visualisers::Composite          composite_view;
-    //L3::Visualisers::BasicPanController controller;
+    L3::Visualisers::PoseChainRenderer  pose_chain_renderer( &poses );
+    L3::Visualisers::Composite          composite_view;
+    L3::Visualisers::BasicPanController controller;
 
-    //composite_view.current_time = dataset.start_time;
-    //composite_view.sf = 2.0;
+    composite_view.current_time = dataset.start_time;
+    composite_view.sf = 2.0;
 
-    //top << (composite_view << pose_chain_renderer);
+    top << (composite_view << pose_chain_renderer);
 
     win.setGLV(top);
     glv::Application::run();

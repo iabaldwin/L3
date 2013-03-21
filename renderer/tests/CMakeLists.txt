@@ -1,6 +1,3 @@
-add_executable( test_app test_app.cpp )
-target_link_libraries( test_app GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
 add_executable( test_iterator_visual test_iterator.cpp )
 target_link_libraries( test_iterator_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
@@ -33,4 +30,7 @@ target_link_libraries( test_pipeline_stage_1_visual GLV ${GLUT_LIBRARIES} ${OPEN
 
 add_executable( test_data_providers test_data_providers.cpp )
 target_link_libraries( test_data_providers GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
+add_executable( test_layout test_layout.cpp )
+target_link_libraries( test_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
