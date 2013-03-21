@@ -111,9 +111,14 @@ struct Composite : glv::View3D
 
     virtual void onDraw3D(glv::GLV& g)
     {
+
+        //glv::draw::fog(float end, float start, const Color& c=Color(0));  ///< Set linear fog parameters
+
         std::list<Leaf*>::iterator it = components.begin();
         glv::draw::translate( _x, _y, _z );
         glv::draw::rotate( _r, _p, _q );
+
+        glv::draw::fog(1000.0, 500.0 );
 
         // 1. Compute time since last update
         current = clock();
