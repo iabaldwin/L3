@@ -34,3 +34,6 @@ target_link_libraries( test_data_providers GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRAR
 add_executable( test_layout test_layout.cpp )
 target_link_libraries( test_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
+add_executable( test_dataset_layout test_dataset_layout.cpp )
+target_link_libraries( test_dataset_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+

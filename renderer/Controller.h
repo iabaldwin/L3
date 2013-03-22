@@ -34,6 +34,7 @@ struct Controller
 
 };
 
+//Mouse controller, keyboard controller
 
 /*
  *Basic panning motion

@@ -5,6 +5,7 @@
 #include "Definitions.h"        // Useful typedefs
 #include "Core.h"               // Base types, exceptions
 #include "Dataset.h"            // Dataset reader
+#include "Runner.h"             // Dataset runner
 #include "Iterator.h"           // Constant-time, constant-distance, etc
 #include "PointCloud.h"         // Points, point-cloud
 #include "Projector.h"          // Convert raw LIDAR data to Point cloud
@@ -16,6 +17,6 @@
 #include "ChainBuilder.h"       // Poses from rotational data
 #include "Experience.h"         // Experience generation
 #include "LibraryAdapters.h"    // PCL, ...
-#include "PoseProvider.h"       // PCL, ...
+#include "PoseProvider.h"       // Pose sources
 
 #endif

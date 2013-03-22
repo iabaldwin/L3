@@ -4,6 +4,9 @@ target_link_libraries( test_include_order L3 ${Boost_LIBRARIES}   )
 add_executable( test_dataset test_dataset.cpp )
 target_link_libraries( test_dataset L3 ${Boost_LIBRARIES}   )
 
+add_executable( test_dataset_runner test_dataset_runner.cpp )
+target_link_libraries( test_dataset_runner L3 ${Boost_LIBRARIES}   )
+
 add_executable( test_utils test_utils.cpp )
 target_link_libraries( test_utils L3 ${Boost_LIBRARIES}  )
 
