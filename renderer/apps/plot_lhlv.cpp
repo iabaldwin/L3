@@ -32,9 +32,8 @@ struct VelocityPlotter : Poco::Runnable
 
     void run()
     {
-
-        //data.resize( glv::Data::DOUBLE, 100, 1 );
         data.resize( glv::Data::DOUBLE, 1, 100 );
+        
         //while( running )
         int runner = 0;
         while( runner++<10000  )

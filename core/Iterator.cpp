@@ -22,7 +22,7 @@ bool ConstantTimeIterator<T>::update( double time )
         return false; 
     }
 
-    it = ( fabs(( it-1 )->first - time)  ) < ( fabs(( it )->first - time)  ) ? ( it-1) : it ;
+    it = ( fabs(( it-1 )->first - time)  ) < ( fabs(( it )->first - time)  ) ? ( it-1) : it;
 
     // Got it?
     this->window.clear();
