@@ -96,7 +96,7 @@ class ChainBuilder : public TemporalObserver, public PoseWindower
 
         ChainBuilder( L3::Iterator<L3::LHLV>* iterator ) : LHLV_iterator(iterator)
         {
-
+            this->window = &(this->_window);
         }
 
         bool update( double time )
@@ -121,7 +121,9 @@ class ChainBuilder : public TemporalObserver, public PoseWindower
             
     private:
 
-            L3::Iterator<L3::LHLV>*      LHLV_iterator;
+        std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > _window;
+            
+        L3::Iterator<L3::LHLV>*      LHLV_iterator;
 };
 
 }

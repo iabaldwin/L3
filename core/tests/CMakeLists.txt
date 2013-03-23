@@ -19,8 +19,11 @@ target_link_libraries( test_pose_homogeneous config L3 ${Boost_LIBRARIES}  )
 add_executable( test_windower test_windower.cpp )
 target_link_libraries( test_windower config L3 ${Boost_LIBRARIES}  )
 
-add_executable( test_swathe_builder test_swathe_builder.cpp )
-target_link_libraries( test_swathe_builder config L3 ${Boost_LIBRARIES}  )
+add_executable( test_swathe_builder_INS test_swathe_builder_INS.cpp )
+target_link_libraries( test_swathe_builder_INS config L3 ${Boost_LIBRARIES}  )
+
+add_executable( test_swathe_builder_LHLV test_swathe_builder_LHLV.cpp )
+target_link_libraries( test_swathe_builder_LHLV config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_iterator test_iterator.cpp )
 target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES}  )
