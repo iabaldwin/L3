@@ -4,6 +4,16 @@ namespace L3
 {
 
 template <typename T>
+void Iterator<T>::getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window)  
+{
+    mutex.lock();
+    //window = this->window;      
+    window.resize( this->window.size() );
+    std::copy( this->window.begin(), this->window.end(), window.begin() );
+    mutex.unlock();
+}
+
+template <typename T>
 bool ConstantTimeIterator<T>::update( double time )
 {
     // Update the watcher with the new time
@@ -24,13 +34,13 @@ bool ConstantTimeIterator<T>::update( double time )
 
     it = ( fabs(( it-1 )->first - time)  ) < ( fabs(( it )->first - time)  ) ? ( it-1) : it;
 
-    // Got it?
-    this->window.clear();
 
     double data_swathe_length = 0;
 
     typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it_back_iterator = it;
 
+    this->mutex.lock();
+    this->window.clear();
     // Working backwards, build up the data swathe
     while( data_swathe_length < swathe_length )
     {
@@ -45,8 +55,8 @@ bool ConstantTimeIterator<T>::update( double time )
        
         // Continue
         it_back_iterator--;
-
     }
+    this->mutex.unlock();
 
     return true;
 }
@@ -58,3 +68,4 @@ template class L3::ConstantTimeIterator<L3::LHLV>;
 template class L3::ConstantTimeIterator<L3::LMS151>;
 template class L3::ConstantTimeIterator<L3::SE3>;
 
+template void L3::Iterator<L3::LHLV>::getWindow( std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > >& window) ;

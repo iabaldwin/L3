@@ -27,7 +27,9 @@ int main (int argc, char ** argv)
     
     double time = dataset.start_time;
 
-    L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
+    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    
+    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
     /*
      *Visualisation
@@ -45,7 +47,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
 
-    experience_renderer.addPoseProvider( &swathe_builder );
+    //experience_renderer.addPoseProvider( &swathe_builder );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
     composite.current_time = time;

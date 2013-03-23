@@ -20,8 +20,6 @@ int main()
 
     layout.runDataset( &dataset );
 
-    std::cout << "Starting..." << std::endl;
-
-    layout.run( top );
+    layout.go( top );
 
 }

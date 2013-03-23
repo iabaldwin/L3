@@ -10,6 +10,7 @@
 #include "Datatypes.h"
 #include "Core.h"
 #include "Iterator.h"
+#include "PoseProvider.h"
 
 namespace L3
 {
@@ -58,11 +59,8 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
         current_time = current_in->first;
 
         // Compute roll, pitch, yaw
-        //w1 = current_in->second->LHLV_iterator.window[5];
         w1 = current_in->second->data[5];
-        //w2 = current_in->second->LHLV_iterator.window[4];
         w2 = current_in->second->data[4];
-        //w3 = current_in->second->LHLV_iterator.window[3];
         w3 = current_in->second->data[3];
 
         previous_pose = boost::dynamic_pointer_cast< L3::SE3 >( (*(output-1)).second );
@@ -92,7 +90,7 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
 
 }
 
-class ChainBuilder : public TemporalObserver
+class ChainBuilder : public TemporalObserver, public PoseWindower
 {
     public:
 
@@ -108,25 +106,22 @@ class ChainBuilder : public TemporalObserver
                 throw std::exception();
 
             // Reset
-            window.clear();
+            window->clear();
 
             // Allocate
-            window.resize( LHLV_iterator->window.size() );
+            window->resize( LHLV_iterator->window.size() );
 
             // Accumulate 
             L3::trajectoryAccumulate( LHLV_iterator->window.begin(), 
                                         LHLV_iterator->window.end(), 
-                                        window.begin() );
+                                        window->begin() );
 
             return true;
         }
             
-        POSE_SEQUENCE window;
-
     private:
 
             L3::Iterator<L3::LHLV>*      LHLV_iterator;
-
 };
 
 }

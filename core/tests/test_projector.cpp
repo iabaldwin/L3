@@ -23,7 +23,13 @@ int main()
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 60.0 );
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 60.0 );
     
-    L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
+    //L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
+
+
+    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    
+    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
+
 
     /*
      *Projector  

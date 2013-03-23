@@ -11,6 +11,6 @@ int main()
 
     glv::GLV top;
     
-    layout.run( top );
+    layout.go( top );
 
 }

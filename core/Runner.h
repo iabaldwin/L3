@@ -37,16 +37,16 @@ struct DatasetRunner : Poco::Runnable
         stop();
       
         if ( thread.isRunning() )
-        {
             thread.join();
-        }
     }
 
-    void start( double start_time )
+    void start( double start_time, bool threaded=true )
     {
         current_time = start_time;
         running = true;
-        thread.start( *this );
+        
+        if (threaded)
+            thread.start( *this );
     }
 
     void stop()
@@ -54,16 +54,21 @@ struct DatasetRunner : Poco::Runnable
         running = false;
     }
 
-    void update( double time )
+    void step( double dt )
     {
+        current_time += dt;
+
         // Update Poses
-        pose_iterator->update( time ); 
+        if ( !pose_iterator->update( current_time ) )
+            throw std::exception();
     
         // Update LHLV
-        LHLV_iterator->update( time );
+        if ( !LHLV_iterator->update( current_time ) )
+            throw std::exception();
 
         // Update LIDAR
-        LIDAR_iterator->update( time );
+        if ( !LIDAR_iterator->update( current_time ))
+            throw std::exception();
     
     }
 
@@ -75,8 +80,9 @@ struct DatasetRunner : Poco::Runnable
         {
             if ( t.elapsed() > 1.0/frequency )
             {
-                update( current_time += .5 );
+                step( .5 );
 
+                // Restart timer
                 t.restart();
             }
         }

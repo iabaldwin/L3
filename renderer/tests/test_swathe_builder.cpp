@@ -25,7 +25,9 @@ int main (int argc, char ** argv)
     
     double time = dataset.start_time;
 
-    L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
+    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    
+    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
     /*
      *Visualisation
@@ -46,10 +48,7 @@ int main (int argc, char ** argv)
     composite.current_time = time;
     composite.sf = 2.0;
 
-    double d = 800;
-    glv::Plot velocity( glv::Rect( 0,0*d/8, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
-
-    top << (composite << swathe_renderer << grid ) << velocity;
+    top << (composite << swathe_renderer << grid );
 
     win.setGLV(top);
     win.fit(); 

@@ -15,7 +15,7 @@ int main()
         if( !(dataset.validate() && dataset.load() ) )
             throw std::exception();
 
-        // Constant time iterator over poses
+        // Constant time iterator over LHLV data
         L3::ConstantTimeIterator< L3::LHLV > iterator( dataset.LHLV_reader, 20.0 );
 
         double time = dataset.start_time;
@@ -35,6 +35,7 @@ int main()
             t.begin();
             if ( !builder.update( time += 1 ) )
                 throw std::exception();
+            
             std::cout << time << "-->" << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first <<  "(" << iterator.window.size() << ")" << std::endl;
 
         } 

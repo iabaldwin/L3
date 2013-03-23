@@ -18,7 +18,12 @@ int main()
     
     double time = dataset.start_time;
 
-    L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
+    //L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
+
+    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    
+    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
+
 
     L3::Tools::Timer t;
 

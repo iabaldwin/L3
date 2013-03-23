@@ -2,6 +2,7 @@
 #define L3_POSE_PROVIDER_H
 
 #include <boost/timer.hpp>
+#include <Poco/Thread.h>
 
 namespace L3
 {
@@ -10,7 +11,6 @@ struct PoseProvider : std::unary_function< L3::SE3, void >
 {
     virtual L3::SE3 operator()() = 0;
 };
-
 
 struct CircularPoseProvider : PoseProvider, Poco::Runnable
 {
@@ -67,6 +67,21 @@ struct CircularPoseProvider : PoseProvider, Poco::Runnable
         return pose;
     }
 };
+
+
+
+struct PoseWindower 
+{
+    PoseWindower()
+    {
+
+    }
+
+    virtual bool update( double dt ) = 0;
+
+    std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > >* window;
+};
+
 
 }
 #endif

@@ -42,21 +42,17 @@ class Layout
         
         Layout( glv::Window& win ) : window(win)
         {
-            composite   = new L3::Visualisers::Composite();
-            controller  = new L3::Visualisers::BasicPanController();
-            grid        = new L3::Visualisers::Grid();
+            composite.reset( new L3::Visualisers::Composite() );
+            controller.reset( new L3::Visualisers::BasicPanController() );
+            grid.reset( new L3::Visualisers::Grid() );
         
-            composite->addController( controller );
+            composite->addController( &*controller );
        
             _create();
         }
 
         virtual ~Layout()
         {
-            delete composite;
-            delete controller;
-            delete grid;
-            delete main_view;
         }
 
         void _create()
@@ -68,6 +64,7 @@ class Layout
             // Create subplots
             plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
             plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, window.width()-10, 150-5), *plot1 );
+            plot_region_1->range( 0,100 ); 
 
             plot1->stroke( 2.0 );
 
@@ -77,7 +74,7 @@ class Layout
             plot2->stroke( 2.0 );
         }
         
-        void run( glv::GLV& top )
+        void go( glv::GLV& top )
         {
             // Colors
             top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
@@ -94,7 +91,6 @@ class Layout
                 it++;
             }
 
-
             window.setGLV(top);
 
             glv::Application::run();
@@ -105,48 +101,77 @@ class Layout
         glv::Window& window; 
         glv::View* main_view;
 
-        glv::PlotFunction1D*    plot1;
-        glv::Plot*              plot_region_1;
+        glv::PlotFunction1D*            plot1;
+        glv::Plot*                      plot_region_1;
 
-        glv::PlotFunction1D*    plot2;
-        glv::Plot*              plot_region_2;
+        glv::PlotFunction1D*            plot2;
+        glv::Plot*                      plot_region_2;
 
-        L3::Visualisers::Composite*    composite;
-        L3::Visualisers::Controller*   controller;
-        L3::Visualisers::Grid*         grid;
+        std::auto_ptr<L3::Visualisers::Composite>     composite;
+        std::auto_ptr<L3::Visualisers::Controller>    controller;
+        std::auto_ptr<L3::Visualisers::Grid>          grid;
 
-        std::list< glv::View* > renderables;
+        std::list< glv::View* >         renderables;
 
 };
 
-class DatasetLayout : public Layout
+class DatasetLayout : public Layout, public Poco::Runnable
 {
     public:
 
-        DatasetLayout( glv::Window& win ) : Layout(win)
+        DatasetLayout( glv::Window& win ) : Layout(win), running(true)
         {
 
         }
 
-        const L3::Dataset* dataset;
-        std::auto_ptr< L3::DatasetRunner > runner;
+        bool            running;
+        Poco::Thread    thread;          
+        const L3::Dataset*                  dataset;
+        std::auto_ptr< L3::DatasetRunner >  runner;
         std::auto_ptr< L3::Visualisers::VelocityPlotter > velocity_plotter;
 
-
+        ~DatasetLayout()
+        {
+            running = false;
+            if( thread.isRunning() )
+                thread.join();
+        }
+        
         void runDataset( L3::Dataset* d ) 
         {
             dataset = d;
 
-            // Start the runner
+            // Start the dataset runner
             runner.reset( new L3::DatasetRunner( dataset ) );
-            runner->start( dataset->start_time );
+            runner->start( dataset->start_time, false );
 
-            velocity_plotter.reset( new L3::Visualisers::VelocityPlotter( runner->LHLV_iterator->window, plot1 ) );
+            // Create velocity plotter
+            velocity_plotter.reset( new L3::Visualisers::VelocityPlotter( &*runner->LHLV_iterator, plot1 ) );
 
+            // Timer
             TextRenderer<double>* text_renderer = new TextRenderer<double>( runner->current_time );
+            text_renderer->disable( glv::DrawBorder );
             this->renderables.push_front( text_renderer) ;
 
+            thread.start( *this );
         }
+        
+        void run()
+        {
+            boost::timer t;
+           
+            while( running )
+            {
+            
+                if ( t.elapsed() > 1 )
+                {
+                    runner->step( .5 );
+                    velocity_plotter->update();
+                    t.restart();
+                }
+            }
+        }
+
 };
 
 } // Visualisers

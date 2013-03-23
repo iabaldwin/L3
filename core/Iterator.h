@@ -11,6 +11,7 @@
 #include "Windower.h"
 #include "Tools.h"
 #include "AbstractFactory.h"
+#include "PoseProvider.h"
 
 namespace L3
 {
@@ -27,8 +28,12 @@ class Iterator : public TemporalObserver
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator WINDOW_ITERATOR;
 
+        void getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window);
+
     protected:
-        
+
+        Poco::Mutex mutex;
+
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > buffered_window;
 
@@ -45,12 +50,33 @@ class ConstantTimeIterator : public Iterator<T>
         {
         }
 
+        // Swathe length, in seconds
         double swathe_length;
-        Comparator<std::pair< double, boost::shared_ptr<T> > > _pair_comparator;
         
+        // <time, pose> comparison
+        Comparator<std::pair< double, boost::shared_ptr<T> > > _pair_comparator;
+       
+        // Core update
         bool update( double time );
 };
 
+class ConstantTimePoseWindower : public PoseWindower
+{
+    public:
+        
+        ConstantTimePoseWindower( L3::ConstantTimeIterator<L3::SE3>* iterator ) 
+            : constant_time_iterator (iterator)
+        {
+            this->window = &(iterator->window);
+        }
+
+        bool update( double t)
+        {
+            constant_time_iterator->update(t);
+        }
+
+        L3::ConstantTimeIterator<L3::SE3>* constant_time_iterator;
+};
 
 } // L3
 
