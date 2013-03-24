@@ -1,6 +1,9 @@
 add_executable( test_include_order test_include_order.cpp )
 target_link_libraries( test_include_order L3 ${Boost_LIBRARIES}   )
 
+add_executable( test_configuration test_configuration.cpp )
+target_link_libraries( test_configuration L3 ${Boost_LIBRARIES}   )
+
 add_executable( test_dataset test_dataset.cpp )
 target_link_libraries( test_dataset L3 ${Boost_LIBRARIES}   )
 

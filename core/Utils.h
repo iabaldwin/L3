@@ -7,12 +7,12 @@
 #include <sstream>
 #include <string.h>
 
-#include <libconfig.h++>
 #include <boost/filesystem.hpp>
 
 #include "Datatypes.h"
 #include "Definitions.h"
 #include "Core.h"
+#include "Configuration.h"
 
 namespace L3
 {
@@ -52,75 +52,68 @@ struct Accumulator
 };
 
 
-/*
- *Directory management
- */
-boost::filesystem::path configurationDirectory( void );
+//struct Locale 
+//{
+    //std::string name;
 
-L3::SE3 loadCalibration( const std::string& target, const::std::string& LIDAR );
+    //Locale( const std::string& target )
+    //{
+        //boost::filesystem::path p = L3::Utils::configurationDirectory();
 
-struct Locale 
-{
-    std::string name;
+        //p /= target;
 
-    Locale( const std::string& target )
-    {
-        boost::filesystem::path p = L3::Utils::configurationDirectory();
-
-        p /= target;
-
-        try
-        {
-            libconfig::Config config;
+        //try
+        //{
+            //libconfig::Config config;
         
-            f = fopen( p.string().c_str(), "r"  );
+            //f = fopen( p.string().c_str(), "r"  );
 
-            config.read( f );
+            //config.read( f );
 
-            double result;
-            if (config.lookupValue( "datum.X.lower", result) )
-            {
-                x = result;
-            }
+            //double result;
+            //if (config.lookupValue( "datum.X.lower", result) )
+            //{
+                //x = result;
+            //}
 
-            if (config.lookupValue( "datum.Y.lower", result) )
-            {
-                y = result;
-            }
-        }  
-        catch( ... )
-        {
+            //if (config.lookupValue( "datum.Y.lower", result) )
+            //{
+                //y = result;
+            //}
+        //}  
+        //catch( ... )
+        //{
 
-        }
+        //}
 
 
-    }
+    //}
 
-    FILE* f;
-    float x,y,z;
+    //FILE* f;
+    //float x,y,z;
 
-};
+//};
 
-struct BEGBROKE : Locale
-{
-    BEGBROKE() : Locale("begbroke_datum.config") 
-    {
-    }
+//struct BEGBROKE : Locale
+//{
+    //BEGBROKE() : Locale("begbroke_datum.config") 
+    //{
+    //}
 
-};
+//};
 
-struct WOODSTOCK : Locale
-{
-    WOODSTOCK() : Locale("woodstock_datum.config") 
-    {
-    }
+//struct WOODSTOCK : Locale
+//{
+    //WOODSTOCK() : Locale("woodstock_datum.config") 
+    //{
+    //}
 
-};
+//};
 
 void localisePoseChainToOrigin( POSE_SEQUENCE& poses );
 
 template <typename Iterator>
-void localisePoseChain( Iterator begin, Iterator end, const Locale& l )
+void localisePoseChain( Iterator begin, Iterator end, const L3::Configuration::Locale& l )
 {
   
     Iterator current = begin;

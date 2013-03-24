@@ -120,11 +120,13 @@ struct ExperienceBuilder
     ExperienceBuilder( L3::Dataset& dataset, double threshold=10.0 )
     {
         std::cout.precision(15);
-        
+       
+        // Pose reader
         pose_reader.reset( new L3::IO::BinaryReader<L3::SE3>() );
         if (!pose_reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" ))
             throw std::exception();
 
+        // Scan reader
         LIDAR_reader.reset( new L3::IO::SequentialBinaryReader<L3::LMS151>() );
         if (!LIDAR_reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/LMS1xx_10420001_192.168.0.51.lidar" ) )
             throw std::exception();
@@ -149,18 +151,23 @@ struct ExperienceBuilder
 
         int id = 0;
         double accumulate = 0.0;
-      
+     
+        // Experience data
         std::ofstream experience_data( "experience.dat", std::ios::binary );
         std::ofstream experience_index( "experience.index", std::ios::binary );
 
         unsigned int stream_position=0;
 
-        // Read data
+        // Fast forward to beginning
+
+        // Read LIDAr data, element at a time
         while( LIDAR_reader->read() )
         {
             // Extract scan
             LIDAR_reader->extract( scans );
-            
+          
+            std::cout << scans.size() << ":" << scans[0].first << std::endl;
+
             // Match pose
             std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > matched;
             
@@ -180,10 +187,13 @@ struct ExperienceBuilder
                 L3::Tools::Timer t;
                 t.begin();
 #endif
+                // Project the points 
                 projector->project( swathe );
+
 #ifndef NDEBUG
                 std::cout << point_cloud->num_points << " points in " << t.end() << "s" << std::endl;
 #endif
+                // Compute mean
                 std::pair<double,double> means = mean( point_cloud );
 
                 std::cout << means.first << " " << means.second << std::endl;
@@ -227,7 +237,7 @@ struct ExperienceGenerator
         
         try
         {
-            calibration = L3::Utils::loadCalibration( "dataset/" + dataset.name()  + ".config", "LMS1xx_10420002" );
+            //calibration = L3::Utils::loadCalibration( "dataset/" + dataset.name()  + ".config", "LMS1xx_10420002" );
         }
         catch( L3::calibration_failure )
         {

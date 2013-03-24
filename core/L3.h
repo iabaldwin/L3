@@ -5,6 +5,7 @@
 #include "Definitions.h"        // Useful typedefs
 #include "Core.h"               // Base types, exceptions
 #include "Dataset.h"            // Dataset reader
+#include "Configuration.h"      // Libconfig configuration parameters
 #include "Runner.h"             // Dataset runner
 #include "Iterator.h"           // Constant-time, constant-distance, etc
 #include "PointCloud.h"         // Points, point-cloud
