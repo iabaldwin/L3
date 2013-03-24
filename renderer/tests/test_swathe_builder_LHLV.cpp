@@ -43,12 +43,13 @@ int main (int argc, char ** argv)
     L3::Visualisers::BasicPanController controller;
     L3::Visualisers::Grid               grid;
     L3::Visualisers::SwatheRenderer     swathe_renderer( &swathe_builder ); 
+    L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
     composite.current_time = time;
     composite.sf = 2.0;
 
-    top << (composite << swathe_renderer << grid );
+    top << (composite << swathe_renderer << pose_renderer << grid );
 
     win.setGLV(top);
     win.fit(); 

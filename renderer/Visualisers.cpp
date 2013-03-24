@@ -70,8 +70,8 @@ namespace Visualisers
         iterator->update( time );
 
         // Reserve
-        glv::Color* colors    = new glv::Color[iterator->window.size()];
         glv::Point3* vertices = new glv::Point3[iterator->window.size()];;
+        glv::Color* colors    = new glv::Color[iterator->window.size()];
 
         typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator->window.begin();
 
@@ -80,6 +80,7 @@ namespace Visualisers
         while( it != iterator->window.end() )
         {
             vertices[counter]( it->second->x, it->second->y, 0 );
+            colors[counter].set( 0, 255, 0);
             counter++;
             it++; 
         }
@@ -274,6 +275,7 @@ namespace Visualisers
         while( it != pose_windower->window->end() )
         {
             vertices[counter]( it->second->x, it->second->y, 0 );
+            colors[counter].set( 1,0,0 );
             counter++;
             it++; 
         }
