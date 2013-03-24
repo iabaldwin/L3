@@ -129,6 +129,9 @@ std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud );
 template <typename T>
 void centerPointCloud( PointCloud<T>* cloud );
 
+template <typename T>
+void transform( PointCloud<T>* cloud, L3::SE3* pose );
+
 /*
 * Statistics
 */

@@ -183,12 +183,6 @@ void centerPointCloud( PointCloud<T>* cloud )
     }
 }
 
-
-
-
-
-
-
 //template <typename T>
 //PointCloud<T>& operator>>( PointCloud<T>& cloud, L3::Utils::Locale l )
 //{
@@ -206,84 +200,75 @@ void centerPointCloud( PointCloud<T>* cloud )
     //return cloud;
 //}
 
-//void transform( L3::Pose* t )
-    //{
-        //// 1. Compute mean
-        //centroid c; 
-        //c = std::for_each( data.begin(), data.end(), c );
+/*
+ *Manipulation
+ */
+template <typename T>
+void transform( PointCloud<T>* cloud, L3::SE3* pose )
+    {
+        // 1. Compute mean
+        std::pair<double,double> m = mean( cloud );
 
-        //// 2. Subtract
-        //typename std::vector< Point<T> >::iterator it;
-        //it = data.begin();
+        std::cout << m.first << ":" << m.second << std::endl;
+
+        // 2. Subtract
+        typename PointCloud<T>::ITERATOR it = cloud->begin();
         
-        //while( it != data.end() )
+        while( it != cloud->end() )
+        {
+            (*it).x -= m.first;
+            (*it).y -= m.second;
+            it++;
+        }
+
+        // 3. Rotate
+        int point_counter, num_points = cloud->num_points;
+        T x,y,z;
+        Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
+
+        Point<T>* tmp = cloud->begin();
+
+#pragma omp parallel private(point_counter, rot) shared(num_points, tmp, t )
+        {
+            Eigen::Matrix4f XYZ = Eigen::Matrix4f::Identity();
+            
+            #pragma omp for  nowait
+            for (point_counter=0; point_counter<num_points; point_counter++) 
+            {
+                XYZ( 0, 3 ) = tmp[point_counter].x;
+                XYZ( 1, 3 ) = tmp[point_counter].y;
+                XYZ( 2, 3 ) = tmp[point_counter].z;
+
+                rot = pose->getHomogeneous()*XYZ;
+           
+                tmp[point_counter].x = rot( 0, 3 );
+                tmp[point_counter].y = rot( 1, 3 );
+                tmp[point_counter].z = rot( 2, 3 );
+            }
+        }
+
+        // 4. Translate
+        it = cloud->begin();
+        
+        //while( it != cloud->end() )
         //{
-            //(*it).x -= c.x_mean;
-            //(*it).y -= c.y_mean;
-            //(*it).z -= c.z_mean;
+            //(*it).x += m.first;
+            //(*it).y += m.second;
             //it++;
         //}
-
-        //// 3. Rotate
-        //int point_counter, num_points = data.size();
-        //std::vector< Point<T> >* tmp = &data;
-        //T x,y,z;
-        //Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
-
-//#pragma omp parallel private(point_counter, rot) shared(num_points, tmp, t )
-        //{
-            //Eigen::Matrix4f XYZ = Eigen::Matrix4f::Identity();
-            
-            //#pragma omp for  nowait
-            //for (point_counter=0; point_counter<num_points; point_counter++) 
-            //{
-                //XYZ( 0, 3 ) = (*tmp)[point_counter].x;
-                //XYZ( 1, 3 ) = (*tmp)[point_counter].y;
-                //XYZ( 2, 3 ) = (*tmp)[point_counter].z;
-
-                //rot = t->getHomogeneous()*XYZ;
-           
-                //(*tmp)[point_counter].x = rot( 0, 3 );
-                //(*tmp)[point_counter].y = rot( 1, 3 );
-                //(*tmp)[point_counter].z = rot( 2, 3 );
-            //}
-        //}
-
-        //// 4. Translate
-        ////it = data.begin();
-        
-        ////while( it != data.end() )
-        ////{
-            ////(*it).x += c.x_mean;
-            ////(*it).y += c.y_mean;
-            ////(*it).z += c.z_mean;
-            ////it++;
-        ////}
-    //}
-
-    
-    //typedef typename std::vector< Point<T> >::iterator POINT_CLOUD_ITERATOR;
-
-    //POINT_CLOUD_ITERATOR begin()
-    //{
-        //return data.begin();
-    //}
-
-    //POINT_CLOUD_ITERATOR end()
-    //{
-        //return data.end();
-    //}
-
+    }
 }
 
 // Explicit Instantiations
-template std::pair<double, double> L3::mean<double>(L3::PointCloud<double>*);
-template std::pair<float, float> L3::mean<float>(L3::PointCloud<float>*);
+template void L3::transform( L3::PointCloud<double>* cloud, L3::SE3* p );
+
+template std::pair<double, double>  L3::mean<double>(L3::PointCloud<double>*);
+template std::pair<float, float>    L3::mean<float>(L3::PointCloud<float>*);
 template boost::shared_ptr<L3::PointCloud<double> > L3::join( std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds );
 template void L3::centerPointCloud<double>( PointCloud<double>* cloud );
 template std::ostream& L3::operator<<( std::ostream& o, L3::PointCloud<double> cloud );
 
-template L3::PointCloud<double> L3::samplePointCloud( L3::PointCloud<double>* cloud, int size );
-template std::pair<double,double> L3::max( PointCloud<double>* cloud );
-template std::pair<double,double> L3::min( PointCloud<double>* cloud );
+template L3::PointCloud<double>     L3::samplePointCloud( L3::PointCloud<double>* cloud, int size );
+template std::pair<double,double>   L3::max( PointCloud<double>* cloud );
+template std::pair<double,double>   L3::min( PointCloud<double>* cloud );
 

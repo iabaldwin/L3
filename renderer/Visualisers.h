@@ -37,7 +37,7 @@ struct PoseChainRenderer : Leaf
 template <typename T>
 struct CloudRenderer : Leaf
 {
-    CloudRenderer( L3::PointCloud<T>* CLOUD );
+    CloudRenderer( L3::PointCloud<T>* cloud );
     glv::Color*         colors;
     glv::Point3*        vertices;
     L3::PointCloud<T>*  cloud;

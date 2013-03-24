@@ -13,7 +13,6 @@ int main (int argc, char ** argv)
     /*
      *L3
      */
-    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
@@ -33,7 +32,7 @@ int main (int argc, char ** argv)
      *Visualisation
      */
     glv::GLV top;
-    glv::Window win(1400, 800, "Visualisation::PointCloud");
+    glv::Window win(1400, 800, "Visualisation");
 
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
@@ -53,7 +52,15 @@ int main (int argc, char ** argv)
 
     win.setGLV(top);
     win.fit(); 
-    glv::Application::run();
+   
+    try
+    {
+        glv::Application::run();
+    }
+    catch( L3::end_of_stream& e )
+    {
+        std::cout << "Done" << std::endl;
+    }
 }
 
 

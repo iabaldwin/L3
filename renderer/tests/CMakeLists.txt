@@ -4,6 +4,9 @@ target_link_libraries( test_iterator_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRA
 add_executable( test_point_clouds test_point_clouds.cpp )
 target_link_libraries( test_point_clouds GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
+add_executable( test_point_clouds_transform test_point_clouds_transform.cpp )
+target_link_libraries( test_point_clouds_transform GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
 add_executable( test_adapters test_adapters.cpp )
 target_link_libraries( test_adapters GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
