@@ -18,14 +18,15 @@ int main (int argc, char ** argv)
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
-    // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 10.0 );
+    // Constant time iterator over LHLV
+    L3::ConstantTimeIterator< L3::LHLV > iterator( dataset.LHLV_reader, 20.0 );
+    
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
     
     double time = dataset.start_time;
 
-    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    L3::ChainBuilder pose_windower( &iterator );
     
     /*
      *Visualisation
