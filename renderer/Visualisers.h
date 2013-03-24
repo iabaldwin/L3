@@ -120,6 +120,26 @@ struct ExperienceRenderer : Leaf
 };
 
 /*
+ *Pose windower renderer
+ */
+struct PoseWindowerRenderer : Leaf
+{
+
+    PoseWindowerRenderer( L3::PoseWindower* windower );
+
+    int                                 pt_limit, pt_counter, sample_counter; 
+    boost::shared_ptr<L3::Experience>   experience;
+    glv::Point3*                        point_vertices;
+    glv::Color*                         point_colors;
+    L3::PoseWindower*                   pose_windower;
+
+    void onDraw3D( glv::GLV& g );
+
+};
+
+
+
+/*
  *Real or synthesized pose provider
  */
 struct PoseProviderRenderer : Leaf
