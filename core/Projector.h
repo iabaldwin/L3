@@ -33,6 +33,7 @@ class Projector
         ~Projector()
         {
             delete [] cloud->points;
+            cloud->num_points = 0; 
         }
 
         void reallocate( size_t size )
@@ -81,8 +82,10 @@ class Projector
                     for (scan_counter=0; scan_counter<541; scan_counter++) 
                     {
 
+                        // Compute angle 
                         double angle = scan_counter*(*swathe_ptr)[pair_counter].second->angle_spacing +  (*swathe_ptr)[pair_counter].second->angle_start; 
 
+                        // 2D x&y
                         x = (*swathe_ptr)[pair_counter].second->ranges[scan_counter] * cos( angle );
                         y = (*swathe_ptr)[pair_counter].second->ranges[scan_counter] * sin( angle );
 
@@ -94,7 +97,6 @@ class Projector
                         // Project 3D point 
                         tmp = ((*swathe_ptr)[pair_counter].first->getHomogeneous()*(*calib_ptr))*XY;
 
-                        //points[(pair_counter*541)+scan_counter] = L3::Point<T>( tmp(0,3), tmp(1,3), tmp(2,3) );
                         points_ptr[(pair_counter*541)+scan_counter].x = tmp(0,3);
                         points_ptr[(pair_counter*541)+scan_counter].y = tmp(1,3);
                         points_ptr[(pair_counter*541)+scan_counter].z = tmp(2,3);

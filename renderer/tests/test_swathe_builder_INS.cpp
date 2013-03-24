@@ -52,7 +52,15 @@ int main (int argc, char ** argv)
 
     win.setGLV(top);
     win.fit(); 
-    glv::Application::run();
+    
+    try
+    {
+        glv::Application::run();
+    }
+    catch( L3::end_of_stream& e )
+    {
+        std::cout << "Done" << std::endl;
+    }
 }
 
 
