@@ -15,16 +15,23 @@ struct Transformer : L3::Visualisers::Leaf
 
     Transformer( L3::PointCloud<T>* point_cloud ) : cloud( point_cloud )
     {
-
+        done = false;
     }
 
     L3::PointCloud<T>* cloud;
 
+    bool done;
     void onDraw3D( glv::GLV& g )
     {
         L3::SE3 update( 0, 0, -10.0, 0, 0, 0 );
   
         transform( cloud, &update );
+
+        if (!done)
+        {
+            delete [] cloud->points;
+            done = true;
+        }
     }
 
 };
@@ -82,7 +89,8 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid               grid;
     
     composite_view.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-    
+   
+    // Transform tester
     Transformer<double> transformer( &sampled_cloud );
     
     // Point cloud renderer

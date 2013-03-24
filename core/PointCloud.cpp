@@ -209,8 +209,6 @@ void transform( PointCloud<T>* cloud, L3::SE3* pose )
         // 1. Compute mean
         std::pair<double,double> m = mean( cloud );
 
-        std::cout << m.first << ":" << m.second << std::endl;
-
         // 2. Subtract
         typename PointCloud<T>::ITERATOR it = cloud->begin();
         
@@ -250,12 +248,12 @@ void transform( PointCloud<T>* cloud, L3::SE3* pose )
         // 4. Translate
         it = cloud->begin();
         
-        //while( it != cloud->end() )
-        //{
-            //(*it).x += m.first;
-            //(*it).y += m.second;
-            //it++;
-        //}
+        while( it != cloud->end() )
+        {
+            (*it).x += m.first;
+            (*it).y += m.second;
+            it++;
+        }
     }
 }
 

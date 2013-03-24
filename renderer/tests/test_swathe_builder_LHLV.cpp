@@ -19,6 +19,7 @@ int main (int argc, char ** argv)
     
     // Constant time iterator over LHLV data
     L3::ConstantTimeIterator< L3::LHLV >   lhlv_iterator( dataset.LHLV_reader, 20.0 );
+    
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
     
