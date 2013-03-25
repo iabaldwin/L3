@@ -50,7 +50,7 @@ struct Experience : SpatialObserver, Poco::Runnable
 
     Experience( std::deque<experience_section>  SECTIONS, std::string& fname, unsigned int WINDOW=10 );
     
-    double _x,_y;
+    double                          _x,_y;
     std::deque<experience_section>  sections;
     std::ifstream                   data;
     Poco::Thread                    thread;
@@ -72,20 +72,20 @@ struct Experience : SpatialObserver, Poco::Runnable
 };
 
 /*
- *Load an experience from file
+ *  Experience loader
  */
 struct ExperienceLoader
 {
     std::deque<experience_section> sections;
 
-    ExperienceLoader()
+    ExperienceLoader( const L3::Dataset& dataset )
     {
-        std::ifstream experience_index( "experience.index", std::ios::binary );
-      
+        std::ifstream experience_index( (dataset.path() + "experience.index").c_str(), std::ios::binary );
+
         if ( !experience_index.good() )
             throw L3::no_such_file();
 
-        std::string experience_name( "experience.dat" );
+        std::string experience_name( dataset.path() + "experience.dat");
 
         experience_section section;
 
@@ -113,7 +113,7 @@ struct ExperienceLoader
 };
 
 /*
- *Build an experience from a dataset
+ *  Build an experience from a dataset
  */
 struct ExperienceBuilder
 {
@@ -123,12 +123,12 @@ struct ExperienceBuilder
        
         // Pose reader
         pose_reader.reset( new L3::IO::BinaryReader<L3::SE3>() );
-        if (!pose_reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" ))
+        if (!pose_reader->open( dataset.path() + "/OxTS.ins" ) )
             throw std::exception();
 
         // Scan reader
         LIDAR_reader.reset( new L3::IO::SequentialBinaryReader<L3::LMS151>() );
-        if (!LIDAR_reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/LMS1xx_10420001_192.168.0.51.lidar" ) )
+        if (!LIDAR_reader->open( dataset.path() + "/LMS1xx_10420002_192.168.0.50.lidar" ) )
             throw std::exception();
         
         std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >      poses;
@@ -153,11 +153,14 @@ struct ExperienceBuilder
         double accumulate = 0.0;
      
         // Experience data
-        std::ofstream experience_data( "experience.dat", std::ios::binary );
-        std::ofstream experience_index( "experience.index", std::ios::binary );
+        std::ofstream experience_data( (dataset.path() + "experience.dat").c_str(), std::ios::binary );
+        //std::ofstream experience_data( "experience.dat", std::ios::binary );
+        std::ofstream experience_index( (dataset.path() + "experience.index").c_str(), std::ios::binary );
+        //std::ofstream experience_index( "experience.index", std::ios::binary );
 
         unsigned int stream_position=0;
 
+        //TODO
         // Fast forward to beginning
 
         // Read LIDAr data, element at a time
@@ -166,12 +169,13 @@ struct ExperienceBuilder
             // Extract scan
             LIDAR_reader->extract( scans );
           
-            std::cout << scans.size() << ":" << scans[0].first << std::endl;
+            //std::cout << scans.size() << ":" << scans[0].first << std::endl;
 
             // Match pose
             std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > matched;
             
             L3::Utils::matcher< L3::SE3, L3::LMS151 > m( &poses, &matched );
+            
             m = std::for_each( scans.begin(), scans.end(),  m );
 
             accumulate += length_estimator( matched[0] );
@@ -224,77 +228,6 @@ struct ExperienceBuilder
 
     std::auto_ptr<L3::IO::BinaryReader< L3::SE3 > >                 pose_reader;
     std::auto_ptr<L3::IO::SequentialBinaryReader< L3::LMS151 > >    LIDAR_reader;
-
-};
-
-struct ExperienceGenerator
-{
-
-    ExperienceGenerator( L3::Dataset& dataset ) : point_cloud(NULL)
-    {
-
-        L3::SE3 calibration = L3::SE3::ZERO();
-        
-        try
-        {
-            //calibration = L3::Utils::loadCalibration( "dataset/" + dataset.name()  + ".config", "LMS1xx_10420002" );
-        }
-        catch( L3::calibration_failure )
-        {
-            std::cout << "No/erroneous calibration file for " <<  dataset.name() << std::endl;
-            throw std::exception(); 
-        }
-
-        std::cout << calibration << std::endl;
-
-        // Load the poses
-        INS_reader.reset( new L3::IO::BinaryReader<L3::SE3>() );
-        INS_reader->open( dataset.path() + "/OxTS.ins" );
-        INS_reader->read();
-        INS_reader->extract( poses );
-
-        // Load the lidar data 
-        LIDAR_reader.reset( new L3::IO::BinaryReader<L3::LMS151>() );
-        LIDAR_reader->open( dataset.path() + "/LMS1xx_10420002_192.168.0.50.lidar" );
-        LIDAR_reader->read();
-        LIDAR_reader->extract( LIDAR_data );
-
-        // Match
-        std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > matched;
-        L3::Utils::matcher< L3::SE3, L3::LMS151 > m( &poses, &matched );
-        m = std::for_each( LIDAR_data.begin(), LIDAR_data.end(),  m );
-
-        // Thread into swathe
-        L3::Utils::threader<L3::SE3, L3::LMS151>  t;
-        std::transform( matched.begin(), 
-                        matched.end(), 
-                        LIDAR_data.begin(), 
-                        std::back_inserter( swathe ),
-                        t );
-
-        //Project
-        L3::SE3 calib( 0, 0, 0, -1.57, 0, 0 ); 
-        point_cloud = new L3::PointCloud<double>();
-        projector = new L3::Projector<double>( &calib, point_cloud );
-        projector->project( swathe );
-    }
-    
-    ~ExperienceGenerator()
-    {
-        delete point_cloud;
-        delete projector;
-    }
-
-    L3::Projector<double>*  projector;
-    L3::PointCloud<double>* point_cloud;
-
-    SWATHE swathe;
-
-    std::auto_ptr<L3::IO::BinaryReader< L3::SE3 > > INS_reader;
-    std::auto_ptr<L3::IO::BinaryReader< L3::LMS151 > > LIDAR_reader;
-        
-    std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > poses;
-    std::vector< std::pair< double, boost::shared_ptr<L3::LMS151> > > LIDAR_data;
 
 };
 

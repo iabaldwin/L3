@@ -8,13 +8,14 @@ int main()
 
     if(! dataset.validate() )
         throw std::exception(); 
+    
     std::cout << dataset << std::endl;
 
     // Build experience
     L3::ExperienceBuilder experience_builder( dataset, 100.0 );
 
     // Build experience
-    L3::ExperienceLoader experience_loader;
+    L3::ExperienceLoader experience_loader( dataset );
 
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 

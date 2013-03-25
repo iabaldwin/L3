@@ -13,13 +13,14 @@ int main (int argc, char ** argv)
     /*
      *L3
      */
-    L3::ExperienceLoader experience_loader;
-    boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
     
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
-    
+ 
+    L3::ExperienceLoader experience_loader( dataset );
+    boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
+   
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 10.0 );
     // Constant time iterator over LIDAR

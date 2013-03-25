@@ -19,7 +19,10 @@ int main (int argc, char ** argv)
 
     try
     {
-        calibration = L3::Utils::loadCalibration( "dataset/" + dataset.name()  + ".config", "LMS1xx_10420002" );
+        L3::Configuration::Mission mission_configuration( dataset.name() );
+
+        std::cout << mission_configuration << std::endl;
+        
     }
     catch( L3::calibration_failure )
     {
@@ -27,8 +30,6 @@ int main (int argc, char ** argv)
         throw std::exception(); 
     }
 
-    std::cout << calibration << std::endl;
-    
     std::auto_ptr<L3::IO::BinaryReader< L3::SE3 > > INS_reader;
     std::auto_ptr<L3::IO::BinaryReader< L3::LMS151 > > LIDAR_reader;
         

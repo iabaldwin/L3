@@ -2,13 +2,14 @@
 
 int main()
 {
-    // Load experience
-    L3::ExperienceLoader experience_loader;
-    boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
-
+    
     // Load dataset
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
     
+    // Load experience
+    L3::ExperienceLoader experience_loader( dataset );
+    boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
+
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
 
@@ -17,8 +18,6 @@ int main()
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.back(), 10.0 );
     
     double time = dataset.start_time;
-
-    //L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
 
     L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
     

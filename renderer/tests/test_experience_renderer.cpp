@@ -17,8 +17,9 @@ int main (int argc, char ** argv)
     
     try
     {
-        L3::ExperienceLoader experience_loader;
-    
+        L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
+        L3::ExperienceLoader experience_loader( dataset );
+
         experience = experience_loader.experience;
     }
     catch( std::exception e )

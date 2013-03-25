@@ -29,8 +29,8 @@ class Dataset
 
         bool            validate();
         bool            load();
-        std::string     path(){ return root_path.string(); };
-        std::string     name(){ return dataset_name;};
+        std::string     path() const { return root_path.string(); };
+        std::string     name() const { return dataset_name;};
 
         double          start_time;
 
