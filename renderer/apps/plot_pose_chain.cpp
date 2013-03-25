@@ -13,6 +13,8 @@ int main (int argc, char ** argv)
     L3::SE3 calibration = L3::SE3::ZERO();
     
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
+   
+    // Check the integrity, but don't load
     dataset.validate();
 
     try

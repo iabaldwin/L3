@@ -22,7 +22,7 @@ namespace Utils
 
 namespace Math
 {
-double degreesToRadians( double degrees );
+    double degreesToRadians( double degrees );
 }
 
 struct Accumulator
@@ -51,66 +51,6 @@ struct Accumulator
     }
 };
 
-
-//struct Locale 
-//{
-    //std::string name;
-
-    //Locale( const std::string& target )
-    //{
-        //boost::filesystem::path p = L3::Utils::configurationDirectory();
-
-        //p /= target;
-
-        //try
-        //{
-            //libconfig::Config config;
-        
-            //f = fopen( p.string().c_str(), "r"  );
-
-            //config.read( f );
-
-            //double result;
-            //if (config.lookupValue( "datum.X.lower", result) )
-            //{
-                //x = result;
-            //}
-
-            //if (config.lookupValue( "datum.Y.lower", result) )
-            //{
-                //y = result;
-            //}
-        //}  
-        //catch( ... )
-        //{
-
-        //}
-
-
-    //}
-
-    //FILE* f;
-    //float x,y,z;
-
-//};
-
-//struct BEGBROKE : Locale
-//{
-    //BEGBROKE() : Locale("begbroke_datum.config") 
-    //{
-    //}
-
-//};
-
-//struct WOODSTOCK : Locale
-//{
-    //WOODSTOCK() : Locale("woodstock_datum.config") 
-    //{
-    //}
-
-//};
-
-void localisePoseChainToOrigin( POSE_SEQUENCE& poses );
 
 template <typename Iterator>
 void localisePoseChain( Iterator begin, Iterator end, const L3::Configuration::Locale& l )
@@ -233,6 +173,17 @@ struct threader : std::binary_function< std::pair< double, boost::shared_ptr<T1>
 
     std::vector< std::pair< boost::shared_ptr<T1>, boost::shared_ptr<T2> > > threaded;
 };
+
+/*
+ *Configuration tools
+ */
+template <typename T>
+void CalibrationToEigen( const std::vector<T>& calib, Eigen::Matrix4f& eig )
+{
+
+    L3::SE3 pose( calib );
+    eig = pose.getHomogeneous();
+}
 
 }
 }

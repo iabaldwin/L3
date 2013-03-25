@@ -42,11 +42,20 @@ std::ostream& operator<<( std::ostream& o, const LIDARParameters& parameters )
 
 std::ostream& operator<<( std::ostream& o, const std::pair< std::string, LIDARParameters> & parameters )
 {
-    o << parameters.first << std::endl;
-    o << parameters.second << std::endl;
+    o << parameters.first << ":";
+    o << parameters.second;
 
     return o;
 }
+
+std::ostream& operator<<( std::ostream& o, const Mission& mission )
+{
+    o << mission.dataset << ":" << std::endl; 
+    std::copy( mission.lidars.begin(), mission.lidars.end(), std::ostream_iterator< std::pair< std::string, LIDARParameters > >( o, "\n" ) );
+
+    return o;
+}
+
 
 }
 }

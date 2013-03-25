@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Reader.h"
+#include "Writer.h"
 #include "Utils.h"
 
 int main()
@@ -12,12 +13,12 @@ int main()
     std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > poses;
     if ( reader->extract( poses ) )
     {
-        L3::Utils::localisePoseChain( poses.begin(), poses.end(), L3::Utils::BEGBROKE() );
-   
-        //L3::Utils::localisePoseChainToOrigin( poses );
+        L3::Configuration::Begbroke b;
 
-        //L3::IO::Writer w;
-        //if( w.open( "test.txt" ))
-            //w << poses; 
+        L3::Utils::localisePoseChain( poses.begin(), poses.end(), b );
+   
+        L3::IO::Writer w;
+        if( w.open( "test.txt" ))
+            w << poses; 
     }
 }

@@ -11,6 +11,8 @@ int main()
 
     std::cout << dataset << std::endl;
 
-    L3::Configuration::Mission( dataset.name() );
+    L3::Configuration::Mission mission( dataset.name() );
+
+    std::cout << mission << std::endl;
 
 }
