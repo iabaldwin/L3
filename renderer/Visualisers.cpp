@@ -130,7 +130,6 @@ namespace Visualisers
         projector->project( swathe_builder->swathe );
     
         // Do histogram
-        SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
 
         // Get bounds
         std::pair<double,double> min_bound = L3::min<double>( point_cloud );
@@ -152,6 +151,8 @@ namespace Visualisers
         if (swathe_builder->swathe.size() > current_alloc )
             realloc( swathe_builder->swathe.size() );
 
+        SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
+        
         int counter = 0;
         while( pose_iterator != swathe_builder->swathe.end() )
         {
