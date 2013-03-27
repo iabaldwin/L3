@@ -6,13 +6,44 @@
 
 #include <boost/timer.hpp>
 
+#include "Core.h"
 #include "Iterator.h"
 #include "Dataset.h"
 
 namespace L3
 {
 
-struct DatasetRunner : Poco::Runnable
+struct Runner
+{
+
+    virtual void operator<< ( L3::Observer* observer )
+    {
+        observables.push_front( observer ); 
+    }
+
+    std::list< L3::Observer* > observables;
+
+};
+
+struct TemporalRunner : Runner, TemporalObserver
+{
+
+    virtual bool update( double t )
+    {
+        for( std::list< L3::Observer* >::iterator it = observables.begin(); 
+                it != observables.end();
+                it++ )
+            dynamic_cast<L3::TemporalObserver*>( *it )->update( t );
+    }
+
+};
+
+struct ThreadedRunner : Runner, Poco::Runnable
+{
+    virtual void run() = 0;
+};
+    
+struct DatasetRunner : ThreadedRunner
 {
     DatasetRunner( const L3::Dataset* d ) : dataset(d), running(false), frequency(1.0)
     {

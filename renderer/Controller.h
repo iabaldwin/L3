@@ -8,6 +8,8 @@
 #include <GL/glut.h>
 #endif
 
+#include <iostream>
+
 namespace L3
 {
 namespace Visualisers

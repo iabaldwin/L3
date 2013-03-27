@@ -11,7 +11,6 @@ namespace L3
     class SwatheBuilder : public TemporalObserver
     {
         public:
-            //SwatheBuilder( L3::Iterator<L3::SE3> * pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
             SwatheBuilder( L3::PoseWindower* pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
                 pose_windower( pose_it ), 
                 LIDAR_iterator( LIDAR_it ), 
@@ -39,9 +38,9 @@ namespace L3
                  *  For each LIDAR scan, find the time
                  *  and associated pose
                  */
-         
                 L3::Iterator<L3::LMS151>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
 
+                // Rebuild swathe completely
                 swathe.clear();
 
                 // For each lidar scan, find the nearest pose
@@ -54,9 +53,20 @@ namespace L3
                                                                                         _comparator );
                     
                     if ( index == pose_windower->window->end() ) 
-                        index--; 
+                    {
+                    //{
+                        //index--; 
+                        //std::cout << fabs( index->first - it->first ) << std::endl;
+                    //}
+                        //it++;
+                        //continue;
+                        break;
+                    }
 
-                    //assert( index-
+                    //TODO:
+                    // Fix this timing situation
+                    //std::cout << fabs( index->first - it->first ) << std::endl;
+                    //assert( fabs( index->first - it->first ) < std::numeric_limits<double>::epsilon() );
 
                     swathe.push_back( std::make_pair( index->second, it->second ) );
 
@@ -73,7 +83,7 @@ namespace L3
 
         private:
 
-            L3::PoseWindower*            pose_windower;
+            L3::PoseWindower*           pose_windower;
             L3::Iterator<L3::LMS151>*   LIDAR_iterator;
 
             double window_duration;

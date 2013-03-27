@@ -121,6 +121,7 @@ struct ColoredExperienceRenderer : L3::Visualisers::Leaf
         for( std::vector< Section* >::iterator it = sections.begin(); 
                 it != sections.end();
                 it++ )
+            
             delete (*it);
 
     }

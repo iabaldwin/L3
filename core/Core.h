@@ -8,6 +8,11 @@ namespace L3
 
 struct Observer
 {
+
+    virtual ~Observer()
+    {
+
+    }
 };
 
 
