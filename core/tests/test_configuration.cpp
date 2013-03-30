@@ -1,18 +1,19 @@
 #include <iostream>
 
 #include "L3.h"
+#include "Misc.h"
 
 int main()
 {
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
 
-    if( dataset.validate() )
-        dataset.load();
+    // Validate all the datsets
+    std::list <std::string> datasets = L3::Misc::getDatasetConfigurations();
 
-    std::cout << dataset << std::endl;
+    for( std::list<std::string>::iterator it = datasets.begin(); it!= datasets.end(); it++ )
+    {
+        L3::Configuration::Mission mission( *it );
 
-    L3::Configuration::Mission mission( dataset.name() );
+        std::cout << mission << std::endl;
 
-    std::cout << mission << std::endl;
-
+    }
 }

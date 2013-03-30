@@ -1,5 +1,5 @@
-add_executable( test_config test_config.cpp )
-target_link_libraries( test_config config L3 ${Boost_LIBRARIES} )
+add_executable( test_libconfig test_libconfig.cpp )
+target_link_libraries( test_libconfig config L3 ${Boost_LIBRARIES} )
 
 add_executable( test_include_order test_include_order.cpp )
 target_link_libraries( test_include_order L3 ${Boost_LIBRARIES}   )
@@ -90,4 +90,7 @@ target_link_libraries( test_pipeline_stage_1 config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_runner test_runner.cpp )
 target_link_libraries( test_runner config L3 ${Boost_LIBRARIES}  )
+
+add_executable( test_swathe_builder_LHLV_point_cloud test_swathe_builder_LHLV_point_cloud.cpp )
+target_link_libraries( test_swathe_builder_LHLV_point_cloud config L3 ${Boost_LIBRARIES}  )
 

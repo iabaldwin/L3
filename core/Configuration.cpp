@@ -1,6 +1,7 @@
 #include "Configuration.h"
 
 #include <iterator>
+#include <sstream>
 
 namespace L3
 {
@@ -31,6 +32,59 @@ boost::filesystem::path configurationDirectory( void )
         return p;
 }
 
+
+bool Mission::loadLIDARS()
+{
+    std::string current_name;
+
+    std::vector< std::string > params;
+    params.push_back( ".x" );
+    params.push_back( ".y" );
+    params.push_back( ".z" );
+    params.push_back( ".r" );
+    params.push_back( ".p" );
+    params.push_back( ".q" );
+
+    for( int i=0;;i++ )
+    {
+        std::stringstream ss;
+        ss <<  "mission.lasers.[" << i << "]";
+
+        std::string lookup = ss.str();
+
+        if (!config.lookupValue( lookup+".name", current_name))
+            break;
+        else
+        {
+            LIDARParameters parameters;
+
+            for( int j=0; j<6; j++ )
+            {
+                double dresult;
+                if (!config.lookupValue( lookup+".transform"+params[j], dresult))
+                {
+                    int iresult;
+                    if( !config.lookupValue( lookup+".transform"+params[j], iresult ) )
+                        return false;
+                    else
+                    parameters.transform[j] = (double)iresult;
+
+                }
+                else
+                    parameters.transform[j] = dresult;
+
+            }
+
+            lidars.insert( std::make_pair( current_name, parameters ) );
+        }
+    }
+
+    return lidars.size() > 0;
+}
+
+/*
+ *  I/O
+ */
 std::ostream& operator<<( std::ostream& o, const LIDARParameters& parameters )
 {
     o << parameters.name << std::endl;
@@ -50,7 +104,12 @@ std::ostream& operator<<( std::ostream& o, const std::pair< std::string, LIDARPa
 
 std::ostream& operator<<( std::ostream& o, const Mission& mission )
 {
-    o << mission.dataset << ":" << std::endl; 
+    std::stringstream ss;
+    for( std::string::const_iterator it = mission.target.begin(); it != mission.target.end(); it++ )
+        ss << "-";
+
+
+    o << ss.str() << std::endl << mission.target << ":" << std::endl; 
     std::copy( mission.lidars.begin(), mission.lidars.end(), std::ostream_iterator< std::pair< std::string, LIDARParameters > >( o, "\n" ) );
 
     return o;
@@ -65,8 +124,7 @@ bool convert( const LIDARParameters& params, L3::SE3& calibration )
  
     for( int i=3; i<transform.size(); i++ )
         transform[i] = L3::Utils::Math::degreesToRadians( transform[i] );
-
-
+    
     calibration = L3::SE3( transform );
 }
 

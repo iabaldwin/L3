@@ -255,36 +255,17 @@ namespace Visualisers
      *Pose windower
      */
 
-    PoseWindowerRenderer::PoseWindowerRenderer( L3::PoseWindower* windower ) : pose_windower(windower)
-    {
-
-    }
-    
     void PoseWindowerRenderer::onDraw3D( glv::GLV& g )
     {
         // Update the iterator
         pose_windower->update( time );
-
-        // Reserve
-        glv::Color* colors    = new glv::Color[pose_windower->window->size()];
-        glv::Point3* vertices = new glv::Point3[pose_windower->window->size()];;
 
         std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = pose_windower->window->begin();
 
         int counter = 0;
 
         while( it != pose_windower->window->end() )
-        {
-            vertices[counter]( it->second->x, it->second->y, 0 );
-            colors[counter].set( 1,0,0 );
-            counter++;
-            it++; 
-        }
-    
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-
-        delete [] colors;
-        delete [] vertices;
+            CoordinateSystem( *(it++)->second ).onDraw3D(g );
     }
 
 

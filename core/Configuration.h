@@ -11,6 +11,7 @@
 #include <libconfig.h++>
 
 #include "Datatypes.h"
+#include "Dataset.h"
 #include "Utils.h"
 
 namespace L3
@@ -65,22 +66,39 @@ struct Configuration
 
 struct Mission : Configuration
 {
-    Mission( const std::string& DATASET )  : dataset(DATASET)
+    Mission( const L3::Dataset& dataset )
     {
         // Load configuration directory 
         p = L3::Configuration::configurationDirectory();
    
         // Add target
         p /= "missions";
-        p /= dataset + ".config";
+        p /= dataset.name() + ".config";
 
-        if ( !load( p.string() ) )
-            throw std::exception();
-  
-        loadLIDARS();
+        target = p.string();
+        loadAll( target );
     }
 
-    std::string dataset;
+    Mission( const std::string& target )  
+    {
+        this->target = target;
+       
+        loadAll( target );
+            
+    }
+
+    bool loadAll( std::string target )
+    {
+        if ( !load( target ) )
+            throw std::exception();
+
+        if ( !loadLIDARS() )
+            throw std::exception();
+
+        return true;
+    }
+
+    std::string target;
     std::string description;
     std::string locale;
     std::map< std::string, LIDARParameters > lidars;
@@ -89,44 +107,8 @@ struct Mission : Configuration
     std::string horizontal;
     std::string declined;
 
-    bool loadLIDARS()
-    {
-        std::string current_name;
-
-        std::vector< std::string > params;
-        params.push_back( ".x" );
-        params.push_back( ".y" );
-        params.push_back( ".z" );
-        params.push_back( ".r" );
-        params.push_back( ".p" );
-        params.push_back( ".q" );
-
-        for( int i=0;;i++ )
-        {
-            std::stringstream ss;
-            ss <<  "mission.lasers.[" << i << "]";
-
-            std::string lookup = ss.str();
-
-            if (!config.lookupValue( lookup+".name", current_name))
-                break;
-            else
-            {
-                LIDARParameters parameters;
-
-
-                double result;
-                for( int j=0; j<6; j++ )
-                {
-                    if (!config.lookupValue( lookup+".transform"+params[j], result))
-                        return false;
-                    parameters.transform[j] = result;
-                }
-
-                lidars.insert( std::make_pair( current_name, parameters ) );
-            }
-        }
-    }
+    bool loadLIDARS();
+    
 };
 
 struct Locale : Configuration

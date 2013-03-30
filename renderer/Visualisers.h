@@ -125,7 +125,10 @@ struct ExperienceRenderer : Leaf
 struct PoseWindowerRenderer : Leaf
 {
 
-    PoseWindowerRenderer( L3::PoseWindower* windower );
+    PoseWindowerRenderer( L3::PoseWindower* windower ) : pose_windower(windower)
+    {
+        
+    };
 
     int                                 pt_limit, pt_counter, sample_counter; 
     boost::shared_ptr<L3::Experience>   experience;
