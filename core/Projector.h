@@ -18,7 +18,7 @@ class Projector
     Eigen::Matrix4f calibration;
 
     public:
-    
+
         L3::PointCloud<T>* cloud;
         size_t allocated_size;
 
@@ -28,12 +28,6 @@ class Projector
 
             // Pre-allocate
             cloud->points = new L3::Point<T>[ allocated_size*541 ]; 
-        }
-
-        ~Projector()
-        {
-            delete [] cloud->points;
-            cloud->num_points = 0; 
         }
 
         void reallocate( size_t size )
@@ -81,7 +75,6 @@ class Projector
 #pragma omp for  nowait
                     for (scan_counter=0; scan_counter<541; scan_counter++) 
                     {
-
                         // Compute angle 
                         double angle = scan_counter*(*swathe_ptr)[pair_counter].second->angle_spacing +  (*swathe_ptr)[pair_counter].second->angle_start; 
 
@@ -92,7 +85,6 @@ class Projector
                         // Planar scan, no Z
                         XY(0,3) = x;
                         XY(1,3) = y;
-                        XY(2,3) = 0.0;
 
                         // Project 3D point 
                         tmp = ((*swathe_ptr)[pair_counter].first->getHomogeneous()*(*calib_ptr))*XY;

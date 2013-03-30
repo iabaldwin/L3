@@ -24,7 +24,6 @@ struct VelocityPlotter : Poco::Runnable
     ~VelocityPlotter()
     {
         running = false;
-   
         thread.join();
     }
 
@@ -65,20 +64,14 @@ int main (int argc, char ** argv)
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
-    glv::Grid grid(glv::Rect(0,0));
-
-    grid.range(1);            // set plot region
-    grid.major(1);            // set major tick mark placement
-    grid.minor(2);            // number of divisions per major ticks
-    //grid.equalizeAxes(true);
-    grid.stretch(1,.2);
-
+    // Velocity plotter
     glv::PlotFunction1D* plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
     
     glv::Plot v( glv::Rect( 0, 0, win.width(), win.width()/8), *plot1 );
 
     v.range(0, 100, 0);
 
+    // Linewidth
     plot1->stroke(2);
 
     top << v;

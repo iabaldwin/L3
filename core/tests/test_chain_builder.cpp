@@ -11,7 +11,7 @@ int main()
             throw std::exception();
 
         // Constant time iterator over LHLV data
-        L3::ConstantTimeIterator< L3::LHLV > iterator( dataset.LHLV_reader, 20.0 );
+        L3::ConstantTimeIterator< L3::LHLV > iterator( dataset.LHLV_reader );
 
         double time = dataset.start_time;
 
@@ -20,8 +20,6 @@ int main()
         L3::ChainBuilder builder( &iterator );
 
         L3::Tools::Timer t;
-
-        std::pair<double,int> latency( 0.0, 0 );
 
         // Run
         while (true)
@@ -32,7 +30,6 @@ int main()
                 throw std::exception();
             
             std::cout << time << "-->" << iterator.window.front().first << ":" << iterator.window.back().first << ":" << iterator.window.back().first - iterator.window.front().first <<  "(" << iterator.window.size() << ")" << std::endl;
-
         } 
 
     }

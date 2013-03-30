@@ -12,7 +12,7 @@ int main()
     std::cout << dataset << std::endl;
 
     // Build experience
-    L3::ExperienceBuilder experience_builder( dataset, 100.0 );
+    L3::ExperienceBuilder experience_builder( dataset, 100, 200, 100 );
 
     // Build experience
     L3::ExperienceLoader experience_loader( dataset );

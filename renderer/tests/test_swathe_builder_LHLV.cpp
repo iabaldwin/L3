@@ -18,10 +18,10 @@ int main (int argc, char ** argv)
         throw std::exception();
     
     // Constant time iterator over LHLV data
-    L3::ConstantTimeIterator< L3::LHLV >   lhlv_iterator( dataset.LHLV_reader, 20.0 );
+    L3::ConstantTimeIterator< L3::LHLV >   lhlv_iterator( dataset.LHLV_reader );
     
     // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 10.0 );
+    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front() );
     
     double time = dataset.start_time;
 

@@ -11,24 +11,25 @@
 int main (int argc, char ** argv)
 {
     L3::SE3 calibration = L3::SE3::ZERO();
-    
+ 
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
-   
+ 
     // Check the integrity, but don't load
     dataset.validate();
 
-    try
-    {
+   
+    //try
+    //{
         L3::Configuration::Mission mission_configuration( dataset.name() );
 
         std::cout << mission_configuration << std::endl;
         
-    }
-    catch( L3::calibration_failure )
-    {
-        std::cout << "No/erroneous calibration file for " <<  dataset.name() << std::endl;
-        throw std::exception(); 
-    }
+    //}
+    //catch( L3::calibration_failure )
+    //{
+        //std::cout << "No/erroneous calibration file for " <<  dataset.name() << std::endl;
+        //throw std::exception(); 
+    //}
 
     std::auto_ptr<L3::IO::BinaryReader< L3::SE3 > > INS_reader;
     std::auto_ptr<L3::IO::BinaryReader< L3::LMS151 > > LIDAR_reader;
@@ -36,18 +37,21 @@ int main (int argc, char ** argv)
     std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > poses;
     std::vector< std::pair< double, boost::shared_ptr<L3::LMS151> > > LIDAR_data;
 
-
     // Load the poses
     INS_reader.reset( new L3::IO::BinaryReader<L3::SE3>() );
     INS_reader->open( dataset.path() + "/OxTS.ins" );
     INS_reader->read();
     INS_reader->extract( poses );
 
+    std::cout << poses.size() << " pose" << std::endl;
+
     // Load the lidar data 
     LIDAR_reader.reset( new L3::IO::BinaryReader<L3::LMS151>() );
     LIDAR_reader->open( dataset.path() + "/LMS1xx_10420002_192.168.0.50.lidar" );
     LIDAR_reader->read();
     LIDAR_reader->extract( LIDAR_data );
+    
+    std::cout << LIDAR_data.size() << " scans" << std::endl;
 
     // Match
     std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > matched;
@@ -55,15 +59,15 @@ int main (int argc, char ** argv)
     m = std::for_each( LIDAR_data.begin(), LIDAR_data.end(),  m );
 
     // Thread into swathe
-    L3::Utils::threader<L3::SE3, L3::LMS151>  t;
+    L3::Utils::threader<L3::SE3, L3::LMS151>  threader;
 
     SWATHE s;
 
     std::transform( matched.begin(), 
-            matched.end(), 
-            LIDAR_data.begin(), 
-            std::back_inserter( s ),
-            t );
+                    matched.end(), 
+                    LIDAR_data.begin(), 
+                    std::back_inserter( s ),
+                    threader );
 
 
     /*

@@ -50,7 +50,6 @@ bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned
     {
         while( running )
         {
-            mutex.lock();
             std::vector< std::pair< double, unsigned int > > distances;
 
             // Calculate distances to all sections
@@ -62,6 +61,7 @@ bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned
             std::sort( distances.begin(), distances.end() );
             std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
 
+            mutex.lock();
             required_sections.clear();
             for( unsigned int i=0; i<window-1 && i<distances.size(); i++ )
             {
@@ -120,6 +120,7 @@ bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned
             }
             mutex.unlock();
 
+            // Play nice
             usleep( .1*1e6 );
         }
     }

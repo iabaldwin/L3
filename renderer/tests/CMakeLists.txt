@@ -49,3 +49,6 @@ target_link_libraries( test_pose_windower GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARI
 add_executable( test_scan_projection test_scan_projection.cpp )
 target_link_libraries( test_scan_projection GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
+add_executable( test_kinematics test_kinematics.cpp )
+target_link_libraries( test_kinematics GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+

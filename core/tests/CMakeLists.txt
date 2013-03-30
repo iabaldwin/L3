@@ -88,3 +88,6 @@ target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES}  )
 add_executable( test_pipeline_stage_1 test_pipeline_stage_1.cpp )
 target_link_libraries( test_pipeline_stage_1 config L3 ${Boost_LIBRARIES}  )
 
+add_executable( test_runner test_runner.cpp )
+target_link_libraries( test_runner config L3 ${Boost_LIBRARIES}  )
+

@@ -143,7 +143,7 @@ class DatasetLayout : public Layout, public Poco::Runnable
 
             // Start the dataset runner
             runner.reset( new L3::DatasetRunner( dataset ) );
-            runner->start( dataset->start_time, false );
+            runner->start( dataset->start_time );
 
             // Create velocity plotter
             velocity_plotter.reset( new L3::Visualisers::VelocityPlotter( &*runner->LHLV_iterator, plot1 ) );
@@ -162,7 +162,6 @@ class DatasetLayout : public Layout, public Poco::Runnable
            
             while( running )
             {
-            
                 if ( t.elapsed() > 1 )
                 {
                     runner->step( .5 );

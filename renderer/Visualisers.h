@@ -210,10 +210,7 @@ struct ScanRenderer : Leaf
         projector->project( single_scan );
 
         for( int i=0; i<cloud->num_points; i++ )
-        {
             point_vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z );
-        
-        }
         
         glv::draw::paint( glv::draw::Points, point_vertices, point_colors, cloud->num_points );
     }

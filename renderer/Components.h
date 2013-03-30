@@ -111,7 +111,6 @@ struct Composite : glv::View3D
 
     virtual void onDraw3D(glv::GLV& g)
     {
-
         //glv::draw::fog(float end, float start, const Color& c=Color(0));  ///< Set linear fog parameters
 
         std::list<Leaf*>::iterator it = components.begin();
@@ -277,12 +276,15 @@ struct CoordinateSystem
     void _init()
     {
         vertices = new glv::Point3[6];
+       
+        float scale =10.0f;
+
         vertices[0]( 0, 0, 0 ); 
-        vertices[1]( 1, 0, 0 ); 
+        vertices[1]( scale, 0, 0 ); 
         vertices[2]( 0, 0, 0 ); 
-        vertices[3]( 0, 1, 0 ); 
+        vertices[3]( 0, scale, 0 ); 
         vertices[4]( 0, 0, 0 ); 
-        vertices[5]( 0, 0, 1 ); 
+        vertices[5]( 0, 0, scale ); 
    
         colors = new glv::Color[6];
         colors[0] = glv::Color( 1, 0, 0 ); 

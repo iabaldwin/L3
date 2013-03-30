@@ -12,7 +12,6 @@
 #include "Datatypes.h"
 #include "Definitions.h"
 #include "Core.h"
-#include "Configuration.h"
 
 namespace L3
 {
@@ -52,19 +51,19 @@ struct Accumulator
 };
 
 
-template <typename Iterator>
-void localisePoseChain( Iterator begin, Iterator end, const L3::Configuration::Locale& l )
-{
+//template <typename Iterator>
+//void localisePoseChain( Iterator begin, Iterator end, const L3::Configuration::Locale& l )
+//{
   
-    Iterator current = begin;
-    while(  current != end )
-    {
-        current->second->x -= l.x;
-        current->second->y -= l.y;
+    //Iterator current = begin;
+    //while(  current != end )
+    //{
+        //current->second->x -= l.x;
+        //current->second->y -= l.y;
         
-        current++;
-    }
-}
+        //current++;
+    //}
+//}
 
 template <typename Iterator>
 void localisePoseChainToMean( Iterator begin, Iterator end )

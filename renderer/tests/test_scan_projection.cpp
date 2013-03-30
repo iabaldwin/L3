@@ -18,12 +18,13 @@ int main (int argc, char ** argv)
         throw std::exception();
      
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 10.0 );
+    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
+    
     // Constant time iterator over LIDAR - declined
-    L3::ConstantTimeIterator< L3::LMS151 > declined_lidar( dataset.LIDAR_readers.front(), 10.0 );
+    L3::ConstantTimeIterator< L3::LMS151 > declined_lidar( dataset.LIDAR_readers.front() );
     
     // Constant time iterator over LIDAR - horizontal
-    L3::ConstantTimeIterator< L3::LMS151 > horizontal_lidar( dataset.LIDAR_readers.back(), 10.0 );
+    L3::ConstantTimeIterator< L3::LMS151 > horizontal_lidar( dataset.LIDAR_readers.back() );
 
     double time = dataset.start_time;
 

@@ -21,7 +21,7 @@ int main (int argc, char ** argv)
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
-    L3::ConstantTimeIterator< L3::SE3 > iterator( dataset.pose_reader, 10.0 );
+    L3::ConstantTimeIterator< L3::SE3 > iterator( dataset.pose_reader );
 
     glv::Grid grid(glv::Rect(0,0));
 

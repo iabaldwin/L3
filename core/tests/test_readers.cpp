@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Reader.h"
 #include "Writer.h"
+#include "Configuration.h"
 #include "Utils.h"
 
 int main()
@@ -15,7 +16,7 @@ int main()
     {
         L3::Configuration::Begbroke b;
 
-        L3::Utils::localisePoseChain( poses.begin(), poses.end(), b );
+        //L3::Utils::localisePoseChain( poses.begin(), poses.end(), b );
    
         L3::IO::Writer w;
         if( w.open( "test.txt" ))

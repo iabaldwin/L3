@@ -5,7 +5,6 @@ int main()
     /*
      *Dataset
      */
-    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );           // Weird data with this one
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
@@ -13,9 +12,11 @@ int main()
     /*
      *Constant time iterator over poses
      */
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front(), 30.0 );
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, LIDAR_iterator.swathe_length );
-    
+    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front() );
+    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
+  
+    pose_iterator.swathe_length = LIDAR_iterator.swathe_length;
+
     double time = dataset.start_time;
 
     L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
@@ -34,16 +35,24 @@ int main()
     /*
      *Projector  
      */
-    L3::SE3 projection(0, 0, 0, 1.57, 0, 0);
+    L3::Configuration::Mission mission(  dataset.name() );
+  
+    std::cout << mission << std::endl;
+
+    L3::SE3 calibration = L3::SE3::ZERO();
+    convert( (++mission.lidars.begin())->second, calibration );
+
     L3::PointCloud<double>* cloud = new L3::PointCloud<double>();
-    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, cloud ) );
+    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &calibration, cloud ) );
 
     /*
      *Do Projection
      */
     projector->project( swathe_builder.swathe );
 
-    L3::centerPointCloud( cloud );
+    //L3::centerPointCloud( cloud );
 
     L3::writePCLASCII( "test.pcd", *cloud );
+
+    std::cout << "Done" << std::endl;
 }

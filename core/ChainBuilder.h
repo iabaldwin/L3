@@ -44,11 +44,11 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
     
     *output++ = std::make_pair( current_time, boost::shared_ptr<L3::SE3>( new L3::SE3( 0,0,0,0,0,0 ) ) );
 
-    double x, y, z;
-    double r, p, q;
+    double x=0, y=0, z=0;
+    double r=0, p=0, q=0;
     
-    double w1, w2, w3;
-    double lin_vel, x_vel, y_vel, z_vel;
+    double w1=0, w2=0, w3=0;
+    double lin_vel=0, x_vel=0, y_vel=0, z_vel=0;
     
     boost::shared_ptr< L3::SE3 > previous_pose;
     
@@ -63,6 +63,7 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
         w2 = current_in->second->data[4];
         w3 = current_in->second->data[3];
 
+        // Get the SE3 pose
         previous_pose = boost::dynamic_pointer_cast< L3::SE3 >( (*(output-1)).second );
 
         r = previous_pose->r + w1*dt;
@@ -82,7 +83,7 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
         z = previous_pose->z + z_vel*dt;
         
         // Log
-        *output++ = std::make_pair( current_time, boost::shared_ptr<L3::SE3>( new L3::SE3( x, y, z, r, p , q ) )); 
+        *output++ = std::make_pair( current_time, boost::shared_ptr<L3::SE3>( new L3::SE3( x, y, z, r, p, q ) )); 
        
         // Continue
         current_in++;

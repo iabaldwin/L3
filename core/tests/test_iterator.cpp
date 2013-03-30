@@ -16,8 +16,10 @@ int main()
     std::string LIDAR_name = dataset.LIDAR_names[0];
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::LMS151 > iterator( dataset.LIDAR_readers.front(), 20.0 );
-    
+    L3::ConstantTimeIterator< L3::LMS151 > iterator( dataset.LIDAR_readers.front() );
+  
+    iterator.swathe_length = 30.0;
+
     double time = dataset.start_time;
         
     std::cout.precision(15);

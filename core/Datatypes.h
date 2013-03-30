@@ -144,24 +144,23 @@ class SE3 : public Pose
     
         void updateHomogeneous() 
         {
-            Eigen::Matrix4f Rx = Eigen::Matrix4f::Identity();
-            Rx(1,1) = cos( r );
-            Rx(1,2) = -1*sin( r );
-            Rx(2,1) = sin( r );
-            Rx(2,2) = cos( r );
-
-            Eigen::Matrix4f Ry = Eigen::Matrix4f::Identity();
-            Ry(0,0) = cos( p );
-            Ry(0,2) = sin( p );
-            Ry(2,0) = -1*sin( p );
-            Ry(2,2) = cos( p );
-
-
             Eigen::Matrix4f Rz = Eigen::Matrix4f::Identity();
             Rz(0,0) = cos( q );
             Rz(0,1) = -1*sin( q );
             Rz(1,0) = sin( q );
             Rz(1,1) = cos( q );
+
+            Eigen::Matrix4f Rx = Eigen::Matrix4f::Identity();
+            Rx(1,1) = cos( p );
+            Rx(1,2) = -1*sin( p );
+            Rx(2,1) = sin( p );
+            Rx(2,2) = cos( p );
+
+            Eigen::Matrix4f Ry = Eigen::Matrix4f::Identity();
+            Ry(0,0) = cos( r );
+            Ry(0,2) = sin( r );
+            Ry(2,0) = -1*sin( r );
+            Ry(2,2) = cos( r );
 
             // SO3
             homogeneous = Rz*Ry*Rx;

@@ -10,6 +10,9 @@
 #include <boost/filesystem.hpp>
 #include <libconfig.h++>
 
+#include "Datatypes.h"
+#include "Utils.h"
+
 namespace L3
 {
 namespace Configuration
@@ -49,8 +52,10 @@ struct Configuration
         FILE* f = fopen( target.c_str(), "r"  );
         if ( !f )
             return false;
-
+        
         config.read( f );
+   
+        return true;
     }
 
     boost::filesystem::path p;
@@ -180,10 +185,17 @@ struct Woodstock : Locale
 
 
 /*
- *I/O
+ *Conversion
+ */
+bool convert( const LIDARParameters& params, L3::SE3& calibration );
+
+/*
+ *  I/O
  */
 std::ostream& operator<<( std::ostream& o, const Mission& mission );
 std::ostream& operator<<( std::ostream& o, const std::pair< std::string, LIDARParameters> & parameters );
+
+
 
 } // Configuration
 } // L3

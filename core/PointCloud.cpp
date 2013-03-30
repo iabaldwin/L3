@@ -175,6 +175,8 @@ void centerPointCloud( PointCloud<T>* cloud )
     y /= (double)cloud->num_points;
     z /= (double)cloud->num_points;
 
+    std::cout << x << " " << y << " " <<  z << std::endl;
+
     for( size_t i=0; i<cloud->num_points; i++)
     {
         cloud->points[i].x -= x;

@@ -15,19 +15,16 @@ namespace L3
 
 struct Runner
 {
-
-    virtual void operator<< ( L3::Observer* observer )
+    virtual void operator << ( L3::Observer* observer )
     {
         observables.push_front( observer ); 
     }
 
     std::list< L3::Observer* > observables;
-
 };
 
 struct TemporalRunner : Runner, TemporalObserver
 {
-
     virtual bool update( double t )
     {
         for( std::list< L3::Observer* >::iterator it = observables.begin(); 
@@ -38,23 +35,55 @@ struct TemporalRunner : Runner, TemporalObserver
 
 };
 
-struct ThreadedRunner : Runner, Poco::Runnable
+struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 {
-    virtual void run() = 0;
+    Poco::Thread thread;
+
+    bool running;
+
+    ThreadedTemporalRunner() : running( true )
+    {
+    }
+
+    ~ThreadedTemporalRunner()
+    {
+        running = false;
+        if ( thread.isRunning() )
+            thread.join();
+    }
+
+    void start( double start_time, bool threaded=true )
+    {
+        thread.start( *this );
+    }
+
+    virtual void run()
+    {
+        while( running )
+        {
+
+        }
+    }
 };
     
-struct DatasetRunner : ThreadedRunner
+struct DatasetRunner : ThreadedTemporalRunner
 {
-    DatasetRunner( const L3::Dataset* d ) : dataset(d), running(false), frequency(1.0)
+    DatasetRunner( const L3::Dataset* d ) : dataset(d), running(true), frequency(1.0)
     {
         // Constant time iterator over poses
-        pose_iterator.reset( new L3::ConstantTimeIterator<L3::SE3>( dataset->pose_reader, 60.0 ) );
-        LIDAR_iterator.reset( new L3::ConstantTimeIterator<L3::LMS151>( dataset->LIDAR_readers.back(), 10.0 ) );
-        LHLV_iterator.reset( new L3::ConstantTimeIterator<L3::LHLV> ( dataset->LHLV_reader, 30.0 ) );  
+        pose_iterator.reset( new L3::ConstantTimeIterator<L3::SE3>( dataset->pose_reader ) );
+        LIDAR_iterator.reset( new L3::ConstantTimeIterator<L3::LMS151>( dataset->LIDAR_readers.back() ) );
+        LHLV_iterator.reset( new L3::ConstantTimeIterator<L3::LHLV> ( dataset->LHLV_reader ) );  
+    
+   
+        (*this)<< &*pose_iterator;
+        (*this)<< &*LIDAR_iterator;
+        (*this)<< &*LHLV_iterator;
+    
     }
 
     std::auto_ptr<L3::ConstantTimeIterator< L3::SE3 > >     pose_iterator;
-    std::auto_ptr<L3::ConstantTimeIterator< L3::LHLV> >     LHLV_iterator;
+    std::auto_ptr<L3::ConstantTimeIterator< L3::LHLV > >    LHLV_iterator;
     std::auto_ptr<L3::ConstantTimeIterator< L3::LMS151 > >  LIDAR_iterator;
 
     Poco::Thread    thread;
@@ -71,13 +100,10 @@ struct DatasetRunner : ThreadedRunner
             thread.join();
     }
 
-    void start( double start_time, bool threaded=true )
+    void start( double start_time )
     {
         current_time = start_time;
-        running = true;
-        
-        if (threaded)
-            thread.start( *this );
+        thread.start( *this );
     }
 
     void stop()
@@ -88,19 +114,8 @@ struct DatasetRunner : ThreadedRunner
     void step( double dt )
     {
         current_time += dt;
-
-        // Update Poses
-        if ( !pose_iterator->update( current_time ) )
-            throw std::exception();
-    
-        // Update LHLV
-        if ( !LHLV_iterator->update( current_time ) )
-            throw std::exception();
-
-        // Update LIDAR
-        if ( !LIDAR_iterator->update( current_time ))
-            throw std::exception();
-    
+           
+        this->update( current_time );
     }
 
     void run()

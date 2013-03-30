@@ -15,8 +15,11 @@ int main()
         throw std::exception();
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader, 60.0 );
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.back(), 10.0 );
+    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
+    pose_iterator.swathe_length = 60;
+    
+    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.back() );
+    LIDAR_iterator.swathe_length = 60;
     
     double time = dataset.start_time;
 

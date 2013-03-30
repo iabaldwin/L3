@@ -117,7 +117,7 @@ struct ExperienceLoader
  */
 struct ExperienceBuilder
 {
-    ExperienceBuilder( L3::Dataset& dataset, double threshold=10.0 )
+    ExperienceBuilder( L3::Dataset& dataset, double start_time, double end_time, double threshold=10.0 )
     {
         std::cout.precision(15);
        
@@ -154,22 +154,30 @@ struct ExperienceBuilder
      
         // Experience data
         std::ofstream experience_data( (dataset.path() + "experience.dat").c_str(), std::ios::binary );
-        //std::ofstream experience_data( "experience.dat", std::ios::binary );
         std::ofstream experience_index( (dataset.path() + "experience.index").c_str(), std::ios::binary );
-        //std::ofstream experience_index( "experience.index", std::ios::binary );
 
-        unsigned int stream_position=0;
+        unsigned int stream_position = 0;
 
-        //TODO
-        // Fast forward to beginning
+        double absolute_start_time = 0;
 
         // Read LIDAr data, element at a time
         while( LIDAR_reader->read() )
         {
             // Extract scan
             LIDAR_reader->extract( scans );
-          
-            //std::cout << scans.size() << ":" << scans[0].first << std::endl;
+      
+            if (absolute_start_time == 0)
+                absolute_start_time = scans[0].first;
+
+            double current_relative_time = scans[0].first - absolute_start_time;
+
+            // Still to go?
+            if ( current_relative_time < start_time )
+                continue;
+
+            // Done
+            if ( current_relative_time > end_time )
+                break;
 
             // Match pose
             std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > matched;

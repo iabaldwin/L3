@@ -32,7 +32,7 @@ namespace L3
         // Done
         writer.close();
 
-        return true;
+        return writer.is_open();
     }
 
 }
