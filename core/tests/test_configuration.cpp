@@ -11,9 +11,14 @@ int main()
 
     for( std::list<std::string>::iterator it = datasets.begin(); it!= datasets.end(); it++ )
     {
-        std::cout << *it << ":" << std::endl;
+        try
+        {
         L3::Configuration::Mission mission( *it );
-
         std::cout << mission << std::endl;
+        }
+        catch( ... )
+        {
+            std::cerr << "Error: " << *it << std::endl;
+        }
     }
 }
