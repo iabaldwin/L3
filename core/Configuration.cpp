@@ -82,6 +82,25 @@ bool Mission::loadLIDARS()
     return lidars.size() > 0;
 }
 
+bool Mission::loadDescription()
+{
+    return config.lookupValue( "mission.description", description);
+}
+
+bool Mission::loadLocale()
+{
+    std::string locale;
+    return config.lookupValue( "mission.locale", locale);
+}
+
+bool Mission::loadEstimation()
+{
+    return ( config.lookupValue( "estimation.laser.declined", declined )  &&
+            config.lookupValue( "estimation.laser.horizontal", horizontal ) );
+}
+
+
+
 /*
  *  I/O
  */
@@ -92,7 +111,6 @@ std::ostream& operator<<( std::ostream& o, const LIDARParameters& parameters )
 
     return o;
 }
-
 
 std::ostream& operator<<( std::ostream& o, const std::pair< std::string, LIDARParameters> & parameters )
 {
@@ -108,9 +126,11 @@ std::ostream& operator<<( std::ostream& o, const Mission& mission )
     for( std::string::const_iterator it = mission.target.begin(); it != mission.target.end(); it++ )
         ss << "-";
 
-
     o << ss.str() << std::endl << mission.target << ":" << std::endl; 
     std::copy( mission.lidars.begin(), mission.lidars.end(), std::ostream_iterator< std::pair< std::string, LIDARParameters > >( o, "\n" ) );
+
+    o << "Declined :" <<  mission.declined << std::endl;
+    o << "Inclinded :" <<  mission.declined << std::endl;
 
     return o;
 }

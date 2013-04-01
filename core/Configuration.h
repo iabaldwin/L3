@@ -92,7 +92,13 @@ struct Mission : Configuration
         if ( !load( target ) )
             throw std::exception();
 
+        if ( !loadDescription() )
+            throw std::exception();
+
         if ( !loadLIDARS() )
+            throw std::exception();
+
+        if ( !loadEstimation() )
             throw std::exception();
 
         return true;
@@ -100,14 +106,16 @@ struct Mission : Configuration
 
     std::string target;
     std::string description;
-    std::string locale;
     std::map< std::string, LIDARParameters > lidars;
 
     // Estimation
     std::string horizontal;
     std::string declined;
 
+    bool loadDescription();
+    bool loadLocale();
     bool loadLIDARS();
+    bool loadEstimation();
     
 };
 

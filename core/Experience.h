@@ -9,7 +9,7 @@
 #include "Dataset.h"
 #include "Reader.h"
 #include "Projector.h"
-
+#include "Configuration.h"
 
 #include <map>
 
@@ -145,9 +145,12 @@ struct ExperienceBuilder
         SWATHE swathe;
 
         // Calibration/projection
-        L3::SE3 projection(0,0,0,-1.57,0,0);
+        L3::Configuration::Mission mission( dataset );   
+        L3::SE3 calibration = L3::SE3::ZERO();
+        L3::Configuration::convert( mission.lidars[ mission.declined ], calibration );
+
         L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
-        std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
+        std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &calibration, point_cloud ) );
 
         int id = 0;
         double accumulate = 0.0;
