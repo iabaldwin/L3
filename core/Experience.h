@@ -80,12 +80,12 @@ struct ExperienceLoader
 
     ExperienceLoader( const L3::Dataset& dataset )
     {
-        std::ifstream experience_index( (dataset.path() + "experience.index").c_str(), std::ios::binary );
+        std::ifstream experience_index( (dataset.path() + "/experience.index").c_str(), std::ios::binary );
 
         if ( !experience_index.good() )
             throw L3::no_such_file();
 
-        std::string experience_name( dataset.path() + "experience.dat");
+        std::string experience_name( dataset.path() + "/experience.dat");
 
         experience_section section;
 
@@ -153,8 +153,8 @@ struct ExperienceBuilder
         double accumulate = 0.0;
      
         // Experience data
-        std::ofstream experience_data( (dataset.path() + "experience.dat").c_str(), std::ios::binary );
-        std::ofstream experience_index( (dataset.path() + "experience.index").c_str(), std::ios::binary );
+        std::ofstream experience_data( (dataset.path() + "/experience.dat").c_str(), std::ios::binary );
+        std::ofstream experience_index( (dataset.path() + "/experience.index").c_str(), std::ios::binary );
 
         unsigned int stream_position = 0;
 

@@ -129,8 +129,6 @@ namespace Visualisers
         // Do projection
         projector->project( swathe_builder->swathe );
     
-        // Do histogram
-
         // Get bounds
         std::pair<double,double> min_bound = L3::min<double>( point_cloud );
         std::pair<double,double> max_bound = L3::max<double>( point_cloud );
@@ -166,11 +164,9 @@ namespace Visualisers
 
         counter = 0;
 
-        //while( point_iterator != point_cloud->end() )
         while( point_iterator < point_cloud->end() )
         {
             point_vertices[counter++]( point_iterator->x , point_iterator->y , point_iterator->z);
-            //point_iterator++; 
             point_iterator+=10; 
         }
         
@@ -183,17 +179,24 @@ namespace Visualisers
      */
     ExperienceRenderer::ExperienceRenderer( boost::shared_ptr<L3::Experience> EXPERIENCE ) : experience(EXPERIENCE), pose_provider(NULL)
     {
-        pt_limit = 1*10000;
+        pt_limit = 10*10000;
 
         point_vertices = new glv::Point3[pt_limit];
         point_colors = new glv::Color[pt_limit];
-   
+  
+        experience_nodes_vertices = new glv::Point3[experience->sections.size()];
+        experience_nodes_colors = new glv::Color[experience->sections.size()];
     }
 
     ExperienceRenderer::~ExperienceRenderer()
     {
         delete [] point_vertices;
         delete [] point_colors;
+    
+    
+        delete [] experience_nodes_vertices;
+        delete [] experience_nodes_colors;
+    
     }
 
     void ExperienceRenderer::addPoseProvider( L3::PoseProvider* provider )
@@ -203,6 +206,17 @@ namespace Visualisers
 
     void ExperienceRenderer::onDraw3D( glv::GLV& g )
     {
+
+        std::deque<L3::experience_section>::iterator it = experience->sections.begin();
+
+        while( it != experience->sections.end() )
+        {
+            experience_nodes_vertices[ std::distance( experience->sections.begin(), it ) ]( it->x, it->y, 0 );
+            experience_nodes_colors[ std::distance( experience->sections.begin(), it ) ].set( 255, 0, 0 );
+            it++;
+        }
+        glv::draw::paint( glv::draw::Points, experience_nodes_vertices, experience_nodes_colors, experience->sections.size());
+
         // Update experience
         if( pose_provider )
         {

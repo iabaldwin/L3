@@ -22,6 +22,7 @@ namespace Utils
 namespace Math
 {
     double degreesToRadians( double degrees );
+    double radiansToDegrees( double radians );
 }
 
 struct Accumulator

@@ -59,8 +59,12 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
         current_time = current_in->first;
 
         // Compute roll, pitch, yaw
-        w1 = current_in->second->data[5];
-        w2 = current_in->second->data[4];
+        //w1 = current_in->second->data[5];
+        //w2 = current_in->second->data[4];
+        //w3 = current_in->second->data[3];
+
+        w1 = 0.0; 
+        w2 = 0.0;
         w3 = current_in->second->data[3];
 
         // Get the SE3 pose
@@ -69,7 +73,7 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
         r = previous_pose->r + w1*dt;
         p = previous_pose->p + w2*dt;
         q = previous_pose->q + w3*dt;
-    
+        
         // Compute x_bar, y_bar, z_bar 
         lin_vel = current_in->second->data[9];
       
@@ -102,6 +106,7 @@ class ChainBuilder : public TemporalObserver, public PoseWindower
 
         bool update( double time )
         {
+            //std::cout << time << std::endl;
 
             if (!LHLV_iterator->update( time ))
                 throw std::exception();

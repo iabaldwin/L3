@@ -109,6 +109,10 @@ struct ExperienceRenderer : Leaf
     boost::shared_ptr<L3::Experience>   experience;
     glv::Point3*                        point_vertices;
     glv::Color*                         point_colors;
+    
+    glv::Point3*                        experience_nodes_vertices;
+    glv::Color*                         experience_nodes_colors;
+    
     L3::PoseProvider*                   pose_provider;
 
     ~ExperienceRenderer();

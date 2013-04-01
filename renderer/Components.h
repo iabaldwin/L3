@@ -302,7 +302,10 @@ struct CoordinateSystem
         glv::draw::push();
 
         glv::draw::translate( _pose.x, _pose.y, _pose.z );
-        glv::draw::rotate( _pose.r, _pose.q, _pose.q );
+        glv::draw::rotate( L3::Utils::Math::radiansToDegrees(_pose.r), 
+                            L3::Utils::Math::radiansToDegrees(_pose.p),
+                            L3::Utils::Math::radiansToDegrees(_pose.q));
+        
         glv::draw::paint( glv::draw::LineStrip, vertices, colors, 6 );
         
         glv::draw::pop();

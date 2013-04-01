@@ -12,6 +12,12 @@ double degreesToRadians( double degrees )
         return (M_PI/180.0)*degrees;
 }
 
+double radiansToDegrees( double radians )
+{
+        return (180.0/M_PI)*radians;
+}
+
+
 } // Math
 
 //L3::SE3 loadCalibration( const std::string& target, const::std::string& LIDAR )
