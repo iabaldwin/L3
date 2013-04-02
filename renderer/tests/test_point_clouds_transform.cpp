@@ -46,11 +46,14 @@ int main (int argc, char ** argv)
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
+    L3::Configuration::Mission mission( dataset );
+    
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
-    
+  
+
     // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front() );
+    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
     
     double time = dataset.start_time;
 

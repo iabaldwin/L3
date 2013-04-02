@@ -54,10 +54,10 @@ namespace L3
                     
                     if ( index == pose_windower->window->end() ) 
                     {
-                    //{
+                        //{
                         //index--; 
                         //std::cout << fabs( index->first - it->first ) << std::endl;
-                    //}
+                        //}
                         //it++;
                         //continue;
                         break;

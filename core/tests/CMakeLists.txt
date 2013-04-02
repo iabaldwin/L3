@@ -61,9 +61,6 @@ target_link_libraries( test_chain_builder config L3 ${Boost_LIBRARIES}  )
 add_executable( test_library_adapters test_library_adapters.cpp )
 target_link_libraries( test_library_adapters config L3 ${Boost_LIBRARIES}  )
 
-add_executable( test_pipeline test_pipeline.cpp )
-target_link_libraries( test_pipeline config L3 ${Boost_LIBRARIES}  )
-
 add_executable( test_readers test_readers.cpp )
 target_link_libraries( test_readers config L3 ${Boost_LIBRARIES}  )
 
@@ -85,12 +82,19 @@ target_link_libraries( test_experience_pipeline config L3 ${Boost_LIBRARIES}  )
 add_executable( test_experience_query test_experience_query.cpp )
 target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES}  )
 
-add_executable( test_pipeline_stage_1 test_pipeline_stage_1.cpp )
-target_link_libraries( test_pipeline_stage_1 config L3 ${Boost_LIBRARIES}  )
-
 add_executable( test_runner test_runner.cpp )
 target_link_libraries( test_runner config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_swathe_builder_LHLV_point_cloud test_swathe_builder_LHLV_point_cloud.cpp )
 target_link_libraries( test_swathe_builder_LHLV_point_cloud config L3 ${Boost_LIBRARIES}  )
+
+add_executable( test_pipeline_stage_1 test_pipeline_stage_1.cpp )
+target_link_libraries( test_pipeline_stage_1 config L3 ${Boost_LIBRARIES}  )
+
+add_executable( test_pipeline_stage_2 test_pipeline_stage_2.cpp )
+target_link_libraries( test_pipeline_stage_2 config L3 ${Boost_LIBRARIES}  )
+
+add_executable( test_pipeline_stage_3 test_pipeline_stage_3.cpp )
+target_link_libraries( test_pipeline_stage_3 config L3 ${Boost_LIBRARIES}  )
+
 

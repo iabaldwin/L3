@@ -5,20 +5,23 @@
 #include "Dataset.h"
 #include "Projector.h"
 #include "SwatheBuilder.h"
+#include "Configuration.h"
 
 int main()
 {
     /*
-     *  Load dataset
+     *Load dataset
      */
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
 
+    L3::Configuration::Mission mission( dataset );
+
     /*
-     *  Constant time iterator over poses
+     *Constant time iterator over poses
      */
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.begin()->second );
+    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined] );
     L3::ConstantTimeIterator< L3::SE3 >    pose_iterator( dataset.pose_reader );
     
     pose_iterator.swathe_length = LIDAR_iterator.swathe_length;
@@ -30,14 +33,14 @@ int main()
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
     /*
-     *  Projector  
+     * Projector  
      */
     L3::SE3 projection(0,0,0,.1,.2,.3);
     L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
     std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
 
     /*
-     *  Run
+     * Run
      */
     L3::Tools::Timer t;
     double increment = 1.0;

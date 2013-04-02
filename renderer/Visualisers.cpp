@@ -193,7 +193,6 @@ namespace Visualisers
         delete [] point_vertices;
         delete [] point_colors;
     
-    
         delete [] experience_nodes_vertices;
         delete [] experience_nodes_colors;
     

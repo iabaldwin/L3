@@ -17,12 +17,17 @@ int main (int argc, char ** argv)
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
+    L3::Configuration::Mission mission( dataset );
+
+    std::cout << mission.declined << std::endl;
+    std::cout << dataset.LIDAR_readers.begin()->first << std::endl;
+
     // Constant time iterator over LHLV data
     L3::ConstantTimeIterator< L3::LHLV >   lhlv_iterator( dataset.LHLV_reader );
     
     // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front() );
-    
+    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
+
     double time = dataset.start_time;
 
     L3::ChainBuilder pose_windower( &lhlv_iterator );

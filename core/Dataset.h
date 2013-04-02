@@ -40,7 +40,8 @@ class Dataset
         // Threaded windowers
         boost::shared_ptr<SlidingWindow<L3::SE3> >                  pose_reader;
         boost::shared_ptr<SlidingWindow<L3::LHLV> >                 LHLV_reader;
-        std::list< boost::shared_ptr< SlidingWindow<L3::LMS151> > > LIDAR_readers;
+        //std::list< boost::shared_ptr< SlidingWindow<L3::LMS151> > > LIDAR_readers;
+        std::map< std::string, boost::shared_ptr< SlidingWindow<L3::LMS151> > > LIDAR_readers;
        
         
     protected:

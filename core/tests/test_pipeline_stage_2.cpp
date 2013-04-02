@@ -20,14 +20,13 @@ int main()
     /*
      *Constant time iterator over poses
      */
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.front() );
+    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.begin()->second );
     L3::ConstantTimeIterator< L3::SE3 >    pose_iterator( dataset.pose_reader );
+    
     pose_iterator.swathe_length = LIDAR_iterator.swathe_length;
     
     double time = dataset.start_time;
 
-    //L3::SwatheBuilder swathe_builder( &pose_iterator, &LIDAR_iterator );
-    
     L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
     
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );

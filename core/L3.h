@@ -19,5 +19,6 @@
 #include "Experience.h"         // Experience generation
 #include "LibraryAdapters.h"    // PCL, ...
 #include "PoseProvider.h"       // Pose sources
+#include "Histogrammer.h"       // Pose sources
 
 #endif

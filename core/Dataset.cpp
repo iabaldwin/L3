@@ -30,9 +30,10 @@ Dataset::~Dataset()
     if ( LHLV_reader )
         LHLV_reader->stop();
 
-    for ( std::list< boost::shared_ptr< SlidingWindow<L3::LMS151> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
+    //for ( std::list< boost::shared_ptr< SlidingWindow<L3::LMS151> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
+    for ( std::map< std::string, boost::shared_ptr< SlidingWindow<L3::LMS151> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
     {
-        (*it)->stop();
+        it->second->stop();
     }
 
     for( std::list< Poco::Thread* >::iterator it= threads.begin(); it != threads.end(); it++ )
@@ -113,9 +114,7 @@ bool Dataset::load()
     {
         boost::shared_ptr< SlidingWindow<L3::LMS151> > reader = L3::WindowerFactory<L3::LMS151>::constantTimeWindow( (*it).path().string(), 30 );
         reader->initialise(); 
-        LIDAR_readers.push_back( reader );
-        runnables.push_back( reader );
-        
+                
         /*
          *Logging always used to be:
          *  -> LMS_XXX_XXXX
@@ -128,8 +127,10 @@ bool Dataset::load()
          */
         std::string raw_name = (*it).path().leaf().string();
         std::string LIDAR_name( raw_name.begin(), raw_name.begin()+15); 
-        LIDAR_names.push_back( LIDAR_name );
-        
+
+        LIDAR_readers.insert( std::make_pair( LIDAR_name, reader ) );
+        runnables.push_back( reader );
+
         it++;
     }
 

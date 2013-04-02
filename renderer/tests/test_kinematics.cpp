@@ -92,15 +92,17 @@ int main (int argc, char ** argv)
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
-     
+   
+    L3::Configuration::Mission mission( dataset );
+
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
     
     // Constant time iterator over LIDAR - declined
-    L3::ConstantTimeIterator< L3::LMS151 > declined_lidar( dataset.LIDAR_readers.front() );
+    L3::ConstantTimeIterator< L3::LMS151 > declined_lidar( dataset.LIDAR_readers[ mission.declined ] );
     
     // Constant time iterator over LIDAR - horizontal
-    L3::ConstantTimeIterator< L3::LMS151 > horizontal_lidar( dataset.LIDAR_readers.back() );
+    L3::ConstantTimeIterator< L3::LMS151 > horizontal_lidar( dataset.LIDAR_readers[ mission.horizontal ] );
 
     double time = dataset.start_time;
 

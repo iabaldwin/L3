@@ -5,6 +5,7 @@
 #include "Dataset.h"
 #include "Projector.h"
 #include "PointCloud.h"
+#include "Histogrammer.h"
 
 template <typename T>
 L3::Point<T> randomate()
