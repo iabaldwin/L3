@@ -72,13 +72,15 @@ namespace L3
         {
 
             Histogrammer( L3::PointCloud<T>* EXPERIENCE, L3::PointCloud<T>* SWATHE ) :
-                experience(EXPERIENCE), swathe(SWATHE)
+                experience(EXPERIENCE), 
+                swathe(SWATHE),
+                granularity(40)
             {
-
             }
 
-            L3::PointCloud<T>* experience;
-            L3::PointCloud<T>* swathe ;
+            L3::PointCloud<T>* experience;      // Experience swathe, localising *against* this
+            L3::PointCloud<T>* swathe ;         // Run-time swathe, localising *with8 this
+            int granularity;
 
             void histogram()
             {
@@ -86,25 +88,29 @@ namespace L3
                 std::pair<T,T> max_bound = L3::max<T>( experience );
                 std::pair<T,T> means     = L3::mean( experience );
 
-                // Build histogram 
-                L3::histogram<T> hist( means.first, 
-                        means.first - min_bound.first, 
-                        max_bound.first - means.first, 
-                        means.second, 
-                        means.second - min_bound.second, 
-                        max_bound.second - means.second, 
-                        40 );
+                // Build experience histogram 
+                L3::histogram<T> experience_hist( means.first, 
+                                                    means.first - min_bound.first, 
+                                                    max_bound.first - means.first, 
+                                                    means.second, 
+                                                    means.second - min_bound.second, 
+                                                    max_bound.second - means.second, 
+                                                    granularity );
 
+        
+                L3::histogram<T> swathe_hist( means.first, 
+                                                    means.first - min_bound.first, 
+                                                    max_bound.first - means.first, 
+                                                    means.second, 
+                                                    means.second - min_bound.second, 
+                                                    max_bound.second - means.second, 
+                                                    granularity );
+
+                experience_hist( experience );
+                swathe_hist( swathe );
             }
 
-
-
-
-
-
-
         };
-
 
 }
 

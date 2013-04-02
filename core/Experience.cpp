@@ -3,6 +3,13 @@
 namespace L3
 {
 
+template <typename T>
+T norm( std::pair<T,T> a, std::pair<T,T> b)
+{
+    return sqrt( pow( a.first-b.first,2) + pow( a.second - b.second, 2) );
+}
+
+
 std::ostream& operator<<( std::ostream& o, experience_section section )
 {
     o << section.id << ":" << section.x << "," << section.y << "(" << section.stream_position << "," << section.payload_size << ")";

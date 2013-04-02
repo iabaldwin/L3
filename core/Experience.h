@@ -13,7 +13,6 @@
 
 #include <map>
 
-
 struct LengthEstimatorInterface : L3::LengthEstimator
 {
     L3::LengthEstimator estimator;
@@ -24,12 +23,6 @@ struct LengthEstimatorInterface : L3::LengthEstimator
     }
 
 };
-
-template <typename T>
-T norm( std::pair<T,T> a, std::pair<T,T> b)
-{
-    return sqrt( pow( a.first-b.first,2) + pow( a.second - b.second, 2) );
-}
 
 namespace L3
 {
@@ -80,12 +73,22 @@ struct ExperienceLoader
 
     ExperienceLoader( const L3::Dataset& dataset )
     {
-        std::ifstream experience_index( (dataset.path() + "/experience.index").c_str(), std::ios::binary );
+        load( dataset.path() );
+    }
+
+    ExperienceLoader( const std::string& target )
+    {
+        load( target );
+    }
+
+    void load( const std::string& target )
+    {
+        std::ifstream experience_index( (target + "/experience.index").c_str(), std::ios::binary );
 
         if ( !experience_index.good() )
             throw L3::no_such_file();
 
-        std::string experience_name( dataset.path() + "/experience.dat");
+        std::string experience_name( target + "/experience.dat");
 
         experience_section section;
 
