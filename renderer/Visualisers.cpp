@@ -106,7 +106,6 @@ namespace Visualisers
         point_colors   = new glv::Color[10*100000];
         point_vertices = new glv::Point3[10*100000];
   
-        histogram_renderer.reset( new L3::Visualisers::HistogramRenderer() ); 
     }
     
     void SwatheRenderer::realloc( int size )
@@ -130,21 +129,21 @@ namespace Visualisers
         projector->project( swathe_builder->swathe );
     
         // Get bounds
-        std::pair<double,double> min_bound = L3::min<double>( point_cloud );
-        std::pair<double,double> max_bound = L3::max<double>( point_cloud );
-        std::pair<double,double> means     = L3::mean( point_cloud );
+        //std::pair<double,double> min_bound = L3::min<double>( point_cloud );
+        //std::pair<double,double> max_bound = L3::max<double>( point_cloud );
+        //std::pair<double,double> means     = L3::mean( point_cloud );
 
-        // Build histogram 
-        L3::histogram<double> hist( means.first, 
-                                    means.first - min_bound.first, 
-                                    max_bound.first - means.first, 
-                                    means.second, 
-                                    means.second - min_bound.second, 
-                                    max_bound.second - means.second, 
-                                    40 );
-        hist( point_cloud );
-        (*histogram_renderer)( &hist ) ;
-        histogram_renderer->onDraw3D( g );
+        //// Build histogram 
+        //L3::histogram<double> hist( means.first, 
+                                    //means.first - min_bound.first, 
+                                    //max_bound.first - means.first, 
+                                    //means.second, 
+                                    //means.second - min_bound.second, 
+                                    //max_bound.second - means.second, 
+                                    //40 );
+        //hist( point_cloud );
+        //(*histogram_renderer)( &hist ) ;
+        //histogram_renderer->onDraw3D( g );
 
         if (swathe_builder->swathe.size() > current_alloc )
             realloc( swathe_builder->swathe.size() );
@@ -206,6 +205,7 @@ namespace Visualisers
     void ExperienceRenderer::onDraw3D( glv::GLV& g )
     {
 
+        // Plot experience section locations
         std::deque<L3::experience_section>::iterator it = experience->sections.begin();
 
         while( it != experience->sections.end() )
@@ -223,6 +223,7 @@ namespace Visualisers
             experience->update( update.x, update.y );
         }
 
+        // Plot experience cloud
         boost::shared_ptr< L3::PointCloud<double> > cloud;
         experience->getExperienceCloud( cloud );
 

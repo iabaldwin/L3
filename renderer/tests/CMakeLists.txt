@@ -31,9 +31,6 @@ target_link_libraries( test_histogram_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LI
 add_executable( test_experience_renderer test_experience_renderer.cpp )
 target_link_libraries( test_experience_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
-add_executable( test_pipeline_stage_1_visual test_pipeline_stage_1.cpp )
-target_link_libraries( test_pipeline_stage_1_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
 add_executable( test_data_providers test_data_providers.cpp )
 target_link_libraries( test_data_providers GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
@@ -51,4 +48,11 @@ target_link_libraries( test_scan_projection GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRA
 
 add_executable( test_kinematics test_kinematics.cpp )
 target_link_libraries( test_kinematics GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
+add_executable( test_pipeline_stage_1_visual test_pipeline_stage_1.cpp )
+target_link_libraries( test_pipeline_stage_1_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
+add_executable( test_pipeline_stage_2_visual test_pipeline_stage_2.cpp )
+target_link_libraries( test_pipeline_stage_2_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
 

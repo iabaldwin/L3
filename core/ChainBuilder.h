@@ -15,6 +15,7 @@
 namespace L3
 {
 
+
 struct LengthEstimator 
 {
     
@@ -124,7 +125,12 @@ class ChainBuilder : public TemporalObserver, public PoseWindower
 
             return true;
         }
-            
+
+        L3::SE3 operator()( void )
+        {
+            return *(this->window->front().second);
+        }
+
     private:
 
         std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > _window;

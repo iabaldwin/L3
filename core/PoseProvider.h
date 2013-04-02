@@ -70,13 +70,14 @@ struct CircularPoseProvider : PoseProvider, Poco::Runnable
 
 
 
-struct PoseWindower 
+struct PoseWindower  : PoseProvider
 {
     PoseWindower()
     {
 
     }
 
+    // Must be updateable
     virtual bool update( double dt ) = 0;
 
     std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > >* window;

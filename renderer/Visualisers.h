@@ -78,7 +78,6 @@ struct SwatheRenderer : Leaf
     
     unsigned int                                        current_alloc;
     L3::SwatheBuilder*                                  swathe_builder;
-    std::auto_ptr< L3::Visualisers::HistogramRenderer > histogram_renderer;
 
     double                                              x,y;
     L3::PointCloud<double>*                             point_cloud;

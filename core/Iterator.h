@@ -77,6 +77,11 @@ class ConstantTimePoseWindower : public PoseWindower
         }
 
         L3::ConstantTimeIterator<L3::SE3>* constant_time_iterator;
+
+        L3::SE3 operator()( void )
+        {
+            return *(this->constant_time_iterator->window.back().second);
+        }
 };
 
 } // L3

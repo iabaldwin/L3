@@ -17,8 +17,9 @@ int main (int argc, char ** argv)
     
     try
     {
-        L3::ExperienceLoader experience_loader;
-    
+        L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+        L3::ExperienceLoader experience_loader( dataset );
+
         experience = experience_loader.experience;
     }
     catch( std::exception e )
@@ -40,8 +41,10 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite          composite;
     L3::Visualisers::Controller*        controller = new L3::Visualisers::BasicPanController();
     L3::Visualisers::Grid               grid;
-    L3::Visualisers::ExperienceRenderer experience_renderer( experience );
-
+    L3::PoseProvider*                       pose_provider = new L3::CircularPoseProvider();
+    L3::Visualisers::PoseProviderRenderer   pose_provider_renderer( pose_provider );
+    L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
+    
     composite.addController( controller );
     
     top << (composite << grid << experience_renderer) ;

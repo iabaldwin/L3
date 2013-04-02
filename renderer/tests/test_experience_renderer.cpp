@@ -17,7 +17,6 @@ int main (int argc, char ** argv)
     
     try
     {
-        //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
         L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
         L3::ExperienceLoader experience_loader( dataset );
 
