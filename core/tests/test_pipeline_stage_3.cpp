@@ -1,11 +1,6 @@
 #include <iostream>
 
-#include "Iterator.h"
-#include "Utils.h"
-#include "Dataset.h"
-#include "Projector.h"
-#include "SwatheBuilder.h"
-#include "Configuration.h"
+#include "L3.h"
 
 int main()
 {
@@ -15,9 +10,17 @@ int main()
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
-
+    
     L3::Configuration::Mission mission( dataset );
 
+
+    /*
+     *Load experience
+     */
+    L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
+    L3::ExperienceLoader experience_loader( experience_dataset );
+
+    boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
     /*
      *Constant time iterator over poses
      */
@@ -39,19 +42,36 @@ int main()
     L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
     std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
 
+    L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
+    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function );
+
+
+
     /*
      * Run
      */
     L3::Tools::Timer t;
     double increment = 1.0;
+        
+    boost::shared_ptr<L3::PointCloud<double> > experience_cloud;
     while( true )
     {
         t.begin();
         
-        projector->project( swathe_builder.swathe );
-      
-        if ( !swathe_builder.update( time += increment ))
+        time += increment;
+       
+        pose_windower.update( time );
+
+        experience->update( rand()%100, rand()%100 );
+
+        if ( !swathe_builder.update( time ))
             throw std::exception();
+
+        projector->project( swathe_builder.swathe );
+
+        experience->getExperienceCloud( experience_cloud );
+
+        estimator( &*experience_cloud, point_cloud, L3::SE3::ZERO() );
 
         double end_time = t.end(); 
         //std::cout << cloud.size() << " pts\t " << end_time << "s" << "\t" << "[" << (double)cloud.size()/end_time << " pts/s" << "]" << " :" << swathe_builder.window_duration << std::endl;

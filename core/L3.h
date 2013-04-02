@@ -20,5 +20,6 @@
 #include "LibraryAdapters.h"    // PCL, ...
 #include "PoseProvider.h"       // Pose sources
 #include "Histogrammer.h"       // Pose sources
+#include "Estimator.h"       // Pose sources
 
 #endif

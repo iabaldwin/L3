@@ -20,7 +20,7 @@ int main (int argc, char ** argv)
         *it++ = L3::Point<double>( random()%100, random()%100, random()%100 );
     }
 
-    L3::histogram<double> hist(50, 50, 20 );
+    L3::Histogram<double> hist(50, 50, 20 );
 
     hist( &cloud );
 
@@ -37,13 +37,13 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid               grid;
     L3::Visualisers::Composite          composite;
     L3::Visualisers::BasicPanController controller;
-    L3::Visualisers::HistogramRenderer  histogram_renderer;
+    L3::Visualisers::HistogramRenderer  Histogram_renderer;
 
-    histogram_renderer( &hist );
+    Histogram_renderer( &hist );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
-    top << (composite << histogram_renderer << grid );
+    top << (composite << Histogram_renderer << grid );
 
     // Go
     win.setGLV(top);

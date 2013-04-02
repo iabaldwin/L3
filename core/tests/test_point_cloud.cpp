@@ -31,7 +31,7 @@ int main()
 
     L3::Tools::Timer t;
     t.begin();
-    L3::histogram<double> hist;
+    L3::Histogram<double> hist;
         hist( cloud );
     double elapsed = t.end();
 

@@ -1,43 +1,70 @@
 #ifndef L3_ESTIMATOR_H
 #define L3_ESTIMATOR_H
 
+#include "Histogrammer.h"
+
 namespace L3
 {
 namespace Estimator
 {
 
-struct Stepper
-{
 
+/*
+ *  Base cost function
+ */
+template <typename T>
+struct CostFunction
+{
+    virtual double operator()( Histogram<T>* exp, Histogram<T>* swathe, L3::SE3& estimated_pose, L3::SE3 pose_guess ) = 0;
+
+    virtual ~CostFunction()
+    {
+
+    }
 
 
 };
 
-
+template <typename T>
+struct KLCostFunction : CostFunction<T>
+{
+    double operator()( Histogram<T>* exp, Histogram<T>* swathe, L3::SE3& estimated_pose, L3::SE3 pose_guess ) ;
+};
 
 /*
- *  Base estimator
+ *Estimator types
  */
+template< typename T >
 struct Estimator
 {
-    bool estimate ( 2D_HIST* exp, 2D_HIST* swathe, L3::SE3& estimated_pose, L3::SE3 pose_guess ) = 0;
+    Estimator( CostFunction<T>* f ) : cost_function(f)
+    {
+    }
+    
+    CostFunction<T>* cost_function;
 
     virtual ~Estimator()
     {
-
     }
 
+    virtual double operator()( PointCloud<T>* experience, PointCloud<T>* swathe, SE3 estimate ) = 0;
 
 };
 
-struct KLEstimator : Estimator
+
+template< typename T >
+struct DiscreteEstimator : Estimator<T>
 {
-    bool estimate ( 2D_HIST* exp, 2D_HIST* swathe, L3::SE3& estimated_pose, L3::SE3 pose_guess ) = 0;
+
+    DiscreteEstimator( CostFunction<T>* f ) : Estimator<T>(f)
     {
-        return true;
     }
+ 
+    double operator()( PointCloud<T>* experience, PointCloud<T>* swathe, SE3 estimate );
 
 };
+
+
 
 
 }

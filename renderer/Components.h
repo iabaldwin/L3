@@ -210,9 +210,9 @@ struct Grid : Leaf
  */
 struct HistogramRenderer : Leaf
 {
-    L3::histogram<double>* hist;
+    L3::Histogram<double>* hist;
 
-    void operator()( L3::histogram<double>* HIST )
+    void operator()( L3::Histogram<double>* HIST )
     {
         hist = HIST;
     }
