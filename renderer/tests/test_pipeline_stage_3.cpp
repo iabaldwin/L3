@@ -55,6 +55,10 @@ int main (int argc, char ** argv)
     L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
 
 
+    L3::SE3 projection(0,0,0,.1,.2,.3);
+    L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
+    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
+
     // Link the experience to the current pose generator
     experience_renderer.addPoseProvider( &pose_windower );
 
@@ -65,15 +69,22 @@ int main (int argc, char ** argv)
     // Add watchers
     composite << swathe_renderer << grid << experience_renderer;
 
-    // Add runner
-    L3::Visualisers::ElementRunner runner;    
-    runner << &swathe_builder << &pose_windower;
+    L3::EstimatorRunner runner;
+    
+    runner.setExperience( &*experience )
+            .setPoseProvider( &pose_windower )
+            .setProjector( &*projector )
+            .setEstimator( &estimator  )
+            .setSwatheBuilder( &swathe_builder );
 
-    top << (composite << runner );
+    // Add runner
+    L3::Visualisers::Runner estimator_runner;    
+    
+    top << (composite << estimator_runner );
 
     win.setGLV(top);
     win.fit(); 
     glv::Application::run();
-}
 
+}
 

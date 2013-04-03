@@ -63,7 +63,7 @@ int main (int argc, char ** argv)
     composite << scan_renderer << pose_renderer << grid;
 
     // Add runner
-    L3::Visualisers::ElementRunner runner;    
+    L3::Visualisers::Runner runner;    
     runner << &swathe_builder << &pose_windower;
 
     top << (composite << runner );

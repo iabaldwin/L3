@@ -50,18 +50,17 @@ int main()
 
 
     /*
-     * Run
+     *  Run
      */
     double increment = 1.0;
  
     L3::EstimatorRunner runner;
-    runner << &swathe_builder;
-
-    runner.setExperience( &*experience );
-    runner.setPoseProvider( &pose_windower );
-    runner.setProjector( &*projector );
-    runner.setEstimator( &estimator  );
-    runner.setSwathe( &swathe_builder.swathe);
+    
+    runner.setExperience( &*experience )
+            .setPoseProvider( &pose_windower )
+            .setProjector( &*projector )
+            .setEstimator( &estimator  )
+            .setSwatheBuilder( &swathe_builder );
 
     while( true )
     {

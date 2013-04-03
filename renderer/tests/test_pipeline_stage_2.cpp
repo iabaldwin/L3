@@ -28,12 +28,15 @@ int main (int argc, char ** argv)
     
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
-    
+  
     double time = dataset.start_time;
 
     L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
     
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
+
+    L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
+    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function );
 
     /*
      *Visualisation
@@ -51,7 +54,8 @@ int main (int argc, char ** argv)
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
 
-    // Associate pose provider
+
+    // Link the experience to the current pose generator
     experience_renderer.addPoseProvider( &pose_windower );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
@@ -62,14 +66,14 @@ int main (int argc, char ** argv)
     composite << swathe_renderer << grid << experience_renderer;
 
     // Add runner
-    L3::Visualisers::ElementRunner runner;    
+    L3::Visualisers::Runner runner;    
     runner << &swathe_builder << &pose_windower;
 
     top << (composite << runner );
-    
+
     win.setGLV(top);
     win.fit(); 
     glv::Application::run();
-}
 
+}
 

@@ -11,6 +11,7 @@
 #include "Dataset.h"
 #include "Experience.h"
 #include "Estimator.h"
+#include "SwatheBuilder.h"
 
 namespace L3
 {
@@ -78,14 +79,14 @@ struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 /*
  *  Implementation specific
  */
-struct EstimatorRunner : TemporalRunner
+struct EstimatorRunner 
 {
 
     L3::Experience*                     experience;
     L3::PoseProvider*                   provider;
+    L3::SwatheBuilder*                  swathe_builder;
     L3::Projector<double>*              projector;
     L3::Estimator::Estimator<double>*   estimator;
-    SWATHE*                             swathe;
 
     /*
      *    All time-sensitive iterables have been
@@ -93,11 +94,12 @@ struct EstimatorRunner : TemporalRunner
      *
      */
 
-    bool postUpdate()
+    bool update( double time )
     {
-#ifndef  NDEBUG
+#ifndef  DEBUG
         boost::timer t;
 #endif
+        swathe_builder->update( time );
 
         boost::shared_ptr<L3::PointCloud<double> > experience_cloud;
         
@@ -105,46 +107,51 @@ struct EstimatorRunner : TemporalRunner
         experience->update( pose.x, pose.y );
         experience->getExperienceCloud( experience_cloud );
 
-#ifndef  NDEBUG
+#ifndef  DEBUG
         std::cout << "Experience\t" << t.elapsed() << std::endl;
 #endif
-        projector->project( *swathe );
+        projector->project( swathe_builder->swathe );
 
-#ifndef  NDEBUG
+#ifndef  DEBUG
         std::cout << "Projection\t" << t.elapsed() << std::endl;
 #endif
 
         (*estimator)( &*experience_cloud, projector->cloud, L3::SE3::ZERO() );
 
-#ifndef  NDEBUG
+#ifndef  DEBUG
         std::cout << "Estimation\t" << t.elapsed() << std::endl;
 #endif
     
     }
 
-    bool setPoseProvider( L3::PoseProvider* provider )
+    EstimatorRunner& setPoseProvider( L3::PoseProvider* provider )
     {
         this->provider = provider;
+        return *this;
     }
 
-    bool setExperience( L3::Experience* experience )
+    EstimatorRunner& setExperience( L3::Experience* experience )
     {
         this->experience = experience;
+        return *this;
     }
 
-    bool setProjector( L3::Projector<double>* projector )
+    EstimatorRunner& setProjector( L3::Projector<double>* projector )
     {
         this->projector = projector;
+        return *this;
     }
 
-    bool setEstimator( L3::Estimator::Estimator<double>* estimator )
+    EstimatorRunner& setEstimator( L3::Estimator::Estimator<double>* estimator )
     {
         this->estimator = estimator;
+        return *this;
     }
 
-    bool setSwathe( SWATHE* swathe )
+    EstimatorRunner& setSwatheBuilder( L3::SwatheBuilder* swathe_builder )
     {
-        this->swathe = swathe;
+        this->swathe_builder = swathe_builder;
+        return *this;
     }
 
 };

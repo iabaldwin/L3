@@ -149,7 +149,7 @@ struct Composite : glv::View3D
 /*
  *Element runner
  */
-struct ElementRunner : Leaf, L3::TemporalRunner
+struct Runner : Leaf, L3::TemporalRunner
 {
     void onDraw3D(glv::GLV& g)
     {
