@@ -51,17 +51,22 @@ int main (int argc, char ** argv)
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
 
+    // Associate pose provider
     experience_renderer.addPoseProvider( &pose_windower );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
     composite.current_time = time;
     composite.sf = 2.0;
 
-    double d = 800;
-    glv::Plot velocity( glv::Rect( 0,0*d/8, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
+    // Add watchers
+    composite << swathe_renderer << grid << experience_renderer;
 
-    top << (composite << swathe_renderer << grid << experience_renderer ) << velocity;
+    // Add runner
+    L3::Visualisers::ElementRunner runner;    
+    runner << &swathe_builder << &pose_windower;
 
+    top << (composite << runner );
+    
     win.setGLV(top);
     win.fit(); 
     glv::Application::run();

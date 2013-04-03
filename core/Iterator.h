@@ -80,7 +80,11 @@ class ConstantTimePoseWindower : public PoseWindower
 
         L3::SE3 operator()( void )
         {
-            return *(this->constant_time_iterator->window.back().second);
+
+            if ( this->constant_time_iterator->window.size() > 0 )
+                return *(this->constant_time_iterator->window.back().second);
+            else
+                return L3::SE3::ZERO();
         }
 };
 

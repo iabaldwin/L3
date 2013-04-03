@@ -96,7 +96,7 @@ void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterato
 
 }
 
-class ChainBuilder : public TemporalObserver, public PoseWindower
+class ChainBuilder : public PoseWindower
 {
     public:
 
@@ -128,7 +128,10 @@ class ChainBuilder : public TemporalObserver, public PoseWindower
 
         L3::SE3 operator()( void )
         {
-            return *(this->window->front().second);
+            if ( this->window->size() > 0 )
+                return *(this->window->front().second);
+            else
+                return L3::SE3::ZERO();
         }
 
     private:

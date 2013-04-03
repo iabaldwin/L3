@@ -66,9 +66,6 @@ namespace Visualisers
     template <typename T>
     void IteratorRenderer<T>::onDraw3D( glv::GLV& g )
     {
-        // Update the iterator
-        iterator->update( time );
-
         // Reserve
         glv::Point3* vertices = new glv::Point3[iterator->window.size()];;
         glv::Color* colors    = new glv::Color[iterator->window.size()];
@@ -101,8 +98,6 @@ namespace Visualisers
         point_cloud = new L3::PointCloud<double>();
         projector.reset( new L3::Projector<double>( &calibration, point_cloud ) );
     
-        pose_colors    = new glv::Color[current_alloc];
-        pose_vertices  = new glv::Point3[current_alloc];
         point_colors   = new glv::Color[10*100000];
         point_vertices = new glv::Point3[10*100000];
   
@@ -110,8 +105,6 @@ namespace Visualisers
     
     void SwatheRenderer::realloc( int size )
     {
-        delete [] pose_colors;
-        delete [] pose_vertices;
 
         pose_colors   = new glv::Color[size];
         pose_vertices = new glv::Point3[size];
@@ -121,50 +114,16 @@ namespace Visualisers
 
     void SwatheRenderer::onDraw3D( glv::GLV& g )
     {
-        // Update the swathe_builder
-        if ( !swathe_builder->update( time ))
-            throw std::exception();
-
         // Do projection
         projector->project( swathe_builder->swathe );
-    
-        // Get bounds
-        //std::pair<double,double> min_bound = L3::min<double>( point_cloud );
-        //std::pair<double,double> max_bound = L3::max<double>( point_cloud );
-        //std::pair<double,double> means     = L3::mean( point_cloud );
-
-        //// Build histogram 
-        //L3::histogram<double> hist( means.first, 
-                                    //means.first - min_bound.first, 
-                                    //max_bound.first - means.first, 
-                                    //means.second, 
-                                    //means.second - min_bound.second, 
-                                    //max_bound.second - means.second, 
-                                    //40 );
-        //hist( point_cloud );
-        //(*histogram_renderer)( &hist ) ;
-        //histogram_renderer->onDraw3D( g );
-
-        if (swathe_builder->swathe.size() > current_alloc )
-            realloc( swathe_builder->swathe.size() );
-
-        SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
-        
-        int counter = 0;
-        while( pose_iterator != swathe_builder->swathe.end() )
-        {
-            pose_vertices[counter]( pose_iterator->first->x, pose_iterator->first->y, 0 );
-            pose_iterator++; 
-            counter++;
-        }
-        glv::draw::paint( glv::draw::Points, pose_vertices, pose_colors, counter );
-        
+   
         PointCloud<double>::ITERATOR point_iterator = point_cloud->begin();
 
-        counter = 0;
+        int counter = 0;
 
         while( point_iterator < point_cloud->end() )
         {
+            point_colors[counter].set( .5, .5, .5, 255 );
             point_vertices[counter++]( point_iterator->x , point_iterator->y , point_iterator->z);
             point_iterator+=10; 
         }
@@ -271,15 +230,30 @@ namespace Visualisers
 
     void PoseWindowerRenderer::onDraw3D( glv::GLV& g )
     {
-        // Update the iterator
-        pose_windower->update( time );
-
         std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = pose_windower->window->begin();
 
         int counter = 0;
 
         while( it != pose_windower->window->end() )
             CoordinateSystem( *(it++)->second ).onDraw3D(g );
+    }
+
+    /*
+     *Scan renderer
+     */
+    void ScanRenderer::onDraw3D( glv::GLV& g )
+    {
+        // Project just 1 scan
+        if ( swathe_builder->swathe.size() == 0 )
+            return;
+        
+        std::vector< std::pair< boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> > > single_scan( swathe_builder->swathe.begin(), swathe_builder->swathe.begin()+1 );
+        projector->project( single_scan );
+
+        for( int i=0; i<cloud->num_points; i++ )
+            point_vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z );
+        
+        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, cloud->num_points );
     }
 
 

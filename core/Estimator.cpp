@@ -11,8 +11,6 @@ namespace Estimator
 template <typename T>
 double KLCostFunction<T>::operator()( Histogram<T>* exp, Histogram<T>* swathe, L3::SE3& estimated_pose, L3::SE3 pose_guess ) 
 {
-    
-    
 }
 
 
@@ -30,7 +28,7 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
     int granularity = 100;
 
     // Build experience histogram 
-    L3::Histogram<T> experience_hist( means.first, 
+    L3::Histogram<T> histogram( means.first, 
                                         means.first - min_bound.first, 
                                         max_bound.first - means.first, 
                                         means.second, 
@@ -38,25 +36,20 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
                                         max_bound.second - means.second, 
                                         granularity );
 
-    experience_hist( experience );
+    histogram( experience );
 
-    L3::Histogram<T> swathe_hist( means.first, 
-                                        means.first - min_bound.first, 
-                                        max_bound.first - means.first, 
-                                        means.second, 
-                                        means.second - min_bound.second, 
-                                        max_bound.second - means.second, 
-                                        granularity );
+    // Restart
+    histogram.reset();
 
-    swathe_hist( swathe );
+    histogram( swathe );
 
 }
 
 
 
-}
-}
+}   // Estimator
+}   // L3
 
-//Explicit instantiations
+// Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double>*, L3::Histogram<double>*, L3::SE3&, L3::SE3);
 template double L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::PointCloud<double>*, L3::SE3);

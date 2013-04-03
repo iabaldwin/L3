@@ -12,6 +12,9 @@ struct PoseProvider : std::unary_function< L3::SE3, void >
     virtual L3::SE3 operator()() = 0;
 };
 
+/*
+ *Circular pose provider (testing)
+ */
 struct CircularPoseProvider : PoseProvider, Poco::Runnable
 {
     CircularPoseProvider() : counter(0), x(0), y(0), angle(0.0), running(true), frequency(10), update(false)
@@ -68,17 +71,17 @@ struct CircularPoseProvider : PoseProvider, Poco::Runnable
     }
 };
 
-
-
-struct PoseWindower  : PoseProvider
+/*
+ *  Pose Windower
+ */
+struct PoseWindower : PoseProvider, TemporalObserver
 {
     PoseWindower()
     {
 
     }
 
-    // Must be updateable
-    virtual bool update( double dt ) = 0;
+    virtual bool update( double ) = 0;
 
     std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > >* window;
 };

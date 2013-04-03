@@ -70,11 +70,12 @@ struct Composite : glv::View3D
                     _r(0), _p(0), _q(0),
                     controller(NULL)
     {
+        // Fill the view
         stretch(1,1); 
         
+        // Extend far clip
         far( 1000 );
     }
-
     
     double current_time; 
     unsigned int sf;
@@ -111,8 +112,6 @@ struct Composite : glv::View3D
 
     virtual void onDraw3D(glv::GLV& g)
     {
-        //glv::draw::fog(float end, float start, const Color& c=Color(0));  ///< Set linear fog parameters
-
         std::list<Leaf*>::iterator it = components.begin();
         glv::draw::translate( _x, _y, _z );
         glv::draw::rotate( _r, _p, _q );
@@ -146,6 +145,19 @@ struct Composite : glv::View3D
     }
     
 };
+
+/*
+ *Element runner
+ */
+struct ElementRunner : Leaf, L3::TemporalRunner
+{
+    void onDraw3D(glv::GLV& g)
+    {
+        this->update( time );
+    }
+
+};
+
 
 /*
  *Useful components
@@ -249,6 +261,24 @@ struct HistogramRenderer : Leaf
         }
     }
 };
+
+struct HistogramBoundsRenderer : Leaf
+{
+    L3::Histogram<double>* hist;
+
+    void operator()( L3::Histogram<double>* HIST )
+    {
+        hist = HIST;
+    }
+
+    void onDraw3D(glv::GLV& g)
+    {
+         
+
+    }
+
+};
+
 
 /*
  *CoordinateSystem : XYZ, RGB

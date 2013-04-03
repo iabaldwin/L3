@@ -1,7 +1,7 @@
 #ifndef L3_ESTIMATOR_H
 #define L3_ESTIMATOR_H
 
-#include "Histogrammer.h"
+#include "Histogram.h"
 
 namespace L3
 {
@@ -21,8 +21,6 @@ struct CostFunction
     {
 
     }
-
-
 };
 
 template <typename T>
@@ -63,9 +61,6 @@ struct DiscreteEstimator : Estimator<T>
     double operator()( PointCloud<T>* experience, PointCloud<T>* swathe, SE3 estimate );
 
 };
-
-
-
 
 }
 }

@@ -163,27 +163,25 @@ struct PoseProviderRenderer : Leaf
 
 };
 
+/*
+ *Scan renderer
+ */
 struct ScanRenderer : Leaf
 {
 
     ScanRenderer( L3::SwatheBuilder* SWATHE_BUILDER ) : swathe_builder(SWATHE_BUILDER)
     {
     
-        pose_colors    = new glv::Color[1000];
-        pose_vertices  = new glv::Point3[1000];
- 
         point_colors   = new glv::Color[541];
         point_vertices = new glv::Point3[541];
   
-        calibration = new L3::SE3( 0, 0, 0, -1.57, 0, 0 );
+        calibration = new L3::SE3( 0, 0, -1.57, 0, 0, 0 );
 
         cloud = new L3::PointCloud<double>();
 
         projector.reset( new L3::Projector<double>( calibration, cloud ) );
     }
 
-    glv::Color*         pose_colors;
-    glv::Point3*        pose_vertices;
     glv::Color*         point_colors;
     glv::Point3*        point_vertices;
     
@@ -193,34 +191,24 @@ struct ScanRenderer : Leaf
     L3::SE3*                calibration;
     L3::PointCloud<double>* cloud;
     
-    void onDraw3D( glv::GLV& g )
-    {
-        // Update the swathe_builder
-        if ( !swathe_builder->update( time ))
-            throw std::exception();
-
-        SWATHE_ITERATOR pose_iterator = swathe_builder->swathe.begin();
-
-        int counter = 0;
-        while( pose_iterator != swathe_builder->swathe.end() && counter < 1000 )
-        {
-            pose_vertices[counter]( pose_iterator->first->x, pose_iterator->first->y, 0 );
-            pose_iterator++; 
-            counter++;
-        }
-
-        glv::draw::paint( glv::draw::Points, pose_vertices, pose_colors, counter );
-
-        // Project just 1 scan
-        std::vector< std::pair< boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> > > single_scan( swathe_builder->swathe.begin(), swathe_builder->swathe.begin()+1 );
-        projector->project( single_scan );
-
-        for( int i=0; i<cloud->num_points; i++ )
-            point_vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z );
-        
-        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, cloud->num_points );
-    }
+    void onDraw3D( glv::GLV& g );
+    
 };
+
+struct EstimatorRenderer : Leaf
+{
+    EstimatorRenderer( L3::Estimator::Estimator<double>* ESTIMATOR ) : estimator(estimator)
+    {
+
+    }
+    
+    L3::Estimator::Estimator<double>* estimator;
+
+    void onDraw3D( glv::GLV& g );
+
+
+};
+
 
 }   // ::Visualisers
 }   // ::L3
