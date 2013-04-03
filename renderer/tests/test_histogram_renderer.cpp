@@ -20,9 +20,10 @@ int main (int argc, char ** argv)
         *it++ = L3::Point<double>( random()%100, random()%100, random()%100 );
     }
 
-    L3::Histogram<double> hist(50, 50, 20 );
+    //L3::Histogram<double> histogram(50, 50, 20 );
+    L3::Histogram<double> histogram = L3::Histogram<double>::UniformDistance(0, -50, 50, 0, -50, 50, 1 );
 
-    hist( &cloud );
+    histogram( &cloud );
 
     /*
      *Visualisation
@@ -34,16 +35,19 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     // Renderer
-    L3::Visualisers::Grid               grid;
-    L3::Visualisers::Composite          composite;
-    L3::Visualisers::BasicPanController controller;
-    L3::Visualisers::HistogramRenderer  Histogram_renderer;
+    L3::Visualisers::Grid                       grid;
+    L3::Visualisers::Composite                  composite;
+    L3::Visualisers::BasicPanController         controller;
+    L3::Visualisers::HistogramVertexRenderer    histogram_renderer;
+    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer( glv::Rect(500,300) );
 
-    Histogram_renderer( &hist );
+    histogram_renderer( &histogram );
+    histogram_pixel_renderer( &histogram );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
-    top << (composite << Histogram_renderer << grid );
+    //top << histogram_pixel_renderer << (composite << histogram_renderer << grid );
+    top << (composite << histogram_renderer << grid ) << histogram_pixel_renderer ;
 
     // Go
     win.setGLV(top);

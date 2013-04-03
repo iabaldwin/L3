@@ -25,23 +25,26 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
     std::pair<T,T> max_bound = L3::max<T>( experience );
     std::pair<T,T> means     = L3::mean( experience );
 
-    int granularity = 100;
+    int granularity = 10;
+
+    if ( experience->num_points == 0 )
+        return std::numeric_limits<T>::infinity();
 
     // Build experience histogram 
-    L3::Histogram<T> histogram( means.first, 
-                                        means.first - min_bound.first, 
-                                        max_bound.first - means.first, 
-                                        means.second, 
-                                        means.second - min_bound.second, 
-                                        max_bound.second - means.second, 
-                                        granularity );
+    L3::Histogram<T> histogram = L3::Histogram<T>::UniformDistance( means.first, 
+                                                                    min_bound.first, 
+                                                                    max_bound.first,
+                                                                    means.second, 
+                                                                    min_bound.second, 
+                                                                    max_bound.second,
+                                                                    granularity );
 
-    histogram( experience );
+    //histogram( experience );
 
-    // Restart
-    histogram.reset();
+    //// Restart
+    //histogram.reset();
 
-    histogram( swathe );
+    //histogram( swathe );
 
 }
 

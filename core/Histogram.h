@@ -14,30 +14,57 @@ namespace L3
         
         struct Histogram
         {
-            float delta;
-            unsigned int num_bins;
+
+            static Histogram UniformDistance( float x_centre,
+                                                float x_lower,
+                                                float x_upper,
+                                                float y_centre,
+                                                float y_lower,
+                                                float y_upper,
+                                                float bins_per_metre )
+            {
+                return Histogram<T>( x_centre, x_lower, x_upper, y_centre, y_lower, y_upper,  
+                                    bins_per_metre*( x_upper - x_lower ),  
+                                    bins_per_metre*( y_upper - y_lower ) );
+            }
+
+            static Histogram Square( float x_centre,
+                                        float x_lower,
+                                        float x_upper,
+                                        float y_centre,
+                                        float y_lower,
+                                        float y_upper,
+                                        unsigned int bins ) 
+            {
+                return Histogram<T>( x_centre, x_lower, x_upper, y_centre, y_lower, y_upper, bins, bins );
+            }
+
 
             Histogram(  float x_centre=0.f, 
-                    float x_lower=50.0f, 
-                    float x_upper=50.0f, 
-                    float y_centre=0.f, 
-                    float y_lower=50.0f, 
-                    float y_upper=50.0f, 
-                    unsigned int bins=1000 ) : num_bins(bins)
+                        float x_lower=-50.0f, 
+                        float x_upper=50.0f, 
+                        float y_centre=0.f, 
+                        float y_lower=-50.0f, 
+                        float y_upper=50.0f, 
+                        unsigned int x_bins=1000, 
+                        unsigned int y_bins=1000
+                        ) : x_bins(x_bins), y_bins(y_bins)
             {
-                hist =  gsl_histogram2d_alloc (num_bins, num_bins);
+                hist =  gsl_histogram2d_alloc ( x_bins, y_bins );
 
                 gsl_histogram2d_set_ranges_uniform (hist, 
-                        x_centre-x_lower, 
-                        x_centre+x_upper, 
-                        y_centre-y_lower, 
-                        y_centre+y_upper );
+                                                    x_centre+x_lower, 
+                                                    x_centre+x_upper, 
+                                                    y_centre+y_lower, 
+                                                    y_centre+y_upper );
 
-                delta = 100.0/num_bins;
+                x_delta = 100.0/x_bins;
+                y_delta = 100.0/y_bins;
             }
            
-            //Raw Histogram 
-            gsl_histogram2d* hist;
+            float               x_delta, y_delta;
+            unsigned int        x_bins, y_bins;
+            gsl_histogram2d*    hist;
 
             ~Histogram()
             {

@@ -8,6 +8,11 @@
 #include "L3.h"
 #include "Visualisers.h"
 
+//struct EstimatorRunnerVisualiser : L3::Visualisers::Runner, L3::EstimatorRunner
+//{
+    //virtual bool update( double time ){} 
+//};
+
 int main (int argc, char ** argv)
 {
     /*
@@ -69,6 +74,7 @@ int main (int argc, char ** argv)
     // Add watchers
     composite << swathe_renderer << grid << experience_renderer;
 
+    // Create runner
     L3::EstimatorRunner runner;
     
     runner.setExperience( &*experience )
@@ -77,10 +83,10 @@ int main (int argc, char ** argv)
             .setEstimator( &estimator  )
             .setSwatheBuilder( &swathe_builder );
 
-    // Add runner
-    L3::Visualisers::Runner estimator_runner;    
-    
-    top << (composite << estimator_runner );
+    L3::Visualisers::Runner runner_visualiser;
+    runner_visualiser << &runner;
+
+    top << (composite << runner_visualiser );
 
     win.setGLV(top);
     win.fit(); 

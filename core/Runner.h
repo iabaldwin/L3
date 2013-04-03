@@ -79,7 +79,7 @@ struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 /*
  *  Implementation specific
  */
-struct EstimatorRunner 
+struct EstimatorRunner : TemporalObserver
 {
 
     L3::Experience*                     experience;
@@ -94,35 +94,7 @@ struct EstimatorRunner
      *
      */
 
-    bool update( double time )
-    {
-#ifndef  DEBUG
-        boost::timer t;
-#endif
-        swathe_builder->update( time );
-
-        boost::shared_ptr<L3::PointCloud<double> > experience_cloud;
-        
-        L3::SE3 pose = (*provider)();
-        experience->update( pose.x, pose.y );
-        experience->getExperienceCloud( experience_cloud );
-
-#ifndef  DEBUG
-        std::cout << "Experience\t" << t.elapsed() << std::endl;
-#endif
-        projector->project( swathe_builder->swathe );
-
-#ifndef  DEBUG
-        std::cout << "Projection\t" << t.elapsed() << std::endl;
-#endif
-
-        (*estimator)( &*experience_cloud, projector->cloud, L3::SE3::ZERO() );
-
-#ifndef  DEBUG
-        std::cout << "Estimation\t" << t.elapsed() << std::endl;
-#endif
-    
-    }
+    bool update( double time );
 
     EstimatorRunner& setPoseProvider( L3::PoseProvider* provider )
     {

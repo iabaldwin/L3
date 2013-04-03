@@ -4,6 +4,9 @@
 namespace L3
 {
 
+/*
+ *I/O
+ */
 template <typename T>
 std::ostream& operator<<( std::ostream& o, const Point<T>& point )
 {

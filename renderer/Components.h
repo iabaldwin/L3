@@ -160,9 +160,9 @@ struct Runner : Leaf, L3::TemporalRunner
 
 
 /*
- *Useful components
+ *  Useful components
  *
- *      GRID
+ *  1.  Grid
  */
 struct Grid : Leaf
 {
@@ -218,12 +218,21 @@ struct Grid : Leaf
 };
 
 /*
- *Histogram Renderer
+ *  Histograms
  */
-struct HistogramRenderer : Leaf
+struct HistogramRenderer 
 {
     L3::Histogram<double>* hist;
 
+    void operator()( L3::Histogram<double>* HIST )
+    {
+        hist = HIST;
+    }
+
+};
+
+struct HistogramVertexRenderer : HistogramRenderer, Leaf
+{
     void operator()( L3::Histogram<double>* HIST )
     {
         hist = HIST;
@@ -234,11 +243,12 @@ struct HistogramRenderer : Leaf
         glv::Point3 quad_vertices[4];
         glv::Color quad_colors[4];
 
-        float delta = hist->delta;
+        float x_delta = hist->x_delta;
+        float y_delta = hist->y_delta;
 
-        for( unsigned int i=0; i < hist->num_bins; i++ )
+        for( unsigned int i=0; i < hist->y_bins; i++ )
         {
-            for( unsigned int j=0; j < hist->num_bins; j++ )
+            for( unsigned int j=0; j < hist->x_bins; j++ )
             {
                 unsigned int val = hist->bin( i, j );
           
@@ -247,13 +257,13 @@ struct HistogramRenderer : Leaf
                 std::pair<float,float> coords = hist->coords( i, j);
 
                 quad_colors[0] = c;
-                quad_vertices[0]( coords.first-delta/2.5, coords.second-delta/2.5, val );
+                quad_vertices[0]( coords.first-x_delta/2.5, coords.second-y_delta/2.5, val );
                 quad_colors[1] = c;
-                quad_vertices[1]( coords.first-delta/2.5, coords.second+delta/2.5, val );
+                quad_vertices[1]( coords.first-x_delta/2.5, coords.second+y_delta/2.5, val );
                 quad_colors[2] = c;
-                quad_vertices[2]( coords.first+delta/2.5, coords.second+delta/2.5, val );
+                quad_vertices[2]( coords.first+x_delta/2.5, coords.second+y_delta/2.5, val );
                 quad_colors[3] = c;
-                quad_vertices[3]( coords.first+delta/2.5, coords.second-delta/2.5, val );
+                quad_vertices[3]( coords.first+x_delta/2.5, coords.second-y_delta/2.5, val );
         
                 glv::draw::paint( glv::draw::TriangleFan, quad_vertices, quad_colors, 4 );
             
@@ -262,23 +272,40 @@ struct HistogramRenderer : Leaf
     }
 };
 
-struct HistogramBoundsRenderer : Leaf
+struct HistogramBoundsRenderer : HistogramRenderer, Leaf
 {
-    L3::Histogram<double>* hist;
-
-    void operator()( L3::Histogram<double>* HIST )
-    {
-        hist = HIST;
-    }
 
     void onDraw3D(glv::GLV& g)
     {
-         
 
     }
 
 };
 
+struct HistogramPixelRenderer : glv::Plot, HistogramRenderer
+{
+	HistogramPixelRenderer(const glv::Rect& r): glv::Plot(r)
+    {
+	    this->add(*new glv::PlotDensity( glv::Color(1)) );
+    }
+
+    bool onEvent( glv::Event::t e, glv::GLV& g)
+    {
+        data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
+
+        for( unsigned int i=0; i< hist->x_bins; i++ )
+        {
+            for( unsigned int j=0; j< hist->y_bins; j++ )
+            {
+                data().assign( hist->bin(i,j)/10.0, 0, i, j );
+            }
+        }
+		
+        return true;
+	}
+
+
+};
 
 /*
  *CoordinateSystem : XYZ, RGB
