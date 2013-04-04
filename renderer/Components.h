@@ -46,12 +46,12 @@ struct Component : glv::View3D
  */
 struct Leaf 
 {
+    virtual void update()
+    {}
+
     virtual void onDraw3D( glv::GLV& g )
     {}
 
-    virtual void onDraw2D( glv::GLV& g )
-    {}
-   
     double time;
 };
 
@@ -85,7 +85,7 @@ struct Composite : glv::View3D
  
     clock_t current, previous;
     
-    std::list<Leaf*> components; 
+    std::list<Leaf*>        components; 
 
     void apply( control_t t )
     {
@@ -109,14 +109,11 @@ struct Composite : glv::View3D
     {
         controller = c; 
     }
-
+    
     virtual void onDraw3D(glv::GLV& g)
     {
-        std::list<Leaf*>::iterator it = components.begin();
         glv::draw::translate( _x, _y, _z );
         glv::draw::rotate( _r, _p, _q );
-
-        glv::draw::fog(1000.0, 500.0 );
 
         // 1. Compute time since last update
         current = clock();
@@ -128,9 +125,11 @@ struct Composite : glv::View3D
         // 2. Increment the *time* by this value 
         current_time += (elapsed *= sf);
 
+        std::list<Leaf*>::iterator it = components.begin();
         while( it != components.end() )
         {
             (*it)->time = this->current_time;
+            (*it)->update();
             (*it)->onDraw3D( g );
             it++;
         }
@@ -153,7 +152,8 @@ struct Runner : Leaf, L3::TemporalRunner
 {
     void onDraw3D(glv::GLV& g)
     {
-        this->update( time );
+        //this->update( time );
+        L3::TemporalRunner::update( time );
     }
 
 };
@@ -272,24 +272,18 @@ struct HistogramVertexRenderer : HistogramRenderer, Leaf
     }
 };
 
-struct HistogramBoundsRenderer : HistogramRenderer, Leaf
+struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Leaf
 {
-
-    void onDraw3D(glv::GLV& g)
+	HistogramPixelRenderer(const glv::Rect& r, L3::Histogram<double>*& hist ) 
+        : glv::Plot(r), histogram(hist)
     {
-
+        // Assign density plot
+        this->add(*new glv::PlotDensity( glv::Color(1)) );
     }
+   
+    L3::Histogram<double>*& histogram;
 
-};
-
-struct HistogramPixelRenderer : glv::Plot, HistogramRenderer
-{
-	HistogramPixelRenderer(const glv::Rect& r): glv::Plot(r)
-    {
-	    this->add(*new glv::PlotDensity( glv::Color(1)) );
-    }
-
-    bool onEvent( glv::Event::t e, glv::GLV& g)
+    void update()
     {
         data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
 
@@ -297,14 +291,10 @@ struct HistogramPixelRenderer : glv::Plot, HistogramRenderer
         {
             for( unsigned int j=0; j< hist->y_bins; j++ )
             {
-                data().assign( hist->bin(i,j)/10.0, 0, i, j );
+                data().assign( round( (float)(rand()%10)/10.0 ), 0, i, j );
             }
         }
-		
-        return true;
-	}
-
-
+    }
 };
 
 /*

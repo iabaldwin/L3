@@ -39,15 +39,19 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::BasicPanController         controller;
     L3::Visualisers::HistogramVertexRenderer    histogram_renderer;
-    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer( glv::Rect(500,300) );
+ 
+    L3::Histogram<double>* ptr = &histogram;
+
+    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer( glv::Rect(500,300), ptr );
 
     histogram_renderer( &histogram );
     histogram_pixel_renderer( &histogram );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
-    //top << histogram_pixel_renderer << (composite << histogram_renderer << grid );
-    top << (composite << histogram_renderer << grid ) << histogram_pixel_renderer ;
+    top << (composite << grid << histogram_renderer << histogram_pixel_renderer );
+
+    top << histogram_pixel_renderer;
 
     // Go
     win.setGLV(top);

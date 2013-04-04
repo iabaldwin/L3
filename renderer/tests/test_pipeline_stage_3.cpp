@@ -8,24 +8,20 @@
 #include "L3.h"
 #include "Visualisers.h"
 
-//struct EstimatorRunnerVisualiser : L3::Visualisers::Runner, L3::EstimatorRunner
-//{
-    //virtual bool update( double time ){} 
-//};
-
 int main (int argc, char ** argv)
 {
     /*
      *L3
      */
-    
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
 
+    // Configuration
     L3::Configuration::Mission mission( dataset );
 
-    L3::ExperienceLoader experience_loader( dataset );
+    L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+    L3::ExperienceLoader experience_loader( experience_dataset );
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
     // Constant time iterator over poses
@@ -51,13 +47,15 @@ int main (int argc, char ** argv)
 
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
-    
-    // Point cloud renderer
+  
+    L3::Histogram<double>* ptr = &*estimator.experience_histogram;
+
     L3::Visualisers::Composite              composite;
     L3::Visualisers::BasicPanController     controller;
     L3::Visualisers::Grid                   grid;
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
+    L3::Visualisers::HistogramPixelRenderer histogram_pixel_renderer( glv::Rect(500,300), ptr );
 
 
     L3::SE3 projection(0,0,0,.1,.2,.3);
@@ -78,15 +76,15 @@ int main (int argc, char ** argv)
     L3::EstimatorRunner runner;
     
     runner.setExperience( &*experience )
-            .setPoseProvider( &pose_windower )
-            .setProjector( &*projector )
-            .setEstimator( &estimator  )
-            .setSwatheBuilder( &swathe_builder );
+          .setPoseProvider( &pose_windower )
+          .setProjector( &*projector )
+          .setEstimator( &estimator  )
+          .setSwatheBuilder( &swathe_builder );
 
     L3::Visualisers::Runner runner_visualiser;
     runner_visualiser << &runner;
 
-    top << (composite << runner_visualiser );
+    top << (composite << runner_visualiser ) << histogram_pixel_renderer;
 
     win.setGLV(top);
     win.fit(); 

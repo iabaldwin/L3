@@ -1,4 +1,5 @@
 #include "Estimator.h"
+#include <boost/timer.hpp>
 
 namespace L3
 {
@@ -31,21 +32,17 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
         return std::numeric_limits<T>::infinity();
 
     // Build experience histogram 
-    L3::Histogram<T> histogram = L3::Histogram<T>::UniformDistance( means.first, 
+    this->experience_histogram.reset( new L3::Histogram<T>( L3::Histogram<T>::UniformDistance( means.first, 
                                                                     min_bound.first, 
                                                                     max_bound.first,
                                                                     means.second, 
                                                                     min_bound.second, 
                                                                     max_bound.second,
-                                                                    granularity );
+                                                                    granularity ) ) );
 
-    //histogram( experience );
+    (*this->experience_histogram)( experience );
 
-    //// Restart
-    //histogram.reset();
-
-    //histogram( swathe );
-
+    std::cout << &*(this->experience_histogram) << std::endl;;
 }
 
 

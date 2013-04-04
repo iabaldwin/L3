@@ -38,8 +38,10 @@ struct Estimator
     Estimator( CostFunction<T>* f ) : cost_function(f)
     {
     }
-    
-    CostFunction<T>* cost_function;
+
+    std::auto_ptr< L3::Histogram<T> >   experience_histogram;
+    L3::Histogram<T>                    swathe_histogram;
+    CostFunction<T>*                    cost_function;
 
     virtual ~Estimator()
     {
