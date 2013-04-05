@@ -22,8 +22,26 @@ struct control_t
     control_t() : x(0), y(0), z(0), r(0), p(0), q(0)
     {}
     
+    control_t( float x, float y, float z, float r, float p, float q ) : x(x), y(y), z(z), r(r), p(p), q(q)
+    {}
+    
+
+    control_t& operator +=( control_t& rhs  )
+    {
+        this->x += rhs.x;
+        this->y += rhs.y;
+        this->z += rhs.z;
+        
+        this->r += rhs.r;
+        this->p += rhs.p;
+        this->q += rhs.q;
+
+        return *this;
+    }
+
     double x,y,z,r,p,q;
 };
+
 
 control_t operator+( const control_t& a, const control_t& b );
 std::ostream& operator<<( std::ostream& o, const control_t& t );

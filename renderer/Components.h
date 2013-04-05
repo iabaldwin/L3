@@ -41,14 +41,20 @@ struct Component : glv::View3D
 
 };
 
+struct Updateable
+{
+
+    virtual void update()
+    {
+
+    }
+};
+
 /*
  *Leaf component for 3D rendering
  */
 struct Leaf 
 {
-    virtual void update()
-    {}
-
     virtual void onDraw3D( glv::GLV& g )
     {}
 
@@ -63,38 +69,38 @@ struct Leaf
  */
 struct Composite : glv::View3D 
 {
-
-    Composite() : current_time(0.0), 
-                    sf(1), 
-                    _x(0), _y(0), _z( -500.0 ), 
-                    _r(0), _p(0), _q(0),
-                    controller(NULL)
+    Composite() : glv::View3D( glv::Rect(100,100) ),
+        current_time(0.0), 
+        sf(1), 
+        controller(NULL)
     {
-        // Fill the view
-        stretch(1,1); 
-        
         // Extend far clip
         far( 1000 );
+        
+        // Fill the view
+        stretch(1,1); 
+
+        // Appropriate view-point
+        position.z = -500; 
     }
     
-    double current_time; 
-    unsigned int sf;
-    double _x, _y, _z;
-    double _r, _p, _q;
+    double          current_time; 
+    control_t       position ;
+    unsigned int    sf;
     L3::Visualisers::Controller* controller;
  
-    clock_t current, previous;
-    
+    clock_t                 current, previous;
     std::list<Leaf*>        components; 
+    std::list<Updateable*>  updateables; 
 
     void apply( control_t t )
     {
-        _x += t.x;
-        _y += t.y;
-        _z += t.z;
-        _r += t.r;
-        _p += t.p;
-        _q += t.q;
+        position += t;
+    }
+
+    void addController( L3::Visualisers::Controller* c )
+    {
+        controller = c; 
     }
 
     bool onEvent( glv::Event::t type, glv::GLV& g )
@@ -104,16 +110,11 @@ struct Composite : glv::View3D
   
         return true;
     }
-
-    void addController( L3::Visualisers::Controller* c )
-    {
-        controller = c; 
-    }
-    
+        
     virtual void onDraw3D(glv::GLV& g)
     {
-        glv::draw::translate( _x, _y, _z );
-        glv::draw::rotate( _r, _p, _q );
+        glv::draw::translate( position.x, position.y, position.z );
+        glv::draw::rotate( position.r, position.p, position.q );
 
         // 1. Compute time since last update
         current = clock();
@@ -122,16 +123,22 @@ struct Composite : glv::View3D
         // Takes care of initial inf.
         elapsed  = (elapsed > 1.0) ? 1.0 : elapsed;
 
+        std::list<Updateable*>::iterator updateable_iterator = updateables.begin();
+        while( updateable_iterator != updateables.end() )
+        {
+            (*updateable_iterator)->update();
+            updateable_iterator++;
+        }
+
         // 2. Increment the *time* by this value 
         current_time += (elapsed *= sf);
 
-        std::list<Leaf*>::iterator it = components.begin();
-        while( it != components.end() )
+        std::list<Leaf*>::iterator leaf_iterator = components.begin();
+        while( leaf_iterator != components.end() )
         {
-            (*it)->time = this->current_time;
-            (*it)->update();
-            (*it)->onDraw3D( g );
-            it++;
+            (*leaf_iterator)->time = this->current_time;
+            (*leaf_iterator)->onDraw3D( g );
+            leaf_iterator++;
         }
  
         previous = current;
@@ -142,7 +149,15 @@ struct Composite : glv::View3D
         components.push_back( &leaf );
         return *this;
     }
-    
+  
+    Composite& operator<<( Updateable& leaf )
+    {
+        updateables.push_back( &leaf );
+        return *this;
+    }
+  
+
+
 };
 
 /*
@@ -233,7 +248,7 @@ struct HistogramRenderer
 
 struct HistogramVertexRenderer : HistogramRenderer, Leaf
 {
-    void operator()( L3::Histogram<double>* HIST )
+    void operator()( boost::shared_ptr<L3::Histogram<double> > HIST )
     {
         hist = HIST;
     }
@@ -272,7 +287,7 @@ struct HistogramVertexRenderer : HistogramRenderer, Leaf
     }
 };
 
-struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Leaf
+struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Updateable
 {
 	HistogramPixelRenderer(const glv::Rect& r, L3::Histogram<double>*& hist ) 
         : glv::Plot(r), histogram(hist)
@@ -285,15 +300,16 @@ struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Leaf
 
     void update()
     {
-        data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
+        //data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
 
-        for( unsigned int i=0; i< hist->x_bins; i++ )
-        {
-            for( unsigned int j=0; j< hist->y_bins; j++ )
-            {
-                data().assign( round( (float)(rand()%10)/10.0 ), 0, i, j );
-            }
-        }
+        //for( unsigned int i=0; i< hist->x_bins; i++ )
+        //{
+            //for( unsigned int j=0; j< hist->y_bins; j++ )
+            //{
+                //data().assign( hist->bin(i,j)/10.0 , 0, i, j );
+            //}
+        //}
+   
     }
 };
 

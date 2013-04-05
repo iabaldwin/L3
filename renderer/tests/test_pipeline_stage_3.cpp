@@ -70,7 +70,7 @@ int main (int argc, char ** argv)
     composite.sf = 2.0;
 
     // Add watchers
-    composite << swathe_renderer << grid << experience_renderer;
+    composite << swathe_renderer << grid << experience_renderer << histogram_pixel_renderer;
 
     // Create runner
     L3::EstimatorRunner runner;

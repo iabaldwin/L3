@@ -42,7 +42,6 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
 
     (*this->experience_histogram)( experience );
 
-    std::cout << &*(this->experience_histogram) << std::endl;;
 }
 
 

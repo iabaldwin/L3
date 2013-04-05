@@ -52,10 +52,8 @@ struct Configuration
     {
         FILE* f = fopen( target.c_str(), "r"  );
         if ( !f )
-        {
-            std::cout << "NOPE" << std::endl;
             return false;
-        } 
+
         config.read( f );
    
         return true;

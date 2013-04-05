@@ -107,8 +107,6 @@ class ChainBuilder : public PoseWindower
 
         bool update( double time )
         {
-            //std::cout << time << std::endl;
-
             if (!LHLV_iterator->update( time ))
                 throw std::exception();
 
