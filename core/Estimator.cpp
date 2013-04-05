@@ -41,6 +41,10 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
                                         granularity );
 
     (*this->experience_histogram)( experience );
+    
+    this->experience_histogram->clear();
+    
+    (*this->experience_histogram)( swathe );
 
 }
 

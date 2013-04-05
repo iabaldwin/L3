@@ -60,6 +60,11 @@ namespace L3
 
             }
 
+            void clear()
+            {
+                gsl_histogram2d_reset( hist );
+            }
+
             unsigned int bin( size_t x, size_t y  )
             {
                 return gsl_histogram2d_get(hist,x,y); 
