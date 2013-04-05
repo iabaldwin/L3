@@ -102,17 +102,15 @@ void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)
     glv::Color  bound_colors[4];
 
     std::pair<float, float> lower_left = hist->coords(0,0);
-    std::pair<float, float> upper_left = hist->coords( hist->y_bins,0);
-    std::pair<float, float> upper_right = hist->coords( hist->y_bins, hist->x_bins );
-    std::pair<float, float> lower_right = hist->coords( 0,hist->x_bins );
+    std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
 
     bound_vertices[0]( lower_left.first, lower_left.second, 0.0 );
     bound_colors[0].set( 1, 1, 0 );
-    bound_vertices[1]( upper_left.first, upper_left.second, 0.0 );
+    bound_vertices[1]( lower_left.first, upper_right.second, 0.0 );
     bound_colors[1].set( 1, 1, 0 );
     bound_vertices[2]( upper_right.first, upper_right.second, 0.0 );
     bound_colors[2].set( 1, 1, 0 );
-    bound_vertices[3]( lower_right.first, lower_right.second, 0.0 );
+    bound_vertices[3]( upper_right.first, lower_left.second, 0.0 );
     bound_colors[3].set( 1, 1, 0 );
 
     glv::draw::lineWidth(1.5);
@@ -132,9 +130,9 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
     float x_delta = hist->x_delta;
     float y_delta = hist->y_delta;
 
-    for( unsigned int i=0; i < hist->y_bins; i++ )
+    for( unsigned int i=0; i < hist->x_bins; i++ )
     {
-        for( unsigned int j=0; j < hist->x_bins; j++ )
+        for( unsigned int j=0; j < hist->y_bins; j++ )
         {
             unsigned int val = hist->bin( i, j );
 

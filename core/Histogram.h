@@ -88,7 +88,6 @@ namespace L3
         {
             float bins_per_metre;
 
-                       
             void create( float x_centre,
                             float x_lower,
                             float x_upper,

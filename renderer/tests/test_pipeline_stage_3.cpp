@@ -61,10 +61,12 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::SwatheRenderer             swathe_renderer( &swathe_builder ); 
     L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
-    //L3::Visualisers::HistogramPixelRenderer histogram_renderer( glv::Rect(500,300) );
-    //L3::Visualisers::HistogramBoundsRenderer    histogram_renderer;
-    //L3::Visualisers::HistogramVertexRenderer    histogram_renderer;
-    //histogram_renderer( estimator.experience_histogram );
+    //L3::Visualisers::HistogramPixelRenderer   histogram_renderer( glv::Rect(500,300) );
+    L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer;
+    L3::Visualisers::HistogramVertexRenderer    histogram_vertex_renderer;
+    
+    histogram_bounds_renderer( estimator.experience_histogram );
+    histogram_vertex_renderer( estimator.experience_histogram );
 
     L3::Visualisers::PointCloudBoundsRenderer point_cloud_bounds_renderer( point_cloud );
     
@@ -76,8 +78,9 @@ int main (int argc, char ** argv)
     composite.sf = 2.0;
 
     // Add watchers
-    //composite << swathe_renderer << grid << experience_renderer << histogram_renderer;
-    composite << swathe_renderer << grid << experience_renderer << point_cloud_bounds_renderer;
+    //composite << swathe_renderer << grid << experience_renderer << point_cloud_bounds_renderer;
+    composite << swathe_renderer << grid << experience_renderer << histogram_bounds_renderer;
+    //composite << swathe_renderer << grid << experience_renderer << histogram_vertex_renderer;
 
     // Create runner
     L3::EstimatorRunner runner;
@@ -91,7 +94,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::Runner runner_visualiser;
     runner_visualiser << &runner;
 
-    //top << (composite << runner_visualiser ) << histogram_renderer;
     top << (composite << runner_visualiser );
 
     win.setGLV(top);
