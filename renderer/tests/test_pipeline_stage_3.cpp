@@ -48,14 +48,16 @@ int main (int argc, char ** argv)
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
   
-    L3::Histogram<double>* ptr = &*estimator.experience_histogram;
+    L3::Visualisers::Composite                  composite;
+    L3::Visualisers::BasicPanController         controller;
+    L3::Visualisers::Grid                       grid;
+    L3::Visualisers::SwatheRenderer             swathe_renderer( &swathe_builder ); 
+    L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
+    //L3::Visualisers::HistogramPixelRenderer histogram_renderer( glv::Rect(500,300) );
+    //L3::Visualisers::HistogramBoundsRenderer    histogram_renderer;
+    L3::Visualisers::HistogramVertexRenderer    histogram_renderer;
 
-    L3::Visualisers::Composite              composite;
-    L3::Visualisers::BasicPanController     controller;
-    L3::Visualisers::Grid                   grid;
-    L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
-    L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
-    L3::Visualisers::HistogramPixelRenderer histogram_pixel_renderer( glv::Rect(500,300), ptr );
+    histogram_renderer( estimator.experience_histogram );
 
 
     L3::SE3 projection(0,0,0,.1,.2,.3);
@@ -70,7 +72,7 @@ int main (int argc, char ** argv)
     composite.sf = 2.0;
 
     // Add watchers
-    composite << swathe_renderer << grid << experience_renderer << histogram_pixel_renderer;
+    composite << swathe_renderer << grid << experience_renderer << histogram_renderer;
 
     // Create runner
     L3::EstimatorRunner runner;
@@ -84,7 +86,8 @@ int main (int argc, char ** argv)
     L3::Visualisers::Runner runner_visualiser;
     runner_visualiser << &runner;
 
-    top << (composite << runner_visualiser ) << histogram_pixel_renderer;
+    //top << (composite << runner_visualiser ) << histogram_renderer;
+    top << (composite << runner_visualiser );
 
     win.setGLV(top);
     win.fit(); 

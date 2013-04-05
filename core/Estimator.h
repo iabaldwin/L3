@@ -37,11 +37,13 @@ struct Estimator
 {
     Estimator( CostFunction<T>* f ) : cost_function(f)
     {
+        experience_histogram = new L3::HistogramUniformDistance<T>(); 
+        swathe_histogram = new L3::HistogramUniformDistance<T>(); 
     }
 
-    boost::shared_ptr< L3::Histogram<T> >   experience_histogram;
-    L3::Histogram<T>                        swathe_histogram;
-    CostFunction<T>*                        cost_function;
+    L3::HistogramUniformDistance<T>*   experience_histogram;
+    L3::HistogramUniformDistance<T>*   swathe_histogram;
+    CostFunction<T>*    cost_function;
 
     virtual ~Estimator()
     {

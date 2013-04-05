@@ -239,20 +239,50 @@ struct HistogramRenderer
 {
     L3::Histogram<double>* hist;
 
-    void operator()( L3::Histogram<double>* HIST )
+    void operator()( L3::Histogram<double>* hist )
     {
-        hist = HIST;
+        this->hist = hist;
     }
+
+};
+
+std::ostream& operator<<( std::ostream& o, const std::pair<float, float>& input );
+
+struct HistogramBoundsRenderer : HistogramRenderer, Leaf
+{
+
+    void onDraw3D(glv::GLV& g)
+    {
+        glv::Point3 bound_vertices[4];
+        glv::Color  bound_colors[4];
+
+        std::pair<float, float> lower_left = hist->coords(0,0);
+        std::cout << "LL " << lower_left << std::endl;
+
+        std::pair<float, float> upper_left = hist->coords( hist->y_bins-1,0);
+        std::cout << "UL " << upper_left << std::endl;
+        
+        std::pair<float, float> upper_right = hist->coords( hist->y_bins-1, hist->x_bins-1 );
+        std::cout << "UR " << upper_right << std::endl;
+
+        std::pair<float, float> lower_right = hist->coords( 0,hist->x_bins-1 );
+        std::cout << "LR " << lower_right << std::endl;
+
+        bound_vertices[0]( lower_left.first, lower_left.second, 0.0 );
+        bound_vertices[1]( upper_left.first, upper_left.second, 0.0 );
+        bound_vertices[2]( upper_right.first, upper_right.second, 0.0 );
+        bound_vertices[3]( lower_right.first, lower_right.second, 0.0 );
+
+        glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
+        std::cout << "---------------" << std::endl;
+    
+    }
+
 
 };
 
 struct HistogramVertexRenderer : HistogramRenderer, Leaf
 {
-    void operator()( boost::shared_ptr<L3::Histogram<double> > HIST )
-    {
-        hist = HIST;
-    }
-
     void onDraw3D(glv::GLV& g)
     {
         glv::Point3 quad_vertices[4];
@@ -289,26 +319,24 @@ struct HistogramVertexRenderer : HistogramRenderer, Leaf
 
 struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Updateable
 {
-	HistogramPixelRenderer(const glv::Rect& r, L3::Histogram<double>*& hist ) 
-        : glv::Plot(r), histogram(hist)
+	HistogramPixelRenderer(const glv::Rect& r )
+        : glv::Plot(r)
     {
         // Assign density plot
         this->add(*new glv::PlotDensity( glv::Color(1)) );
     }
    
-    L3::Histogram<double>*& histogram;
-
     void update()
     {
-        //data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
+        data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
 
-        //for( unsigned int i=0; i< hist->x_bins; i++ )
-        //{
-            //for( unsigned int j=0; j< hist->y_bins; j++ )
-            //{
-                //data().assign( hist->bin(i,j)/10.0 , 0, i, j );
-            //}
-        //}
+        for( unsigned int i=0; i< hist->x_bins; i++ )
+        {
+            for( unsigned int j=0; j< hist->y_bins; j++ )
+            {
+                data().assign( hist->bin(i,j)/10.0 , 0, i, j );
+            }
+        }
    
     }
 };
