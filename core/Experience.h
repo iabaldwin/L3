@@ -52,10 +52,12 @@ struct Experience : SpatialObserver, Poco::Runnable
     bool                            running;
     std::list<unsigned int>         required_sections;
     std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
-    
+  
+    boost::shared_ptr< L3::PointCloud<double> > resident_point_cloud;
+
     ~Experience();
 
-    void            _stop();
+    void            initialise();
     virtual void    run();
     bool            getExperienceCloud( boost::shared_ptr< L3::PointCloud<double> >& cloud );
     bool            update( double x, double y );

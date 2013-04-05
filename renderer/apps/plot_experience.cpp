@@ -83,7 +83,7 @@ struct ColoredExperienceRenderer : L3::Visualisers::Leaf
 
     ColoredExperienceRenderer( boost::shared_ptr<L3::Experience> EXPERIENCE ) : experience(EXPERIENCE)
     {
-        experience->_stop();
+        experience->running = false;
 
         std::cout << "Synching..." << std::endl;
         usleep( 2*1e6 );

@@ -68,7 +68,8 @@ class Projector
 
 #pragma omp parallel private(pair_counter,x,y,scan_counter,tmp ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
             {
-                for( pair_counter=0; pair_counter < n; pair_counter+=1 ) 
+                //for( pair_counter=0; pair_counter < n; pair_counter+=1 ) 
+                for( pair_counter=0; pair_counter < n; pair_counter+=10 ) 
                 {
                     Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();
 

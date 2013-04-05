@@ -32,15 +32,15 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
     float granularity = 1.0;
 
     // Build experience histogram 
-    this->experience_histogram->create( means.first, 
-                                        min_bound.first, 
-                                        max_bound.first,
-                                        means.second, 
-                                        min_bound.second, 
-                                        max_bound.second,
-                                        granularity );
+    //this->experience_histogram->create( means.first, 
+                                        //min_bound.first, 
+                                        //max_bound.first,
+                                        //means.second, 
+                                        //min_bound.second, 
+                                        //max_bound.second,
+                                        //granularity );
 
-    (*this->experience_histogram)( experience );
+    //(*this->experience_histogram)( experience );
     
     this->swathe_histogram->create( means.first, 
                                     min_bound.first, 
