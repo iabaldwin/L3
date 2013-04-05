@@ -5,7 +5,7 @@ namespace L3
 namespace Visualisers
 {
     /*
-     *Pose chain
+     *  Pose chain
      */
     PoseChainRenderer::PoseChainRenderer( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* poses ) 
     {
@@ -25,7 +25,7 @@ namespace Visualisers
 
 
     /*
-     *Point Cloud
+     *  Point Cloud
      */
 
     template <typename T>
@@ -225,7 +225,7 @@ namespace Visualisers
     }
 
     /*
-     *Pose windower
+     *  Pose windower
      */
 
     void PoseWindowerRenderer::onDraw3D( glv::GLV& g )
@@ -239,7 +239,7 @@ namespace Visualisers
     }
 
     /*
-     *Scan renderer
+     *  Scan renderer
      */
     void ScanRenderer::onDraw3D( glv::GLV& g )
     {
@@ -256,12 +256,10 @@ namespace Visualisers
         glv::draw::paint( glv::draw::Points, point_vertices, point_colors, cloud->num_points );
     }
 
-
 }
 }
 
 // Explicit Instantiations
 template L3::Visualisers::CloudRenderer<double>::CloudRenderer(L3::PointCloud<double>*);
 template L3::Visualisers::CloudRenderer<double>::~CloudRenderer();
-
 template L3::Visualisers::IteratorRenderer<L3::SE3>::IteratorRenderer(L3::Iterator<L3::SE3>*);
