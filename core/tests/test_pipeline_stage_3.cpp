@@ -14,8 +14,6 @@ int main()
     //Dataset configuration
     L3::Configuration::Mission mission( dataset );
 
-    double time = dataset.start_time;
-
     /*
      *  Experience
      */
@@ -61,6 +59,8 @@ int main()
             .setProjector( &*projector )
             .setEstimator( &estimator  )
             .setSwatheBuilder( &swathe_builder );
+
+    double time = dataset.start_time;
 
     while( true )
     {

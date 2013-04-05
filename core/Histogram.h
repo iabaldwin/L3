@@ -45,10 +45,10 @@ namespace L3
 
                 // Set ranges
                 gsl_histogram2d_set_ranges_uniform (hist, 
-                                                    x_centre+x_lower, 
-                                                    x_centre+x_upper, 
-                                                    y_centre+y_lower, 
-                                                    y_centre+y_upper );
+                                                    x_lower, 
+                                                    x_upper, 
+                                                    y_lower, 
+                                                    y_upper );
 
                 // Compute delta
                 x_delta = 100.0/x_bins;

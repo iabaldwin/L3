@@ -78,9 +78,7 @@ int main (int argc, char ** argv)
     composite.sf = 2.0;
 
     // Add watchers
-    //composite << swathe_renderer << grid << experience_renderer << point_cloud_bounds_renderer;
-    composite << swathe_renderer << grid << experience_renderer << histogram_bounds_renderer;
-    //composite << swathe_renderer << grid << experience_renderer << histogram_vertex_renderer;
+    composite << swathe_renderer << grid << experience_renderer << histogram_bounds_renderer << point_cloud_bounds_renderer;
 
     // Create runner
     L3::EstimatorRunner runner;
@@ -97,7 +95,14 @@ int main (int argc, char ** argv)
     top << (composite << runner_visualiser );
 
     win.setGLV(top);
-    glv::Application::run();
-
+   
+    try
+    {
+        glv::Application::run();
+    }
+    catch( ... )
+    {
+        std::cout << "Done" << std::endl;
+    }
 }
 
