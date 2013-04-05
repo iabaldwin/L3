@@ -29,7 +29,7 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
     if ( experience->num_points == 0 )
         return std::numeric_limits<T>::infinity();
 
-    int granularity = 10;
+    float granularity = 1.0;
 
     // Build experience histogram 
     this->experience_histogram->create( means.first, 
@@ -42,9 +42,16 @@ double DiscreteEstimator<T>::operator()( PointCloud<T>* experience, PointCloud<T
 
     (*this->experience_histogram)( experience );
     
-    this->experience_histogram->clear();
+    this->swathe_histogram->create( means.first, 
+                                    min_bound.first, 
+                                    max_bound.first,
+                                    means.second, 
+                                    min_bound.second, 
+                                    max_bound.second,
+                                    granularity );
+
     
-    (*this->experience_histogram)( swathe );
+    (*this->swathe_histogram)( swathe );
 
 }
 
