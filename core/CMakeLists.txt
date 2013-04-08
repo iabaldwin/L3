@@ -7,6 +7,7 @@ add_library( L3
     Utils.cpp 
     Writer.cpp 
     Experience.cpp 
+    Projector.cpp 
     ChainBuilder.cpp 
     Configuration.cpp 
     Estimator.cpp 

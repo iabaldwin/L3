@@ -19,7 +19,6 @@ int main()
      */
     L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
     L3::ExperienceLoader experience_loader( experience_dataset );
-
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
     
     /*
@@ -44,7 +43,7 @@ int main()
      *  Estimation
      */
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function );
+    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
 
 
     /*

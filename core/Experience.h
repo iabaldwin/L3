@@ -10,6 +10,7 @@
 #include "Reader.h"
 #include "Projector.h"
 #include "Configuration.h"
+#include "Histogram.h"
 
 #include <map>
 
@@ -47,19 +48,18 @@ struct Experience : SpatialObserver, Poco::Runnable
     std::deque<experience_section>  sections;
     std::ifstream                   data;
     Poco::Thread                    thread;
-    Poco::Mutex                     mutex;
+    
     unsigned int                    window;
     bool                            running;
-    std::list<unsigned int>         required_sections;
     std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
   
-    boost::shared_ptr< L3::PointCloud<double> > resident_point_cloud;
+    boost::shared_ptr< L3::PointCloud<double> >  resident_point_cloud;
+    boost::shared_ptr< L3::Histogram<double> >   experience_histogram;
 
     ~Experience();
 
     void            initialise();
     virtual void    run();
-    bool            getExperienceCloud( boost::shared_ptr< L3::PointCloud<double> >& cloud );
     bool            update( double x, double y );
     
     std::pair< long unsigned int, L3::Point<double>* > load( unsigned int id );
@@ -85,6 +85,8 @@ struct ExperienceLoader
 
     void load( const std::string& target )
     {
+        std::cout << target + "/experience.index" << std::endl;
+
         std::ifstream experience_index( (target + "/experience.index").c_str(), std::ios::binary );
 
         if ( !experience_index.good() )

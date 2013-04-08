@@ -2,6 +2,7 @@
 #define L3_CORE_H
 
 #include <boost/exception/all.hpp>
+#include <boost/thread/shared_mutex.hpp>
 
 namespace L3
 {
@@ -57,6 +58,15 @@ struct Comparator
         return ( t.first < f);
     }
 
+};
+
+typedef boost::shared_mutex Mutex;
+typedef boost::shared_lock<Mutex> ReadLock;
+typedef boost::unique_lock<Mutex> WriteLock;
+
+struct Lockable
+{
+    boost::shared_mutex mutex;
 };
 
 

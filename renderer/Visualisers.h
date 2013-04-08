@@ -32,7 +32,7 @@ struct PoseChainRenderer : Leaf
 };
 
 /*
- *Cloud Renderer
+ *  Point cloud Renderer
  */
 template <typename T>
 struct CloudRenderer : Leaf
@@ -50,10 +50,7 @@ struct CloudRenderer : Leaf
 };
 
 /*
- * Iterator renderer
- *
- *  Render the poses from a dataset iterator
- *
+ *  Iterator renderer
  */
 template <typename T>
 struct IteratorRenderer : Leaf
@@ -67,10 +64,7 @@ struct IteratorRenderer : Leaf
 
 
 /*
- * Swathe renderer
- *
- *  Render the poses from a swathe generator
- *
+ *  Swathe renderer
  */
 struct SwatheRenderer : Leaf
 {
@@ -88,8 +82,6 @@ struct SwatheRenderer : Leaf
     glv::Color*         point_colors  ;
     glv::Point3*        point_vertices;
 
-    L3::Tools::Timer    t;
-    
     void realloc( int size );
 
     void onDraw3D( glv::GLV& g );
@@ -97,7 +89,7 @@ struct SwatheRenderer : Leaf
 };
 
 /*
- * Experience renderer 
+ *  Experience renderer 
  */
 struct ExperienceRenderer : Leaf
 {
@@ -123,7 +115,7 @@ struct ExperienceRenderer : Leaf
 };
 
 /*
- *Pose windower renderer
+ *  Pose windower renderer
  */
 struct PoseWindowerRenderer : Leaf
 {
@@ -146,7 +138,7 @@ struct PoseWindowerRenderer : Leaf
 
 
 /*
- *Real or synthesized pose provider
+ *  Real or synthesized pose provider
  */
 struct PoseProviderRenderer : Leaf
 {
@@ -195,6 +187,9 @@ struct ScanRenderer : Leaf
     
 };
 
+/*
+ *  Estimator Renderer
+ */
 struct EstimatorRenderer : Leaf
 {
     EstimatorRenderer( L3::Estimator::Estimator<double>* ESTIMATOR ) : estimator(estimator)

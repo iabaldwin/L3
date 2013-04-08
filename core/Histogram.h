@@ -12,13 +12,13 @@ namespace L3
      */
     template <typename T>
         
-        struct Histogram
+        struct Histogram : Lockable
         {
 
             Histogram() : x_delta(0.0), y_delta(0.0), x_bins(0), y_bins(0), hist(NULL)
             {
             }
-           
+
             float               x_delta, y_delta;
             unsigned int        x_bins, y_bins;
             gsl_histogram2d*    hist;
@@ -26,6 +26,17 @@ namespace L3
             virtual ~Histogram()
             {
                 gsl_histogram2d_free( hist );
+            }
+
+            virtual Histogram& copy( const Histogram& rhs )
+            {
+                //std::cout << rhs.x_bins << ":" << rhs.y_bins << std::endl;
+                this->hist = gsl_histogram2d_clone( rhs.hist );
+                clear(); 
+                this->x_bins = rhs.x_bins; 
+                this->y_bins = rhs.y_bins; 
+
+                return *this;
             }
 
             virtual void create( float x_centre,
@@ -56,8 +67,6 @@ namespace L3
 
                 this->x_bins = x_bins;
                 this->y_bins = y_bins;
-
-
             }
 
             void clear()
@@ -91,6 +100,11 @@ namespace L3
 
         struct HistogramUniformDistance : Histogram<T>
         {
+            HistogramUniformDistance( float bins_per_metre=1.0f ) : bins_per_metre(bins_per_metre)
+            {
+
+            }
+
             float bins_per_metre;
 
             void create( float x_centre,
@@ -98,8 +112,7 @@ namespace L3
                             float x_upper,
                             float y_centre,
                             float y_lower,
-                            float y_upper,
-                            float  bins_per_metre )
+                            float y_upper )
             {
                 Histogram<T>::create( x_centre, x_lower, x_upper, y_centre, y_lower, y_upper, bins_per_metre*( x_upper - x_lower ), bins_per_metre*( y_upper - y_lower ) );
             }

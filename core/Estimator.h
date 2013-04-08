@@ -35,21 +35,20 @@ struct KLCostFunction : CostFunction<T>
 template< typename T >
 struct Estimator
 {
-    Estimator( CostFunction<T>* f ) : cost_function(f)
+    Estimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) : cost_function(f), experience_histogram(experience)
     {
-        experience_histogram = new L3::HistogramUniformDistance<T>(); 
-        swathe_histogram = new L3::HistogramUniformDistance<T>(); 
+        swathe_histogram.reset( new L3::HistogramUniformDistance<double>() );
     }
 
-    L3::HistogramUniformDistance<T>*   experience_histogram;
-    L3::HistogramUniformDistance<T>*   swathe_histogram;
-    CostFunction<T>*    cost_function;
+    CostFunction<T>*                        cost_function;
+    boost::shared_ptr<L3::Histogram<T> >    experience_histogram;
+    boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;
 
     virtual ~Estimator()
     {
     }
 
-    virtual double operator()( PointCloud<T>* experience, PointCloud<T>* swathe, SE3 estimate ) = 0;
+    virtual double operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
 
 };
 
@@ -58,11 +57,11 @@ template< typename T >
 struct DiscreteEstimator : Estimator<T>
 {
 
-    DiscreteEstimator( CostFunction<T>* f ) : Estimator<T>(f)
+    DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) : Estimator<T>(f, experience)
     {
     }
  
-    double operator()( PointCloud<T>* experience, PointCloud<T>* swathe, SE3 estimate );
+    double operator()( PointCloud<T>* swathe, SE3 estimate );
 
 };
 

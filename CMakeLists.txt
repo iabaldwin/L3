@@ -9,7 +9,7 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
-find_package( Boost COMPONENTS system filesystem unit_test_framework REQUIRED )     # Filesystem, smart pointers, ...
+find_package( Boost COMPONENTS system filesystem unit_test_framework thread REQUIRED )     # Filesystem, smart pointers, ...
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_package( HDF5 )                                             # Matlab interoperability  
@@ -35,10 +35,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 # GLV custom build directory
 include_directories( $ENV{GLV_DIR} )
 link_directories( $ENV{HOME}/code/build/lib )
-
-#include_directories( "/Users/ian/code/build/include/pcl-1.6/" )
-#include_directories( "/usr/local/include/vtk-5.10/" )
-#link_directories( "/Users/ian/code/build/lib/" )
 
 find_package( POCO COMPONENTS XML Net Data )
 include_directories(${Poco_INCLUDE_DIRS})

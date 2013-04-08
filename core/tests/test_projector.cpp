@@ -15,8 +15,6 @@ int main()
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
 
-    std::string LIDAR_name = dataset.LIDAR_names[0];
-
     /*
      *Constant time iterator over poses
      */
@@ -44,7 +42,8 @@ int main()
     L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
     std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
 
-    swathe_builder.update( dataset.start_time + 20 );
+    double time  = dataset.start_time;
+    swathe_builder.update( dataset.start_time + 30 );
 
     /*
      *Do Projection, & average

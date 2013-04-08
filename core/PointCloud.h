@@ -110,7 +110,7 @@ template< typename T >
 std::pair<T,T> max( PointCloud<T>* cloud );
 
 template <typename T>
-boost::shared_ptr<L3::PointCloud<T> > join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds );
+bool join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds, boost::shared_ptr<L3::PointCloud<T> >& result  );
 
 template <typename T>
 PointCloud<T> samplePointCloud( PointCloud<T>* cloud, int size );

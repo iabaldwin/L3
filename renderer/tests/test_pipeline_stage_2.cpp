@@ -36,7 +36,7 @@ int main (int argc, char ** argv)
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function );
+    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
 
     /*
      *Visualisation

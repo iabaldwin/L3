@@ -101,6 +101,8 @@ void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)
     glv::Point3 bound_vertices[4];
     glv::Color  bound_colors[4];
 
+    L3::ReadLock( hist->mutex );
+
     std::pair<float, float> lower_left = hist->coords(0,0);
     std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
 
@@ -118,6 +120,7 @@ void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)
     glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
 }
 
+
 /*
  *Components :: HistogramVertexRenderer
  */
@@ -127,6 +130,8 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
     glv::Point3 quad_vertices[4];
     glv::Color quad_colors[4];
 
+    L3::ReadLock( hist->mutex );
+    
     float x_delta = hist->x_delta;
     float y_delta = hist->y_delta;
 
@@ -161,6 +166,8 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
 
 void HistogramPixelRenderer::update()
 {
+    L3::ReadLock( hist->mutex );
+
     data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
 
     for( unsigned int i=0; i< hist->x_bins; i++ )

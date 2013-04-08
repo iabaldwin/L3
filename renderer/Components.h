@@ -8,6 +8,8 @@
 #include "Controller.h"
 #include "L3.h"
 
+#include <boost/weak_ptr.hpp>
+
 namespace L3
 {
 namespace Visualisers
@@ -136,7 +138,6 @@ struct Runner : Leaf, L3::TemporalRunner
 {
     void onDraw3D(glv::GLV& g)
     {
-        //this->update( time );
         L3::TemporalRunner::update( time );
     }
 
@@ -167,13 +168,12 @@ struct Grid : Leaf
  */
 struct HistogramRenderer 
 {
-    L3::Histogram<double>* hist;
-
-    void operator()( L3::Histogram<double>* hist )
+    HistogramRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : hist(histogram)
     {
-        this->hist = hist;
+        
     }
 
+    boost::shared_ptr<L3::Histogram<double> > hist;
 };
 
 std::ostream& operator<<( std::ostream& o, const std::pair<float, float>& input );
@@ -183,6 +183,10 @@ std::ostream& operator<<( std::ostream& o, const std::pair<float, float>& input 
  */
 struct HistogramBoundsRenderer : HistogramRenderer, Leaf
 {
+    HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : HistogramRenderer(histogram)
+    {
+    }
+    
     void onDraw3D(glv::GLV& g);
 };
 
@@ -191,13 +195,17 @@ struct HistogramBoundsRenderer : HistogramRenderer, Leaf
  */
 struct HistogramVertexRenderer : HistogramRenderer, Leaf
 {
+    HistogramVertexRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : HistogramRenderer(histogram)
+    {
+    }
+    
     void onDraw3D(glv::GLV& g);
 };
 
 struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Updateable
 {
-	HistogramPixelRenderer(const glv::Rect& r )
-        : glv::Plot(r)
+	HistogramPixelRenderer(const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram  )
+        : glv::Plot(r), HistogramRenderer(histogram)
     {
         // Assign density plot
         this->add(*new glv::PlotDensity( glv::Color(1)) );

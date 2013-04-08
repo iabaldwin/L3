@@ -6,31 +6,29 @@ namespace L3
     bool EstimatorRunner::update( double time )
     {
 
-#ifndef DEBUG
+#ifndef NDEBUG
         boost::timer t;
 #endif
         swathe_builder->update( time );
 
-        boost::shared_ptr<L3::PointCloud<double> > experience_cloud;
-
+        // Get the pose from the pose provider
         L3::SE3 pose = (*provider)();
 
+        // Update the experience
         experience->update( pose.x, pose.y );
-        experience->getExperienceCloud( experience_cloud );
-
-#ifndef DEBUG
-        //std::cout << "Experience\t" << t.elapsed() << std::endl;
+        
+#ifndef NDEBUG
+        std::cout << "Experience\t" << t.elapsed() << std::endl;
 #endif
         projector->project( swathe_builder->swathe );
 
-#ifndef DEBUG
-        //std::cout << "Projection\t" << t.elapsed() << std::endl;
+#ifndef NDEBUG
+        std::cout << "Projection\t" << t.elapsed() << std::endl;
 #endif
+        (*estimator)( projector->cloud, L3::SE3::ZERO() );
 
-        (*estimator)( &*experience_cloud, projector->cloud, L3::SE3::ZERO() );
-
-#ifndef DEBUG
-        //std::cout << "Estimation\t" << t.elapsed() << std::endl;
+#ifndef NDEBUG
+        std::cout << "Estimation\t" << t.elapsed() << std::endl;
 #endif
 
     }

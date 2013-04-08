@@ -87,7 +87,7 @@ std::pair<T,T> max( PointCloud<T>* cloud )
 }
 
 template <typename T>
-boost::shared_ptr<L3::PointCloud<T> > join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds )
+bool join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds, boost::shared_ptr<L3::PointCloud<T> >& result )
 {
     long unsigned int size = 0;
 
@@ -107,7 +107,6 @@ boost::shared_ptr<L3::PointCloud<T> > join( std::list< boost::shared_ptr<L3::Poi
     // Allocate
     L3::Point<T>* points = new L3::Point<T>[ size ];
 
-
     // Fill
     L3::Point<T>* ptr = points;
 
@@ -122,7 +121,8 @@ boost::shared_ptr<L3::PointCloud<T> > join( std::list< boost::shared_ptr<L3::Poi
     resultant_cloud->num_points = size;
     resultant_cloud->points     = points;
 
-    return boost::shared_ptr<L3::PointCloud<T> >( resultant_cloud );
+    result.reset( resultant_cloud );
+    //return boost::shared_ptr<L3::PointCloud<T> >( resultant_cloud );
 }
 
 template <typename T>
@@ -267,7 +267,7 @@ template void L3::transform( L3::PointCloud<double>* cloud, L3::SE3* p );
 
 template std::pair<double, double>  L3::mean<double>(L3::PointCloud<double>*);
 template std::pair<float, float>    L3::mean<float>(L3::PointCloud<float>*);
-template boost::shared_ptr<L3::PointCloud<double> > L3::join( std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds );
+template bool L3::join( std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds, boost::shared_ptr<L3::PointCloud<double> >& result );
 template void L3::centerPointCloud<double>( PointCloud<double>* cloud );
 template std::ostream& L3::operator<<( std::ostream& o, L3::PointCloud<double> cloud );
 

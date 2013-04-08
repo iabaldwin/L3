@@ -16,6 +16,9 @@
 namespace L3
 {
 
+/*
+ *  Core runner
+ */
 struct Runner
 {
     virtual Runner& operator << ( L3::Observer* observer )
@@ -27,6 +30,9 @@ struct Runner
     std::list< L3::Observer* > observables;
 };
 
+/*
+ *  Time-based runner
+ */
 struct TemporalRunner : Runner, TemporalObserver
 {
     virtual bool update( double t )
@@ -82,11 +88,12 @@ struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 struct EstimatorRunner : TemporalObserver
 {
 
-    L3::Experience*                     experience;
-    L3::PoseProvider*                   provider;
-    L3::SwatheBuilder*                  swathe_builder;
-    L3::Projector<double>*              projector;
-    L3::Estimator::Estimator<double>*   estimator;
+    L3::Experience*                             experience;
+    L3::PoseProvider*                           provider;
+    L3::SwatheBuilder*                          swathe_builder;
+    L3::Projector<double>*                      projector;
+    L3::Estimator::Estimator<double>*           estimator;
+    boost::shared_ptr<L3::Histogram<double> >   experience_histogram;
 
     /*
      *    All time-sensitive iterables have been
