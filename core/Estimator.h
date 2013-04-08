@@ -15,7 +15,7 @@ namespace Estimator
 template <typename T>
 struct CostFunction
 {
-    virtual double operator()( Histogram<T>* exp, Histogram<T>* swathe, L3::SE3& estimated_pose, L3::SE3 pose_guess ) = 0;
+    virtual double operator()( const Histogram<T>& experience, const Histogram<T>& swathe, const L3::SE3& estimated_pose ) = 0;
 
     virtual ~CostFunction()
     {
@@ -26,7 +26,7 @@ struct CostFunction
 template <typename T>
 struct KLCostFunction : CostFunction<T>
 {
-    double operator()( Histogram<T>* exp, Histogram<T>* swathe, L3::SE3& estimated_pose, L3::SE3 pose_guess ) ;
+    double operator()( const Histogram<T>& experience, const Histogram<T>& swathe, const L3::SE3& estimated_pose );
 };
 
 /*
