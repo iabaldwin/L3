@@ -1,4 +1,7 @@
 #include "Components.h"
+
+#include <boost/scoped_ptr.hpp>
+
 namespace L3
 {
 namespace Visualisers
@@ -239,26 +242,34 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
 /*
  *  Point cloud :: vertex renderer
  */
-    PointCloudRenderer::PointCloudRenderer( L3::PointCloud<double>* CLOUD ) : cloud(CLOUD)
+    PointCloudRenderer::PointCloudRenderer( L3::PointCloud<double>* cloud ) : cloud(cloud)
     {
-            
+        plot_cloud.reset( new L3::PointCloud<double>() );
+
+        L3::allocate( plot_cloud.get(), 5*1000 );
+
+        colors   = new glv::Color[plot_cloud->num_points];
+        vertices = new glv::Point3[plot_cloud->num_points];
+    
     };
     
     void PointCloudRenderer::onDraw3D( glv::GLV& g )
     {
-        L3::ReadLock( cloud->mutex );
-        colors   = new glv::Color[cloud->num_points];
-        vertices = new glv::Point3[cloud->num_points];
+        boost::scoped_ptr< L3::PointCloud<double> > point_cloud( new L3::PointCloud<double>()  );
+        
+        L3::ReadLock lock( cloud->mutex );
+        L3::copy( cloud, point_cloud.get() );
+        lock.unlock();
 
-        for( int i=0; i<cloud->num_points; i++) 
+        L3::sample( point_cloud.get(), plot_cloud.get(), plot_cloud->num_points );
+
+
+        for( int i=0; i<plot_cloud->num_points; i++) 
         {
-            vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z); 
+            vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
         }
 
-        glv::draw::paint( glv::draw::Points, &*vertices, &*colors, cloud->num_points);
-
-        delete [] colors;
-        delete [] vertices;
+        glv::draw::paint( glv::draw::Points, vertices, colors, plot_cloud->num_points);
 
     }
 

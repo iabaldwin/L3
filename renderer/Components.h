@@ -140,12 +140,14 @@ struct CoordinateSystem
 struct PointCloudRenderer : Leaf
 {
     PointCloudRenderer( L3::PointCloud<double>* cloud );
+
+    L3::PointCloud<double>*                     cloud;
+    boost::shared_ptr<L3::PointCloud<double> >  plot_cloud;
+    
     glv::Color*         colors;
     glv::Point3*        vertices;
-    L3::PointCloud<double>*  cloud;
-    
-    void onDraw3D( glv::GLV& g );
 
+    void onDraw3D( glv::GLV& g );
     
 };
 

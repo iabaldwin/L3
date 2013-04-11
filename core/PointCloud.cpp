@@ -237,7 +237,7 @@ namespace L3
             }
         }
     /*
-     *Manipulation
+     *  Manipulation
      */
     template <typename T>
         void translate( PointCloud<T>* cloud, L3::SE3 const * pose )
@@ -252,13 +252,16 @@ namespace L3
                 it++;
             }
         }
+
+    /*
+     *  Utilities
+     */
     template <typename T>
         bool copy( PointCloud<T>* src, PointCloud<T>* dest )
         {
             dest->num_points = src->num_points;
             dest->points = new Point<T>[ dest->num_points ];
             std::copy( src->begin(), src->end(), dest->begin() );
-
             return ( std::distance( dest->begin(), dest->end() ) == dest->num_points );
         }
 
