@@ -74,7 +74,7 @@ struct SwatheRenderer : Leaf
     L3::SwatheBuilder*                                  swathe_builder;
 
     double                                              x,y;
-    L3::PointCloud<double>*                             point_cloud;
+    boost::shared_ptr<L3::PointCloud<double> >          point_cloud;
     std::auto_ptr<L3::Projector<double> >               projector;
     
     glv::Color*         pose_colors;

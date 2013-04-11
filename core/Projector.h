@@ -22,7 +22,7 @@ class Projector
         L3::PointCloud<T>* cloud;
         size_t allocated_size;
 
-        Projector( L3::SE3* calib, L3::PointCloud<T>* CLOUD ) : cloud(CLOUD), allocated_size(500)
+        Projector( L3::SE3* calib, L3::PointCloud<T>* cloud ) : cloud(cloud), allocated_size(500)
         {
             calibration = calib->getHomogeneous(); 
 

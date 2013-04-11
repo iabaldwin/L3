@@ -66,10 +66,10 @@ int main (int argc, char ** argv)
     composite << swathe_renderer << grid << experience_renderer;
 
     // Add runner
-    L3::Visualisers::Runner runner;    
-    runner << &swathe_builder << &pose_windower;
+    //L3::Visualisers::Runner runner;    
+    //runner << &swathe_builder << &pose_windower;
 
-    top << (composite << runner );
+    //top << (composite << runner );
 
     win.setGLV(top);
     win.fit(); 

@@ -64,6 +64,8 @@ int main()
     while( true )
     {
         time += increment;
+        
+        usleep( .1*1e6 );
 
         // Update
         runner.update( time );

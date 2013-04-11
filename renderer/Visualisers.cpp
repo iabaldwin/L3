@@ -31,28 +31,30 @@ namespace Visualisers
     template <typename T>
     CloudRenderer<T>::CloudRenderer( L3::PointCloud<T>* CLOUD ) : cloud(CLOUD)
     {
-        colors   = new glv::Color[cloud->num_points];
-        vertices = new glv::Point3[cloud->num_points];
-   
-        for( int i=0; i<cloud->num_points; i++) 
-        {
-            vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z); 
-            colors[i] = glv::HSV(0.6, .1, cloud->points[i].z*.5);
-        }
-    
+            
     };
     
     template <typename T>
     CloudRenderer<T>::~CloudRenderer()
     {
-        delete [] colors;
-        delete [] vertices;
     }
     
     template <typename T>
     void CloudRenderer<T>::onDraw3D( glv::GLV& g )
     {
+        colors   = new glv::Color[cloud->num_points];
+        vertices = new glv::Point3[cloud->num_points];
+
+        for( int i=0; i<cloud->num_points; i++) 
+        {
+            vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z); 
+        }
+
         glv::draw::paint( glv::draw::Points, &*vertices, &*colors, cloud->num_points);
+
+        delete [] colors;
+        delete [] vertices;
+
     }
 
     /*
@@ -95,8 +97,8 @@ namespace Visualisers
     {
         // Projector  
         L3::SE3 calibration( 0, 0, 0, 0, -1.57, 0 ); 
-        point_cloud = new L3::PointCloud<double>();
-        projector.reset( new L3::Projector<double>( &calibration, point_cloud ) );
+        point_cloud.reset( new L3::PointCloud<double>() );
+        projector.reset( new L3::Projector<double>( &calibration, point_cloud.get() ) );
     
         point_colors   = new glv::Color[10*100000];
         point_vertices = new glv::Point3[10*100000];

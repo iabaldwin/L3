@@ -4,14 +4,8 @@ namespace L3
 namespace Visualisers
 {
 
-std::ostream& operator<<( std::ostream& o, const std::pair<float, float>& input )
-{
-    o << input.first << ":" << input.second;
-    return o; 
-}
-
 /*
- *Components :: Composite
+ *  Components :: Composite
  */
 void Composite::onDraw3D( glv::GLV& g )
 {
@@ -47,7 +41,7 @@ void Composite::onDraw3D( glv::GLV& g )
 }
 
 /*
- *Components :: Grid
+ *  Components :: Grid
  */
 Grid::Grid()
 {
@@ -94,7 +88,7 @@ void Grid::onDraw3D(glv::GLV& g)
 }
 
 /*
- *Components :: HistogramBoundsRenderer
+ *  Components :: HistogramBoundsRenderer
  */
 void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)
 {
@@ -122,7 +116,7 @@ void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)
 
 
 /*
- *Components :: HistogramVertexRenderer
+ *  Components :: HistogramVertexRenderer
  */
 
 void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
@@ -161,20 +155,33 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
 }
 
 /*
- *Components :: HistogramPixelRenderer
+ *  Components :: HistogramPixelRenderer
  */
 
-void HistogramPixelRenderer::update()
+void HistogramPixelRenderer::run()
 {
-    L3::ReadLock( hist->mutex );
-
-    data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
-
-    for( unsigned int i=0; i< hist->x_bins; i++ )
+    while( running )
     {
-        for( unsigned int j=0; j< hist->y_bins; j++ )
+        if( t.elapsed() > 1.0 )
         {
-            data().assign( hist->bin(i,j)/10.0 , 0, i, j );
+            t.restart();
+
+            L3::ReadLock( hist->mutex );
+
+            // Aspect ratio?
+            //float aspect_ratio = (float)hist->y_bins/(float)hist->x_bins;
+            //int w = this->width();
+            //this->height( w * aspect_ratio );
+
+            data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
+
+            for( unsigned int i=0; i< hist->x_bins; i++ )
+            {
+                for( unsigned int j=0; j< hist->y_bins; j++ )
+                {
+                    data().assign( hist->bin(i,j)/10.0 , 0, i, j );
+                }
+            }
         }
     }
 }
@@ -251,8 +258,10 @@ void PointCloudBoundsRenderer::onDraw3D(glv::GLV& g)
     glv::Point3 bound_vertices[4];
     glv::Color  bound_colors[4];
 
+    L3::ReadLock point_cloud_lock( cloud->mutex );
     std::pair<double, double> lower_left = min( cloud );
     std::pair<double, double> upper_right = max(cloud);
+    point_cloud_lock.unlock();
 
     bound_vertices[0]( lower_left.first, lower_left.second, 0.0 );
     bound_colors[0].set( 0, 1, 1 );
@@ -266,6 +275,29 @@ void PointCloudBoundsRenderer::onDraw3D(glv::GLV& g)
     glv::draw::lineWidth(1.5);
 
     glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
+
+}
+
+/*
+ *  Pose prediction
+ */
+
+void PoseEstimatesRenderer::onDraw3D( glv::GLV& g )
+{
+    glv::Point3 points[ pose_estimates->estimates.size() ];
+    glv::Color  colors[ pose_estimates->estimates.size() ];
+
+    std::vector< L3::SE3 >::iterator it = pose_estimates->estimates.begin();
+
+    int counter = 0;
+    while( it != pose_estimates->estimates.end() )
+    {
+        points[ counter++ ]( it->x, it->y, 0.0 );
+        it++;
+    }
+
+    glv::draw::paint( glv::draw::Points, points, colors, counter );
+
 
 }
 

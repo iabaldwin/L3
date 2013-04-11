@@ -29,6 +29,7 @@ namespace L3
 #pragma omp parallel private(pair_counter,x,y,scan_counter ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
         {
 #pragma omp for  nowait
+            //for( pair_counter=0; pair_counter < n; pair_counter+=20 ) 
             for( pair_counter=0; pair_counter < n; ++pair_counter ) 
             {
                 Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();

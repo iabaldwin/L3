@@ -60,6 +60,7 @@ struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 
     Poco::Thread    thread;
     bool            running;
+    double          current_time;
 
     ~ThreadedTemporalRunner()
     {
@@ -68,8 +69,9 @@ struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
             thread.join();
     }
 
-    void start( double start_time, bool threaded=true )
+    void start( double start_time )
     {
+        current_time = start_time;
         thread.start( *this );
     }
 
@@ -85,7 +87,7 @@ struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 /*
  *  Implementation specific
  */
-struct EstimatorRunner : TemporalObserver
+struct EstimatorRunner : ThreadedTemporalRunner
 {
 
     L3::Experience*                             experience;
@@ -95,12 +97,7 @@ struct EstimatorRunner : TemporalObserver
     L3::Estimator::Estimator<double>*           estimator;
     boost::shared_ptr<L3::Histogram<double> >   experience_histogram;
 
-    /*
-     *    All time-sensitive iterables have been
-     *    updated
-     *
-     */
-
+    void run();
     bool update( double time );
 
     EstimatorRunner& setPoseProvider( L3::PoseProvider* provider )

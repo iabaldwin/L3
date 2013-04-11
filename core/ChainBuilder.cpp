@@ -28,7 +28,7 @@ namespace L3
     {
         o<< r.first << " ";
 
-        r.second->print(o);
+        std::cout << r.second << std::endl;
 
         return o;
     }

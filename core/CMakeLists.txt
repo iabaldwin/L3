@@ -13,7 +13,8 @@ add_library( L3
     Estimator.cpp 
     Runner.cpp )
 
-target_link_libraries( L3 config++ gsl PocoFoundation gslcblas )
+#target_link_libraries( L3 config++ gsl PocoFoundation gslcblas )
+target_link_libraries( L3 config++ gsl PocoFoundation tbb )
 
 add_subdirectory( tests )
 add_subdirectory( apps )

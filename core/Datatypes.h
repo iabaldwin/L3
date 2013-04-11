@@ -13,8 +13,6 @@
 namespace L3
 {
 
-    
-
 class Pose 
 {
     public:
@@ -29,14 +27,6 @@ class Pose
         //This is dirty
         virtual void _update() = 0;
         
-        friend std::ostream& operator<<( std::ostream& o, const Pose& p )
-        {
-            p.print( o );
-            return o;
-        }
-
-        virtual void print( std::ostream& o ) const = 0;
-
     protected:
 
         Eigen::Matrix4f homogeneous;
@@ -50,34 +40,17 @@ class SE2 : public Pose
 
     public:
 
-        SE2( double X, double Y, double Q ) : q(Q)
-        {
-            x = X;
-            y = Y;
-        }
+        SE2( double X, double Y, double Q );
+        SE2( std::vector<double> input );
 
-        SE2( std::vector<double> input )
-        {
-
-        }
-
-        void print( std::ostream& o ) const {
-            o << x << "," << y << ","  << q;
-        }
-      
         double q;
 
-        void _update()
-        {
-
-        }
+        void _update();
 
     private:
 
-        void updateHomogeneous() 
-        {
+        void updateHomogeneous();
 
-        }
 };
 
 class SE3 : public Pose
@@ -85,92 +58,23 @@ class SE3 : public Pose
 
     public:
 
-        static SE3 ZERO()
-        {
-            return SE3(0,0,0,0,0,0);
-        }
+        static SE3 ZERO();
+        static SE3 UNIT_X();
+        static SE3 UNIT_Y();
+        static SE3 UNIT_Z();
 
-        static SE3 UNIT_X()
-        {
-            return SE3(1,0,0,0,0,0);
-        }
-
-        static SE3 UNIT_Y()
-        {
-            return SE3(0,1,0,0,0,0);
-        }
-
-        static SE3 UNIT_Z()
-        {
-            return SE3(0,0,1,0,0,0);
-        }
-
-        SE3( double X, double Y, double Z, double R, double P, double Q) 
-            : z(Z), r(R), p(P), q(Q)
-        {
-            x = X;
-            y = Y;
-
-            updateHomogeneous();
-        }
-
-        SE3( const std::vector<double> v ) 
-        {
-            assert( v.size() == 6 );
-            x = v[0];
-            y = v[1];
-            z = v[2];
-            r = v[3];
-            p = v[4];
-            q = v[5];
-            
-            updateHomogeneous();
-        }
-
-        void print( std::ostream& o ) const {
-            o << x << "," << y << ","  << z << "," << r << "," << p << "," << q << std::endl;;
-        }
-      
-        void _update()
-        {
-            updateHomogeneous();
-        }
-
+        SE3( double X, double Y, double Z, double R, double P, double Q);
+        SE3( const std::vector<double> v );
+        
         double z;
         double r,p,q;
 
-        
+        void _update();
+
     private:
     
-        void updateHomogeneous() 
-        {
-            Eigen::Matrix4f Rz = Eigen::Matrix4f::Identity();
-            Rz(0,0) = cos( q );
-            Rz(0,1) = -1*sin( q );
-            Rz(1,0) = sin( q );
-            Rz(1,1) = cos( q );
-
-            Eigen::Matrix4f Rx = Eigen::Matrix4f::Identity();
-            Rx(1,1) = cos( p );
-            Rx(1,2) = -1*sin( p );
-            Rx(2,1) = sin( p );
-            Rx(2,2) = cos( p );
-
-            Eigen::Matrix4f Ry = Eigen::Matrix4f::Identity();
-            Ry(0,0) = cos( r );
-            Ry(0,2) = sin( r );
-            Ry(2,0) = -1*sin( r );
-            Ry(2,2) = cos( r );
-
-            // SO3
-            homogeneous = Rz*Ry*Rx;
-            
-            // SE3
-            homogeneous(0,3) = x;
-            homogeneous(1,3) = y;
-            homogeneous(2,3) = z;
-        }
-
+        void updateHomogeneous() ;
+        
 };
 
 struct LHLV  
@@ -182,14 +86,7 @@ struct LHLV
         data.assign( v.begin(), v.end() );
     }
 
-    void print( std::ostream& o ) const {
-        std::copy( data.begin(), 
-                data.end(),
-                std::ostream_iterator<double>( o, " " ) );
-       
-        o << std::endl;
-    }
-
+    
     std::vector< double > data;
 };
 
@@ -264,6 +161,18 @@ struct Sizes<L3::LHLV>
     const static int elements = 11+1;
 };
 
+/*
+ *  I/O
+ */
+std::ostream& operator<<( std::ostream& o, const L3::SE2& pose );
+std::ostream& operator<<( std::ostream& o, const L3::SE3& pose );
+std::ostream& operator<<( std::ostream& o, const L3::LIDAR& scan );
+std::ostream& operator<<( std::ostream& o, const L3::LMS151& scan );
+std::ostream& operator<<( std::ostream& o, const L3::LHLV& lhlv );
+
+/*
+ *Intrinsic math
+ */
 namespace Math
 {
     double norm( const L3::SE3& a, const L3::SE3& b );

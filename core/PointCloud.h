@@ -69,7 +69,7 @@ struct PointRGB : Point<T>
  *Cloud types
  */
 template< typename T>
-struct PointCloud 
+struct PointCloud  : Lockable
 {
 
     PointCloud() : num_points(0), points(NULL)
@@ -87,6 +87,7 @@ struct PointCloud
     }
 
     typedef L3::Point<T>* ITERATOR;
+    typedef L3::Point<T>* const CONST_ITERATOR;
 
     ITERATOR begin()
     {
@@ -99,6 +100,9 @@ struct PointCloud
     }
       
 };
+
+template <typename T>
+void allocate( PointCloud<T>* cloud, size_t size  );
 
 template< typename T >
 std::pair<T,T> mean( PointCloud<T>* cloud );
@@ -113,22 +117,31 @@ template <typename T>
 bool join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds, boost::shared_ptr<L3::PointCloud<T> >& result  );
 
 template <typename T>
-PointCloud<T> samplePointCloud( PointCloud<T>* cloud, int size );
-
-template <typename T>
-std::ostream& operator<<( std::ostream& o, PointCloud<T> cloud );
+bool sample( PointCloud<T>* input,  PointCloud<T>* output, int size );
 
 template <typename T>
 void centerPointCloud( PointCloud<T>* cloud );
 
 template <typename T>
-void transform( PointCloud<T>* cloud, L3::SE3* pose );
+void transform( PointCloud<T>* cloud, L3::SE3 * pose );
+
+template <typename T>
+void translate( PointCloud<T>* cloud, L3::SE3 const * pose );
 
 template <typename T>
 std::ostream& operator<<( std::ostream& o, const Point<T>& point );
 
 template <typename T>
 std::ostream& operator<<( std::ostream& o, const PointRGB<T>& point );
+
+template <typename T>
+std::ostream& operator<<( std::ostream& o, const PointCloud<T>& cloud );
+
+template <typename T>
+bool copy( PointCloud<T>* src, PointCloud<T>* dest );
+
+template <typename T>
+void gaussianCloud( PointCloud<T>* cloud );
 
 } // L3
 

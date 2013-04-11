@@ -1,14 +1,23 @@
 add_executable( test_libconfig test_libconfig.cpp )
 target_link_libraries( test_libconfig config L3 ${Boost_LIBRARIES} )
 
-add_executable( test_include_order test_include_order.cpp )
-target_link_libraries( test_include_order L3 ${Boost_LIBRARIES}   )
+add_executable( test_kl_computation test_kl_computation.cpp )
+target_link_libraries( test_kl_computation L3 ${Boost_LIBRARIES}   )
 
 add_executable( test_configuration test_configuration.cpp )
 target_link_libraries( test_configuration L3 ${Boost_LIBRARIES}   )
 
 add_executable( test_dataset test_dataset.cpp )
 target_link_libraries( test_dataset L3 ${Boost_LIBRARIES}   )
+
+add_executable( test_point_cloud test_point_cloud.cpp )
+target_link_libraries( test_point_cloud config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
+
+add_executable( test_point_cloud_copy test_point_cloud_copy.cpp )
+target_link_libraries( test_point_cloud_copy config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
+
+add_executable( test_point_cloud_transform test_point_cloud_transform.cpp )
+target_link_libraries( test_point_cloud_transform config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
 
 add_executable( test_dataset_runner test_dataset_runner.cpp )
 target_link_libraries( test_dataset_runner L3 ${Boost_LIBRARIES}   )
@@ -49,8 +58,8 @@ target_link_libraries( test_windower_factory config L3 ${Boost_LIBRARIES}  )
 add_executable( test_projector test_projector.cpp )
 target_link_libraries( test_projector config L3 ${Boost_LIBRARIES}  )
 
-add_executable( test_point_cloud test_point_cloud.cpp )
-target_link_libraries( test_point_cloud config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
+add_executable( test_smoother test_smoother.cpp )
+target_link_libraries( test_smoother config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
 
 add_executable( test_chain_builder test_chain_builder.cpp )
 target_link_libraries( test_chain_builder config L3 ${Boost_LIBRARIES}  )

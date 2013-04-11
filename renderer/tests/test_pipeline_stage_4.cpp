@@ -53,7 +53,8 @@ int main (int argc, char ** argv)
           .setPoseProvider( &pose_windower )
           .setProjector( &*projector )
           .setEstimator( &estimator  )
-          .setSwatheBuilder( &swathe_builder );
+          .setSwatheBuilder( &swathe_builder )
+          .start( dataset.start_time );
     
     /*
      *Visualisation
@@ -67,26 +68,28 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::BasicPanController         controller;
     L3::Visualisers::Grid                       grid;
-    L3::Visualisers::SwatheRenderer             swathe_renderer( &swathe_builder ); 
-    L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
+    //L3::Visualisers::SwatheRenderer             swathe_renderer( &swathe_builder ); 
+    //L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
     L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), experience->experience_histogram );
     L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_swathe( glv::Rect(50, 400, 500, 300 ), estimator.swathe_histogram );
-    L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer( experience->experience_histogram );
+    //L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer( experience->experience_histogram );
     L3::Visualisers::PointCloudBoundsRenderer   point_cloud_bounds_renderer( point_cloud );
+    //L3::Visualisers::PoseEstimatesRenderer      pose_estimates_renderer( estimator.pose_estimates );
     
     // Link the experience to the current pose generator
-    experience_renderer.addPoseProvider( &pose_windower );
+    //experience_renderer.addPoseProvider( &pose_windower );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
     composite.current_time = dataset.start_time;
     composite.sf = 2.0;
 
     // Add watchers
-    composite << swathe_renderer 
-                << grid 
-                << experience_renderer 
-                << histogram_bounds_renderer 
+    composite << grid 
+                //<< swathe_renderer 
+                //<< experience_renderer 
+                //<< histogram_bounds_renderer 
                 << point_cloud_bounds_renderer
+                //<< pose_estimates_renderer 
                 ;
 
     

@@ -3,6 +3,15 @@
 namespace L3
 {
 
+    void EstimatorRunner::run()
+    {
+        while( running )
+        {
+            this->update( current_time += 1 );
+        }
+
+    }
+
     bool EstimatorRunner::update( double time )
     {
 
@@ -20,12 +29,15 @@ namespace L3
 #ifndef NDEBUG
         std::cout << "Experience\t" << t.elapsed() << std::endl;
 #endif
+        L3::WriteLock point_cloud_lock( projector->cloud->mutex );
         projector->project( swathe_builder->swathe );
+        point_cloud_lock.unlock();
 
 #ifndef NDEBUG
         std::cout << "Projection\t" << t.elapsed() << std::endl;
 #endif
-        (*estimator)( projector->cloud, L3::SE3::ZERO() );
+        //(*estimator)( projector->cloud, (*provider)() );
+
 
 #ifndef NDEBUG
         std::cout << "Estimation\t" << t.elapsed() << std::endl;

@@ -132,22 +132,39 @@ struct Composite : glv::View3D
 };
 
 /*
- *Element runner
+ *  CoordinateSystem 
  */
-struct Runner : Leaf, L3::TemporalRunner
+struct CoordinateSystem
 {
-    void onDraw3D(glv::GLV& g)
-    {
-        L3::TemporalRunner::update( time );
-    }
+    L3::SE3 _pose;
+    glv::Color* colors;
+    glv::Point3* vertices;
+ 
+    CoordinateSystem() ;
+    CoordinateSystem( const L3::SE3& pose );
+
+    ~CoordinateSystem();
+
+    void _init();
+    
+    void onDraw3D(glv::GLV& g);
+   
+};
+
+struct PointCloudBoundsRenderer : Leaf
+{
+    L3::PointCloud<double>*  cloud;
+
+    PointCloudBoundsRenderer( L3::PointCloud<double>* point_cloud );
+    
+    void onDraw3D(glv::GLV& g);
 
 };
 
 
+
 /*
- *  Useful components
- *
- *  1.  Grid
+ *  Grid
  */
 struct Grid : Leaf
 {
@@ -176,8 +193,6 @@ struct HistogramRenderer
     boost::shared_ptr<L3::Histogram<double> > hist;
 };
 
-std::ostream& operator<<( std::ostream& o, const std::pair<float, float>& input );
-
 /*
  *  Histogram :: Bounds Renderer
  */
@@ -202,46 +217,49 @@ struct HistogramVertexRenderer : HistogramRenderer, Leaf
     void onDraw3D(glv::GLV& g);
 };
 
-struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Updateable
+struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Poco::Runnable
 {
 	HistogramPixelRenderer(const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram  )
-        : glv::Plot(r), HistogramRenderer(histogram)
+        : glv::Plot(r), HistogramRenderer(histogram), running(true)
     {
         // Assign density plot
         this->add(*new glv::PlotDensity( glv::Color(1)) );
-    }
    
-    void update();
+        thread.start( *this );
+   
+        t.restart();
+    }
+
+    ~HistogramPixelRenderer()
+    {
+        running = false;
+   
+        if (thread.isRunning())
+            thread.join();
+    }
+
+    boost::timer    t;
+    Poco::Thread    thread;
+    bool            running;
+
+    void run();
 };
 
 /*
- *  CoordinateSystem 
+ *  Pose prediction 
  */
-struct CoordinateSystem
+
+struct PoseEstimatesRenderer : Leaf
 {
-    L3::SE3 _pose;
-    glv::Color* colors;
-    glv::Point3* vertices;
- 
-    CoordinateSystem() ;
-    CoordinateSystem( const L3::SE3& pose );
 
-    ~CoordinateSystem();
-
-    void _init();
+    PoseEstimatesRenderer( boost::shared_ptr<L3::Estimator::PoseEstimates> estimates )  : pose_estimates(estimates)
+    {
+    }
     
+    boost::shared_ptr<L3::Estimator::PoseEstimates> pose_estimates;
+
     void onDraw3D(glv::GLV& g);
-   
-};
-
-struct PointCloudBoundsRenderer : Leaf
-{
-    L3::PointCloud<double>*  cloud;
-
-    PointCloudBoundsRenderer( L3::PointCloud<double>* point_cloud );
     
-    void onDraw3D(glv::GLV& g);
-
 };
 
 
