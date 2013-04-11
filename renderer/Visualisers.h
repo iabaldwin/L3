@@ -32,24 +32,6 @@ struct PoseChainRenderer : Leaf
 };
 
 /*
- *  Point cloud Renderer
- */
-template <typename T>
-struct CloudRenderer : Leaf
-{
-    CloudRenderer( L3::PointCloud<T>* cloud );
-    glv::Color*         colors;
-    glv::Point3*        vertices;
-    L3::PointCloud<T>*  cloud;
-    
-    ~CloudRenderer();
-
-    void onDraw3D( glv::GLV& g );
-
-    
-};
-
-/*
  *  Iterator renderer
  */
 template <typename T>
@@ -61,7 +43,6 @@ struct IteratorRenderer : Leaf
    
     void onDraw3D( glv::GLV& g );
 };
-
 
 /*
  *  Swathe renderer

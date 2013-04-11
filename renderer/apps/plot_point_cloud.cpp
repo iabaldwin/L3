@@ -50,7 +50,7 @@ int main()
     glv::Plot v1__( glv::Rect( 0,0*d/8, d, d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
 
     // Point cloud renderer
-    L3::Visualisers::CloudRenderer<double> cloud_renderer( cloud );
+    L3::Visualisers::PointCloudRenderer cloud_renderer( cloud );
     L3::Visualisers::Composite composite_view;
   
     composite_view << cloud_renderer;

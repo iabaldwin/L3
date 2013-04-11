@@ -24,39 +24,7 @@ namespace Visualisers
     }
 
 
-    /*
-     *  Point Cloud
-     */
-
-    template <typename T>
-    CloudRenderer<T>::CloudRenderer( L3::PointCloud<T>* CLOUD ) : cloud(CLOUD)
-    {
-            
-    };
     
-    template <typename T>
-    CloudRenderer<T>::~CloudRenderer()
-    {
-    }
-    
-    template <typename T>
-    void CloudRenderer<T>::onDraw3D( glv::GLV& g )
-    {
-        colors   = new glv::Color[cloud->num_points];
-        vertices = new glv::Point3[cloud->num_points];
-
-        for( int i=0; i<cloud->num_points; i++) 
-        {
-            vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z); 
-        }
-
-        glv::draw::paint( glv::draw::Points, &*vertices, &*colors, cloud->num_points);
-
-        delete [] colors;
-        delete [] vertices;
-
-    }
-
     /*
      *  Iterator
      */
@@ -262,6 +230,4 @@ namespace Visualisers
 }
 
 // Explicit Instantiations
-template L3::Visualisers::CloudRenderer<double>::CloudRenderer(L3::PointCloud<double>*);
-template L3::Visualisers::CloudRenderer<double>::~CloudRenderer();
 template L3::Visualisers::IteratorRenderer<L3::SE3>::IteratorRenderer(L3::Iterator<L3::SE3>*);

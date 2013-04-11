@@ -62,7 +62,7 @@ int main (int argc, char ** argv)
     Transformer<double> transformer( cloud );
 
     // Point cloud renderer
-    L3::Visualisers::CloudRenderer<double> cloud_renderer( cloud );
+    L3::Visualisers::PointCloudRenderer cloud_renderer( cloud );
 
     composite_view << cloud_renderer << transformer << grid;
     top << composite_view;

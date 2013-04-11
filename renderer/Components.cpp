@@ -18,15 +18,7 @@ void Composite::onDraw3D( glv::GLV& g )
 
     // Takes care of initial inf.
     elapsed  = (elapsed > 1.0) ? 1.0 : elapsed;
-
-    std::list<Updateable*>::iterator updateable_iterator = updateables.begin();
-    while( updateable_iterator != updateables.end() )
-    {
-        (*updateable_iterator)->update();
-        updateable_iterator++;
-    }
-
-    // 2. Increment the *time* by this value 
+    
     current_time += (elapsed *= sf);
 
     std::list<Leaf*>::iterator leaf_iterator = components.begin();
@@ -242,6 +234,34 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
 
     glv::draw::pop();
 }
+
+
+/*
+ *  Point cloud :: vertex renderer
+ */
+    PointCloudRenderer::PointCloudRenderer( L3::PointCloud<double>* CLOUD ) : cloud(CLOUD)
+    {
+            
+    };
+    
+    void PointCloudRenderer::onDraw3D( glv::GLV& g )
+    {
+        L3::ReadLock( cloud->mutex );
+        colors   = new glv::Color[cloud->num_points];
+        vertices = new glv::Point3[cloud->num_points];
+
+        for( int i=0; i<cloud->num_points; i++) 
+        {
+            vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z); 
+        }
+
+        glv::draw::paint( glv::draw::Points, &*vertices, &*colors, cloud->num_points);
+
+        delete [] colors;
+        delete [] vertices;
+
+    }
+
 
 /*
  *  Point cloud :: bounds renderer

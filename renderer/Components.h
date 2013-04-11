@@ -43,15 +43,6 @@ struct Component : glv::View3D
 
 };
 
-struct Updateable
-{
-
-    virtual void update()
-    {
-
-    }
-};
-
 /*
  *Leaf component for 3D rendering
  */
@@ -93,7 +84,6 @@ struct Composite : glv::View3D
  
     clock_t                 current, previous;
     std::list<Leaf*>        components; 
-    std::list<Updateable*>  updateables; 
 
     void apply( control_t t )
     {
@@ -120,14 +110,6 @@ struct Composite : glv::View3D
         components.push_back( &leaf );
         return *this;
     }
-  
-    Composite& operator<<( Updateable& leaf )
-    {
-        updateables.push_back( &leaf );
-        return *this;
-    }
-  
-
 
 };
 
@@ -151,6 +133,25 @@ struct CoordinateSystem
    
 };
 
+
+/*
+ *  Point cloud renderer
+ */
+struct PointCloudRenderer : Leaf
+{
+    PointCloudRenderer( L3::PointCloud<double>* cloud );
+    glv::Color*         colors;
+    glv::Point3*        vertices;
+    L3::PointCloud<double>*  cloud;
+    
+    void onDraw3D( glv::GLV& g );
+
+    
+};
+
+/*
+ *Point cloud bounds renderer
+ */
 struct PointCloudBoundsRenderer : Leaf
 {
     L3::PointCloud<double>*  cloud;
