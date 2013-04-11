@@ -5,9 +5,17 @@ namespace L3
 
     void EstimatorRunner::run()
     {
+        L3::Tools::Timer t;
+
+        std::cout.precision( 16 );
+
+        double start_time = current_time;
+
         while( running )
         {
-            this->update( current_time += 1 );
+            double current_time = start_time + t.elapsed();
+
+            this->update( current_time );
         }
 
     }
@@ -25,7 +33,8 @@ namespace L3
 
         // Update the experience
         experience->update( pose.x, pose.y );
-        
+
+
 #ifndef NDEBUG
         std::cout << "Experience\t" << t.elapsed() << std::endl;
 #endif
@@ -36,7 +45,8 @@ namespace L3
 #ifndef NDEBUG
         std::cout << "Projection\t" << t.elapsed() << std::endl;
 #endif
-        //(*estimator)( projector->cloud, (*provider)() );
+      
+        (*estimator)( projector->cloud, (*provider)() );
 
 
 #ifndef NDEBUG

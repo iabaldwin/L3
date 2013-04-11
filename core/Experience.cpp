@@ -41,7 +41,7 @@ Experience::Experience( std::deque<experience_section>  SECTIONS,
 
     experience_histogram.reset( new L3::HistogramUniformDistance<double>() ); 
     
-    initialise();
+    resident_point_cloud.reset( new L3::PointCloud<double>() );
 }
 
 Experience::~Experience()
@@ -50,11 +50,6 @@ Experience::~Experience()
     running = false;        
     if( thread.isRunning() )
         thread.join();          
-}
-
-void Experience::initialise()
-{
-    resident_point_cloud.reset( new L3::PointCloud<double>() );
 }
 
 void Experience::run()

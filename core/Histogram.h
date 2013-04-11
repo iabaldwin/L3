@@ -15,10 +15,15 @@ namespace L3
         struct Histogram : Lockable
     {
 
-        Histogram() : x_delta(0.0), y_delta(0.0), x_bins(0), y_bins(0), hist(NULL)
+        Histogram() : x_delta(0.0), y_delta(0.0), x_bins(0), y_bins(0), 
+        x_lower(.0f),x_upper(.0f),x_centre(.0f),
+        y_lower(.0f),y_upper(.0f),y_centre(.0f),
+        hist(NULL)
         {
         }
 
+        float               x_lower,x_upper,x_centre;
+        float               y_lower,y_upper,y_centre;
         float               x_delta, y_delta;
         unsigned int        x_bins, y_bins;
         gsl_histogram2d*    hist;
@@ -41,6 +46,18 @@ namespace L3
             if ( hist )
                 gsl_histogram2d_free( hist );
 
+            this->x_centre= x_centre;
+            this->x_lower = x_lower;
+            this->x_upper = x_upper;
+
+            this->y_centre= y_centre;
+            this->y_lower = y_lower;
+            this->y_upper = y_upper;
+
+            this->x_bins = x_bins;
+            this->y_bins = y_bins;
+
+
             // Allocate histogram
             hist =  gsl_histogram2d_alloc ( x_bins, y_bins );
 
@@ -55,8 +72,6 @@ namespace L3
             x_delta = (x_upper - x_lower)/x_bins;
             y_delta = (y_upper - y_lower)/y_bins;
 
-            this->x_bins = x_bins;
-            this->y_bins = y_bins;
         }
 
         void clear()
@@ -87,7 +102,6 @@ namespace L3
     };
 
     template <typename T>
-
         struct HistogramUniformDistance : Histogram<T>
     {
         HistogramUniformDistance( float bins_per_metre=1.0f ) : bins_per_metre(bins_per_metre)
@@ -113,12 +127,24 @@ namespace L3
     template <typename T>
         void copy( Histogram<T> const* src, Histogram<T> * dest )
         {
-            dest->hist = gsl_histogram2d_clone( src->hist );
-            dest->clear(); 
-            dest->x_bins = src->x_bins; 
-            dest->y_bins = src->y_bins; 
+            dest->create( src->x_centre,     
+                    src->x_lower,
+                    src->x_upper,
+                    src->y_centre,
+                    src->y_lower,
+                    src->y_upper,      
+                    src->x_bins,
+                    src->y_bins 
+                    );
+
+            //dest->hist = gsl_histogram2d_clone( src->hist );
+            //dest->clear(); 
+            //dest->x_bins = src->x_bins; 
+            //dest->y_bins = src->y_bins; 
         }
 
+    template <typename T>
+        std::ostream& operator<<( std::ostream& o, const Histogram<T>& h );
 }
 
 #endif

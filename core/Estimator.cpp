@@ -87,6 +87,7 @@ namespace L3
                 L3::copy( const_cast<L3::PointCloud<double>* >(swathe), hypothesis.get() );
 
                 L3::Histogram<double> swathe_histogram;
+               
                 L3::copy( experience, &swathe_histogram );
 
                 // Transform to pose estimate
@@ -109,26 +110,27 @@ namespace L3
             double DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
                 // Lock the experience histogram
-                L3::ReadLock( this->experience_histogram->mutex );
+                L3::ReadLock lock( this->experience_histogram->mutex );
 
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
 
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
 
-                boost::timer t; 
+
+                if ( __builtin_expect( (this->experience_histogram->x_bins == 0) , 0 ) )
+                    return std::numeric_limits<T>::infinity();
+
                 while( it != this->pose_estimates->estimates.end() )
                 {
                     group.run( HypothesisBuilder( swathe, &estimate, this->experience_histogram.get() , this->cost_function ) );
-                                   
+
                     // Continue
                     it++;
                 }
 
                 // Synch
                 group.wait();
-
-                std::cout << t.elapsed()/(float)this->pose_estimates->estimates.size()  << std::endl;
 
             }
 

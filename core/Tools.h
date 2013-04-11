@@ -22,7 +22,11 @@ namespace Tools
         {
             return (double)(clock() - tStart)/CLOCKS_PER_SEC;
         }
-        
+
+        double elapsed()
+        {
+            return end();
+        }
     };
 
     

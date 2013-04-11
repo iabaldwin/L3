@@ -95,7 +95,7 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::SwatheBuilder*                          swathe_builder;
     L3::Projector<double>*                      projector;
     L3::Estimator::Estimator<double>*           estimator;
-    boost::shared_ptr<L3::Histogram<double> >   experience_histogram;
+    //boost::shared_ptr<L3::Histogram<double> >   experience_histogram;
 
     void run();
     bool update( double time );

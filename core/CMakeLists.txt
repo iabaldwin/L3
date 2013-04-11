@@ -11,7 +11,9 @@ add_library( L3
     ChainBuilder.cpp 
     Configuration.cpp 
     Estimator.cpp 
-    Runner.cpp )
+    Runner.cpp 
+    Histogram.cpp
+    )
 
 #target_link_libraries( L3 config++ gsl PocoFoundation gslcblas )
 target_link_libraries( L3 config++ gsl PocoFoundation tbb )
