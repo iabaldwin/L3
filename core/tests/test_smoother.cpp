@@ -8,32 +8,40 @@ int main()
     L3::PointCloud<double> cloud;
     cloud.points = new L3::Point<double>[10000];
     cloud.num_points = 10000;
-    L3::PointCloud<double>::ITERATOR it = cloud.begin();
+   
+    L3::gaussianCloud( &cloud, 5.0 );
+  
+    L3::translate( &cloud, new L3::SE3( -10, 20, 0, 0, 0, 0 ) );
 
-    boost::mt19937 rng;
-    boost::normal_distribution<> normal(0.0, 10.0);
-
-    boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor(rng, normal );
-
-    while( it != cloud.end() )
-        *it++ = L3::Point<double>( var_nor(), var_nor(), var_nor() );
-
-
-    boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram( new L3::HistogramUniformDistance<double>() );
-    histogram->create(0, -50, 50, 0, -50, 50 );
+    boost::shared_ptr< L3::Histogram<double> > histogram( new L3::Histogram<double>() );
+    histogram->create(0, -40, 40, 0, -40, 40, 40, 40 );
 
     /*
      *Make histogram
      */
-    (*histogram)( &cloud );
-
+    histogram->operator()( &cloud );
 
     /*
      *Smooth
      */
 
-    L3::Smoother<double,4>* smoother = new L3::BoxSmoother<double,4>();
+    std::ofstream stream( "hist.original" );
+    //std::cout << *histogram << std::endl;
+    stream << *histogram;
+    stream.close();
 
+    L3::Smoother<double,5>* smoother = new L3::BoxSmoother<double,5>();
+
+    L3::Tools::Timer t;
+    t.begin();
     smoother->smooth( histogram.get() );
+    std::cout << t.end() << std::endl;
 
+    stream.open( "hist.new" );
+    stream << *histogram;
+    stream.close();
+
+    stream.open( "point_cloud" );
+    stream << cloud ;
+    stream.close();
 }

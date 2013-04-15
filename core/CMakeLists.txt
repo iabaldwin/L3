@@ -13,6 +13,7 @@ add_library( L3
     Estimator.cpp 
     Runner.cpp 
     Histogram.cpp
+    Smoother.cpp 
     )
 
 #target_link_libraries( L3 config++ gsl PocoFoundation gslcblas )

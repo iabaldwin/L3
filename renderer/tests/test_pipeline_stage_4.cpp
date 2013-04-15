@@ -86,16 +86,13 @@ int main (int argc, char ** argv)
     // Add watchers
     composite << grid 
                 << runtime_cloud_renderer 
-                //<< experience_renderer 
                 << histogram_bounds_renderer 
                 << point_cloud_bounds_renderer
+                //<< experience_renderer 
                 //<< pose_estimates_renderer 
                 ;
 
     
-    //L3::Visualisers::Runner runner_visualiser;
-    //runner_visualiser << &runner;
-
     top << (composite ) 
         << histogram_pixel_renderer_experience 
         << histogram_pixel_renderer_swathe;

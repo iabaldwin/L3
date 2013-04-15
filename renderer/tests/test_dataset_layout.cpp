@@ -16,8 +16,8 @@ int main()
 
     glv::GLV top;
 
-    layout.runDataset( &dataset );
+    layout.load( &dataset );
 
-    layout.go( top );
+    layout.run( top );
 
 }

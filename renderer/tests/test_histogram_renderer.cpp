@@ -43,7 +43,7 @@ int main (int argc, char ** argv)
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
     // Add drawables and updateables
-    //top << (composite << grid << histogram_renderer << histogram_pixel_renderer << histogram_bounds_renderer );
+    top << (composite << grid << histogram_renderer <<  histogram_bounds_renderer ) << histogram_pixel_renderer;
 
     // Add drawables
     top << histogram_pixel_renderer;

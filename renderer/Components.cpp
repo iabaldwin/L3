@@ -120,7 +120,10 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
     glv::Color quad_colors[4];
 
     L3::ReadLock( hist->mutex );
-    
+
+    // We may have acquired the lock, but the histogram might be empty
+    //std::cout << hist->x_delta << ":" << hist->y_delta << std::endl;
+
     float x_delta = hist->x_delta;
     float y_delta = hist->y_delta;
 

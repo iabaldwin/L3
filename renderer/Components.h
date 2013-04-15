@@ -133,6 +133,31 @@ struct CoordinateSystem
    
 };
 
+template <typename T> 
+struct TextRenderer : glv::View
+{
+
+    TextRenderer( T& v ) : t(v)
+    {
+    }
+
+    T& t;
+    
+    void onDraw(glv::GLV& g)
+    {
+        glv::draw::color(1);
+        glv::draw::lineWidth(2);
+        
+        std::stringstream ss;
+        ss.precision( 15 );
+        
+        ss << t;
+        glv::draw::text( ss.str().c_str() );
+    }
+
+};
+
+
 
 /*
  *  Point cloud renderer
