@@ -1,5 +1,7 @@
 #include "ChainBuilder.h"
 
+typedef std::pair< double, boost::shared_ptr<L3::LHLV> > RECORD;
+
 namespace L3
 {
     

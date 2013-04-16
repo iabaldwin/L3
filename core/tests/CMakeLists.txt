@@ -64,6 +64,9 @@ target_link_libraries( test_smoother config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM
 add_executable( test_chain_builder test_chain_builder.cpp )
 target_link_libraries( test_chain_builder config L3 ${Boost_LIBRARIES}  )
 
+add_executable( test_predictor test_predictor.cpp )
+target_link_libraries( test_predictor config L3 ${Boost_LIBRARIES}  )
+
 add_executable( test_library_adapters test_library_adapters.cpp )
 target_link_libraries( test_library_adapters config L3 ${Boost_LIBRARIES}  )
 
@@ -90,6 +93,8 @@ target_link_libraries( test_runner config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_swathe_builder_LHLV_point_cloud test_swathe_builder_LHLV_point_cloud.cpp )
 target_link_libraries( test_swathe_builder_LHLV_point_cloud config L3 ${Boost_LIBRARIES}  )
+
+
 
 add_executable( test_pipeline_stage_1 test_pipeline_stage_1.cpp )
 target_link_libraries( test_pipeline_stage_1 config L3 ${Boost_LIBRARIES}  )

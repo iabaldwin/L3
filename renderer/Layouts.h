@@ -32,21 +32,19 @@ class Layout
             controller.reset( new L3::Visualisers::BasicPanController() );
         
             composite->addController( &*controller );
-       
+
             // Create the main view
-            main_view = new glv::View( glv::Rect(0,0, 1000,500));
+            main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
             (*main_view) << ( *composite << *grid );
 
             // Create subplots
             plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
-            //plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, window.width()-10, 150-5), *plot1 );
-            plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .8*window.width(), 150-5), *plot1 );
-            //plot_region_1->range( 0,100 ); 
+            plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
             plot1->stroke( 2.0 );
 
-            plot2 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
-            plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .8*window.width(), 150-5), *plot2 );
-            plot2->stroke( 2.0 );
+            //plot2 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
+            //plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
+            //plot2->stroke( 2.0 );
         }
         
         virtual ~Layout()
