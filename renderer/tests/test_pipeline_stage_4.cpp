@@ -68,13 +68,13 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::BasicPanController         controller;
     L3::Visualisers::Grid                       grid;
-    //L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
+    L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
     L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), experience->experience_histogram );
     L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_swathe( glv::Rect(50, 400, 500, 300 ), estimator.swathe_histogram );
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer( experience->experience_histogram );
     L3::Visualisers::PointCloudBoundsRenderer   point_cloud_bounds_renderer( point_cloud );
     L3::Visualisers::PointCloudRenderer         runtime_cloud_renderer( point_cloud );
-    //L3::Visualisers::PoseEstimatesRenderer      pose_estimates_renderer( estimator.pose_estimates );
+    L3::Visualisers::PoseEstimatesRenderer      pose_estimates_renderer( estimator.pose_estimates );
     
     // Link the experience to the current pose generator
     //experience_renderer.addPoseProvider( &pose_windower );
@@ -88,8 +88,8 @@ int main (int argc, char ** argv)
                 << runtime_cloud_renderer 
                 << histogram_bounds_renderer 
                 << point_cloud_bounds_renderer
-                //<< experience_renderer 
-                //<< pose_estimates_renderer 
+                << experience_renderer 
+                << pose_estimates_renderer 
                 ;
 
     
