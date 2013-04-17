@@ -45,8 +45,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-    composite.current_time = time;
-    composite.sf = 2.0;
 
     top << (composite << pose_renderer << grid );
 

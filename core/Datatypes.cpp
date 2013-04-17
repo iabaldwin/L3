@@ -85,7 +85,8 @@ double SE3::X() const
 
 void SE3::X( double x )
 {
-    x = x;
+    this->x = x;
+    updateHomogeneous();
 }
 
 double SE3::Y() const
@@ -95,7 +96,8 @@ double SE3::Y() const
 
 void SE3::Y( double y )
 {
-    y = y;
+    this->y = y;
+    updateHomogeneous();
 }
 
 double SE3::Z() const
@@ -105,7 +107,8 @@ double SE3::Z() const
 
 void SE3::Z( double z )
 {
-    z = z;
+    this->z = z;
+    updateHomogeneous();
 }
 
 double SE3::R() const
@@ -116,7 +119,6 @@ double SE3::R() const
 void SE3::R( double r )
 {
     this->r = r;
-
     updateHomogeneous();
 }
 
@@ -127,7 +129,8 @@ double SE3::P() const
 
 void SE3::P( double p )
 {
-    p = p;
+    this->p = p;
+    updateHomogeneous();
 }
 
 double SE3::Q() const
@@ -137,12 +140,13 @@ double SE3::Q() const
 
 void SE3::Q( double q )
 {
-    q = q;
+    this->q = q;
+    updateHomogeneous();
 }
 
 void SE3::updateEuler() 
 {
-
+    throw std::exception();
 }
 
 void SE3::updateHomogeneous() 

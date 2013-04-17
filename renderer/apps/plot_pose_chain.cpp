@@ -94,9 +94,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite          composite_view;
     L3::Visualisers::BasicPanController controller;
 
-    composite_view.current_time = dataset.start_time;
-    composite_view.sf = 2.0;
-
     top << (composite_view << pose_chain_renderer);
 
     win.setGLV(top);

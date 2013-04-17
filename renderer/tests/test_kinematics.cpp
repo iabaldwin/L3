@@ -135,8 +135,6 @@ int main (int argc, char ** argv)
     Kinematics k;
 
     composite.addController( controller );
-    composite.current_time = time;
-    composite.sf = 2.0;
 
     // Compose 
     top << (composite << k << grid) ;

@@ -56,8 +56,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
     composite.addController( controller );
-    composite.current_time = time;
-    composite.sf = 2.0;
 
     // Add watchers
     composite << scan_renderer << pose_renderer << grid;

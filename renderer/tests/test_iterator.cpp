@@ -28,14 +28,12 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::IteratorRenderer<L3::SE3>  iterator_renderer( &iterator  );
     L3::Visualisers::Composite composite;
-    composite.sf = 10.0;
 
     L3::Visualisers::VisualiserRunner runner( dataset.start_time );
 
     runner << &iterator;
 
     composite << iterator_renderer << grid << runner;
-    composite.current_time = dataset.start_time; 
 
     top << composite;
 

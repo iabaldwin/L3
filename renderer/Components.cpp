@@ -8,34 +8,6 @@ namespace Visualisers
 {
 
 /*
- *  Components :: Composite
- */
-void Composite::onDraw3D( glv::GLV& g )
-{
-    glv::draw::translate( position.x, position.y, position.z );
-    glv::draw::rotate( position.r, position.p, position.q );
-
-    // 1. Compute time since last update
-    current = clock();
-    double elapsed = double(current - previous)/CLOCKS_PER_SEC;
-
-    // Takes care of initial inf.
-    elapsed  = (elapsed > 1.0) ? 1.0 : elapsed;
-    
-    current_time += (elapsed *= sf);
-
-    std::list<Leaf*>::iterator leaf_iterator = components.begin();
-    while( leaf_iterator != components.end() )
-    {
-        (*leaf_iterator)->time = this->current_time;
-        (*leaf_iterator)->onDraw3D( g );
-        leaf_iterator++;
-    }
-
-    previous = current;
-}
-
-/*
  *  Components :: Grid
  */
 Grid::Grid()
@@ -303,8 +275,6 @@ void PoseEstimatesRenderer::onDraw3D( glv::GLV& g )
     }
 
     glv::draw::paint( glv::draw::Points, points, colors, counter );
-
-
 }
 
 }

@@ -63,26 +63,21 @@ struct Leaf
 struct Composite : glv::View3D 
 {
     Composite( const glv::Rect rect = glv::Rect(100,100) ) : glv::View3D( rect ),
-        current_time(0.0), 
-        sf(1), 
-        controller(NULL)
+    controller(NULL)
     {
         // Extend far clip
         far( 1000 );
-        
+
         // Fill the view
         stretch(1,1).anchor(0,0); 
 
         // Appropriate view-point
         position.z = -500; 
     }
-    
-    double          current_time; 
+
     control_t       position ;
-    unsigned int    sf;
     L3::Visualisers::Controller* controller;
- 
-    clock_t                 current, previous;
+
     std::list<Leaf*>        components; 
 
     void apply( control_t t )
@@ -99,11 +94,22 @@ struct Composite : glv::View3D
     {
         if (controller)
             apply( controller->onEvent( type, g ) );
-  
+
         return true;
     }
-        
-    virtual void onDraw3D(glv::GLV& g);
+
+    void onDraw3D( glv::GLV& g )
+    {
+        glv::draw::translate( position.x, position.y, position.z );
+        glv::draw::rotate( position.r, position.p, position.q );
+
+        std::list<Leaf*>::iterator leaf_iterator = components.begin();
+        while( leaf_iterator != components.end() )
+        {
+            (*leaf_iterator)->onDraw3D( g );
+            leaf_iterator++;
+        }
+    }
 
     Composite& operator<<( Leaf& leaf )
     {

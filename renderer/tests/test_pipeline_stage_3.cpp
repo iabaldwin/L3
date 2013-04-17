@@ -78,8 +78,6 @@ int main (int argc, char ** argv)
     experience_renderer.addPoseProvider( &pose_windower );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-    composite.current_time = dataset.start_time;
-    composite.sf = 2.0;
 
     // Add watchers
     composite << swathe_renderer 
