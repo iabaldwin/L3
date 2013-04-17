@@ -25,6 +25,10 @@ class Iterator : public TemporalObserver
         {
         }
 
+        virtual ~Iterator()
+        {
+        }
+
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator WINDOW_ITERATOR;
 
@@ -48,7 +52,6 @@ class ConstantTimeIterator : public Iterator<T>
         ConstantTimeIterator( boost::shared_ptr< L3::SlidingWindow<T> > window, double duration=10.0 )
             : Iterator<T>( window ), 
                 swathe_length(duration)
-                //swathe_length(window->window_duration)
         {
         }
 

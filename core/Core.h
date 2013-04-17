@@ -1,6 +1,8 @@
 #ifndef L3_CORE_H
 #define L3_CORE_H
 
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/exception/all.hpp>
 #include <boost/thread/shared_mutex.hpp>
 

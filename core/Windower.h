@@ -178,7 +178,6 @@ struct SlidingWindow : Poco::Runnable, TemporalObserver
     void purge()
     {
         mutex.lock(); 
-        //while( window.back().first - window.front().first > window_duration )
         while( current_time  - window.front().first > window_duration )
             window.pop_front();
         mutex.unlock();

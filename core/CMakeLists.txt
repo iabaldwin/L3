@@ -14,9 +14,10 @@ add_library( L3
     Runner.cpp 
     Histogram.cpp
     Smoother.cpp 
+    Integrator.cpp 
+    Simulator.cpp 
     )
 
-#target_link_libraries( L3 config++ gsl PocoFoundation gslcblas )
 target_link_libraries( L3 config++ gsl PocoFoundation tbb )
 
 add_subdirectory( tests )

@@ -2,7 +2,6 @@
 #include <iterator>
 #include <numeric>
 #include <boost/timer.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/scoped_ptr.hpp>
 
 namespace L3

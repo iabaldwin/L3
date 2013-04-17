@@ -7,9 +7,10 @@ template <typename T>
 void Iterator<T>::getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window)  
 {
     mutex.lock();
-    //window = this->window;      
+    
     window.resize( this->window.size() );
     std::copy( this->window.begin(), this->window.end(), window.begin() );
+    
     mutex.unlock();
 }
 
@@ -41,6 +42,7 @@ bool ConstantTimeIterator<T>::update( double time )
 
     this->mutex.lock();
     this->window.clear();
+   
     // Working backwards, build up the data swathe
     while( data_swathe_length < swathe_length )
     {
@@ -56,6 +58,7 @@ bool ConstantTimeIterator<T>::update( double time )
         // Continue
         it_back_iterator--;
     }
+    
     this->mutex.unlock();
 
     return true;

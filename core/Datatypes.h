@@ -114,7 +114,6 @@ struct LHLV
     {
         data.assign( v.begin(), v.end() );
     }
-
     
     std::vector< double > data;
 };

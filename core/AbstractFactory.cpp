@@ -1,7 +1,5 @@
 #include "AbstractFactory.h"
 
-#include <boost/make_shared.hpp>
-
 namespace L3
 {
 
@@ -33,7 +31,6 @@ std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::vect
     double time = elements[0];
     elements.erase( elements.begin() );
 
-    //return std::make_pair( time, boost::shared_ptr<T>( new T( elements ) ) );
     return std::make_pair( time, boost::make_shared<T>( elements ) );
 }
 
@@ -60,7 +57,6 @@ std::pair< double, boost::shared_ptr<L3::SE3> >  AbstractFactory<L3::SE3>::produ
     double time = elements[0];
     elements.erase( elements.begin() );
 
-    //return std::make_pair( time, boost::shared_ptr<L3::SE3>( new L3::SE3( elements ) ) );
     return std::make_pair( time, boost::make_shared<L3::SE3>( elements ) );
 }
 
