@@ -6,6 +6,8 @@
 
 #include "L3.h"
 #include "Visualisers.h"
+#include "VisualiserRunner.h"
+
 
 int main (int argc, char ** argv)
 {
@@ -23,28 +25,19 @@ int main (int argc, char ** argv)
     
     L3::ConstantTimeIterator< L3::SE3 > iterator( dataset.pose_reader );
 
-    glv::Grid grid(glv::Rect(0,0));
-
-    grid.range(1);            // set plot region
-    grid.major(1);            // set major tick mark placement
-    grid.minor(2);            // number of divisions per major ticks
-    grid.equalizeAxes(true);
-    grid.stretch(1,.2);
-
-    double d = 800;
-    glv::Plot v1__( glv::Rect(    0,0*d/8, d,  d/8), *new glv::PlotFunction1D(glv::Color(0.5,0,0)));
-
-    L3::Visualisers::IteratorRenderer<L3::SE3> iterator_renderer( &iterator  );
+    L3::Visualisers::Grid                       grid;
+    L3::Visualisers::IteratorRenderer<L3::SE3>  iterator_renderer( &iterator  );
     L3::Visualisers::Composite composite;
     composite.sf = 10.0;
- 
-    composite << iterator_renderer;
+
+    L3::Visualisers::VisualiserRunner runner( dataset.start_time );
+
+    runner << &iterator;
+
+    composite << iterator_renderer << grid << runner;
     composite.current_time = dataset.start_time; 
 
-    //TODO:
-    //Not working because??
-    top << grid << composite;
-    //top << composite << grid;
+    top << composite;
 
     win.setGLV(top);
     glv::Application::run();

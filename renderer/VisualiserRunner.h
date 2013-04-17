@@ -1,0 +1,31 @@
+#ifndef L3_VISUALISERS_RUNNER_H
+#define L3_VISUALISERS_RUNNER_H
+
+namespace L3
+{
+namespace Visualisers
+{
+
+struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
+{
+
+    VisualiserRunner( double start_time )
+        : time(start_time)
+    {
+    }
+
+    double time;
+    
+    void onDraw3D( glv::GLV& g )
+    {
+        // Update 
+        this->update( time += .5 );
+    }
+
+};
+
+}
+}
+
+#endif
+
