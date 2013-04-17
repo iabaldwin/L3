@@ -31,7 +31,7 @@ struct Kinematics : L3::Visualisers::Leaf
         scan.reset( new L3::LMS151() );
         generator( scan->ranges );
  
-        pose.reset( new L3::SE3( 0, 0, 0, 0, 0, 0 ) );
+        pose.reset( new L3::SE3( 20, 20, 0, 0, 0, 0 ) );
 
         cloud = new L3::PointCloud<double>();
 

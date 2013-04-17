@@ -58,10 +58,10 @@ struct SwatheRenderer : Leaf
     boost::shared_ptr<L3::PointCloud<double> >          point_cloud;
     std::auto_ptr<L3::Projector<double> >               projector;
     
-    glv::Color*         pose_colors;
-    glv::Point3*        pose_vertices;
-    glv::Color*         point_colors  ;
-    glv::Point3*        point_vertices;
+    boost::shared_array< glv::Color >   pose_colors;
+    boost::shared_array< glv::Point3 >  pose_vertices;
+    boost::shared_array< glv::Color >   point_colors  ;
+    boost::shared_array< glv::Point3 >  point_vertices;
 
     void realloc( int size );
 
@@ -79,16 +79,14 @@ struct ExperienceRenderer : Leaf
 
     int                                 pt_limit, pt_counter, sample_counter; 
     boost::shared_ptr<L3::Experience>   experience;
-    glv::Point3*                        point_vertices;
-    glv::Color*                         point_colors;
+    boost::shared_array< glv::Point3 >  point_vertices;
+    boost::shared_array< glv::Color >   point_colors;
     
-    glv::Point3*                        experience_nodes_vertices;
-    glv::Color*                         experience_nodes_colors;
+    boost::shared_array< glv::Point3 >  experience_nodes_vertices;
+    boost::shared_array< glv::Color >   experience_nodes_colors;
     
     L3::PoseProvider*                   pose_provider;
 
-    ~ExperienceRenderer();
-    
     void addPoseProvider( L3::PoseProvider* provider );
 
     void onDraw3D( glv::GLV& g );
@@ -125,8 +123,8 @@ struct PoseProviderRenderer : Leaf
 {
     PoseProviderRenderer( L3::PoseProvider* provider ) ;
 
-    glv::Color*                             colors;
-    glv::Point3*                            vertices;
+    boost::shared_array< glv::Color >       colors;
+    boost::shared_array< glv::Point3 >      vertices;
 
     int                                     counter, history;
     L3::PoseProvider*                       pose_provider;

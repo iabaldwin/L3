@@ -164,8 +164,8 @@ struct PointCloudRenderer : Leaf
     L3::PointCloud<double>*                     cloud;
     boost::shared_ptr<L3::PointCloud<double> >  plot_cloud;
     
-    glv::Color*         colors;
-    glv::Point3*        vertices;
+    boost::shared_array< glv::Color >   colors;
+    boost::shared_array< glv::Point3 >  vertices;
 
     void onDraw3D( glv::GLV& g );
     

@@ -209,11 +209,6 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
 { 
     glv::draw::push();
 
-    //glv::draw::translate( pose.X(), pose.Y(), pose.Z() );
-    //glv::draw::rotate( L3::Utils::Math::radiansToDegrees(pose.R()), 
-            //L3::Utils::Math::radiansToDegrees(pose.P()),
-            //L3::Utils::Math::radiansToDegrees(pose.Q()));
-    
     glMultMatrixf( pose->getHomogeneous().data() );
 
     glv::draw::paint( glv::draw::LineStrip, vertices.get(), colors.get(), 6 );
@@ -231,8 +226,8 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
 
         L3::allocate( plot_cloud.get(), 5*1000 );
 
-        colors   = new glv::Color[plot_cloud->num_points];
-        vertices = new glv::Point3[plot_cloud->num_points];
+        colors.reset( new glv::Color[plot_cloud->num_points] );
+        vertices.reset( new glv::Point3[plot_cloud->num_points] );
     
     };
     
@@ -246,13 +241,10 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
 
         L3::sample( point_cloud.get(), plot_cloud.get(), plot_cloud->num_points );
 
-
         for( int i=0; i<plot_cloud->num_points; i++) 
-        {
             vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
-        }
 
-        glv::draw::paint( glv::draw::Points, vertices, colors, plot_cloud->num_points);
+        glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
 
     }
 
