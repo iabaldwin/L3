@@ -32,7 +32,7 @@ namespace L3
                      *  This is the issue, as the homogeneous and Euler parameterisations aren't
                      *  linked
                      */
-                    it->second->getHomogeneous()*=current.getHomogeneous();
+                    //it->second->getHomogeneous()*=current.getHomogeneous();
                     it++;
                 }
             }
