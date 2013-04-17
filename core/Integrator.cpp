@@ -32,10 +32,8 @@ namespace L3
             current_time = current_in->first;
 
             // Compute roll, pitch, yaw
-            //w1 = current_in->second->data[5];
-            //w2 = current_in->second->data[4];
-            w1 = 0.0; 
-            w2 = 0.0; 
+            w1 = current_in->second->data[5];
+            w2 = current_in->second->data[4];
             w3 = current_in->second->data[3];
 
             // Get the SE3 pose
@@ -50,12 +48,16 @@ namespace L3
             // Compute x_bar, y_bar, z_bar 
             lin_vel = current_in->second->data[9];
 
-            x_vel = lin_vel * cos(q);  
-            y_vel = lin_vel * sin(q);  
+            //x_vel = lin_vel * cos(q);  
+            //y_vel = lin_vel * sin(q);  
+            //z_vel = lin_vel * sin(p);  
+
+            x_vel = lin_vel * sin(q);  
+            y_vel = lin_vel * cos(q);  
             z_vel = lin_vel * sin(p);  
 
             // Compute x y z
-            x = previous_pose->X() + x_vel*dt;
+            x = previous_pose->X() + -1*x_vel*dt;
             y = previous_pose->Y() + y_vel*dt;
             z = previous_pose->Z() + z_vel*dt;
 
