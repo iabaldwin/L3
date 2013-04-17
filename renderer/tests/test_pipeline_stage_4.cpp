@@ -46,7 +46,7 @@ int main (int argc, char ** argv)
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
     L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
 
-    // Create runner
+    // Create threaded runner
     L3::EstimatorRunner runner;
     
     runner.setExperience( &*experience )
@@ -60,14 +60,14 @@ int main (int argc, char ** argv)
      *Visualisation
      */
     glv::GLV top;
-    glv::Window win(1400, 800, "Visualisation::PointCloud");
+    glv::Window win(1400, 800, "Visualisation::Stage4");
 
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
   
-    L3::Visualisers::Composite                  composite;
-    L3::Visualisers::BasicPanController         controller;
-    L3::Visualisers::Grid                       grid;
+    L3::Visualisers::Composite                  composite;      // 3D composer
+    L3::Visualisers::BasicPanController         controller;     // Control type
+    L3::Visualisers::Grid                       grid;           // Grid spacing
     L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
     L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), experience->experience_histogram );
     L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_swathe( glv::Rect(50, 400, 500, 300 ), estimator.swathe_histogram );
@@ -83,7 +83,7 @@ int main (int argc, char ** argv)
     composite.current_time = dataset.start_time;
     composite.sf = 2.0;
 
-    // Add watchers
+    // Add 3D watchers
     composite << grid 
                 << runtime_cloud_renderer 
                 << histogram_bounds_renderer 
@@ -92,7 +92,8 @@ int main (int argc, char ** argv)
                 << pose_estimates_renderer 
                 ;
 
-    
+   
+    // Add top level components
     top << (composite ) 
         << histogram_pixel_renderer_experience 
         << histogram_pixel_renderer_swathe;
