@@ -7,6 +7,7 @@
 
 #include "L3.h"
 #include "Visualisers.h"
+#include "VisualiserRunner.h"
 
 int main (int argc, char ** argv)
 {
@@ -48,13 +49,13 @@ int main (int argc, char ** argv)
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-    composite.current_time = time;
-    composite.sf = 2.0;
 
-    top << (composite << swathe_renderer << pose_renderer << grid );
+    L3::Visualisers::VisualiserRunner runner( dataset.start_time );
+    runner << &swathe_builder << &pose_windower;
+
+    top << (composite << swathe_renderer << pose_renderer << grid  << runner);
 
     win.setGLV(top);
-    win.fit(); 
    
     try
     {
