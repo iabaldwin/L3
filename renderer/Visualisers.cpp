@@ -13,7 +13,8 @@ namespace Visualisers
         
         for( it=poses->begin(); it < poses->end(); it+= 100 )
         {
-            coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( (*it->second) ) ) );
+            //coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( (*it->second) ) ) );
+            coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( (it->second) ) ) );
         }
     }
 
@@ -46,7 +47,7 @@ namespace Visualisers
 
         while( it != iterator->window.end() )
         {
-            vertices[counter]( it->second->x, it->second->y, 0 );
+            vertices[counter]( it->second->X(), it->second->Y(), 0 );
             colors[counter].set( 0, 255, 0);
             counter++;
             it++; 
@@ -149,7 +150,7 @@ namespace Visualisers
         if( pose_provider )
         {
             L3::SE3 update = (*pose_provider)();
-            experience->update( update.x, update.y );
+            experience->update( update.X(), update.Y() );
         }
 
         // Plot experience cloud
@@ -183,12 +184,10 @@ namespace Visualisers
     {
         L3::SE3 pose = (*pose_provider)();
 
-        positions[ counter++%(positions.size()) ] = std::make_pair( pose.x, pose.y );
+        positions[ counter++%(positions.size()) ] = std::make_pair( pose.X(), pose.Y() );
 
         for ( int it = 0; it <history; it++ )
-        {
             vertices[it]( positions[it].first, positions[it].second, 0.0 );
-        }
 
         glv::draw::paint( glv::draw::Points, vertices, colors, positions.size() );
 
@@ -205,7 +204,7 @@ namespace Visualisers
         int counter = 0;
 
         while( it != pose_windower->window->end() )
-            CoordinateSystem( *(it++)->second ).onDraw3D(g );
+            CoordinateSystem( (it++)->second ).onDraw3D(g );
     }
 
     /*

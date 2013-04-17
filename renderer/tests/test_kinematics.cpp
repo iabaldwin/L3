@@ -23,13 +23,6 @@ struct ScanGenerator
 
 struct Kinematics : L3::Visualisers::Leaf
 {
-    SWATHE swathe;
-
-    boost::shared_ptr< L3::SE3 >   pose;
-    boost::shared_ptr< L3::LMS151 >  scan;
-
-    L3::Projector<double>*  projector;
-    L3::PointCloud<double>* cloud;
 
     Kinematics()
     {
@@ -39,7 +32,6 @@ struct Kinematics : L3::Visualisers::Leaf
         generator( scan->ranges );
  
         pose.reset( new L3::SE3( 0, 0, 0, 0, 0, 0 ) );
-
 
         cloud = new L3::PointCloud<double>();
 
@@ -51,13 +43,24 @@ struct Kinematics : L3::Visualisers::Leaf
         colors = new glv::Color[541];
 
         controllable = new L3::Visualisers::Controllable( pose );
+   
+        c = new L3::Visualisers::CoordinateSystem( pose );
     }
+    
+    SWATHE swathe;
+
+    boost::shared_ptr< L3::SE3 >        pose;
+    boost::shared_ptr< L3::LMS151 >     scan;
+
+    L3::Projector<double>*              projector;
+    L3::PointCloud<double>*             cloud;
+
+
+    L3::Visualisers::Controllable*      controllable;
+    glv::Point3*                        vertices;
+    glv::Color*                         colors;
         
-    L3::Visualisers::Controllable* controllable;
-    glv::Point3*    vertices;
-    glv::Color*     colors;
-        
-    L3::Visualisers::CoordinateSystem c;
+    L3::Visualisers::CoordinateSystem*  c;
 
     void onDraw3D( glv::GLV& g )
     {
@@ -77,7 +80,7 @@ struct Kinematics : L3::Visualisers::Leaf
    
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
    
-        c.onDraw3D( g );
+        c->onDraw3D( g );
    
         controllable->update();
     }
@@ -139,8 +142,6 @@ int main (int argc, char ** argv)
     top << (composite << k << grid) ;
 
     win.setGLV(top);
-    win.fit(); 
- 
 
     try
     {

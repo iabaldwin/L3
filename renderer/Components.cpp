@@ -40,8 +40,8 @@ void Composite::onDraw3D( glv::GLV& g )
  */
 Grid::Grid()
 {
-    vertices = new glv::Point3[ 100*4 ];
-    colors = new glv::Color[ 100*4 ];
+    vertices.reset( new glv::Point3[ 100*4 ] );
+    colors.reset( new glv::Color[ 100*4 ] );
 
     counter = 0;
     float spacing = 50; 
@@ -71,15 +71,10 @@ Grid::Grid()
 
 }
 
-Grid::~Grid()
-{
-    delete [] vertices;
-}
-
 void Grid::onDraw3D(glv::GLV& g)
 { 
     glv::draw::lineWidth( .01 );
-    glv::draw::paint( glv::draw::Lines, vertices, colors, counter );
+    glv::draw::paint( glv::draw::Lines, vertices.get(), colors.get(), counter );
 }
 
 /*
@@ -187,29 +182,11 @@ void HistogramPixelRenderer::run()
 /*
  *Components :: CoordinateSystem
  */
-CoordinateSystem::CoordinateSystem()  : _pose( L3::SE3::ZERO() ), vertices(NULL), colors(NULL)
+CoordinateSystem::CoordinateSystem( boost::shared_ptr< L3::SE3 > pose ) : pose( pose )
 {
-    _init();
-}
+    vertices.reset( new glv::Point3[6] );
 
-CoordinateSystem::CoordinateSystem( const L3::SE3& pose ) : _pose( pose )
-{
-    _init();
-}
-
-CoordinateSystem::~CoordinateSystem()
-{
-    if ( vertices )
-        delete [] vertices;
-    if ( colors )
-        delete [] colors;
-}
-
-void CoordinateSystem::_init()
-{
-    vertices = new glv::Point3[6];
-
-    float scale =10.0f;
+    float scale = 10.0f;
 
     vertices[0]( 0, 0, 0 ); 
     vertices[1]( scale, 0, 0 ); 
@@ -218,25 +195,28 @@ void CoordinateSystem::_init()
     vertices[4]( 0, 0, 0 ); 
     vertices[5]( 0, 0, scale ); 
 
-    colors = new glv::Color[6];
+    colors.reset( new glv::Color[6] );
     colors[0] = glv::Color( 1, 0, 0 ); 
     colors[1] = glv::Color( 1, 0, 0 ); 
     colors[2] = glv::Color( 0, 1, 0 ); 
     colors[3] = glv::Color( 0, 1, 0 ); 
     colors[4] = glv::Color( 0, 0, 1 ); 
     colors[5] = glv::Color( 0, 0, 1 ); 
+
 }
 
 void CoordinateSystem::onDraw3D(glv::GLV& g)
 { 
     glv::draw::push();
 
-    glv::draw::translate( _pose.x, _pose.y, _pose.z );
-    glv::draw::rotate( L3::Utils::Math::radiansToDegrees(_pose.r), 
-            L3::Utils::Math::radiansToDegrees(_pose.p),
-            L3::Utils::Math::radiansToDegrees(_pose.q));
+    //glv::draw::translate( pose.X(), pose.Y(), pose.Z() );
+    //glv::draw::rotate( L3::Utils::Math::radiansToDegrees(pose.R()), 
+            //L3::Utils::Math::radiansToDegrees(pose.P()),
+            //L3::Utils::Math::radiansToDegrees(pose.Q()));
+    
+    glMultMatrixf( pose->getHomogeneous().data() );
 
-    glv::draw::paint( glv::draw::LineStrip, vertices, colors, 6 );
+    glv::draw::paint( glv::draw::LineStrip, vertices.get(), colors.get(), 6 );
 
     glv::draw::pop();
 }
@@ -326,7 +306,7 @@ void PoseEstimatesRenderer::onDraw3D( glv::GLV& g )
     int counter = 0;
     while( it != pose_estimates->estimates.end() )
     {
-        points[ counter++ ]( it->x, it->y, 0.0 );
+        points[ counter++ ]( it->X(), it->Y(), 0.0 );
         it++;
     }
 

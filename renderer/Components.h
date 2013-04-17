@@ -8,7 +8,7 @@
 #include "Controller.h"
 #include "L3.h"
 
-#include <boost/weak_ptr.hpp>
+#include <boost/shared_array.hpp>
 
 namespace L3
 {
@@ -118,17 +118,12 @@ struct Composite : glv::View3D
  */
 struct CoordinateSystem
 {
-    L3::SE3 _pose;
-    glv::Color* colors;
-    glv::Point3* vertices;
- 
-    CoordinateSystem() ;
-    CoordinateSystem( const L3::SE3& pose );
+    explicit CoordinateSystem( boost::shared_ptr< L3::SE3 > pose  );
 
-    ~CoordinateSystem();
+    boost::shared_ptr< L3::SE3 >        pose;
+    boost::shared_array< glv::Color >   colors;
+    boost::shared_array< glv::Point3 >  vertices;
 
-    void _init();
-    
     void onDraw3D(glv::GLV& g);
    
 };
@@ -137,7 +132,7 @@ template <typename T>
 struct TextRenderer : glv::View
 {
 
-    TextRenderer( T& v ) : t(v)
+    explicit TextRenderer( T& v = 0 ) : t(v)
     {
     }
 
@@ -196,13 +191,11 @@ struct PointCloudBoundsRenderer : Leaf
  */
 struct Grid : Leaf
 {
+    Grid();
 
     int counter;
-    glv::Point3*    vertices;
-    glv::Color*     colors;
-
-    Grid();
-    ~Grid();
+    boost::shared_array< glv::Point3 >  vertices;
+    boost::shared_array< glv::Color >   colors;
 
     void onDraw3D(glv::GLV& g);
     

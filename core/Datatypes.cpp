@@ -2,11 +2,12 @@
 
 namespace L3
 {
+
 namespace Math
 {
     double norm( const L3::SE3& a, const L3::SE3& b )
     {
-        return sqrt( pow(a.x - b.x, 2.0 ) + pow(a.y -b.y, 2.0 ) + pow(a.z -b.z, 2.0 ) );
+        return sqrt( pow(a.X() - b.X(), 2.0 ) + pow(a.Y() -b.Y(), 2.0 ) + pow(a.Z() -b.Z(), 2.0 ) );
     }
 }
 
@@ -14,10 +15,8 @@ namespace Math
 /*
  *  SE2
  */
-SE2::SE2( double X, double Y, double Q ) : q(Q)
+SE2::SE2( double x, double y, double q ) : x(x), y(y), q(q)
 {
-    x = X;
-    y = Y;
 }
 
 SE2::SE2( std::vector<double> input )
@@ -25,10 +24,11 @@ SE2::SE2( std::vector<double> input )
 
 }
 
-void SE2::_update()
+void SE2::updateEuler() 
 {
 
 }
+
 
 void SE2::updateHomogeneous() 
 {
@@ -58,12 +58,10 @@ SE3 SE3::UNIT_Z()
     return SE3(0,0,1,0,0,0);
 }
 
-SE3::SE3( double X, double Y, double Z, double R, double P, double Q)
-    : z(Z), r(R), p(P), q(Q)
+SE3::SE3( double x, double y, double z, double r, double p, double q)
+    : x(x), y(y), z(z), 
+        r(r), p(p), q(q)
 {
-    x = X;
-    y = Y;
-
     updateHomogeneous();
 }
 
@@ -80,9 +78,71 @@ SE3::SE3( const std::vector<double> v )
     updateHomogeneous();
 }
 
-void SE3::_update()
+double SE3::X() const
 {
+    return x;
+}
+
+void SE3::X( double x )
+{
+    x = x;
+}
+
+double SE3::Y() const
+{
+    return y;
+}
+
+void SE3::Y( double y )
+{
+    y = y;
+}
+
+double SE3::Z() const
+{
+    return z;
+}
+
+void SE3::Z( double z )
+{
+    z = z;
+}
+
+double SE3::R() const
+{
+    return r;
+}
+
+void SE3::R( double r )
+{
+    this->r = r;
+
     updateHomogeneous();
+}
+
+double SE3::P() const
+{
+    return p;
+}
+
+void SE3::P( double p )
+{
+    p = p;
+}
+
+double SE3::Q() const
+{
+    return q;
+}
+
+void SE3::Q( double q )
+{
+    q = q;
+}
+
+void SE3::updateEuler() 
+{
+
 }
 
 void SE3::updateHomogeneous() 
@@ -115,8 +175,6 @@ void SE3::updateHomogeneous()
 }
 
 
-
-
 std::ostream& operator<<( std::ostream& o, const L3::LHLV& lhlv )
 {
     std::copy( lhlv.data.begin(), 
@@ -128,8 +186,8 @@ std::ostream& operator<<( std::ostream& o, const L3::LHLV& lhlv )
 
 std::ostream& operator<<( std::ostream& o, const L3::SE3& pose )
 {
-    o << pose.x << " " << pose.y << " " << pose.z << " " 
-        << pose.r << " " << pose.p << " " << pose.q;
+    o << pose.X() << " " << pose.Y() << " " << pose.Z() << " " 
+        << pose.R() << " " << pose.P() << " " << pose.Q();
 
     return o;
 }

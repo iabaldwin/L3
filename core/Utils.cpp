@@ -94,20 +94,20 @@ double radiansToDegrees( double radians )
 void localisePoseChainToOrigin( POSE_SEQUENCE& poses )
 {
 
-    double origin_x = poses.front().second->x;
-    double origin_y = poses.front().second->y;
+    //double origin_x = poses.front().second->x;
+    //double origin_y = poses.front().second->y;
 
-    POSE_SEQUENCE_ITERATOR it = poses.begin();
+    //POSE_SEQUENCE_ITERATOR it = poses.begin();
 
-    while( it != poses.end() )
-    {
-        (*it).second->x -= origin_x;
-        (*it).second->y -= origin_y;
+    //while( it != poses.end() )
+    //{
+        //(*it).second->x -= origin_x;
+        //(*it).second->y -= origin_y;
 
-        (*it).second->_update();
+        //(*it).second->_update();
 
-        it++;
-    }
+        //it++;
+    //}
 }
 
 

@@ -33,10 +33,10 @@ struct Accumulator
 
     int counter;
     double x, y, z;
-    void operator()( std::pair< double, boost::shared_ptr<L3::Pose > > p )
+    void operator()( std::pair< double, boost::shared_ptr< L3::SE3 > > p )
     {
-        x += p.second->x;
-        y += p.second->y;
+        x += p.second->X();
+        y += p.second->Y();
    
         counter++;
     }
@@ -178,7 +178,7 @@ struct threader : std::binary_function< std::pair< double, boost::shared_ptr<T1>
  *Configuration tools
  */
 template <typename T>
-void CalibrationToEigen( const std::vector<T>& calib, Eigen::Matrix4f& eig )
+void calibrationToEigen( const std::vector<T>& calib, Eigen::Matrix4f& eig )
 {
 
     L3::SE3 pose( calib );

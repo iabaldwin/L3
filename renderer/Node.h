@@ -23,15 +23,14 @@ struct Controllable : Node
    
     void update()
     {
-        //pose->x += .50;
-        //pose->r += L3::Utils::Math::degreesToRadians( 1 );
-       
         L3::SE3* ptr = dynamic_cast<L3::SE3*>( &*pose );
       
         if( ptr )
-            ptr->r += L3::Utils::Math::degreesToRadians( 1 );
-
-        pose->_update();
+        {
+            double increment = ptr->R();
+            increment += L3::Utils::Math::degreesToRadians( 1 );
+            ptr->R( increment );
+        }
     }
 
     boost::shared_ptr<L3::Pose> pose;

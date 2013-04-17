@@ -195,8 +195,8 @@ namespace L3
 
             while( it != cloud->end() )
             {
-                (*it).x -= pose->x; 
-                (*it).y -= pose->y;
+                (*it).x -= pose->X(); 
+                (*it).y -= pose->Y();
                 it++;
             }
 
@@ -231,8 +231,8 @@ namespace L3
 
             while( it != cloud->end() )
             {
-                (*it).x += pose->x;
-                (*it).y += pose->y;
+                (*it).x += pose->X();
+                (*it).y += pose->Y();
                 it++;
             }
         }
@@ -247,8 +247,8 @@ namespace L3
 
             while( it != cloud->end() )
             {
-                (*it).x += pose->x;
-                (*it).y += pose->y;
+                (*it).x += pose->X();
+                (*it).y += pose->Y();
                 it++;
             }
         }

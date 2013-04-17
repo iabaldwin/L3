@@ -32,7 +32,7 @@ namespace L3
         L3::SE3 pose = (*provider)();
 
         // Update the experience
-        experience->update( pose.x, pose.y );
+        experience->update( pose.X(), pose.Y() );
 
 
 #ifndef NDEBUG

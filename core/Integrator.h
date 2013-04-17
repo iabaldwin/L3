@@ -53,9 +53,9 @@ namespace L3
                 // Get the SE3 pose
                 previous_pose = boost::dynamic_pointer_cast< L3::SE3 >( (*(output-1)).second );
 
-                r = previous_pose->r + w1*dt;
-                p = previous_pose->p + w2*dt;
-                q = previous_pose->q + w3*dt;
+                r = previous_pose->R() + w1*dt;
+                p = previous_pose->P() + w2*dt;
+                q = previous_pose->Q() + w3*dt;
 
                 // Compute x_bar, y_bar, z_bar 
                 lin_vel = current_in->second->data[9];
@@ -65,9 +65,9 @@ namespace L3
                 z_vel = lin_vel * sin(p);  
 
                 // Compute x y z
-                x = previous_pose->x + x_vel*dt;
-                y = previous_pose->y + y_vel*dt;
-                z = previous_pose->z + z_vel*dt;
+                x = previous_pose->X() + x_vel*dt;
+                y = previous_pose->Y() + y_vel*dt;
+                z = previous_pose->Z() + z_vel*dt;
 
                 // Log
                 *output++ = std::make_pair( current_time, boost::shared_ptr<L3::SE3>( new L3::SE3( x, y, z, r, p, q ) )); 

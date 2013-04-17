@@ -19,18 +19,14 @@ class Pose
 
         virtual ~Pose(){}
 
-        double x, y;
-
         Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
 
-        //TODO
-        //This is dirty
-        virtual void _update() = 0;
-        
     protected:
+        
+        virtual void updateHomogeneous()  = 0;
+        virtual void updateEuler()  = 0;
 
         Eigen::Matrix4f homogeneous;
-        virtual void updateHomogeneous()  = 0;
 
 
 };
@@ -43,13 +39,33 @@ class SE2 : public Pose
         SE2( double X, double Y, double Q );
         SE2( std::vector<double> input );
 
-        double q;
+        double& X()
+        {
+            return x;
+        }
 
-        void _update();
+        void X( double x )
+        {
+            x = x;
+        }
+
+        double& Y()
+        {
+            return y;
+        }
+
+        void Y( double y )
+        {
+            y = y;
+        }
+
 
     private:
+        
+        double x,y,q;
 
         void updateHomogeneous();
+        void updateEuler();
 
 };
 
@@ -66,14 +82,27 @@ class SE3 : public Pose
         SE3( double X, double Y, double Z, double R, double P, double Q);
         SE3( const std::vector<double> v );
         
-        double z;
-        double r,p,q;
+        double  X() const;
+        void    X( double x );
+        double  Y() const;
+        void    Y( double y );
+        double  Z() const;
+        void    Z( double z );
+        double  R() const;
+        void    R( double r );
+        double  P() const;
+        void    P( double P );
+        double  Q() const;
+        void    Q( double q );
 
-        void _update();
 
     private:
-    
-        void updateHomogeneous() ;
+ 
+        double x,y,z;
+        double r,p,q;
+   
+        void updateHomogeneous();
+        void updateEuler();
         
 };
 
@@ -171,7 +200,7 @@ std::ostream& operator<<( std::ostream& o, const L3::LMS151& scan );
 std::ostream& operator<<( std::ostream& o, const L3::LHLV& lhlv );
 
 /*
- *Intrinsic math
+ *  Intrinsic math
  */
 namespace Math
 {

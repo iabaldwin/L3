@@ -13,24 +13,47 @@
 struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
 {
 
-    VisualiserRunner( double start_time ) : time(start_time)
+    VisualiserRunner( double start_time, L3::ConstantTimeIterator<L3::LHLV>* iterator, L3::PoseWindower* windower ) 
+        : time(start_time), iterator(iterator), windower(windower)
     {
     }
 
-    double time;
+    double                              time;
+    L3::Predictor                       predictor;
+    L3::PoseWindower*                   windower;
+    L3::ConstantTimeIterator<L3::LHLV>* iterator; 
 
     void onDraw3D( glv::GLV& g )
     {
+        // Update 
         this->update( time += .5 );
+
+        L3::SE3 predicted = L3::SE3::ZERO();
+        L3::SE3 current = windower->operator()();
+
+        predictor.predict( predicted, current, iterator->window.begin(), iterator->window.end() );
+
+        std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = predictor.chain.begin();
+
+        glv::Point3 vertices[predictor.chain.size()];
+        glv::Color  colors[predictor.chain.size()];
+
+        int counter = 0;
+        while( it != predictor.chain.end() )
+        {
+            vertices[counter++]( it->second->X(), it->second->Y(), 0 ); 
+            it++;
+        }
+
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
     }
 
 };
 
-
 int main (int argc, char ** argv)
 {
     /*
-     *L3
+     *  L3
      */
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     if( !( dataset.validate() && dataset.load() ) )
@@ -40,14 +63,17 @@ int main (int argc, char ** argv)
 
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
-    
+
+    // Constant time iterator over poses
+    L3::ConstantTimeIterator< L3::LHLV >  LHLV_iterator( dataset.LHLV_reader );
+
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
-    
-    double time = dataset.start_time;
 
+    // Responsible for building poses
     L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
-    
+
+    // Generating swathe
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
     /*
@@ -58,7 +84,7 @@ int main (int argc, char ** argv)
 
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
-    
+
     // Point cloud renderer
     L3::Visualisers::Composite              composite;
     L3::Visualisers::BasicPanController     controller;
@@ -67,21 +93,21 @@ int main (int argc, char ** argv)
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-    composite.current_time = time;
+    composite.current_time = dataset.start_time;
     composite.sf = 2.0;
 
     // Add watchers
     composite << swathe_renderer << pose_renderer <<  grid;
 
     // Add runner
-    VisualiserRunner runner( dataset.start_time );
-    runner << &swathe_builder << &pose_windower;
+    VisualiserRunner runner( dataset.start_time, &LHLV_iterator, &pose_windower ) ;
+
+    runner << &swathe_builder << &pose_windower << &LHLV_iterator;
 
     top << (composite << runner);
 
     win.setGLV(top);
-    win.fit(); 
-    
+
     try
     {
         glv::Application::run();
@@ -90,6 +116,6 @@ int main (int argc, char ** argv)
     {
         std::cout << "Done" << std::endl;
     }
-}
 
+}
 
