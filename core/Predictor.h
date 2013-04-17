@@ -33,15 +33,10 @@ namespace L3
                      *  linked
                      */
                     it->second->getHomogeneous()*=current.getHomogeneous();
-                    //it->second->_update();
                     it++;
                 }
-
-
             }
-
     };
-
 
 }
 
