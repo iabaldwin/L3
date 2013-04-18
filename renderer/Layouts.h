@@ -22,8 +22,7 @@ class Layout
         
         Layout( glv::Window& win ) : window(win)
         {
-
-
+            
             // Create the main view
             main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
 
@@ -105,7 +104,7 @@ class Layout
 };
 
 /*
- *Dataset specific
+ *  Dataset 
  */
 class DatasetLayout : public Layout
 {
@@ -120,10 +119,7 @@ class DatasetLayout : public Layout
         std::auto_ptr< L3::DatasetRunner >                  runner;
         std::auto_ptr< L3::Visualisers::LinearVelocityPlotter >     linear_velocity_plotter;
         std::auto_ptr< L3::Visualisers::RotationalVelocityPlotter > rotational_velocity_plotter;
-
-        ~DatasetLayout()
-        {
-        }
+        std::auto_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
 
         void load( L3::Dataset* d ) 
         {
@@ -143,6 +139,10 @@ class DatasetLayout : public Layout
             TextRenderer<double>* text_renderer = new TextRenderer<double>( runner->current_time );
             text_renderer->disable( glv::DrawBorder );
             this->renderables.push_front( text_renderer) ;
+        
+            iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
+       
+            *composite << (*iterator_renderer);
         }
         
 };

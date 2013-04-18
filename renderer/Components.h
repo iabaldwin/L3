@@ -120,7 +120,7 @@ struct Composite : glv::View3D
 };
 
 /*
- *  CoordinateSystem 
+ *  Coordinate System 
  */
 struct CoordinateSystem
 {

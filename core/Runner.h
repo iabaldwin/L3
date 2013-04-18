@@ -133,12 +133,12 @@ struct EstimatorRunner : ThreadedTemporalRunner
 };
 
 
-struct DatasetRunner : ThreadedTemporalRunner
+struct DatasetRunner : ThreadedTemporalRunner, Lockable
 {
     DatasetRunner( const L3::Dataset* d ) 
         : dataset(d), 
             running(true), 
-            frequency(1.0)
+            frequency(10.0)
     {
         // Constant time iterator over poses
         pose_iterator.reset( new L3::ConstantTimeIterator<L3::SE3>( dataset->pose_reader ) );
@@ -195,6 +195,8 @@ struct DatasetRunner : ThreadedTemporalRunner
         {
             if ( t.elapsed() > 1.0/frequency )
             {
+                L3::WriteLock( this->mutex );
+                
                 step( .5 );
 
                 // Restart timer

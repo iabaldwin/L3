@@ -33,6 +33,7 @@ namespace L3
             bool update( double )
             {
                 std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
+                
                 iterator->getWindow( window );
 
                 if ( window.size() > 0 )
@@ -48,8 +49,9 @@ namespace L3
                         double d = window[counter++].second->data[index];
                         data.assign( d, i[0], i[1] );
                     }
-               
-                    plotter->data() = data;
+              
+                    // This is the issue
+                    //plotter->data() = data;
                 }
             }
         };

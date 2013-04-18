@@ -1,5 +1,7 @@
 #include "Visualisers.h"
 
+#include <boost/scoped_array.hpp>
+
 namespace L3
 {
 namespace Visualisers
@@ -32,8 +34,8 @@ namespace Visualisers
     void IteratorRenderer<T>::onDraw3D( glv::GLV& g )
     {
         // Reserve
-        glv::Point3* vertices = new glv::Point3[iterator->window.size()];;
-        glv::Color* colors    = new glv::Color[iterator->window.size()];
+        boost::scoped_array< glv::Point3 > vertices( new glv::Point3[iterator->window.size()] );
+        boost::scoped_array< glv::Color >  colors( new glv::Color[iterator->window.size()] );
 
         typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator->window.begin();
 
@@ -48,10 +50,10 @@ namespace Visualisers
             it++; 
         }
     
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), counter );
 
-        delete [] colors;
-        delete [] vertices;
+        //delete [] colors;
+        //delete [] vertices;
     }
 
     /*
