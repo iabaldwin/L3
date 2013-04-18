@@ -116,12 +116,17 @@ namespace L3
 
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
 
-
                 if ( __builtin_expect( (this->experience_histogram->x_bins == 0) , 0 ) )
                     return std::numeric_limits<T>::infinity();
 
+                PointCloud<T>* sampled_swathe = new PointCloud<T>();
+
+                //L3::sample( swathe, sampled_swathe, 2000 );
+
                 while( it != this->pose_estimates->estimates.end() )
                 {
+                    //group.run( HypothesisBuilder( sampled_swathe, &estimate, this->experience_histogram.get() , this->cost_function ) );
+                    
                     group.run( HypothesisBuilder( swathe, &estimate, this->experience_histogram.get() , this->cost_function ) );
 
                     // Continue
@@ -134,7 +139,7 @@ namespace L3
             }
 
     }   // Estimator
-}   // L3
+}       // L3
 
 // Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()( const Histogram<double>& exp, const Histogram<double>& swathe );
