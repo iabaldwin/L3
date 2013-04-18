@@ -1,26 +1,36 @@
-#include <stdio.h>
+#include <iostream>
 
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-
-/* the Lua interpreter */
-lua_State* L;
-
-int main ( int argc, char *argv[] )
+extern "C"
 {
-    /* initialize Lua */
-    L = lua_open();
+       #include "lua.h"
+       #include "lauxlib.h"
+       #include "lualib.h"
+}
 
-    /* load various Lua libraries */
-    //lua_baselibopen(L);
-        //luaopen_table(L);
-        //luaopen_io(L);
-        //luaopen_string(L);
-        //luaopen_math(L);
+#include <iostream>
+
+lua_State* l;
+int main()
+{
+    /* lua interpreter */
+    int doString;
+
+    /* initialize lua */
+    l = lua_open();
+
+    /* load lua libraries */
+    luaL_openlibs(l);
+
+    /* run the hello.lua script */
+    //dofile = luaL_dofile(l, "hello.lua");
+
+    doString = luaL_dostring( l, "print(\"Hello World\")" );
     
+    std::cout << doString << std::endl;
+
     /* cleanup Lua */
-    lua_close(L);
+    lua_close(l);
 
     return 0;
 }
+

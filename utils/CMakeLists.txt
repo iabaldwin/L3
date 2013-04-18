@@ -6,7 +6,6 @@
 #add_executable( octave_interface octave_interface.cpp )
 #target_link_libraries( octave_interface )
 
-#add_executable( lua_interface lua_interface.cpp )
-#target_link_libraries( lua_interface lua )
-
+add_executable( lua_interface lua_interface.cpp )
+target_link_libraries( lua_interface lua )
 

@@ -41,19 +41,20 @@ class Layout
             (*main_view) << ( *composite << *grid );
 
             // Create subplots
-            plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
-            plot1->stroke( 2.0 );
+            //plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
+            //plot1 =  new L3::Visualisers::VelocityPlotter();
+            //plot1->stroke( 2.0 );
 
-            plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
-            plot_region_1->range( 0, 1000, 0 );
-            plot_region_1->range( 0, 10 , 1 );
+            //plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
+            //plot_region_1->range( 0, 1000, 0 );
+            //plot_region_1->range( 0, 10 , 1 );
 
-            plot2 =  new glv::PlotFunction1D(glv::Color(0,0.5,0));
-            plot2->stroke( 2.0 );
+            //plot2 =  new glv::PlotFunction1D(glv::Color(0,0.5,0));
+            //plot2->stroke( 2.0 );
             
-            plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
-            plot_region_2->range( 0, 1000, 0 );
-            plot_region_2->range( -1, 1, 1 );
+            //plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
+            //plot_region_2->range( 0, 1000, 0 );
+            //plot_region_2->range( -1, 1, 1 );
 
 
         }
@@ -68,7 +69,8 @@ class Layout
             top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
            
             // Add core
-            top << (*main_view ) << plot_region_1 << plot_region_2 ;
+            //top << (*main_view ) << plot_region_1 << plot_region_2 ;
+            top << (*main_view ) << plot_region_1;
   
             // Add renderables provided by children
             std::list< glv::View* >::iterator it = renderables.begin();
@@ -89,7 +91,8 @@ class Layout
         glv::Window&    window; 
         glv::View*      main_view;
 
-        glv::PlotFunction1D*    plot1;
+        //glv::PlotFunction1D*    plot1;
+        glv::Plottable*         plot1;
         glv::Plot*              plot_region_1;
 
         glv::PlotFunction1D*    plot2;
@@ -117,8 +120,9 @@ class DatasetLayout : public Layout
 
         const L3::Dataset*                                  dataset;
         std::auto_ptr< L3::DatasetRunner >                  runner;
-        std::auto_ptr< L3::Visualisers::LinearVelocityPlotter >     linear_velocity_plotter;
-        std::auto_ptr< L3::Visualisers::RotationalVelocityPlotter > rotational_velocity_plotter;
+        std::auto_ptr< L3::Visualisers::VelocityPlotter >     linear_velocity_plotter;
+        //std::auto_ptr< L3::Visualisers::LinearVelocityPlotter >     linear_velocity_plotter;
+        //std::auto_ptr< L3::Visualisers::RotationalVelocityPlotter > rotational_velocity_plotter;
         std::auto_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
 
         void load( L3::Dataset* d ) 
@@ -130,10 +134,19 @@ class DatasetLayout : public Layout
             runner->start( dataset->start_time );
 
             // Create velocity plotter
-            linear_velocity_plotter.reset( new L3::Visualisers::LinearVelocityPlotter( runner->LHLV_iterator.get(), plot1 ) );
-            rotational_velocity_plotter.reset( new L3::Visualisers::RotationalVelocityPlotter( runner->LHLV_iterator.get(), plot2 ) );
+            //linear_velocity_plotter.reset( new L3::Visualisers::LinearVelocityPlotter( runner->LHLV_iterator.get(), plot1 ) );
+            //rotational_velocity_plotter.reset( new L3::Visualisers::RotationalVelocityPlotter( runner->LHLV_iterator.get(), plot2 ) );
 
-            (*runner) << linear_velocity_plotter.get() << rotational_velocity_plotter.get();
+            //(*runner) << linear_velocity_plotter.get() << rotational_velocity_plotter.get();
+
+            //plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
+            plot1 =  new L3::Visualisers::VelocityPlotter( runner->LHLV_iterator.get() );
+            plot1->stroke( 2.0 );
+
+
+            plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
+            plot_region_1->range( 0, 1000, 0 );
+            plot_region_1->range( 0, 10 , 1 );
 
             // Timer
             TextRenderer<double>* text_renderer = new TextRenderer<double>( runner->current_time );
