@@ -43,12 +43,20 @@ class Layout
 
             // Create subplots
             plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
-            plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
             plot1->stroke( 2.0 );
 
-            plot2 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
-            plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
+            plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
+            plot_region_1->range( 0, 1000, 0 );
+            plot_region_1->range( 0, 10 , 1 );
+
+            plot2 =  new glv::PlotFunction1D(glv::Color(0,0.5,0));
             plot2->stroke( 2.0 );
+            
+            plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
+            plot_region_2->range( 0, 1000, 0 );
+            plot_region_2->range( -1, 1, 1 );
+
+
         }
         
         virtual ~Layout()
@@ -110,7 +118,8 @@ class DatasetLayout : public Layout
 
         const L3::Dataset*                                  dataset;
         std::auto_ptr< L3::DatasetRunner >                  runner;
-        std::auto_ptr< L3::Visualisers::VelocityPlotter >   velocity_plotter;
+        std::auto_ptr< L3::Visualisers::LinearVelocityPlotter >     linear_velocity_plotter;
+        std::auto_ptr< L3::Visualisers::RotationalVelocityPlotter > rotational_velocity_plotter;
 
         ~DatasetLayout()
         {
@@ -125,9 +134,10 @@ class DatasetLayout : public Layout
             runner->start( dataset->start_time );
 
             // Create velocity plotter
-            velocity_plotter.reset( new L3::Visualisers::VelocityPlotter( &*runner->LHLV_iterator, plot1 ) );
+            linear_velocity_plotter.reset( new L3::Visualisers::LinearVelocityPlotter( runner->LHLV_iterator.get(), plot1 ) );
+            rotational_velocity_plotter.reset( new L3::Visualisers::RotationalVelocityPlotter( runner->LHLV_iterator.get(), plot2 ) );
 
-            (*runner) << velocity_plotter.get();
+            (*runner) << linear_velocity_plotter.get() << rotational_velocity_plotter.get();
 
             // Timer
             TextRenderer<double>* text_renderer = new TextRenderer<double>( runner->current_time );

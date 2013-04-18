@@ -13,12 +13,19 @@ namespace L3
         struct VelocityPlotter : Plotter
         {
 
-            VelocityPlotter( L3::ConstantTimeIterator< L3::LHLV>* lhlv_iterator , glv::PlotFunction1D* vel_plotter ) 
+            VelocityPlotter( L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator , glv::PlotFunction1D* plotter ) 
                 : iterator(lhlv_iterator), 
-                plotter( vel_plotter )
+                    plotter( plotter )
+
+            {
+                index = -1;
+            }
+
+            virtual ~VelocityPlotter()
             {
             }
 
+            int                                     index;
             glv::Data                               data;
             glv::PlotFunction1D*                    plotter;
             L3::ConstantTimeIterator< L3::LHLV>*    iterator; 
@@ -36,8 +43,6 @@ namespace L3
 
                     int counter = 0;
 
-                    int index = 9;
-
                     while( i() && counter < window.size() ) 
                     {
                         double d = window[counter++].second->data[index];
@@ -48,6 +53,26 @@ namespace L3
                 }
             }
         };
+
+        struct LinearVelocityPlotter : VelocityPlotter
+        {
+            LinearVelocityPlotter(L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator , glv::PlotFunction1D* plotter ) :
+                VelocityPlotter( lhlv_iterator, plotter )
+            {
+                index = 9;
+            }
+        };
+
+        struct RotationalVelocityPlotter : VelocityPlotter
+        {
+            RotationalVelocityPlotter(L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator , glv::PlotFunction1D* plotter ) :
+                VelocityPlotter( lhlv_iterator, plotter )
+            {
+                index = 3;
+            }
+        };
+
+
 
     } // Visualisers
 } // L3
