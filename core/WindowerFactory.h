@@ -19,12 +19,12 @@ namespace L3
             {
                 std::ifstream file_input( file.c_str() );
 
-                if( !file_input.good() )
-                    throw L3::no_such_file();
-                
+                // Read N bytes, try to determine if it is binary or not
                 std::vector<BYTE> sample( 1024 );
 
-                
+                if( !file_input.good() )
+                    throw L3::no_such_file();
+                                
                 file_input.read( (char*)(&sample[0]), 1024 );
 
                 file_input.close();
@@ -34,7 +34,6 @@ namespace L3
 
                 int int_max = int(*val_max);
                 int int_min = int(*val_min);
-
 
                 return ( int_max > 127  || int_min< 10 ) ? 
                     boost::shared_ptr< L3::SlidingWindow<T> >( new L3::SlidingWindowBinary<T>( file, time ) ) :

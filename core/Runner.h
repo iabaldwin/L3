@@ -135,17 +135,19 @@ struct EstimatorRunner : ThreadedTemporalRunner
 
 struct DatasetRunner : ThreadedTemporalRunner
 {
-    DatasetRunner( const L3::Dataset* d ) : dataset(d), running(true), frequency(1.0)
+    DatasetRunner( const L3::Dataset* d ) 
+        : dataset(d), 
+            running(true), 
+            frequency(1.0)
     {
         // Constant time iterator over poses
         pose_iterator.reset( new L3::ConstantTimeIterator<L3::SE3>( dataset->pose_reader ) );
         LIDAR_iterator.reset( new L3::ConstantTimeIterator<L3::LMS151>( dataset->LIDAR_readers.begin()->second ) );
         LHLV_iterator.reset( new L3::ConstantTimeIterator<L3::LHLV> ( dataset->LHLV_reader ) );  
-    
    
-        (*this)<< &*pose_iterator;
-        (*this)<< &*LIDAR_iterator;
-        (*this)<< &*LHLV_iterator;
+        (*this)<< pose_iterator.get();
+        (*this)<< LIDAR_iterator.get();
+        (*this)<< LHLV_iterator.get();
     
     }
 
@@ -181,7 +183,7 @@ struct DatasetRunner : ThreadedTemporalRunner
     void step( double dt )
     {
         current_time += dt;
-           
+   
         this->update( current_time );
     }
 

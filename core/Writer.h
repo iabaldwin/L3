@@ -12,31 +12,28 @@
 
 namespace L3
 {
-namespace IO
-{
+    namespace IO
+    {
 
-class Writer 
-{
+        class Writer 
+        {
 
-    public:
-        virtual ~Writer();
-    
-        bool open( const std::string& f );
+            public:
+                virtual ~Writer();
+
+                bool open( const std::string& f );
+
+
+            protected:
+
+                std::ofstream stream;
+
+            private:
+
+                friend L3::IO::Writer& operator<<( L3::IO::Writer& o, const std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > poses );
         
-
-    protected:
-
-        std::ofstream stream;
-
-    private:
-
-
-        friend L3::IO::Writer& operator<<( L3::IO::Writer& o, const std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > poses );
-};
-
-
-
-}
+        };
+    }
 }
 
 #endif

@@ -22,8 +22,13 @@ class Layout
         
         Layout( glv::Window& win ) : window(win)
         {
+
+
+            // Create the main view
+            main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
+
             // Composite view holder
-            composite.reset( new L3::Visualisers::Composite() );
+            composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*win.width(), 500 )) );
             
             // 3D grid 
             grid.reset( new L3::Visualisers::Grid() );
@@ -33,8 +38,7 @@ class Layout
         
             composite->addController( &*controller );
 
-            // Create the main view
-            main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
+            // Accumulate
             (*main_view) << ( *composite << *grid );
 
             // Create subplots
@@ -42,9 +46,9 @@ class Layout
             plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
             plot1->stroke( 2.0 );
 
-            //plot2 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
-            //plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
-            //plot2->stroke( 2.0 );
+            plot2 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
+            plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
+            plot2->stroke( 2.0 );
         }
         
         virtual ~Layout()
@@ -75,20 +79,20 @@ class Layout
 
     protected:
 
-        glv::Window& window; 
-        glv::View* main_view;
+        glv::Window&    window; 
+        glv::View*      main_view;
 
-        glv::PlotFunction1D*            plot1;
-        glv::Plot*                      plot_region_1;
+        glv::PlotFunction1D*    plot1;
+        glv::Plot*              plot_region_1;
 
-        glv::PlotFunction1D*            plot2;
-        glv::Plot*                      plot_region_2;
+        glv::PlotFunction1D*    plot2;
+        glv::Plot*              plot_region_2;
 
-        std::auto_ptr<L3::Visualisers::Composite>     composite;
-        std::auto_ptr<L3::Visualisers::Controller>    controller;
-        std::auto_ptr<L3::Visualisers::Grid>          grid;
+        std::auto_ptr<L3::Visualisers::Composite>   composite;
+        std::auto_ptr<L3::Visualisers::Controller>  controller;
+        std::auto_ptr<L3::Visualisers::Grid>        grid;
 
-        std::list< glv::View* >         renderables;
+        std::list< glv::View* >                     renderables;
 
 };
 
@@ -104,9 +108,9 @@ class DatasetLayout : public Layout
 
         }
 
-        const L3::Dataset*                  dataset;
-        std::auto_ptr< L3::DatasetRunner >  runner;
-        std::auto_ptr< L3::Visualisers::VelocityPlotter > velocity_plotter;
+        const L3::Dataset*                                  dataset;
+        std::auto_ptr< L3::DatasetRunner >                  runner;
+        std::auto_ptr< L3::Visualisers::VelocityPlotter >   velocity_plotter;
 
         ~DatasetLayout()
         {
@@ -122,6 +126,8 @@ class DatasetLayout : public Layout
 
             // Create velocity plotter
             velocity_plotter.reset( new L3::Visualisers::VelocityPlotter( &*runner->LHLV_iterator, plot1 ) );
+
+            (*runner) << velocity_plotter.get();
 
             // Timer
             TextRenderer<double>* text_renderer = new TextRenderer<double>( runner->current_time );

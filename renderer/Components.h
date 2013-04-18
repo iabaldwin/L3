@@ -62,14 +62,14 @@ struct Leaf
  */
 struct Composite : glv::View3D 
 {
-    Composite( const glv::Rect rect = glv::Rect(100,100) ) : glv::View3D( rect ),
-    controller(NULL)
+    Composite( const glv::Rect rect = glv::Rect(100,100) ) 
+        : glv::View3D( rect ), controller(NULL)
     {
         // Extend far clip
         far( 1000 );
 
         // Fill the view
-        stretch(1,1).anchor(0,0); 
+        //stretch(1,1).anchor(0,0); 
 
         // Appropriate view-point
         position.z = -500; 

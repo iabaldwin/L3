@@ -7,8 +7,10 @@ int main()
 {
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
 
-    if( !dataset.validate() && dataset.load() )
+    if( !(dataset.validate() && dataset.load() ))
         exit(-1);
+
+    //std::cout << dataset.start_time << std::endl;
 
     glv::Window win(1400, 800, "Visualisation::Layout");
 
