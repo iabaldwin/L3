@@ -33,19 +33,12 @@ struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
 
         predictor.predict( predicted, current, iterator->window.begin(), iterator->window.end() );
 
-        glv::Point3 vertices[predictor.chain.size()];
-        glv::Color  colors[predictor.chain.size()];
-
-        int counter = 0;
         std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = predictor.chain.begin();
         while( it != predictor.chain.end() )
         {
-            //vertices[counter++]( it->second->X(), it->second->Y(), 0 ); 
             L3::Visualisers::CoordinateSystem( it->second ).onDraw3D( g ); 
             it++;
         }
-
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
     }
 
 };

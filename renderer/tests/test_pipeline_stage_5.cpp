@@ -75,8 +75,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::PointCloudRenderer         runtime_cloud_renderer( point_cloud );
     
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-    composite.current_time = dataset.start_time;
-    composite.sf = 2.0;
 
     // Add watchers
     composite << grid 

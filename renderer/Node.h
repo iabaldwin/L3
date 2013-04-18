@@ -29,7 +29,16 @@ struct Controllable : Node
         {
             double increment = ptr->R();
             increment += L3::Utils::Math::degreesToRadians( 1 );
-            ptr->R( increment );
+           
+            //ptr->getHomogeneous()*=L3::SE3( 0, 0, 0, increment, 0, 0 ).getHomogeneous();
+
+            Eigen::Matrix4f tmp( ptr->getHomogeneous() ); 
+
+            ptr->setHomogeneous( L3::SE3( 0, 0, 0, increment, 0, 0 ).getHomogeneous()*=tmp );
+
+            
+
+            //ptr->R( increment );
         }
     }
 

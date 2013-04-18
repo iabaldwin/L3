@@ -20,6 +20,7 @@ class Pose
         virtual ~Pose(){}
 
         Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
+        void setHomogeneous( Eigen::Matrix4f homogeneous ){ this->homogeneous = homogeneous; };
 
     protected:
         

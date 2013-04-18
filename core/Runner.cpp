@@ -7,13 +7,15 @@ namespace L3
     {
         L3::Tools::Timer t;
 
-        std::cout.precision( 16 );
-
         double start_time = current_time;
 
         while( running )
         {
+            usleep( .05 *1e6 );
             double current_time = start_time + t.elapsed();
+
+            std::cout.precision( 16 );
+            std::cout << current_time << std::endl;
 
             this->update( current_time );
         }
