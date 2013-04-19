@@ -4,6 +4,8 @@
 #include <boost/timer.hpp>
 #include <Poco/Thread.h>
 
+#include "Iterator.h"
+
 namespace L3
 {
 
@@ -76,15 +78,41 @@ struct CircularPoseProvider : PoseProvider, Poco::Runnable
  */
 struct PoseWindower : PoseProvider, TemporalObserver
 {
-    PoseWindower()
-    {
-
-    }
-
-    virtual bool update( double ) = 0;
+    //virtual bool update( double ) = 0;
 
     std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > >* window;
 };
+
+/*
+ *  Constant time windower
+ */
+class ConstantTimePoseWindower : public PoseWindower
+{
+    public:
+        
+        ConstantTimePoseWindower( L3::ConstantTimeIterator<L3::SE3>* iterator ) 
+            : constant_time_iterator (iterator)
+        {
+            this->window = &(iterator->window);
+        }
+        
+        L3::ConstantTimeIterator<L3::SE3>* constant_time_iterator;
+
+        bool update( double t)
+        {
+            constant_time_iterator->update(t);
+        }
+
+        L3::SE3 operator()( void )
+        {
+
+            if ( this->constant_time_iterator->window.size() > 0 )
+                return *(this->constant_time_iterator->window.back().second);
+            else
+                return L3::SE3::ZERO();
+        }
+};
+
 
 
 }

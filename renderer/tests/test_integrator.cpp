@@ -32,17 +32,14 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite              composite;
     L3::Visualisers::BasicPanController     controller;
     L3::Visualisers::Grid                   grid;
-    //L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
     
     L3::Visualisers::VisualiserRunner runner( 0.0 );
-    //runner << &swathe_builder << &pose_windower << &generator;
     runner << &pose_windower << &generator;
 
     top << (composite << pose_renderer << grid  << runner);
-    //top << (composite << grid << runner);
 
     win.setGLV(top);
    

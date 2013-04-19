@@ -12,25 +12,20 @@ namespace L3
         struct StaticCheck<true>{};
 
     template <typename T, int N>
-        struct Smoother : StaticCheck<((N%2) != 0) >
+        struct Smoother : StaticCheck<( (N%2) != 0) >
         {
             Smoother()
             {
-                //if ( (N % 2) == 0 )
-                    //throw std::exception();
-
                 half_step = floor(N/2.0);
             }
 
-            double filter[N][N];
             int half_step;
+            double filter[N][N];
 
             void smooth( L3::Histogram<T>* hist );
 
             virtual ~Smoother()
-            {
-
-            }
+            {}
 
         };
 
@@ -42,7 +37,6 @@ namespace L3
 
                 for( int i=0; i<N; i++ )
                     for( int j=0; j<N; j++ )
-                        //this->filter[i][j] = 0.0f;
                         this->filter[i][j] = 0.111f;
           
             }
@@ -56,9 +50,7 @@ namespace L3
 
     template <typename T, int N>
         struct GaussianSmoother : Smoother<T,N>
-        {
-
-        };
+        {};
 
 }
 #endif

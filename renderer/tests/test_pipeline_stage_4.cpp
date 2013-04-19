@@ -76,7 +76,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::PointCloudRenderer         runtime_cloud_renderer( point_cloud );
     L3::Visualisers::PoseEstimatesRenderer      pose_estimates_renderer( estimator.pose_estimates );
     
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add 3D watchers
     composite << grid 

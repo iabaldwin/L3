@@ -68,9 +68,6 @@ struct Composite : glv::View3D
         // Extend far clip
         far( 1000 );
 
-        // Fill the view
-        //stretch(1,1).anchor(0,0); 
-
         // Appropriate view-point
         position.z = -500; 
     }
@@ -85,9 +82,10 @@ struct Composite : glv::View3D
         position += t;
     }
 
-    void addController( L3::Visualisers::Controller* c )
+    Composite& addController( L3::Visualisers::Controller* c )
     {
         controller = c; 
+        return *this;
     }
 
     bool onEvent( glv::Event::t type, glv::GLV& g )

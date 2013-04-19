@@ -140,27 +140,27 @@ struct PoseProviderRenderer : Leaf
 struct ScanRenderer : Leaf
 {
 
-    ScanRenderer( L3::SwatheBuilder* SWATHE_BUILDER ) : swathe_builder(SWATHE_BUILDER)
+    ScanRenderer( L3::SwatheBuilder* builder ) : swathe_builder(builder)
     {
     
-        point_colors   = new glv::Color[541];
-        point_vertices = new glv::Point3[541];
+        point_colors.reset( new glv::Color[541] );
+        point_vertices.reset( new glv::Point3[541] );
   
-        calibration = new L3::SE3( 0, 0, -1.57, 0, 0, 0 );
+        calibration.reset( new L3::SE3( 0, 0, -1.57, 0, 0, 0 ) );
 
-        cloud = new L3::PointCloud<double>();
+        cloud.reset( new L3::PointCloud<double>() );
 
-        projector.reset( new L3::Projector<double>( calibration, cloud ) );
+        projector.reset( new L3::Projector<double>( calibration.get(), cloud.get() ) );
     }
 
-    glv::Color*         point_colors;
-    glv::Point3*        point_vertices;
+    boost::shared_array< glv::Color >   point_colors;
+    boost::shared_array< glv::Point3 >  point_vertices;
     
     L3::SwatheBuilder*  swathe_builder;
-    std::auto_ptr< L3::Projector<double> > projector;
+    boost::shared_ptr< L3::Projector<double> > projector;
 
-    L3::SE3*                calibration;
-    L3::PointCloud<double>* cloud;
+    boost::shared_ptr< L3::SE3 >    calibration;
+    boost::shared_ptr< L3::PointCloud<double> > cloud;
     
     void onDraw3D( glv::GLV& g );
     

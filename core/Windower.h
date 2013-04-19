@@ -233,7 +233,6 @@ struct SlidingWindowBinary : SlidingWindow<T>
     int read()
     {
         int i;
-
         
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
         

@@ -149,7 +149,7 @@ class DatasetLayout : public Layout, public Common
 
 
             /*
-             *Pose Iterator
+             *  Pose Iterator
              */
             iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
             *composite << (*iterator_renderer);

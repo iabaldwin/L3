@@ -5,6 +5,7 @@
 #include <tbb/task_group.h>
 
 #include "Histogram.h"
+#include "Smoother.h"
 
 namespace L3
 {
@@ -13,20 +14,13 @@ namespace Estimator
 
 struct PoseEstimates 
 {
-
-    PoseEstimates()
-    {
-    }
-
     std::vector< L3::SE3 > estimates;
 
     virtual void operator()( const L3::SE3& pose ) 
     {}
 
     virtual ~PoseEstimates()
-    {
-
-    }
+    {}
 
 };
 
@@ -54,7 +48,6 @@ struct GridEstimates : PoseEstimates
                 estimates.push_back( L3::SE3( x_delta+pose.X(), y_delta+pose.Y(), pose.Z(), 0, 0, 0 ) );
             
             }
-
     }
 
 };

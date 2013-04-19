@@ -49,7 +49,7 @@ int main (int argc, char ** argv)
     experience_renderer.addPoseProvider( pose_provider );
 
     // Associate controller
-    composite.addController( controller );
+    composite.addController( controller ).stretch(1,1);
    
     // Combine
     top << (composite << grid << experience_renderer << pose_provider_renderer ) ;

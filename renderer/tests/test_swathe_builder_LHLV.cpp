@@ -21,14 +21,14 @@ int main (int argc, char ** argv)
     L3::Configuration::Mission mission( dataset );
 
     // Constant time iterator over LHLV data
-    L3::ConstantTimeIterator< L3::LHLV >   lhlv_iterator( dataset.LHLV_reader );
+    L3::ConstantTimeIterator< L3::LHLV >   LHLV_iterator( dataset.LHLV_reader );
     
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
 
     double time = dataset.start_time;
 
-    L3::ChainBuilder pose_windower( &lhlv_iterator );
+    L3::ChainBuilder pose_windower( &LHLV_iterator );
     
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
@@ -48,15 +48,16 @@ int main (int argc, char ** argv)
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     L3::Visualisers::VisualiserRunner runner( dataset.start_time );
     runner << &swathe_builder << &pose_windower;
 
     top << (composite << swathe_renderer << pose_renderer << grid  << runner);
 
+    
     win.setGLV(top);
-   
+  
     try
     {
         glv::Application::run();

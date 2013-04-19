@@ -10,7 +10,6 @@
 
 struct test_leaf : L3::Visualisers::Leaf
 {
-
     void onDraw3D(glv::GLV& g)
     {
         glv::draw::translateZ( -400 );
@@ -18,7 +17,7 @@ struct test_leaf : L3::Visualisers::Leaf
         glv::Color colors[1000];
 
         for( int i=0; i<1000; i++ )
-            pts[i]( random()%100, random()%100, random()%100 );
+            pts[i]( random()%100-50, random()%100-50, random()%100 );
 
         glv::draw::paint( glv::draw::Points, pts, colors, 1000 );
     
@@ -38,6 +37,8 @@ int main (int argc, char ** argv)
     test_leaf leaf;
     
     top << ( composite << leaf );
+
+    composite.stretch(1,1);
 
     win.setGLV(top);
     glv::Application::run();

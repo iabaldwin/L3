@@ -19,6 +19,7 @@ int main()
     L3::ConstantTimeIterator< L3::LHLV >    lhlv_iterator( dataset.LHLV_reader );
 
     L3::ConstantTimeIterator< L3::LMS151 >  LIDAR_iterator( dataset.LIDAR_readers.begin()->second );
+    
     LIDAR_iterator.swathe_length = 60;
     lhlv_iterator.swathe_length = 60;
    

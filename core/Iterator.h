@@ -11,7 +11,7 @@
 #include "Windower.h"
 #include "Tools.h"
 #include "AbstractFactory.h"
-#include "PoseProvider.h"
+//#include "PoseProvider.h"
 
 namespace L3
 {
@@ -65,32 +65,6 @@ class ConstantTimeIterator : public Iterator<T>
         bool update( double time );
 };
 
-class ConstantTimePoseWindower : public PoseWindower
-{
-    public:
-        
-        ConstantTimePoseWindower( L3::ConstantTimeIterator<L3::SE3>* iterator ) 
-            : constant_time_iterator (iterator)
-        {
-            this->window = &(iterator->window);
-        }
-
-        bool update( double t)
-        {
-            constant_time_iterator->update(t);
-        }
-
-        L3::ConstantTimeIterator<L3::SE3>* constant_time_iterator;
-
-        L3::SE3 operator()( void )
-        {
-
-            if ( this->constant_time_iterator->window.size() > 0 )
-                return *(this->constant_time_iterator->window.back().second);
-            else
-                return L3::SE3::ZERO();
-        }
-};
 
 } // L3
 

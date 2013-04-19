@@ -77,7 +77,7 @@ int main (int argc, char ** argv)
     // Link the experience to the current pose generator
     experience_renderer.addPoseProvider( &pose_windower );
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add watchers
     composite << swathe_renderer 
@@ -86,10 +86,6 @@ int main (int argc, char ** argv)
                 << histogram_bounds_renderer 
                 << point_cloud_bounds_renderer
                 ;
-
-    
-    //L3::Visualisers::Runner runner_visualiser;
-    //runner_visualiser << &runner;
 
     top << (composite ) 
         << histogram_pixel_renderer_experience 

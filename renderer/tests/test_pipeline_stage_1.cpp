@@ -53,7 +53,7 @@ int main (int argc, char ** argv)
 
     experience_renderer.addPoseProvider( &pose_windower );
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     top << (composite << swathe_renderer << grid << experience_renderer );
 

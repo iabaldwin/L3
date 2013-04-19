@@ -50,18 +50,18 @@ namespace Visualisers
     {
         // Projector  
         L3::SE3 calibration( 0, 0, 0, 0, -1.57, 0 ); 
-        
+       
         point_cloud.reset( new L3::PointCloud<double>() );
         projector.reset( new L3::Projector<double>( &calibration, point_cloud.get() ) );
-    
+  
+        //TODO : FIX
         point_colors.reset( new glv::Color[10*100000] );
         point_vertices.reset( new glv::Point3[10*100000] );
-  
+ 
     }
     
     void SwatheRenderer::realloc( int size )
     {
-
         pose_colors.reset( new glv::Color[size] );
         pose_vertices.reset( new glv::Point3[size] );
 
@@ -72,7 +72,10 @@ namespace Visualisers
     {
         // Do projection
         projector->project( swathe_builder->swathe );
-   
+ 
+        if ( point_cloud->num_points > current_alloc )
+            realloc( point_cloud->num_points );
+
         PointCloud<double>::ITERATOR point_iterator = point_cloud->begin();
 
         int counter = 0;
@@ -197,7 +200,7 @@ namespace Visualisers
         for( int i=0; i<cloud->num_points; i++ )
             point_vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z );
         
-        glv::draw::paint( glv::draw::Points, point_vertices, point_colors, cloud->num_points );
+        glv::draw::paint( glv::draw::Points, point_vertices.get(), point_colors.get(), cloud->num_points );
     }
 
 }

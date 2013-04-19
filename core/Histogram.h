@@ -33,6 +33,10 @@ namespace L3
                 gsl_histogram2d_free( hist );
             }
 
+            bool empty()
+            {
+                return ((this->x_bins == 0) || (this->y_bins == 0 ) );
+            }
 
             virtual void create( float x_centre,
                     float x_lower,

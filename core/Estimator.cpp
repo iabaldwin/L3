@@ -72,13 +72,12 @@ namespace L3
             {
             }
 
+            double                          cost;
 
             L3::PointCloud<double> const *  swathe;
             L3::SE3 const*                  estimate ;
             L3::Histogram<double> const*    experience;
             CostFunction<double> *          cost_function;
-
-            double                          cost;
 
             void operator()()
             {
@@ -88,7 +87,7 @@ namespace L3
                 L3::Histogram<double> swathe_histogram;
                
                 L3::copy( experience, &swathe_histogram );
-
+                
                 // Transform to pose estimate
                 transform( hypothesis.get(), const_cast<L3::SE3*>(estimate) );
 
@@ -103,7 +102,7 @@ namespace L3
         };
 
         /*
-         *Discrete Estimator
+         *  Discrete Estimator
          */
         template <typename T>
             double DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
@@ -114,19 +113,23 @@ namespace L3
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
 
-                std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
-
-                if ( __builtin_expect( (this->experience_histogram->x_bins == 0) , 0 ) )
+                if ( __builtin_expect( (this->experience_histogram->empty() ) , 0 ) )
                     return std::numeric_limits<T>::infinity();
 
-                PointCloud<T>* sampled_swathe = new PointCloud<T>();
-
+                /*
+                 *  Speed considerations
+                 */
+                //PointCloud<T>* sampled_swathe = new PointCloud<T>();
                 //L3::sample( swathe, sampled_swathe, 2000 );
 
+                // Smooth
+            
+                L3::Smoother< double, 5 > smoother;
+                //smoother.smooth( &swathe_histogram );
+                
+                std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
-                    //group.run( HypothesisBuilder( sampled_swathe, &estimate, this->experience_histogram.get() , this->cost_function ) );
-                    
                     group.run( HypothesisBuilder( swathe, &estimate, this->experience_histogram.get() , this->cost_function ) );
 
                     // Continue

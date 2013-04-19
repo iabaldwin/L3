@@ -58,16 +58,10 @@ int main (int argc, char ** argv)
     // Link the experience to the current pose generator
     experience_renderer.addPoseProvider( &pose_windower );
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add watchers
     composite << swathe_renderer << grid << experience_renderer;
-
-    // Add runner
-    //L3::Visualisers::Runner runner;    
-    //runner << &swathe_builder << &pose_windower;
-
-    //top << (composite << runner );
 
     win.setGLV(top);
     win.fit(); 
