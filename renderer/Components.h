@@ -138,7 +138,8 @@ template <typename T>
 struct TextRenderer : glv::View
 {
 
-    explicit TextRenderer( T& v = 0 ) : t(v)
+    //explicit TextRenderer( T& v = 0 ) : t(v), glv::View( glv::Rect(500,0,150,25 ) )
+    explicit TextRenderer( T& v = 0 ) : t(v), glv::View( glv::Rect(150,25 ) )
     {
     }
 

@@ -9,16 +9,13 @@ namespace L3
 {
     namespace Visualisers
     {
-
-        struct VelocityPlotter : glv::Plottable, TemporalObserver
+        struct VelocityPlotter : glv::Plottable, TemporalObserver, Lockable
         {
             VelocityPlotter( L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator )
-                : glv::Plottable( glv::draw::LineStrip, 1, glv::Color(0)),
-                    iterator(lhlv_iterator)
+                : glv::Plottable( glv::draw::LineStrip, 1 ),
+                    iterator(lhlv_iterator), 
+                    index(-1)
             {
-                index = -1;
-                    
-                data.resize( glv::Data::DOUBLE, 1, 10000 );
             }
 
             virtual ~VelocityPlotter()
@@ -26,11 +23,17 @@ namespace L3
             }
 
             int                                     index;
-            glv::Data                               data;
             L3::ConstantTimeIterator< L3::LHLV>*    iterator; 
 
-            void onMap( glv::GraphicsData& b, const glv::Data& d, const glv::Indexer& i){
-                std::cout << "BYE" << std::endl;
+            void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
+            {
+                L3::ReadLock( this->mutex );
+
+                while(i()){
+                    double x = i[0];
+                    double y = d.at<double>(0, i[0]);
+                    g.addVertex(x, y);
+                }
             }
 
             bool update( double )
@@ -41,56 +44,46 @@ namespace L3
 
                 if ( window.size() > 0 )
                 {
-                    data.resize( glv::Data::DOUBLE, 1, window.size() );
+                    L3::WriteLock( this->mutex );
+                   
+                    mData.resize( glv::Data::DOUBLE, 1, window.size() );
 
-                    glv::Indexer i(data.size(1));
+                    std::cout << "Resize:" << window.size() << std::endl;
+
+                    glv::Indexer i(mData.size(1));
 
                     int counter = 0;
 
                     while( i() && counter < window.size() ) 
                     {
                         double d = window[counter++].second->data[index];
-                        data.assign( d, i[0], i[1] );
+                        mData.assign( d, i[0], i[1] );
                     }
 
-                    // This is the issue
-                    //plotter->data() = data;
                 }
-            }
-
-            void onDraw2D( glv::GLV& g )
-            {
-                std::cout << "BYE" << std::endl;
-            }
-            void onDraw( glv::GLV& g )
-            {
-                std::cout << "BYE" << std::endl;
-            }
-
-            void onDraw( glv::GraphicsData& gd, const glv::Data& d )
-            {
-                std::cout << "HI" << std::endl;
             }
 
         };
 
-        //struct LinearVelocityPlotter : VelocityPlotter
-        //{
-            //LinearVelocityPlotter(L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator , glv::PlotFunction1D* plotter ) :
-                //VelocityPlotter( lhlv_iterator, plotter )
-            //{
-                //index = 9;
-            //}
-        //};
+        struct LinearVelocityPlotter : VelocityPlotter
+        {
+            LinearVelocityPlotter(L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator ) :
+                VelocityPlotter( lhlv_iterator )
+            {
+                index = 9;
+                this->color( glv::Color( 1,0,0 ) );
+            }
+        };
 
-        //struct RotationalVelocityPlotter : VelocityPlotter
-        //{
-            //RotationalVelocityPlotter(L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator , glv::PlotFunction1D* plotter ) :
-                //VelocityPlotter( lhlv_iterator, plotter )
-            //{
-                //index = 3;
-            //}
-        //};
+        struct RotationalVelocityPlotter : VelocityPlotter
+        {
+            RotationalVelocityPlotter(L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator ) :
+                VelocityPlotter( lhlv_iterator )
+            {
+                index = 3;
+                this->color( glv::Color( 0,1,0 ) );
+            }
+        };
 
     } // Visualisers
 } // L3

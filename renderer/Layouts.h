@@ -51,7 +51,7 @@ class Layout
             top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
            
             // Add core
-            top << (*main_view ) << plot_region_1;
+            top << (*main_view ) << plot_region_1 << plot_region_2;
   
             // Add renderables provided by children
             std::list< glv::View* >::iterator it = renderables.begin();
@@ -75,7 +75,7 @@ class Layout
         glv::Plottable*         plot1;
         glv::Plot*              plot_region_1;
 
-        glv::PlotFunction1D*    plot2;
+        glv::Plottable*         plot2;
         glv::Plot*              plot_region_2;
 
         std::auto_ptr<L3::Visualisers::Composite>   composite;
@@ -100,9 +100,7 @@ class DatasetLayout : public Layout
 
         const L3::Dataset*                                  dataset;
         std::auto_ptr< L3::DatasetRunner >                  runner;
-        //std::auto_ptr< L3::Visualisers::VelocityPlotter >     linear_velocity_plotter;
-        //std::auto_ptr< L3::Visualisers::LinearVelocityPlotter >     linear_velocity_plotter;
-        //std::auto_ptr< L3::Visualisers::RotationalVelocityPlotter > rotational_velocity_plotter;
+        boost::shared_ptr< TextRenderer<double> >           time_renderer;
         std::auto_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
 
         void load( L3::Dataset* d ) 
@@ -113,30 +111,41 @@ class DatasetLayout : public Layout
             runner.reset( new L3::DatasetRunner( dataset ) );
             runner->start( dataset->start_time );
 
-            // Create velocity plotter
-            //linear_velocity_plotter.reset( new L3::Visualisers::LinearVelocityPlotter( runner->LHLV_iterator.get(), plot1 ) );
-            //rotational_velocity_plotter.reset( new L3::Visualisers::RotationalVelocityPlotter( runner->LHLV_iterator.get(), plot2 ) );
-
-            //(*runner) << linear_velocity_plotter.get() << rotational_velocity_plotter.get();
-
-            //plot1 =  new glv::PlotFunction1D(glv::Color(0.5,0,0));
-            plot1 =  new L3::Visualisers::VelocityPlotter( runner->LHLV_iterator.get() );
+            /*
+             *  Linear Velocity
+             */
+            plot1 = new L3::Visualisers::LinearVelocityPlotter( runner->LHLV_iterator.get() );
             plot1->stroke( 2.0 );
 
             plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
             plot_region_1->range( 0, 1000, 0 );
-            plot_region_1->range( 0, 10 , 1 );
+            plot_region_1->range( -1, 10 , 1 );
 
-            // Timer
-            TextRenderer<double>* text_renderer = new TextRenderer<double>( runner->current_time );
-            text_renderer->disable( glv::DrawBorder );
-            this->renderables.push_front( text_renderer) ;
-        
+            /*
+             *Rotational Velocity
+             */
+            plot2 = new L3::Visualisers::RotationalVelocityPlotter( runner->LHLV_iterator.get() );
+            plot2->stroke( 2.0 );
+
+            plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
+            plot_region_2->range( 0, 1000, 0 );
+            plot_region_2->range( -1 , 1 , 1 );
+
+            /*
+             *  Timer
+             */
+            time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
+            this->renderables.push_front( time_renderer.get() );
+      
+            time_renderer->pos(1200 , 10);
+
             iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
        
             *composite << (*iterator_renderer);
-        }
+            
+            (*runner) << dynamic_cast<L3::TemporalObserver*>(plot1) << dynamic_cast<L3::TemporalObserver*>(plot2);
         
+        }
 };
 
 /*
