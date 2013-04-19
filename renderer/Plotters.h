@@ -48,8 +48,6 @@ namespace L3
                    
                     mData.resize( glv::Data::DOUBLE, 1, window.size() );
 
-                    std::cout << "Resize:" << window.size() << std::endl;
-
                     glv::Indexer i(mData.size(1));
 
                     int counter = 0;

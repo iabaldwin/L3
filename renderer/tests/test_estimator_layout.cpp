@@ -60,11 +60,9 @@ int main ()
 
     glv::Window win(1400, 800, "Visualisation::Layout");
 
-    L3::Visualisers::EstimatorLayout layout(win);
+    L3::Visualisers::EstimatorLayout layout(win,&dataset);
 
     glv::GLV top;
-
-    layout.load( &runner );
 
     layout.run( top );
 

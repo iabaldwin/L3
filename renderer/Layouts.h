@@ -93,20 +93,9 @@ class DatasetLayout : public Layout
 {
     public:
 
-        DatasetLayout( glv::Window& win ) : Layout(win)
+        DatasetLayout( glv::Window& win, L3::Dataset* dataset ) : Layout(win), dataset(dataset)
         {
-
-        }
-
-        const L3::Dataset*                                  dataset;
-        std::auto_ptr< L3::DatasetRunner >                  runner;
-        boost::shared_ptr< TextRenderer<double> >           time_renderer;
-        std::auto_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
-
-        void load( L3::Dataset* d ) 
-        {
-            dataset = d;
-
+            
             // Start the dataset runner
             runner.reset( new L3::DatasetRunner( dataset ) );
             runner->start( dataset->start_time );
@@ -116,13 +105,17 @@ class DatasetLayout : public Layout
              */
             plot1 = new L3::Visualisers::LinearVelocityPlotter( runner->LHLV_iterator.get() );
             plot1->stroke( 2.0 );
+            plot1->drawUnderGrid(true);
 
             plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
             plot_region_1->range( 0, 1000, 0 );
             plot_region_1->range( -1, 10 , 1 );
 
+            plot_region_1->numbering(true);
+            plot_region_1->showNumbering(true);
+
             /*
-             *Rotational Velocity
+             *  Rotational Velocity
              */
             plot2 = new L3::Visualisers::RotationalVelocityPlotter( runner->LHLV_iterator.get() );
             plot2->stroke( 2.0 );
@@ -136,42 +129,41 @@ class DatasetLayout : public Layout
              */
             time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
             this->renderables.push_front( time_renderer.get() );
-      
+
             time_renderer->pos(1200 , 10);
 
             iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
-       
+
             *composite << (*iterator_renderer);
-            
+
             (*runner) << dynamic_cast<L3::TemporalObserver*>(plot1) << dynamic_cast<L3::TemporalObserver*>(plot2);
-        
+
         }
+
+        virtual ~DatasetLayout()
+        {
+
+        }
+
+        const L3::Dataset*                          dataset;
+        boost::shared_ptr< L3::DatasetRunner >      runner;
+        boost::shared_ptr< TextRenderer<double> >   time_renderer;
+        boost::shared_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
+
 };
 
 /*
  *  Estimator specific
  */
-class EstimatorLayout : public Layout
+class EstimatorLayout : public DatasetLayout
 {
     public:
 
-        EstimatorLayout( glv::Window& win ) : Layout(win)
+        EstimatorLayout( glv::Window& win, L3::Dataset* dataset ) : DatasetLayout(win,dataset)
         {
 
         }
 
-        L3::EstimatorRunner*                runner;
-        const L3::Dataset*                  dataset;
-
-        ~EstimatorLayout()
-        {
-        }
-
-        void load( L3::EstimatorRunner* runner ) 
-        {
-            this->runner = runner;
-        }
-        
 };
 
 
