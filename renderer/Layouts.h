@@ -69,18 +69,18 @@ class Layout
 
     protected:
 
-        glv::Window&    window; 
-        glv::View*      main_view;
+        glv::Window& window; 
+        glv::View*   main_view;
 
-        glv::Plottable*         plot1;
-        glv::Plot*              plot_region_1;
+        glv::Plottable* plot1;
+        glv::Plot*      plot_region_1;
 
-        glv::Plottable*         plot2;
-        glv::Plot*              plot_region_2;
+        glv::Plottable* plot2;
+        glv::Plot*      plot_region_2;
 
-        std::auto_ptr<L3::Visualisers::Composite>   composite;
-        std::auto_ptr<L3::Visualisers::Controller>  controller;
-        std::auto_ptr<L3::Visualisers::Grid>        grid;
+        boost::shared_ptr<L3::Visualisers::Composite>   composite;
+        boost::shared_ptr<L3::Visualisers::Controller>  controller;
+        boost::shared_ptr<L3::Visualisers::Grid>        grid;
 
         std::list< glv::View* >                     renderables;
 
@@ -159,10 +159,32 @@ class EstimatorLayout : public DatasetLayout
 {
     public:
 
-        EstimatorLayout( glv::Window& win, L3::Dataset* dataset ) : DatasetLayout(win,dataset)
+        EstimatorLayout( glv::Window& win, L3::Dataset* dataset, L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, L3::PointCloud<double>* run_time_swathe ) : DatasetLayout(win,dataset), runner(runner), experience(experience)
         {
+            // Histogram view
+            histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramPixelRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
+            histogram_pixel_renderer_experience->pos(win.width()-510,10);
+            this->renderables.push_front( histogram_pixel_renderer_experience.get() );
 
+
+            histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
+
+            point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( run_time_swathe ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
+
+            runtime_cloud_renderer.reset( new L3::Visualisers::PointCloudRenderer( run_time_swathe ));
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
         }
+    
+        L3::EstimatorRunner* runner;
+            
+        boost::shared_ptr< L3::Experience> experience ;
+            
+        boost::shared_ptr< L3::Visualisers::PointCloudRenderer >        runtime_cloud_renderer; 
+        boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >   histogram_bounds_renderer;
+        boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >  point_cloud_bounds_renderer;
+        boost::shared_ptr< L3::Visualisers::HistogramPixelRenderer >    histogram_pixel_renderer_experience;
 
 };
 

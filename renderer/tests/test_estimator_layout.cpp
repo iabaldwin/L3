@@ -9,15 +9,24 @@
 #include "Visualisers.h"
 #include "Layouts.h"
 
-int main ()
+int main( int argc, char* argv[] )
 {
+    if ( argc != 2 ) 
+    {
+        std::cerr << "Usage: " << argv[0] << " <dataset>" << std::endl;
+        exit(-1);
+    }
+
+    char* dataset_directory = argv[1];
  
     /*
      *  L3
      */
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+    L3::Dataset dataset( dataset_directory );
+   
     if( !( dataset.validate() && dataset.load() ) )
-        throw std::exception();
+        exit(-1);
 
     // Configuration
     L3::Configuration::Mission mission( dataset );
@@ -58,9 +67,9 @@ int main ()
           .setSwatheBuilder( &swathe_builder )
           .start( dataset.start_time );
 
-    glv::Window win(1400, 800, "Visualisation::Layout");
+    glv::Window win(1400, 800, "Visualisation::EstimatorLayout");
 
-    L3::Visualisers::EstimatorLayout layout(win,&dataset);
+    L3::Visualisers::EstimatorLayout layout(win, &dataset, &runner, experience, point_cloud );
 
     glv::GLV top;
 

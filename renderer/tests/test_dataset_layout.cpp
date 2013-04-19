@@ -11,10 +11,10 @@ int main( int argc, char* argv[] )
     {
         L3::Dataset dataset( dataset_directory );
 
-        if( !(dataset.validate() && dataset.load() ))
+        if( !(dataset.validate() && dataset.load() ) )
             exit(-1);
         
-        glv::Window win(1400, 800, "Visualisation::Layout");
+        glv::Window win(1400, 800, "Visualisation::DatasetLayout");
 
         L3::Visualisers::DatasetLayout layout(win, &dataset);
 
