@@ -33,27 +33,14 @@ namespace Visualisers
     template <typename T>
     void IteratorRenderer<T>::onDraw3D( glv::GLV& g )
     {
-        // Reserve
-        boost::scoped_array< glv::Point3 > vertices( new glv::Point3[iterator->window.size()] );
-        boost::scoped_array< glv::Color >  colors( new glv::Color[iterator->window.size()] );
+        std::deque< std::pair< double, boost::shared_ptr<T> > > window;
 
-        typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator->window.begin();
+        iterator->getWindow( window );
+        typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
 
-        int counter = 0;
+        while( it != window.end() )
+            L3::Visualisers::CoordinateSystem( it++->second ).onDraw3D( g );
 
-        while( it != iterator->window.end() )
-        {
-            vertices[counter]( it->second->X(), it->second->Y(), 0 );
-            colors[counter].set( 0, 255, 0);
-            
-            counter++;
-            it++; 
-        }
-    
-        glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), counter );
-
-        //delete [] colors;
-        //delete [] vertices;
     }
 
     /*

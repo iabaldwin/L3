@@ -13,9 +13,12 @@ namespace L3
         struct VelocityPlotter : glv::Plottable, TemporalObserver
         {
             VelocityPlotter( L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator )
-                : iterator(lhlv_iterator)
+                : glv::Plottable( glv::draw::LineStrip, 1, glv::Color(0)),
+                    iterator(lhlv_iterator)
             {
                 index = -1;
+                    
+                data.resize( glv::Data::DOUBLE, 1, 10000 );
             }
 
             virtual ~VelocityPlotter()
@@ -25,6 +28,10 @@ namespace L3
             int                                     index;
             glv::Data                               data;
             L3::ConstantTimeIterator< L3::LHLV>*    iterator; 
+
+            void onMap( glv::GraphicsData& b, const glv::Data& d, const glv::Indexer& i){
+                std::cout << "BYE" << std::endl;
+            }
 
             bool update( double )
             {
