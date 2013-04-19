@@ -188,7 +188,6 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
     glv::draw::pop();
 }
 
-
 /*
  *  Point cloud :: vertex renderer
  */
@@ -206,7 +205,7 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
     void PointCloudRenderer::onDraw3D( glv::GLV& g )
     {
         boost::scoped_ptr< L3::PointCloud<double> > point_cloud( new L3::PointCloud<double>()  );
-        
+      
         L3::ReadLock lock( cloud->mutex );
         L3::copy( cloud, point_cloud.get() );
         lock.unlock();

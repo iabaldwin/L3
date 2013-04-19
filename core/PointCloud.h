@@ -79,7 +79,6 @@ struct PointCloud  : Lockable
     size_t num_points;
     L3::Point<T>* points;
 
-
     ~PointCloud()
     {
         if (num_points > 0 && points )

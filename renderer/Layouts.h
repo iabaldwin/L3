@@ -39,6 +39,8 @@ class Layout
 
             // Accumulate
             (*main_view) << ( *composite << *grid );
+       
+            this->renderables.push_front( main_view );
         }
         
         virtual ~Layout()
@@ -51,7 +53,8 @@ class Layout
             top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
            
             // Add core
-            top << (*main_view ) << plot_region_1 << plot_region_2;
+            //top << (*main_view ) << plot_region_1 << plot_region_2;
+            //top << (*main_view );
   
             // Add renderables provided by children
             std::list< glv::View* >::iterator it = renderables.begin();
@@ -72,12 +75,7 @@ class Layout
         glv::Window& window; 
         glv::View*   main_view;
 
-        glv::Plottable* plot1;
-        glv::Plot*      plot_region_1;
-
-        glv::Plottable* plot2;
-        glv::Plot*      plot_region_2;
-
+        
         boost::shared_ptr<L3::Visualisers::Composite>   composite;
         boost::shared_ptr<L3::Visualisers::Controller>  controller;
         boost::shared_ptr<L3::Visualisers::Grid>        grid;
@@ -86,10 +84,23 @@ class Layout
 
 };
 
+
+struct Common 
+{
+
+    glv::Plottable* plot1;
+    glv::Plot*      plot_region_1;
+
+    glv::Plottable* plot2;
+    glv::Plot*      plot_region_2;
+
+};
+
+
 /*
  *  Dataset 
  */
-class DatasetLayout : public Layout
+class DatasetLayout : public Layout, public Common
 {
     public:
 
@@ -113,6 +124,8 @@ class DatasetLayout : public Layout
 
             plot_region_1->numbering(true);
             plot_region_1->showNumbering(true);
+            
+            this->renderables.push_front( plot_region_1 );
 
             /*
              *  Rotational Velocity
@@ -123,19 +136,28 @@ class DatasetLayout : public Layout
             plot_region_2 = new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plot2 );
             plot_region_2->range( 0, 1000, 0 );
             plot_region_2->range( -1 , 1 , 1 );
+            
+            this->renderables.push_front( plot_region_2 );
 
             /*
              *  Timer
              */
             time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
+            time_renderer->pos(1200 , 10);
+            
             this->renderables.push_front( time_renderer.get() );
 
-            time_renderer->pos(1200 , 10);
 
+            /*
+             *Pose Iterator
+             */
             iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
-
             *composite << (*iterator_renderer);
 
+
+            /*
+             *Temporal updates
+             */
             (*runner) << dynamic_cast<L3::TemporalObserver*>(plot1) << dynamic_cast<L3::TemporalObserver*>(plot2);
 
         }
@@ -155,17 +177,17 @@ class DatasetLayout : public Layout
 /*
  *  Estimator specific
  */
-class EstimatorLayout : public DatasetLayout
+class EstimatorLayout : public Layout, public Common
 {
     public:
 
-        EstimatorLayout( glv::Window& win, L3::Dataset* dataset, L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, L3::PointCloud<double>* run_time_swathe ) : DatasetLayout(win,dataset), runner(runner), experience(experience)
+        EstimatorLayout( glv::Window& win, L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, L3::PointCloud<double>* run_time_swathe ) 
+            : Layout(win), runner(runner), experience(experience)
         {
             // Histogram view
             histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramPixelRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
             histogram_pixel_renderer_experience->pos(win.width()-510,10);
             this->renderables.push_front( histogram_pixel_renderer_experience.get() );
-
 
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
@@ -178,7 +200,6 @@ class EstimatorLayout : public DatasetLayout
         }
     
         L3::EstimatorRunner* runner;
-            
         boost::shared_ptr< L3::Experience> experience ;
             
         boost::shared_ptr< L3::Visualisers::PointCloudRenderer >        runtime_cloud_renderer; 

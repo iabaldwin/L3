@@ -27,7 +27,7 @@ class Projector
             calibration = calib->getHomogeneous(); 
 
             // Pre-allocate
-            cloud->points = new L3::Point<T>[ allocated_size*541 ]; 
+            reallocate( allocated_size*541 ); 
         }
 
         void reallocate( size_t size )
