@@ -37,14 +37,12 @@ int main( int argc, char* argv[] )
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
     // Constant time iterator over poses
-    //L3::ConstantTimeIterator< L3::SE3 >  ins_pose_iterator( dataset.pose_reader );
     L3::ConstantTimeIterator< L3::LHLV >  integrated_pose_iterator( dataset.LHLV_reader );
 
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
   
     // Pose Windower
-    //L3::ConstantTimeWindower<L3::SE3> pose_windower( &ins_pose_iterator );
     L3::ConstantTimeWindower<L3::LHLV> pose_windower( &integrated_pose_iterator );
     
     // Swathe builder
@@ -53,7 +51,7 @@ int main( int argc, char* argv[] )
     // Projection
     L3::SE3 projection(0,0,0,.1,.2,.3);
     L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
-    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
+    boost::shared_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
