@@ -193,7 +193,8 @@ class EstimatorLayout : public Layout
             histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramPixelRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
             histogram_pixel_renderer_experience->pos(win.width()-510,10);
             this->renderables.push_front( histogram_pixel_renderer_experience.get() );
-
+            updater->operator<<( dynamic_cast<Updateable*>(histogram_pixel_renderer_experience.get()) );
+            
             // Histogram Bounds
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
@@ -206,10 +207,9 @@ class EstimatorLayout : public Layout
             runtime_cloud_renderer.reset( new L3::Visualisers::PointCloudRenderer( run_time_swathe ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
 
-            addLinearVelocityPlot( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
-            addRotationalVelocityPlot( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
+            //addLinearVelocityPlot( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
+            //addRotationalVelocityPlot( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
 
-            updater->operator<<( dynamic_cast<Updateable*>(histogram_pixel_renderer_experience.get()) );
 
         }
     

@@ -37,13 +37,15 @@ int main( int argc, char* argv[] )
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::LHLV >  integrated_pose_iterator( dataset.LHLV_reader );
+    L3::ConstantTimeIterator< L3::SE3 >     oracle_source( dataset.pose_reader );
+    L3::ConstantTimeIterator< L3::LHLV >    integrated_pose_iterator( dataset.LHLV_reader );
 
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
   
     // Pose Windower
-    L3::ConstantTimeWindower<L3::LHLV> pose_windower( &integrated_pose_iterator );
+    L3::ConstantTimeWindower<L3::SE3>   oracle( &oracle_source);
+    L3::ConstantTimeWindower<L3::LHLV>  pose_windower( &integrated_pose_iterator );
     
     // Swathe builder
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
@@ -59,9 +61,12 @@ int main( int argc, char* argv[] )
 
     // Create runner
     L3::EstimatorRunner runner;
-    
+
+    runner << dynamic_cast<L3::TemporalObserver*>(&oracle);
+
     runner.setExperience( &*experience )
-          .setPoseProvider( &pose_windower )
+          //.setPoseProvider( &pose_windower )
+          .setPoseProvider( &oracle )
           .setProjector( &*projector )
           .setEstimator( &estimator  )
           .setSwatheBuilder( &swathe_builder )

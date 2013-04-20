@@ -96,6 +96,8 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::Projector<double>*                      projector;
     L3::Estimator::Estimator<double>*           estimator;
 
+    std::list < TemporalObserver* >             observers;
+
     void run();
     bool update( double time );
 
@@ -126,6 +128,12 @@ struct EstimatorRunner : ThreadedTemporalRunner
     EstimatorRunner& setSwatheBuilder( L3::SwatheBuilder* swathe_builder )
     {
         this->swathe_builder = swathe_builder;
+        return *this;
+    }
+
+    EstimatorRunner& operator<<( L3::TemporalObserver* observer )
+    {
+        observers.push_front( observer ); 
         return *this;
     }
 

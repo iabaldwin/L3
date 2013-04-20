@@ -10,8 +10,25 @@ namespace L3
 
         std::cout.precision( 16 );
 
+        double current;
+
         while( running )
-            this->update( start_time + t.elapsed() );
+        {
+            current = start_time + t.elapsed();
+
+            /*
+             *Update all watchers
+             */
+            for( std::list < TemporalObserver* >::iterator it = observers.begin(); 
+                    it != observers.end(); 
+                    it++ )
+                (*it)->update( current );
+
+            /*
+             *Do estimation
+             */
+            this->update( current );
+        }
 
     }
 
@@ -24,7 +41,7 @@ namespace L3
         swathe_builder->update( time );
 
         // Get the pose from the pose provider
-        L3::SE3 pose = (*provider)();
+        L3::SE3 pose = provider->operator()();
 
         // Update the experience
         experience->update( pose.X(), pose.Y() );
