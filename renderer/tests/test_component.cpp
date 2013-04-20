@@ -13,8 +13,8 @@ struct test_component : L3::Visualisers::Component
 
     void onDraw3D(glv::GLV& g)
     {
-        far( 500 );
-        glv::draw::translateZ( -400 );
+        far( 1000 );
+        glv::draw::translateZ( -500 );
         glv::Point3 pts[1000];
         glv::Color colors[1000];
 

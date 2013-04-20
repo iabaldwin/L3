@@ -64,7 +64,7 @@ int main (int argc, char ** argv)
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
 
     // Responsible for building poses
-    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    L3::ConstantTimeWindower<L3::SE3>  pose_windower( &pose_iterator );
 
     // Generating swathe
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
@@ -85,7 +85,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add watchers
     composite << swathe_renderer << pose_renderer <<  grid;

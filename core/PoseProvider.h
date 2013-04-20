@@ -5,6 +5,7 @@
 #include <Poco/Thread.h>
 
 #include "Iterator.h"
+#include "ChainBuilder.h"
 
 namespace L3
 {
@@ -56,12 +57,12 @@ struct CircularPoseProvider : PoseProvider, Poco::Runnable
     L3::SE3 operator()() 
     {
         L3::SE3 pose(x,y,0,0,0,0);
+            
+        range = 100;
 
         if (update)
         {
             angle+=( M_PI/180.0 )* 5;
-
-            range = 100;
 
             x = range*cos(angle);
             y = range*sin(angle);
@@ -78,25 +79,26 @@ struct CircularPoseProvider : PoseProvider, Poco::Runnable
  */
 struct PoseWindower : PoseProvider, TemporalObserver
 {
-    //virtual bool update( double ) = 0;
-
     std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > >* window;
 };
 
 /*
- *  Constant time windower
+ *  Constant time INS windower
  */
-class ConstantTimePoseWindower : public PoseWindower
+template <typename T>
+class ConstantTimeWindower : public PoseWindower
 {
     public:
         
-        ConstantTimePoseWindower( L3::ConstantTimeIterator<L3::SE3>* iterator ) 
+        //ConstantTimeINSWindower( L3::ConstantTimeIterator<L3::SE3>* iterator ) 
+        ConstantTimeWindower( L3::ConstantTimeIterator<T>* iterator ) 
             : constant_time_iterator (iterator)
         {
             this->window = &(iterator->window);
         }
         
-        L3::ConstantTimeIterator<L3::SE3>* constant_time_iterator;
+        //L3::ConstantTimeIterator<L3::SE3>* constant_time_iterator;
+        L3::ConstantTimeIterator<T>* constant_time_iterator;
 
         bool update( double t)
         {
@@ -105,13 +107,50 @@ class ConstantTimePoseWindower : public PoseWindower
 
         L3::SE3 operator()( void )
         {
-
             if ( this->constant_time_iterator->window.size() > 0 )
                 return *(this->constant_time_iterator->window.back().second);
             else
                 return L3::SE3::ZERO();
         }
 };
+
+/*
+ *  LHLV Windower
+ */
+template <>
+class ConstantTimeWindower<L3::LHLV> : public PoseWindower
+{
+    public:
+        
+        ConstantTimeWindower( L3::ConstantTimeIterator<L3::LHLV>* iterator ) 
+            : constant_time_iterator(iterator)
+        {
+            chain_builder.reset( new L3::ChainBuilder( iterator ) );
+            
+            this->window = &chain_builder->window;
+       
+        }
+        
+        L3::ConstantTimeIterator<L3::LHLV>* constant_time_iterator;
+
+        boost::shared_ptr< L3::ChainBuilder > chain_builder;
+
+        bool update( double t)
+        {
+            //constant_time_iterator->update(t);
+            chain_builder->update(t);
+        }
+
+        L3::SE3 operator()( void )
+        {
+
+            //if ( this->constant_time_iterator->window.size() > 0 )
+            //return *(this->constant_time_iterator->window.back().second);
+            //else
+            return L3::SE3::ZERO();
+        }
+};
+
 
 
 

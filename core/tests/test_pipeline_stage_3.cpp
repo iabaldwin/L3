@@ -29,8 +29,8 @@ int main()
     
     pose_iterator.swathe_length = LIDAR_iterator.swathe_length;
     
-    L3::ConstantTimePoseWindower    pose_windower( &pose_iterator );
-    L3::SwatheBuilder               swathe_builder( &pose_windower, &LIDAR_iterator );
+    L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
+    L3::SwatheBuilder                 swathe_builder( &pose_windower, &LIDAR_iterator );
 
     /*
      *  Projection 

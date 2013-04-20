@@ -52,7 +52,8 @@ namespace L3
 
                     int counter = 0;
 
-                    while( i() && counter < window.size() ) 
+                    //while( i() && counter < window.size() ) 
+                    while( i() and counter < window.size() ) 
                     {
                         double d = window[counter++].second->data[index];
                         mData.assign( d, i[0], i[1] );

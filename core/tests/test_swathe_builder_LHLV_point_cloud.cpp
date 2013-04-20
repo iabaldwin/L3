@@ -5,7 +5,6 @@
 #include "Dataset.h"
 #include "Utils.h"
 #include "SwatheBuilder.h"
-#include "ChainBuilder.h"
 #include "PointCloud.h"
 #include "Configuration.h"
 #include "Projector.h"
@@ -21,13 +20,13 @@ int main()
         throw std::exception();
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::LHLV >    lhlv_iterator( dataset.LHLV_reader );
+    L3::ConstantTimeIterator< L3::LHLV >    LHLV_iterator( dataset.LHLV_reader );
 
     L3::ConstantTimeIterator< L3::LMS151 >  LIDAR_iterator( dataset.LIDAR_readers.begin()->second );
     LIDAR_iterator.swathe_length = 60;
-    lhlv_iterator.swathe_length = 60;
+    LHLV_iterator.swathe_length = 60;
    
-    L3::ChainBuilder pose_windower( &lhlv_iterator );
+    L3::ConstantTimeWindower<L3::LHLV> pose_windower( &LHLV_iterator );
    
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 

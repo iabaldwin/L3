@@ -32,7 +32,7 @@ int main (int argc, char ** argv)
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
   
     // Pose Windower
-    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
     
     // Swathe builder
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
@@ -74,7 +74,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::PointCloudBoundsRenderer   point_cloud_bounds_renderer( point_cloud );
     L3::Visualisers::PointCloudRenderer         runtime_cloud_renderer( point_cloud );
     
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add watchers
     composite << grid 

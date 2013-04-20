@@ -32,7 +32,7 @@ int main (int argc, char ** argv)
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
   
     // Pose Windower
-    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
     
     // Swathe builder
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );

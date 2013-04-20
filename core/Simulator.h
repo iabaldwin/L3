@@ -8,10 +8,10 @@ namespace L3
 {
 namespace Simulator
 {
-    struct LHLVGenerator : L3::Iterator<L3::LHLV>
+    struct LHLVGenerator : L3::ConstantTimeIterator<L3::LHLV>
     {
 
-        LHLVGenerator( double duration=10.0 ) : L3::Iterator<L3::LHLV>( boost::shared_ptr< L3::SlidingWindow<L3::LHLV > >()),  duration(duration)
+        LHLVGenerator( double duration=10.0 ) : L3::ConstantTimeIterator<L3::LHLV>( boost::shared_ptr< L3::SlidingWindow<L3::LHLV > >()),  duration(duration)
         {
 
         }

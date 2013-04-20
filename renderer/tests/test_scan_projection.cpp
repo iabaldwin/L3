@@ -31,7 +31,7 @@ int main (int argc, char ** argv)
     double time = dataset.start_time;
 
     // Windowed pose producer
-    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    L3::ConstantTimeWindower<L3::SE3>  pose_windower( &pose_iterator );
     
     // Swathe builder
     L3::SwatheBuilder swathe_builder( &pose_windower, &declined_lidar );

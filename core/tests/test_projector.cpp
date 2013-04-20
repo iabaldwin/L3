@@ -27,7 +27,7 @@ int main()
     /*
      *Pose provider
      */
-    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
    
     /*
      *Swathe builder

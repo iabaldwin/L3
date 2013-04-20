@@ -22,9 +22,7 @@ int main()
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers.begin()->second );
     LIDAR_iterator.swathe_length = 60;
    
-    //double time = dataset.start_time;
-
-    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
     
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 

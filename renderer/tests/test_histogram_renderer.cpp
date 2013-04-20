@@ -40,7 +40,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
     L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer( glv::Rect(500,300), histogram );
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add drawables and updateables
     top << (composite << grid << histogram_renderer <<  histogram_bounds_renderer ) << histogram_pixel_renderer;

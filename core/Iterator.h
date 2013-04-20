@@ -11,7 +11,6 @@
 #include "Windower.h"
 #include "Tools.h"
 #include "AbstractFactory.h"
-//#include "PoseProvider.h"
 
 namespace L3
 {
@@ -52,6 +51,10 @@ class ConstantTimeIterator : public Iterator<T>
         ConstantTimeIterator( boost::shared_ptr< L3::SlidingWindow<T> > window, double duration=10.0 )
             : Iterator<T>( window ), 
                 swathe_length(duration)
+        {
+        }
+
+        virtual ~ConstantTimeIterator()
         {
         }
 

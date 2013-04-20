@@ -37,15 +37,15 @@ int main( int argc, char* argv[] )
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
-    //L3::ConstantTimeIterator< L3::LHLV >  pose_iterator( dataset.LHLV_reader );
-   
+    //L3::ConstantTimeIterator< L3::SE3 >  ins_pose_iterator( dataset.pose_reader );
+    L3::ConstantTimeIterator< L3::LHLV >  integrated_pose_iterator( dataset.LHLV_reader );
 
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
   
     // Pose Windower
-    L3::ConstantTimePoseWindower pose_windower( &pose_iterator );
+    //L3::ConstantTimeWindower<L3::SE3> pose_windower( &ins_pose_iterator );
+    L3::ConstantTimeWindower<L3::LHLV> pose_windower( &integrated_pose_iterator );
     
     // Swathe builder
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );

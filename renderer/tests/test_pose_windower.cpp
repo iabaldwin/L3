@@ -27,18 +27,16 @@ int main (int argc, char ** argv)
     
     double time = dataset.start_time;
 
-    L3::ChainBuilder pose_windower( &iterator );
-    
+    L3::ConstantTimeWindower<L3::LHLV> pose_windower( &iterator ); 
+
     /*
      *Visualisation
      */
     glv::GLV top;
     glv::Window win(1400, 800, "Visualisation::PointCloud");
 
-    // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
     
-    // Point cloud renderer
     L3::Visualisers::Composite              composite;
     L3::Visualisers::BasicPanController     controller;
     L3::Visualisers::Grid                   grid;
