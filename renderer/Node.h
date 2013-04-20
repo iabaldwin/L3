@@ -8,9 +8,7 @@ namespace Visualisers
 
 struct Node
 {
-
     virtual void update() = 0;
-
 };
 
 struct Controllable : Node

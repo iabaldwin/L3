@@ -41,7 +41,7 @@ namespace L3
         //std::cout << "Projection\t" << t.elapsed() << std::endl;
 //#endif
       
-        (*estimator)( projector->cloud, (*provider)() );
+        //(*estimator)( projector->cloud, (*provider)() );
 
 #ifndef _NDEBUG
         std::cout << "Estimation\t" << t.elapsed() << std::endl;

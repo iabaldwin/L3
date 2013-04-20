@@ -22,7 +22,6 @@ class Layout
         
         Layout( glv::Window& win ) : window(win)
         {
-            
             // Create the main view
             main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
 
@@ -49,21 +48,11 @@ class Layout
 
         void run( glv::GLV& top )
         {
-            // Colors
             top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
            
-            // Add core
-            //top << (*main_view ) << plot_region_1 << plot_region_2;
-            //top << (*main_view );
-  
             // Add renderables provided by children
-            std::list< glv::View* >::iterator it = renderables.begin();
-
-            while( it != renderables.end() )
-            {
+            for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                 top << *it;
-                it++;
-            }
 
             window.setGLV(top);
 
@@ -194,14 +183,13 @@ class EstimatorLayout : public Layout, public Common
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
 
             // Swathe Bounds
-            histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
             point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( run_time_swathe ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
 
             // Swathe Cloud
             runtime_cloud_renderer.reset( new L3::Visualisers::PointCloudRenderer( run_time_swathe ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
-        
+
             /*
              *  Linear Velocity
              */
@@ -214,9 +202,20 @@ class EstimatorLayout : public Layout, public Common
             plot_region_1->range( -1, 10 , 1 );
 
             this->renderables.push_front( plot_region_1 );
+     
+            /*
+             *  Updateables
+             */
+            updater.reset( new Updater() );
+            
+            updater->operator<<( histogram_pixel_renderer_experience.get() );
+            updater->operator<<( dynamic_cast<Updateable*>(plot1) );
+
+            this->renderables.push_front( updater.get() );
         }
     
         L3::EstimatorRunner* runner;
+        boost::shared_ptr< Updater > updater;
         boost::shared_ptr< L3::Experience> experience ;
             
         boost::shared_ptr< L3::Visualisers::PointCloudRenderer >        runtime_cloud_renderer; 

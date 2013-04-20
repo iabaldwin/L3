@@ -9,7 +9,7 @@ namespace L3
 {
     namespace Visualisers
     {
-        struct VelocityPlotter : glv::Plottable, TemporalObserver, Lockable
+        struct VelocityPlotter : glv::Plottable, Lockable, Updateable
         {
             VelocityPlotter( L3::ConstantTimeIterator< L3::LHLV >* lhlv_iterator )
                 : glv::Plottable( glv::draw::LineStrip, 1 ),
@@ -36,7 +36,7 @@ namespace L3
                 }
             }
 
-            bool update( double )
+            void update()
             {
                 std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
 

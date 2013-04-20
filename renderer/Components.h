@@ -15,6 +15,28 @@ namespace L3
 namespace Visualisers
 {
 
+struct Updateable
+{
+    virtual void update() = 0;
+};
+
+struct Updater : glv::View
+{
+    void onDraw(glv::GLV& g)
+    {
+        for( std::list< Updateable* >::iterator it = updateables.begin(); it != updateables.end(); it++ )
+            (*it)->update();
+    }
+
+    std::list < Updateable* > updateables;
+    Updater& operator<<( Updateable* updateable )
+    {
+        updateables.push_front( updateable );
+    }
+};
+
+
+
 /*
  *Single entity for 3D rendering
  */
@@ -72,10 +94,10 @@ struct Composite : glv::View3D
         position.z = -500; 
     }
 
-    control_t       position ;
-    L3::Visualisers::Controller* controller;
+    control_t                       position ;
+    std::list<Leaf*>                components; 
+    L3::Visualisers::Controller*    controller;
 
-    std::list<Leaf*>        components; 
 
     void apply( control_t t )
     {
@@ -135,8 +157,6 @@ struct CoordinateSystem
 template <typename T> 
 struct TextRenderer : glv::View
 {
-
-    //explicit TextRenderer( T& v = 0 ) : t(v), glv::View( glv::Rect(500,0,150,25 ) )
     explicit TextRenderer( T& v = 0 ) : t(v), glv::View( glv::Rect(150,25 ) )
     {
     }
@@ -243,32 +263,19 @@ struct HistogramVertexRenderer : HistogramRenderer, Leaf
     void onDraw3D(glv::GLV& g);
 };
 
-struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Poco::Runnable
+/*
+ *  Histogram :: Pixel renderer
+ */
+struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Updateable
 {
 	HistogramPixelRenderer(const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram  )
-        : glv::Plot(r), HistogramRenderer(histogram), running(true)
+        : glv::Plot(r), HistogramRenderer(histogram)
     {
         // Assign density plot
         this->add(*new glv::PlotDensity( glv::Color(1)) );
-   
-        thread.start( *this );
-   
-        t.restart();
     }
 
-    ~HistogramPixelRenderer()
-    {
-        running = false;
-   
-        if (thread.isRunning())
-            thread.join();
-    }
-
-    boost::timer    t;
-    Poco::Thread    thread;
-    bool            running;
-
-    void run();
+    void update();
 };
 
 /*

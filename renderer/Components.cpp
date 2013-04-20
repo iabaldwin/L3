@@ -123,30 +123,22 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
  *  Components :: HistogramPixelRenderer
  */
 
-void HistogramPixelRenderer::run()
+void HistogramPixelRenderer::update()
 {
-    while( running )
+    L3::ReadLock( hist->mutex );
+
+    // Aspect ratio?
+    //float aspect_ratio = (float)hist->y_bins/(float)hist->x_bins;
+    //int w = this->width();
+    //this->height( w * aspect_ratio );
+
+    data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
+
+    for( unsigned int i=0; i< hist->x_bins; i++ )
     {
-        if( t.elapsed() > 1.0 )
+        for( unsigned int j=0; j< hist->y_bins; j++ )
         {
-            t.restart();
-
-            L3::ReadLock( hist->mutex );
-
-            // Aspect ratio?
-            //float aspect_ratio = (float)hist->y_bins/(float)hist->x_bins;
-            //int w = this->width();
-            //this->height( w * aspect_ratio );
-
-            data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
-
-            for( unsigned int i=0; i< hist->x_bins; i++ )
-            {
-                for( unsigned int j=0; j< hist->y_bins; j++ )
-                {
-                    data().assign( hist->bin(i,j)/10.0 , 0, i, j );
-                }
-            }
+            data().assign( hist->bin(i,j)/10.0 , 0, i, j );
         }
     }
 }
