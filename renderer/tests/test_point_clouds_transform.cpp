@@ -18,6 +18,7 @@ struct Transformer : L3::Visualisers::Leaf
     }
 
     L3::PointCloud<T>* cloud;
+    
     boost::timer t;
 
     void onDraw3D( glv::GLV& g )
@@ -49,14 +50,13 @@ int main (int argc, char ** argv)
     glv::GLV top;
     glv::Window win(1400, 800, "Visualisation::PointCloud");
 
-    // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     L3::Visualisers::Composite          composite_view;
     L3::Visualisers::BasicPanController controller;
     L3::Visualisers::Grid               grid;
 
-    composite_view.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
+    composite_view.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Transform tester
     Transformer<double> transformer( cloud );

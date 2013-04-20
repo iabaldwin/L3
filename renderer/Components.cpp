@@ -213,7 +213,10 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
         L3::sample( point_cloud.get(), plot_cloud.get(), plot_cloud->num_points );
 
         for( int i=0; i<plot_cloud->num_points; i++) 
+        {
             vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
+            //colors[i].set(  
+        }
 
         glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
 

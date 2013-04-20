@@ -184,19 +184,36 @@ class EstimatorLayout : public Layout, public Common
         EstimatorLayout( glv::Window& win, L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, L3::PointCloud<double>* run_time_swathe ) 
             : Layout(win), runner(runner), experience(experience)
         {
-            // Histogram view
+            // Histogram voxels
             histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramPixelRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
             histogram_pixel_renderer_experience->pos(win.width()-510,10);
             this->renderables.push_front( histogram_pixel_renderer_experience.get() );
 
+            // Histogram Bounds
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
 
+            // Swathe Bounds
+            histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
             point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( run_time_swathe ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
 
+            // Swathe Cloud
             runtime_cloud_renderer.reset( new L3::Visualisers::PointCloudRenderer( run_time_swathe ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
+        
+            /*
+             *  Linear Velocity
+             */
+            plot1 = new L3::Visualisers::LinearVelocityPlotter( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
+            plot1->stroke( 2.0 );
+            plot1->drawUnderGrid(true);
+
+            plot_region_1 = new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plot1 );
+            plot_region_1->range( 0, 1000, 0 );
+            plot_region_1->range( -1, 10 , 1 );
+
+            this->renderables.push_front( plot_region_1 );
         }
     
         L3::EstimatorRunner* runner;

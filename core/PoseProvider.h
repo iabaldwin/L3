@@ -12,7 +12,10 @@ namespace L3
 
 struct PoseProvider : std::unary_function< L3::SE3, void >
 {
-    virtual L3::SE3 operator()() = 0;
+    virtual L3::SE3 operator()() 
+    {
+        return L3::SE3::ZERO();
+    }
 };
 
 /*
@@ -125,30 +128,23 @@ class ConstantTimeWindower<L3::LHLV> : public PoseWindower
         ConstantTimeWindower( L3::ConstantTimeIterator<L3::LHLV>* iterator ) 
             : constant_time_iterator(iterator)
         {
+            // Poses from velocity
             chain_builder.reset( new L3::ChainBuilder( iterator ) );
-            
+           
+            // Reflection
             this->window = &chain_builder->window;
-       
         }
-        
+       
+        // Iterator base
         L3::ConstantTimeIterator<L3::LHLV>* constant_time_iterator;
 
         boost::shared_ptr< L3::ChainBuilder > chain_builder;
 
         bool update( double t)
         {
-            //constant_time_iterator->update(t);
             chain_builder->update(t);
         }
 
-        L3::SE3 operator()( void )
-        {
-
-            //if ( this->constant_time_iterator->window.size() > 0 )
-            //return *(this->constant_time_iterator->window.back().second);
-            //else
-            return L3::SE3::ZERO();
-        }
 };
 
 
