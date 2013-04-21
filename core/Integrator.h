@@ -10,18 +10,34 @@ namespace L3
     struct LengthEstimator 
     {
 
-        LengthEstimator();
+        LengthEstimator() : initialised(false), previous( L3::SE3::ZERO() )
+        {
+        }
 
         bool initialised;
         L3::SE3 previous;
 
-        double operator()( L3::SE3 current );
+        double operator()( L3::SE3 current )
+        {
+            if ( !initialised )  
+            {
+                previous = current;
+                initialised = true;
+                return 0.0;
+            }
+            else
+            {
+                double n = L3::Math::norm( previous, current );
+                previous = current;
+                return n;
+            }
 
+        }
     };
 
     template <typename InputIterator, typename OutputIterator >
         void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output );
-        
+
 }
 
 #endif

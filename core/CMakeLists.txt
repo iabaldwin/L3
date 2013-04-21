@@ -8,7 +8,6 @@ add_library( L3
     Writer.cpp 
     Experience.cpp 
     Projector.cpp 
-    ChainBuilder.cpp 
     Configuration.cpp 
     Estimator.cpp 
     Runner.cpp 

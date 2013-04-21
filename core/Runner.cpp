@@ -52,7 +52,10 @@ namespace L3
         
         L3::WriteLock point_cloud_lock( projector->cloud->mutex );
         projector->project( swathe_builder->swathe );
+        L3::transform( projector->cloud, &pose );
         point_cloud_lock.unlock();
+
+
 
 //#ifndef _NDEBUG
         //std::cout << "Projection\t" << t.elapsed() << std::endl;

@@ -15,10 +15,7 @@ std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::stri
     double tmp;
 
     while ( ss >> tmp )
-    {
         elements.push_back( tmp ); 
-    }
-
 
     return AbstractFactory<T>::produce( elements );
 }
@@ -42,9 +39,7 @@ std::pair< double, boost::shared_ptr<L3::SE3> > AbstractFactory<L3::SE3>::produc
     double tmp;
     
     while ( ss >> tmp )
-    {
         elements.push_back( tmp ); 
-    }
 
 
     return AbstractFactory<L3::SE3>::produce( elements );
@@ -68,9 +63,7 @@ std::pair< double, boost::shared_ptr<L3::LIDAR> >  AbstractFactory<L3::LIDAR>::p
     double tmp;
     
     while ( ss >> tmp )
-    {
         elements.push_back( tmp ); 
-    }
     
     return AbstractFactory<L3::LIDAR>::produce( elements );
 }
@@ -101,9 +94,7 @@ std::pair< double, boost::shared_ptr<L3::Pose> >  AbstractFactory<L3::Pose>::pro
     double tmp;
     
     while ( ss >> tmp )
-    {
         elements.push_back( tmp ); 
-    }
 
     return AbstractFactory<L3::Pose>::produce( elements );
 }
