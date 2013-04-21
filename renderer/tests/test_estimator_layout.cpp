@@ -22,7 +22,6 @@ int main( int argc, char* argv[] )
     /*
      *  L3
      */
-    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     L3::Dataset dataset( dataset_directory );
    
     if( !( dataset.validate() && dataset.load() ) )
@@ -41,7 +40,7 @@ int main( int argc, char* argv[] )
     L3::ConstantTimeIterator< L3::LHLV >    integrated_pose_iterator( dataset.LHLV_reader );
 
     // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
+    L3::ConstantTimeIterator< L3::LMS151 >  LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
   
     // Pose Windower
     L3::ConstantTimeWindower<L3::SE3>   oracle( &oracle_source);

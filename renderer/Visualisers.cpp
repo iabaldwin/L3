@@ -203,6 +203,34 @@ namespace Visualisers
         glv::draw::paint( glv::draw::Points, point_vertices.get(), point_colors.get(), cloud->num_points );
     }
 
+    /*
+     *  Predictor Renderer
+     */
+
+    void PredictorRenderer::onDraw3D( glv::GLV& g )
+    {
+        L3::SE3 predicted = L3::SE3::ZERO();
+        L3::SE3 current = L3::SE3::ZERO();
+
+        L3::Predictor predictor;
+
+        if ( std::distance( pose_windower->constant_time_iterator->window.begin(), 
+                    pose_windower->constant_time_iterator->window.end() ) > 0 )
+        {
+            predictor.predict( predicted, 
+                    current, 
+                    pose_windower->constant_time_iterator->window.begin(), 
+                    pose_windower->constant_time_iterator->window.end() );
+
+            for ( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = predictor.chain.begin(); 
+                    it != predictor.chain.end(); 
+                    it++ )
+                CoordinateSystem( it->second ).onDraw3D(g);
+
+        }
+    }
+
+
 }
 }
 

@@ -16,6 +16,7 @@ add_library( L3
     Integrator.cpp 
     Simulator.cpp 
     Predictor.cpp
+    Misc.cpp
     )
 
 target_link_libraries( L3 config++ gsl PocoFoundation tbb )

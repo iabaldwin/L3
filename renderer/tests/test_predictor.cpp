@@ -15,6 +15,7 @@ int main (int argc, char ** argv)
      *L3
      */
     L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+    
     if( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
@@ -32,6 +33,7 @@ int main (int argc, char ** argv)
 
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
+
     /*
      *  Visualisation
      */
@@ -45,13 +47,14 @@ int main (int argc, char ** argv)
     L3::Visualisers::BasicPanController     controller;
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
+    L3::Visualisers::PredictorRenderer      predictor_renderer( &pose_windower ); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     L3::Visualisers::VisualiserRunner runner( dataset.start_time );
     runner << &swathe_builder << &pose_windower;
 
-    top << (composite << swathe_renderer << pose_renderer << grid  << runner);
+    top << (composite << swathe_renderer << pose_renderer << grid << predictor_renderer << runner);
     
     win.setGLV(top);
   

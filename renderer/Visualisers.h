@@ -184,6 +184,25 @@ struct EstimatorRenderer : Leaf
 };
 
 
+/*
+ *  Predictor Renderer
+ */
+struct PredictorRenderer : Leaf
+{
+    PredictorRenderer( L3::ConstantTimeWindower<L3::LHLV>* windower ) : pose_windower(windower)
+    {
+
+    }
+    
+    L3::ConstantTimeWindower<L3::LHLV>* pose_windower ;
+
+    void onDraw3D( glv::GLV& g );
+
+
+};
+
+
+
 }   // ::Visualisers
 }   // ::L3
 

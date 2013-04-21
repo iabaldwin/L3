@@ -32,6 +32,8 @@ namespace L3
 
     }
 
+    L3::Predictor predictor;
+    
     bool EstimatorRunner::update( double time )
     {
 
@@ -41,10 +43,15 @@ namespace L3
         swathe_builder->update( time );
 
         // Get the pose from the pose provider
-        L3::SE3 pose = provider->operator()();
+        L3::SE3 predicted = provider->operator()();
 
         // Update the experience
-        experience->update( pose.X(), pose.Y() );
+        experience->update( predicted.X(), predicted.Y() );
+
+        L3::SE3 current = L3::SE3::ZERO();
+
+        //predictor.predict( predicted, current, iterator.window.begin(), iterator.window.end() );
+
 
 //#ifndef _NDEBUG
         //std::cout << "Experience\t" << t.elapsed() << std::endl;
@@ -52,7 +59,6 @@ namespace L3
         
         L3::WriteLock point_cloud_lock( projector->cloud->mutex );
         projector->project( swathe_builder->swathe );
-        L3::transform( projector->cloud, &pose );
         point_cloud_lock.unlock();
 
 

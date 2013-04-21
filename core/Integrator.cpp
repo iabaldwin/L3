@@ -6,8 +6,6 @@ namespace L3
     template <typename InputIterator, typename OutputIterator >
         void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output )
     {
-        typedef typename std::iterator_traits<OutputIterator>::value_type VAR;
-
         InputIterator current_in = begin;
 
         // Compute current time

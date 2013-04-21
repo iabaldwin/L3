@@ -25,5 +25,6 @@
 #include "Integrator.h"         // Chain integration
 #include "Predictor.h"          // Pose predcition
 #include "Simulator.h"          // Artificial data provider
+#include "Misc.h"               // Everything else...
 
 #endif

@@ -93,14 +93,12 @@ class ConstantTimeWindower : public PoseWindower
 {
     public:
         
-        //ConstantTimeINSWindower( L3::ConstantTimeIterator<L3::SE3>* iterator ) 
         ConstantTimeWindower( L3::ConstantTimeIterator<T>* iterator ) 
             : constant_time_iterator (iterator)
         {
             this->window = &(iterator->window);
         }
         
-        //L3::ConstantTimeIterator<L3::SE3>* constant_time_iterator;
         L3::ConstantTimeIterator<T>* constant_time_iterator;
 
         bool update( double t)

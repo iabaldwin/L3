@@ -1,4 +1,5 @@
 #include "Iterator.h"
+#include "Misc.h"
 
 namespace L3
 {
@@ -67,9 +68,9 @@ bool ConstantTimeIterator<T>::update( double time )
 } // L3
 
 // Explicit Instantiations
+template class L3::ConstantTimeIterator<L3::SE3>;
 template class L3::ConstantTimeIterator<L3::LHLV>;
 template class L3::ConstantTimeIterator<L3::LMS151>;
-template class L3::ConstantTimeIterator<L3::SE3>;
 
 template void L3::Iterator<L3::LHLV>::getWindow( std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > >& window) ;
 template void L3::Iterator<L3::SE3>::getWindow(std::deque<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > >&);
