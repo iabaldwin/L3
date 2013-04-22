@@ -38,7 +38,8 @@ namespace L3
     {
         // Get the pose from the pose provider
         L3::SE3 predicted = provider->operator()();
-        *current = L3::SE3::ZERO();
+        //*current = L3::SE3::ZERO();
+        *current = predicted;
 
         // Update the experience
         experience->update( predicted.X(), predicted.Y() );

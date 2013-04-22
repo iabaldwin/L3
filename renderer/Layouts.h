@@ -212,7 +212,8 @@ class EstimatorLayout : public Layout
             addRotationalVelocityPlot( runner->windower->constant_time_iterator );
 
             // Current pose estimate
-            //pose_renderer.reset( new L3::Visualisers::PoseRenderer( runner->current ) );
+            pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
         }
     
         L3::EstimatorRunner* runner;

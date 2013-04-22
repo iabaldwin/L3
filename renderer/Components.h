@@ -192,9 +192,9 @@ struct PoseRenderer : Leaf
 
     L3::SE3& pose;
 
-    void onDraw( glv::GLV& g )
+    void onDraw3D( glv::GLV& g )
     {
-        std::cout << pose.X() << ":" << pose.Y() << std::endl; 
+        CoordinateSystem( pose ).onDraw3D( g ); 
     }
 
 };
