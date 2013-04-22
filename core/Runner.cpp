@@ -19,16 +19,13 @@ namespace L3
         {
             current = start_time + t.elapsed();
 
-            std::cout << t.elapsed() << std::endl;
-            std::cout << current << std::endl;
-
             /*
-             *Update all watchers
+             *  Update all watchers
              */
             std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), current ) );
             
             /*
-             *Do estimation
+             *  Do estimation
              */
             this->update( current );
         }
@@ -39,12 +36,16 @@ namespace L3
 
     bool EstimatorRunner::update( double time )
     {
-        // Get the pose from the pose provider
+        /*
+         *Get the pose from the pose provider
+         */
         L3::SE3 predicted = provider->operator()();
         
         *current = predicted;
 
-        // Update the experience
+        /*
+         *Update the experience
+         */
         experience->update( predicted.X(), predicted.Y() );
         
         swathe_builder->update( time );
@@ -53,12 +54,14 @@ namespace L3
          *  Point cloud generation, projection
          */
         L3::WriteLock point_cloud_lock( projector->cloud->mutex );
+        
         projector->project( swathe_builder->swathe );
         L3::transform( projector->cloud, &predicted );  
+        
         point_cloud_lock.unlock();
 
         /*
-         *Estimation
+         *  Estimation
          */
         (*estimator)( projector->cloud, predicted );
 
