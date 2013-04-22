@@ -51,7 +51,7 @@ int main (int argc, char ** argv)
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     L3::Visualisers::VisualiserRunner runner( dataset.start_time );
-    runner << &swathe_builder << &pose_windower;
+    runner << &swathe_builder << &pose_windower << &LIDAR_iterator << &pose_iterator ;
 
     // Add watchers
     composite << swathe_renderer << pose_renderer <<  grid << runner;
@@ -66,7 +66,7 @@ int main (int argc, char ** argv)
     }
     catch( L3::end_of_stream& e )
     {
-        std::cout << "Done" << std::endl;
+        std::cout << "Fin" << std::endl;
     }
 }
 

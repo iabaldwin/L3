@@ -207,14 +207,18 @@ class EstimatorLayout : public Layout
             runtime_cloud_renderer.reset( new L3::Visualisers::PointCloudRenderer( run_time_swathe ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
 
+            // Velocity plots
             //addLinearVelocityPlot( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
             //addRotationalVelocityPlot( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
 
-
+            // Current pose estimate
+            pose_renderer.reset( new L3::Visualisers::PoseRenderer( runner->current ) );
         }
     
         L3::EstimatorRunner* runner;
-        
+      
+        boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
+
         boost::shared_ptr< L3::Experience> experience ;
         boost::shared_ptr< L3::Visualisers::PointCloudRenderer >        runtime_cloud_renderer; 
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >   histogram_bounds_renderer;

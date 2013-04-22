@@ -72,7 +72,7 @@ namespace Visualisers
     {
         // Do projection
         projector->project( swathe_builder->swathe );
- 
+
         if ( point_cloud->num_points > current_alloc )
             realloc( point_cloud->num_points );
 

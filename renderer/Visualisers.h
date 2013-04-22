@@ -51,17 +51,17 @@ struct SwatheRenderer : Leaf
 {
     SwatheRenderer( L3::SwatheBuilder* SWATHE_BUILDER ); 
     
-    unsigned int                                        current_alloc;
-    L3::SwatheBuilder*                                  swathe_builder;
-
-    double                                              x,y;
-    boost::shared_ptr<L3::PointCloud<double> >          point_cloud;
-    std::auto_ptr<L3::Projector<double> >               projector;
-    
+    unsigned int        current_alloc;
+    L3::SwatheBuilder*  swathe_builder;
+        
     boost::shared_array< glv::Color >   pose_colors;
     boost::shared_array< glv::Point3 >  pose_vertices;
     boost::shared_array< glv::Color >   point_colors  ;
     boost::shared_array< glv::Point3 >  point_vertices;
+
+    double                                      x,y;
+    boost::shared_ptr<L3::PointCloud<double> >  point_cloud;
+    std::auto_ptr<L3::Projector<double> >       projector;
 
     void realloc( int size );
 
@@ -106,15 +106,13 @@ struct PoseWindowerRenderer : Leaf
 
     int                                 pt_limit, pt_counter, sample_counter; 
     boost::shared_ptr<L3::Experience>   experience;
-    glv::Point3*                        point_vertices;
     glv::Color*                         point_colors;
+    glv::Point3*                        point_vertices;
     L3::PoseWindower*                   pose_windower;
 
     void onDraw3D( glv::GLV& g );
 
 };
-
-
 
 /*
  *  Real or synthesized pose provider

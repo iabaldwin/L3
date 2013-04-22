@@ -18,30 +18,23 @@ namespace L3
             {
             }
                 
-            Comparator< std::pair< double, boost::shared_ptr<L3::SE3> > > _comparator;
+            Comparator< std::pair< double, boost::shared_ptr<L3::SE3> > > comparator;
 
-            bool update( double time )
+            SWATHE swathe;
+
+            bool update( double )
             {
-#ifndef NDEBUG
-                L3::Tools::Timer t;
-                t.begin();
-#endif
-                if (!pose_windower->update( time ))
-                    throw POSE_end();
+                // Rebuild swathe completely
+                swathe.clear();
 
-                if (!LIDAR_iterator->update( time ))
-                    throw LIDAR_end(); 
-
-#ifndef NDEBUG
-#endif
                 /*
                  *  For each LIDAR scan, find the time
                  *  and associated pose
                  */
-                L3::Iterator<L3::LMS151>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
+                if ( LIDAR_iterator->window.size() == 0 )
+                    return false;
 
-                // Rebuild swathe completely
-                swathe.clear();
+                L3::Iterator<L3::LMS151>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
 
                 // For each lidar scan, find the nearest pose
                 while( it != LIDAR_iterator->window.end() )
@@ -50,23 +43,10 @@ namespace L3
                     L3::Iterator<L3::SE3>::WINDOW_ITERATOR index = std::lower_bound( pose_windower->window->begin(), 
                                                                                         pose_windower->window->end(), 
                                                                                         it->first, 
-                                                                                        _comparator );
+                                                                                        comparator );
                     
                     if ( index == pose_windower->window->end() ) 
-                    {
-                        //{
-                        //index--; 
-                        //std::cout << fabs( index->first - it->first ) << std::endl;
-                        //}
-                        //it++;
-                        //continue;
                         break;
-                    }
-
-                    //TODO:
-                    // Fix this timing situation
-                    //std::cout << fabs( index->first - it->first ) << std::endl;
-                    //assert( fabs( index->first - it->first ) < std::numeric_limits<double>::epsilon() );
 
                     swathe.push_back( std::make_pair( index->second, it->second ) );
 
@@ -78,8 +58,6 @@ namespace L3
                 return true;
                     
             }
-
-            SWATHE swathe;
 
         private:
 

@@ -18,7 +18,7 @@ namespace L3
 {
 
 /*
- *  Core runner
+ *  Runner
  */
 struct Runner
 {
@@ -41,17 +41,20 @@ struct TemporalRunner : Runner, TemporalObserver
         for( std::list< L3::Observer* >::iterator it = observables.begin(); 
                 it != observables.end();
                 it++ )
-            dynamic_cast<L3::TemporalObserver*>( *it )->update( t );
-   
-        return postUpdate();
+        {
+            L3::TemporalObserver* observer = dynamic_cast<L3::TemporalObserver*>( *it );
+            if( observer)
+                observer->update( t );
+            else
+                std::cout << "Wut" << std::endl;
+        }
     }
 
-    virtual bool postUpdate()
-    {
-        return true;
-    }
 };
 
+/*
+ *  Threaded runner
+ */
 struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 {
 
@@ -98,6 +101,13 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::Estimator::Estimator<double>*           estimator;
 
     std::list < TemporalObserver* >             observers;
+    
+    L3::SE3* current;
+
+    EstimatorRunner()
+    {
+        current = new L3::SE3( L3::SE3::ZERO() );
+    }
 
     void run();
     bool update( double time );
@@ -105,6 +115,15 @@ struct EstimatorRunner : ThreadedTemporalRunner
     EstimatorRunner& setPoseProvider( L3::PoseProvider* provider )
     {
         this->provider = provider;
+    
+        (*this) << dynamic_cast<L3::TemporalObserver*>(provider);
+
+        return *this;
+    }
+
+    EstimatorRunner& setSwatheBuilder( L3::SwatheBuilder* swathe_builder )
+    {
+        this->swathe_builder = swathe_builder;
         return *this;
     }
 
@@ -123,12 +142,6 @@ struct EstimatorRunner : ThreadedTemporalRunner
     EstimatorRunner& setEstimator( L3::Estimator::Estimator<double>* estimator )
     {
         this->estimator = estimator;
-        return *this;
-    }
-
-    EstimatorRunner& setSwatheBuilder( L3::SwatheBuilder* swathe_builder )
-    {
-        this->swathe_builder = swathe_builder;
         return *this;
     }
 
@@ -153,9 +166,7 @@ struct DatasetRunner : ThreadedTemporalRunner, Lockable
         LIDAR_iterator.reset( new L3::ConstantTimeIterator<L3::LMS151>( dataset->LIDAR_readers.begin()->second ) );
         LHLV_iterator.reset( new L3::ConstantTimeIterator<L3::LHLV> ( dataset->LHLV_reader ) );  
    
-        (*this)<< pose_iterator.get();
-        (*this)<< LIDAR_iterator.get();
-        (*this)<< LHLV_iterator.get();
+        (*this)<< pose_iterator.get() << LIDAR_iterator.get() << LHLV_iterator.get();
     
     }
 

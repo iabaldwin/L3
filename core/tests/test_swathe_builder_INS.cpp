@@ -35,7 +35,16 @@ int main()
     {
         usleep( increment*1e6 );
         t.begin();
-        swathe_builder.update( time += increment ) ;
-        std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << "\t(" << swathe_builder.swathe.size() << ")" << std::endl;
+     
+        time += increment;
+
+        pose_windower.update( time );
+        LIDAR_iterator.update( time );
+    
+        std::cout << time << ":" << LIDAR_iterator.window.size() << std::endl;
+
+        //swathe_builder.update(time );
+        
+        //std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << "\t(" << swathe_builder.swathe.size() << ")" << std::endl;
     } 
 }

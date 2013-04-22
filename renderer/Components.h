@@ -177,6 +177,25 @@ struct TextRenderer : glv::View
 
 };
 
+/*
+ *  Single referenced pose renderer
+ */
+struct PoseRenderer : Leaf
+{
+
+    PoseRenderer( L3::SE3& pose ) : pose(pose)
+    {
+
+    }
+
+    L3::SE3& pose;
+
+    void onDraw( glv::GLV& g )
+    {
+        std::cout << pose.X() << ":" << pose.Y() << std::endl; 
+    }
+
+};
 
 
 /*

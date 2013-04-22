@@ -16,6 +16,7 @@ add_library( L3
     Integrator.cpp 
     Simulator.cpp 
     Predictor.cpp
+    PoseProvider.cpp
     Misc.cpp
     )
 

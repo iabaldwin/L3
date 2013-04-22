@@ -15,14 +15,13 @@ namespace L3
             // Integrate 
             L3::trajectoryAccumulate( start, end, chain.begin() );
 
-            // Transform
-            std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = chain.begin();
-
             // End point
             Eigen::Matrix4f last_pose = chain.back().second->getHomogeneous(); 
             
             Eigen::Matrix4f delta( last_pose.inverse()  );
             
+            // Transform
+            std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = chain.begin();
             while( it != chain.end() )
             {
                 Eigen::Matrix4f tmp( it->second->getHomogeneous() ); 

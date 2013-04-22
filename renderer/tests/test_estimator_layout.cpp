@@ -61,7 +61,7 @@ int main( int argc, char* argv[] )
     // Create runner
     L3::EstimatorRunner runner;
 
-    runner << dynamic_cast<L3::TemporalObserver*>(&oracle);
+    runner << &LIDAR_iterator << &pose_windower;
 
     runner.setExperience( &*experience )
           //.setPoseProvider( &pose_windower )

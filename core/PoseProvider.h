@@ -1,6 +1,8 @@
 #ifndef L3_POSE_PROVIDER_H
 #define L3_POSE_PROVIDER_H
 
+#include <Eigen/LU>
+
 #include <boost/timer.hpp>
 #include <Poco/Thread.h>
 
@@ -122,7 +124,16 @@ template <>
 class ConstantTimeWindower<L3::LHLV> : public PoseWindower
 {
     public:
-        
+
+        struct Inverter
+        {
+            std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > chain;
+
+            template <typename InputIterator >
+                bool invert( InputIterator start, InputIterator end );
+                
+        } inverter;
+            
         ConstantTimeWindower( L3::ConstantTimeIterator<L3::LHLV>* iterator ) 
             : constant_time_iterator(iterator)
         {
@@ -130,17 +141,24 @@ class ConstantTimeWindower<L3::LHLV> : public PoseWindower
             chain_builder.reset( new L3::ChainBuilder( iterator ) );
            
             // Reflection
-            this->window = &chain_builder->window;
+            //this->window = &chain_builder->window;
+            this->window = &inverter.chain;
         }
-       
+     
+        
         // Iterator base
         L3::ConstantTimeIterator<L3::LHLV>* constant_time_iterator;
 
+        // Chain builder - poses from velocity
         boost::shared_ptr< L3::ChainBuilder > chain_builder;
 
         bool update( double t)
         {
+            // Update the chain
             chain_builder->update(t);
+      
+            // Reorient poses
+            inverter.invert( chain_builder->window.begin(), chain_builder->window.end() );
         }
 
 };

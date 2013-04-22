@@ -33,45 +33,36 @@ namespace L3
     }
 
     L3::Predictor predictor;
-    
+
     bool EstimatorRunner::update( double time )
     {
-
-//#ifndef _NDEBUG
-        boost::timer t;
-//#endif
-        swathe_builder->update( time );
-
         // Get the pose from the pose provider
         L3::SE3 predicted = provider->operator()();
+        *current = L3::SE3::ZERO();
 
         // Update the experience
         experience->update( predicted.X(), predicted.Y() );
-
-        L3::SE3 current = L3::SE3::ZERO();
-
-        //predictor.predict( predicted, current, iterator.window.begin(), iterator.window.end() );
-
-
-//#ifndef _NDEBUG
-        //std::cout << "Experience\t" << t.elapsed() << std::endl;
-//#endif
         
+        //predictor.predict( predicted, 
+                    //current, 
+                    //provider->constant_time_iterator->window.begin(), 
+                    //provider->constant_time_iterator->window.end() );
+
+        swathe_builder->update( time );
+
+        /*
+         *  Point cloud generation, projection
+         */
         L3::WriteLock point_cloud_lock( projector->cloud->mutex );
         projector->project( swathe_builder->swathe );
+        L3::transform( projector->cloud, &predicted );  
         point_cloud_lock.unlock();
 
-
-
-//#ifndef _NDEBUG
-        //std::cout << "Projection\t" << t.elapsed() << std::endl;
-//#endif
-      
-        //(*estimator)( projector->cloud, (*provider)() );
-
-#ifndef _NDEBUG
-        std::cout << "Estimation\t" << t.elapsed() << std::endl;
-#endif
+     
+        /*
+         *Estimation
+         */
+        (*estimator)( projector->cloud, predicted );
 
     }
 }

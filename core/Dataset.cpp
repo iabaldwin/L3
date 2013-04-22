@@ -30,17 +30,11 @@ Dataset::~Dataset()
     if ( LHLV_reader )
         LHLV_reader->stop();
 
-    //for ( std::list< boost::shared_ptr< SlidingWindow<L3::LMS151> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
     for ( std::map< std::string, boost::shared_ptr< SlidingWindow<L3::LMS151> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
-    {
         it->second->stop();
-    }
 
-    for( std::list< Poco::Thread* >::iterator it= threads.begin(); it != threads.end(); it++ )
-    {
+    for( std::list< boost::shared_ptr< Poco::Thread > >::iterator it= threads.begin(); it != threads.end(); it++ )
         (*it)->join();
-        delete *it;
-    }
 }
 
 std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
@@ -138,7 +132,7 @@ bool Dataset::load()
     {
         Poco::Thread* thread = new Poco::Thread();
         thread->start( *(*it) );
-        threads.push_back( thread );
+        threads.push_back( boost::shared_ptr< Poco::Thread >(thread) );
     }
 
     // Get the dataset time - by definition, this is the time of the first pose
@@ -146,54 +140,5 @@ bool Dataset::load()
 
     return true;
 }
-
-template <typename T>
-struct Sorter
-{
-    bool operator()( T* t1,  T* t2 )
-    {
-        return ( t1->time > t2->time );
-    }
-};
-
-
-//L3::Pose* Dataset::getPoseAtTime( double time )
-//{
-    //assert( poses.size() > 0 );
-    //std::vector<L3::Pose*>::iterator it;
-
-    //Comparator<L3::Pose> c;
-
-    //it = std::lower_bound( poses.begin(), poses.end(), time, c );
-
-    //L3::Pose* p = 0;
-
-    //if( it != poses.end() )
-    //{
-        //p = &*(*it);     
-    //}
-
-    //return p;
-//}
-
-//L3::LMS151* Dataset::getScanAtTime( double time, const std::string& name )
-//{
-    //assert( poses.size() > 0 );
-    //std::vector<L3::LMS151*>::iterator it;
-
-    //L3::LMS151* l = 0;
-
-    //Comparator<L3::LMS151> c;
-
-    //it = std::lower_bound( LIDAR_data[name].begin(), LIDAR_data[name].end(), time, c );
-
-    //if( it != LIDAR_data[name].end() )
-    //{
-        //l = &*(*it);     
-    //}
-
-    //return l;
-//}
-
 
 }

@@ -193,12 +193,12 @@ namespace L3
         {
             typename PointCloud<T>::ITERATOR it = cloud->begin();
 
-            while( it != cloud->end() )
-            {
-                (*it).x -= pose->X(); 
-                (*it).y -= pose->Y();
-                it++;
-            }
+            //while( it != cloud->end() )
+            //{
+                //(*it).x -= pose->X(); 
+                //(*it).y -= pose->Y();
+                //it++;
+            //}
 
             // 3. Rotate
             int point_counter, num_points = cloud->num_points;

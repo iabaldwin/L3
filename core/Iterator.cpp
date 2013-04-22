@@ -36,7 +36,6 @@ bool ConstantTimeIterator<T>::update( double time )
 
     it = ( fabs(( it-1 )->first - time)  ) < ( fabs(( it )->first - time)  ) ? ( it-1) : it;
 
-
     double data_swathe_length = 0;
 
     typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it_back_iterator = it;

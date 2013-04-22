@@ -11,8 +11,8 @@ struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
 
     VisualiserRunner( double start_time )
         : time(start_time)
-    {
-    }
+        {
+        }
 
     double time;
     

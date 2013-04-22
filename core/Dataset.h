@@ -7,7 +7,9 @@
 #include <map>
 #include <list>
 #include <assert.h>
+
 #include <boost/filesystem.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "Poco/Runnable.h"
 #include "Poco/Thread.h"
@@ -20,7 +22,7 @@ namespace L3
 
 enum extensionType { INS_file, LIDAR_file, LHLV_file };
 
-class Dataset
+class Dataset : private boost::noncopyable
 {
 
     public:
@@ -40,14 +42,13 @@ class Dataset
         // Threaded windowers
         boost::shared_ptr<SlidingWindow<L3::SE3> >                  pose_reader;
         boost::shared_ptr<SlidingWindow<L3::LHLV> >                 LHLV_reader;
-        //std::list< boost::shared_ptr< SlidingWindow<L3::LMS151> > > LIDAR_readers;
         std::map< std::string, boost::shared_ptr< SlidingWindow<L3::LMS151> > > LIDAR_readers;
        
         
     protected:
         
-        std::list< boost::shared_ptr< Poco::Runnable> >             runnables;
-        std::list< Poco::Thread* >                                  threads;
+        std::list< boost::shared_ptr< Poco::Runnable> >  runnables;
+        std::list< boost::shared_ptr< Poco::Thread > >   threads;
         
         friend std::ostream& operator<<( std::ostream& o, const Dataset& dataset );
 
