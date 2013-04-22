@@ -60,9 +60,7 @@ void Experience::run()
 
         // Calculate distances to all sections
         for( unsigned int i=0; i<sections.size(); i++ )
-        {
             distances.push_back( std::make_pair( norm( std::make_pair( _x, _y ), std::make_pair( sections[i].x, sections[i].y)  ), i ) ); 
-        }
 
         // Sort the distances
         std::sort( distances.begin(), distances.end() );
@@ -73,17 +71,13 @@ void Experience::run()
          */
         std::list<unsigned int> required_sections;
         for( unsigned int i=0; i<window-1 && i<distances.size(); i++ )
-        {
             required_sections.push_front( distances_iterator++->second );
-        }
 
         // Mark everything as *NOT* required
         for( std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.begin();
                 map_it != resident_sections.end();
                 map_it++ )
-        {
             map_it->second.first = false;
-        }
 
         /*
          *  Search
@@ -136,11 +130,11 @@ void Experience::run()
             
         }
 
-
         // Assign the resident cloud
         if (update_required)
         {
-            WriteLock writer( experience_histogram->mutex );
+            //WriteLock writer( experience_histogram->mutex );
+            WriteLock( experience_histogram->mutex );
             
             // Recompute histogram
             join( clouds, resident_point_cloud );
@@ -150,7 +144,6 @@ void Experience::run()
             std::pair<double,double> max_bound = L3::max<double>( &*resident_point_cloud );
             std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
 
-            //boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(experience_histogram)->create( means.first, 
             boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(experience_histogram)->create( means.first, 
                     min_bound.first, 
                     max_bound.first,

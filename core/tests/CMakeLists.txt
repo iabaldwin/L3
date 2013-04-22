@@ -94,8 +94,6 @@ target_link_libraries( test_runner config L3 ${Boost_LIBRARIES}  )
 add_executable( test_swathe_builder_LHLV_point_cloud test_swathe_builder_LHLV_point_cloud.cpp )
 target_link_libraries( test_swathe_builder_LHLV_point_cloud config L3 ${Boost_LIBRARIES}  )
 
-
-
 add_executable( test_pipeline_stage_1 test_pipeline_stage_1.cpp )
 target_link_libraries( test_pipeline_stage_1 config L3 ${Boost_LIBRARIES}  )
 
@@ -104,5 +102,8 @@ target_link_libraries( test_pipeline_stage_2 config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_pipeline_stage_3 test_pipeline_stage_3.cpp )
 target_link_libraries( test_pipeline_stage_3 config L3 ${Boost_LIBRARIES}  )
+
+add_executable( test_estimator test_estimator.cpp )
+target_link_libraries( test_estimator config L3 ${Boost_LIBRARIES}  )
 
 

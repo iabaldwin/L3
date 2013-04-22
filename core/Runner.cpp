@@ -2,19 +2,23 @@
 
 namespace L3
 {
+        
     void EstimatorRunner::run()
     {
+    
+        std::cout.precision( 16 );
+   
         L3::Tools::Timer t;
 
         double start_time = current_time;
-
-        std::cout.precision( 16 );
 
         double current;
 
         while( running )
         {
             current = start_time + t.elapsed();
+
+            std::cout << current << std::endl;
 
             /*
              *Update all watchers
