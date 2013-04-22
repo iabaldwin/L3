@@ -44,7 +44,7 @@ namespace L3
 
             r = previous_pose->R() + w1*dt;
             p = previous_pose->P() + w2*dt;
-            q = previous_pose->Q() + w3*dt;
+            q = previous_pose->Q() + (-1*w3)*dt;
 
             // Compute x_bar, y_bar, z_bar 
             lin_vel = current_in->second->data[9];

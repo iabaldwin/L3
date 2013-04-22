@@ -70,12 +70,12 @@ struct Mission : Configuration
     {
         // Load configuration directory 
         p = L3::Configuration::configurationDirectory();
-   
+        
         // Add target
         p /= "missions";
         p /= dataset.name() + ".config";
-
         target = p.string();
+     
         loadAll( target );
     }
 
@@ -169,7 +169,7 @@ struct Begbroke : Locale
 
 struct Woodstock : Locale
 {
-    Woodstock() : Locale( "begbroke_datum" )
+    Woodstock() : Locale( "woodstock_datum" )
     {};
 };
 

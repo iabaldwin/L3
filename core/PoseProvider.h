@@ -141,8 +141,8 @@ class ConstantTimeWindower<L3::LHLV> : public PoseWindower
             chain_builder.reset( new L3::ChainBuilder( iterator ) );
            
             // Reflection
-            //this->window = &chain_builder->window;
-            this->window = &inverter.chain;
+            this->window = &chain_builder->window;
+            //this->window = &inverter.chain;
         }
      
         

@@ -17,10 +17,10 @@ int main( int argc, char* argv[] )
      *  L3
      */
     L3::Dataset dataset( dataset_directory );
-   
+
     if( !( dataset.validate() && dataset.load() ) )
         exit(-1);
-
+    
     // Configuration
     L3::Configuration::Mission mission( dataset );
 
@@ -28,6 +28,7 @@ int main( int argc, char* argv[] )
     L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     L3::ExperienceLoader experience_loader( experience_dataset );
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
+    
 
     // Constant time iterator over poses
     L3::ConstantTimeIterator< L3::SE3 >     oracle_source( dataset.pose_reader );
@@ -66,6 +67,8 @@ int main( int argc, char* argv[] )
           .start( dataset.start_time );
 
     while( true )
-        continue;
+    {
+        usleep( .5*1e6 ); 
+    }
 }
 

@@ -5,10 +5,19 @@ namespace L3
 
 Dataset::Dataset( const std::string& target )  : start_time(0)
 {
+
+    std::string tmp(target);
+
+    if ( *(tmp.end()-1) != '/' )
+        tmp.insert( tmp.end(), '/' );
+
     // From the root path
-    root_path /= target;
-    // assign the dataset name 
-    dataset_name = root_path.parent_path().filename().string();
+    root_path /= tmp;
+  
+    root_path.remove_filename();
+    
+    // Dataset name 
+    dataset_name = root_path.leaf().string();
 
     // Append the location of the binary data
     root_path /= "L3";
