@@ -64,7 +64,7 @@ int main( int argc, char* argv[] )
     runner << &LIDAR_iterator << &pose_windower;
 
     runner.setExperience( &*experience )
-          //.setPoseProvider( &pose_windower )
+          .setPoseWindower( &pose_windower )
           .setPoseProvider( &oracle )
           .setProjector( &*projector )
           .setEstimator( &estimator  )

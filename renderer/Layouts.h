@@ -208,11 +208,11 @@ class EstimatorLayout : public Layout
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
 
             // Velocity plots
-            //addLinearVelocityPlot( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
-            //addRotationalVelocityPlot( dynamic_cast<ConstantTimeWindower<L3::LHLV>*>( runner->provider)->constant_time_iterator );
+            addLinearVelocityPlot( runner->windower->constant_time_iterator );
+            addRotationalVelocityPlot( runner->windower->constant_time_iterator );
 
             // Current pose estimate
-            pose_renderer.reset( new L3::Visualisers::PoseRenderer( runner->current ) );
+            //pose_renderer.reset( new L3::Visualisers::PoseRenderer( runner->current ) );
         }
     
         L3::EstimatorRunner* runner;

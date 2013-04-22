@@ -41,13 +41,9 @@ struct TemporalRunner : Runner, TemporalObserver
         for( std::list< L3::Observer* >::iterator it = observables.begin(); 
                 it != observables.end();
                 it++ )
-        {
-            L3::TemporalObserver* observer = dynamic_cast<L3::TemporalObserver*>( *it );
-            if( observer)
-                observer->update( t );
-            else
-                std::cout << "Wut" << std::endl;
-        }
+            // Dangerous
+            static_cast<L3::TemporalObserver*>( *it )->update( t);
+            //L3::TemporalObserver* observer = dynamic_cast<L3::TemporalObserver*>( *it );
     }
 
 };
@@ -96,6 +92,7 @@ struct EstimatorRunner : ThreadedTemporalRunner
 
     L3::Experience*                             experience;
     L3::PoseProvider*                           provider;
+    L3::ConstantTimeWindower<L3::LHLV>*         windower;
     L3::SwatheBuilder*                          swathe_builder;
     L3::Projector<double>*                      projector;
     L3::Estimator::Estimator<double>*           estimator;
@@ -112,41 +109,52 @@ struct EstimatorRunner : ThreadedTemporalRunner
     void run();
     bool update( double time );
 
+    EstimatorRunner& setPoseWindower( L3::ConstantTimeWindower<L3::LHLV>* windower )
+    {
+        this->windower = windower;
+        (*this) << dynamic_cast<L3::TemporalObserver*>(windower);
+        return *this;
+    }
+
+    
     EstimatorRunner& setPoseProvider( L3::PoseProvider* provider )
     {
         this->provider = provider;
-    
         (*this) << dynamic_cast<L3::TemporalObserver*>(provider);
-
         return *this;
     }
 
     EstimatorRunner& setSwatheBuilder( L3::SwatheBuilder* swathe_builder )
     {
+        // Not temporally updateable
         this->swathe_builder = swathe_builder;
         return *this;
     }
 
     EstimatorRunner& setExperience( L3::Experience* experience )
     {
+        // Spatially updateable
         this->experience = experience;
         return *this;
     }
 
     EstimatorRunner& setProjector( L3::Projector<double>* projector )
     {
+        // Not temporally updateable
         this->projector = projector;
         return *this;
     }
 
     EstimatorRunner& setEstimator( L3::Estimator::Estimator<double>* estimator )
     {
+        // ?
         this->estimator = estimator;
         return *this;
     }
 
     EstimatorRunner& operator<<( L3::TemporalObserver* observer )
     {
+        // All temporally updateable
         observers.push_front( observer ); 
         return *this;
     }

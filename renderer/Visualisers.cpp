@@ -12,7 +12,8 @@ namespace Visualisers
     PoseChainRenderer::PoseChainRenderer( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* poses ) 
     {
         for( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it=poses->begin(); it < poses->end(); it+= 100 )
-            coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( (it->second) ) ) );
+            //coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( (it->second) ) ) );
+            coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( *(it->second) ) ) );
     }
 
     void PoseChainRenderer::onDraw3D(glv::GLV& g)
@@ -39,7 +40,8 @@ namespace Visualisers
         typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
 
         while( it != window.end() )
-            L3::Visualisers::CoordinateSystem( it++->second ).onDraw3D( g );
+            //L3::Visualisers::CoordinateSystem( it++->second ).onDraw3D( g );
+            L3::Visualisers::CoordinateSystem( *(it++->second) ).onDraw3D( g );
 
     }
 
@@ -182,7 +184,8 @@ namespace Visualisers
         int counter = 0;
 
         while( it != pose_windower->window->end() )
-            CoordinateSystem( (it++)->second ).onDraw3D(g );
+            //CoordinateSystem( (it++)->second ).onDraw3D(g );
+            CoordinateSystem( *(it++)->second ).onDraw3D(g );
     }
 
     /*
@@ -225,7 +228,8 @@ namespace Visualisers
             for ( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = predictor.chain.begin(); 
                     it != predictor.chain.end(); 
                     it++ )
-                CoordinateSystem( it->second ).onDraw3D(g);
+                //CoordinateSystem( it->second ).onDraw3D(g);
+                CoordinateSystem( *(it->second ) ).onDraw3D(g);
 
         }
     }

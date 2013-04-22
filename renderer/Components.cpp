@@ -146,7 +146,8 @@ void HistogramPixelRenderer::update()
 /*
  *Components :: CoordinateSystem
  */
-CoordinateSystem::CoordinateSystem( boost::shared_ptr< L3::SE3 > pose ) : pose( pose )
+//CoordinateSystem::CoordinateSystem( boost::shared_ptr< L3::SE3 > pose ) : pose( pose )
+CoordinateSystem::CoordinateSystem( L3::SE3& pose ) : pose( pose )
 {
     vertices.reset( new glv::Point3[6] );
 
@@ -173,7 +174,8 @@ void CoordinateSystem::onDraw3D(glv::GLV& g)
 { 
     glv::draw::push();
 
-    glMultMatrixf( pose->getHomogeneous().data() );
+    //glMultMatrixf( pose->getHomogeneous().data() );
+    glMultMatrixf( pose.getHomogeneous().data() );
 
     glv::draw::paint( glv::draw::LineStrip, vertices.get(), colors.get(), 6 );
 

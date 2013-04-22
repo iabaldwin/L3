@@ -144,9 +144,11 @@ struct Composite : glv::View3D
  */
 struct CoordinateSystem
 {
-    explicit CoordinateSystem( boost::shared_ptr< L3::SE3 > pose  );
+    //explicit CoordinateSystem( boost::shared_ptr< L3::SE3 > pose  );
+    explicit CoordinateSystem( L3::SE3& pose  );
 
-    boost::shared_ptr< L3::SE3 >        pose;
+    //boost::shared_ptr< L3::SE3 >        pose;
+    L3::SE3&        pose;
     boost::shared_array< glv::Color >   colors;
     boost::shared_array< glv::Point3 >  vertices;
 

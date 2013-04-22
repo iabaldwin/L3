@@ -36,7 +36,8 @@ struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
         std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = predictor.chain.begin();
         while( it != predictor.chain.end() )
         {
-            L3::Visualisers::CoordinateSystem( it->second ).onDraw3D( g ); 
+            //L3::Visualisers::CoordinateSystem( it->second ).onDraw3D( g ); 
+            L3::Visualisers::CoordinateSystem( *(it->second )  ).onDraw3D( g ); 
             it++;
         }
     }

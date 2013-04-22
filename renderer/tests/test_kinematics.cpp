@@ -44,7 +44,7 @@ struct Kinematics : L3::Visualisers::Leaf
 
         controllable = new L3::Visualisers::Controllable( pose );
    
-        c = new L3::Visualisers::CoordinateSystem( pose );
+        c = new L3::Visualisers::CoordinateSystem( *pose );
     }
     
     SWATHE swathe;
