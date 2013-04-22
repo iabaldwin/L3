@@ -5,6 +5,9 @@ namespace L3
     template <typename InputIterator >
         bool ConstantTimeWindower<L3::LHLV>::Inverter::invert(InputIterator start, InputIterator end )
         {
+            if ( std::distance( start, end ) == 0 )
+                return false;
+
             // Destructive resize 
             chain.assign( start, end );
 
@@ -24,6 +27,8 @@ namespace L3
 
                 it++;
             }
+            
+            return true;
         }
 }
 

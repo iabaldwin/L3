@@ -6,6 +6,9 @@ namespace L3
     template <typename InputIterator, typename OutputIterator >
         void trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output )
     {
+        if( std::distance( begin, end) == 0 )
+            return;
+
         InputIterator current_in = begin;
 
         // Compute current time

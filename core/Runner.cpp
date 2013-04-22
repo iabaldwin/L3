@@ -8,7 +8,8 @@ namespace L3
     
         std::cout.precision( 16 );
    
-        L3::Tools::Timer t;
+        //L3::Tools::Timer t;
+        boost::timer t;
 
         double start_time = current_time;
 
@@ -18,16 +19,14 @@ namespace L3
         {
             current = start_time + t.elapsed();
 
+            std::cout << t.elapsed() << std::endl;
             std::cout << current << std::endl;
 
             /*
              *Update all watchers
              */
-            for( std::list < TemporalObserver* >::iterator it = observers.begin(); 
-                    it != observers.end(); 
-                    it++ )
-                (*it)->update( current );
-
+            std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), current ) );
+            
             /*
              *Do estimation
              */
@@ -42,17 +41,12 @@ namespace L3
     {
         // Get the pose from the pose provider
         L3::SE3 predicted = provider->operator()();
-        //*current = L3::SE3::ZERO();
+        
         *current = predicted;
 
         // Update the experience
         experience->update( predicted.X(), predicted.Y() );
         
-        //predictor.predict( predicted, 
-                    //current, 
-                    //provider->constant_time_iterator->window.begin(), 
-                    //provider->constant_time_iterator->window.end() );
-
         swathe_builder->update( time );
 
         /*
@@ -63,7 +57,6 @@ namespace L3
         L3::transform( projector->cloud, &predicted );  
         point_cloud_lock.unlock();
 
-     
         /*
          *Estimation
          */
