@@ -201,30 +201,30 @@ namespace L3
             //}
 
             // 3. Rotate
-            int point_counter, num_points = cloud->num_points;
-            T x,y,z;
-            Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
+            //int point_counter, num_points = cloud->num_points;
+            //T x,y,z;
+            //Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
 
-            Point<T>* tmp = cloud->begin();
+            //Point<T>* tmp = cloud->begin();
 
-#pragma omp parallel private(point_counter, rot) shared(num_points, tmp, t )
-            {
-                Eigen::Matrix4f XYZ = Eigen::Matrix4f::Identity();
+//#pragma omp parallel private(point_counter, rot) shared(num_points, tmp, t )
+            //{
+                //Eigen::Matrix4f XYZ = Eigen::Matrix4f::Identity();
 
-#pragma omp for  nowait
-                for (point_counter=0; point_counter<num_points; point_counter++) 
-                {
-                    XYZ( 0, 3 ) = tmp[point_counter].x;
-                    XYZ( 1, 3 ) = tmp[point_counter].y;
-                    XYZ( 2, 3 ) = tmp[point_counter].z;
+//#pragma omp for  nowait
+                //for (point_counter=0; point_counter<num_points; point_counter++) 
+                //{
+                    //XYZ( 0, 3 ) = tmp[point_counter].x;
+                    //XYZ( 1, 3 ) = tmp[point_counter].y;
+                    //XYZ( 2, 3 ) = tmp[point_counter].z;
 
-                    rot = pose->getHomogeneous()*XYZ;
+                    //rot = pose->getHomogeneous()*XYZ;
 
-                    tmp[point_counter].x = rot( 0, 3 );
-                    tmp[point_counter].y = rot( 1, 3 );
-                    tmp[point_counter].z = rot( 2, 3 );
-                }
-            }
+                    //tmp[point_counter].x = rot( 0, 3 );
+                    //tmp[point_counter].y = rot( 1, 3 );
+                    //tmp[point_counter].z = rot( 2, 3 );
+                //}
+            //}
 
             // 4. Translate
             it = cloud->begin();
