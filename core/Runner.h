@@ -101,7 +101,9 @@ struct EstimatorRunner : ThreadedTemporalRunner
     
     L3::SE3* current;
 
-    EstimatorRunner()
+    float speedup;
+
+    EstimatorRunner( float speedup=5.0) : speedup(speedup)
     {
         current = new L3::SE3( L3::SE3::ZERO() );
     }

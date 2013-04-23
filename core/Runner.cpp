@@ -5,7 +5,6 @@ namespace L3
         
     void EstimatorRunner::run()
     {
-    
         std::cout.precision( 16 );
    
         L3::Timing::ChronoTimer t;
@@ -18,9 +17,7 @@ namespace L3
 
         while( running )
         {
-            current = start_time + t.elapsed();
-
-            std::cout << current << std::endl;
+            current = start_time + speedup*t.elapsed();
 
             /*
              *  Update all watchers

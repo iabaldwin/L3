@@ -152,6 +152,7 @@ template bool L3::SlidingWindow<L3::LMS151>::good();
 template int L3::SlidingWindow<L3::LMS151>::read();
 template void L3::SlidingWindow<L3::LMS151>::stop();
 template bool L3::SlidingWindow<L3::LMS151>::update(double);
+template void L3::SlidingWindow<L3::LMS151>::purge();
 template L3::SlidingWindow<L3::LMS151>::~SlidingWindow();
 template std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > L3::SlidingWindow<L3::LMS151>::getWindow();
 
@@ -177,5 +178,4 @@ template int L3::SlidingWindow<L3::Pose>::read();
 template bool L3::SlidingWindow<L3::Pose>::update(double);
 template L3::SlidingWindow<L3::Pose>::~SlidingWindow();
 template std::deque< std::pair< double, boost::shared_ptr<L3::Pose> > > L3::SlidingWindow<L3::Pose>::getWindow();
-
 
