@@ -9,7 +9,7 @@
 #include "Datatypes.h"
 #include "Definitions.h"
 #include "Windower.h"
-#include "Tools.h"
+#include "Timing.h"
 #include "AbstractFactory.h"
 
 namespace L3

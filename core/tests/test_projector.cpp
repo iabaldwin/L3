@@ -49,12 +49,12 @@ int main()
     /*
      *Do Projection, & average
      */
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
     for ( int i=0; i< 1000; i++ )
     {
         t.begin();
         projector->project( swathe_builder.swathe );
-        double end_time = t.end(); 
+        double end_time = t.elapsed(); 
         std::cout << point_cloud->num_points << " pts in " << end_time << "s" << std::endl;
         std::cout << (double)point_cloud->num_points/end_time << " pts/s" << std::endl;
     

@@ -207,14 +207,14 @@ struct ExperienceBuilder
                 accumulate = 0.0;
 
 #ifndef NDEBUG
-                L3::Tools::Timer t;
+                L3::Timing::SysTimer t;
                 t.begin();
 #endif
                 // Project the points 
                 projector->project( swathe );
 
 #ifndef NDEBUG
-                std::cout << point_cloud->num_points << " points in " << t.end() << "s" << std::endl;
+                std::cout << point_cloud->num_points << " points in " << t.elapsed() << "s" << std::endl;
 #endif
                 // Compute mean
                 std::pair<double,double> means = mean( point_cloud );

@@ -27,7 +27,7 @@ int main()
     
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
 
     // Run
     double increment = .02;

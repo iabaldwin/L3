@@ -1,13 +1,13 @@
 #include "Windower.h"
 #include "Datatypes.h"
 #include "Definitions.h"
+#include "Timing.h"
 
 int main()
 {
     std::cout.precision( 12 );
     
-
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
 
     for ( int i=10; i < 10000; i+= 50 )
     {
@@ -27,7 +27,7 @@ int main()
             w.purge();
         }
         
-        std::cout << w.STACK_SIZE << " entries in an average of " << t.end()/(double)j << "s" << std::endl;
+        std::cout << w.STACK_SIZE << " entries in an average of " << t.elapsed()/(double)j << "s" << std::endl;
     }
 }
 

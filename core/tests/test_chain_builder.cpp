@@ -19,7 +19,7 @@ int main()
 
         L3::ChainBuilder builder( &iterator );
 
-        L3::Tools::Timer t;
+        L3::Timing::SysTimer t;
 
         // Run
         while (true)

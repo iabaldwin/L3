@@ -27,14 +27,14 @@ int main()
     cloud->points = &randoms[0];
     cloud->num_points = randoms.size();
 
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
     L3::Histogram<double> hist;
   
     hist.create( 0, -20, 20, 0, -20, 20, 100, 50 );
 
     t.begin();
     hist( cloud );
-    double elapsed = t.end();
+    double elapsed = t.elapsed();
 
     std::cout << cloud->num_points << " pts histogrammed in " << elapsed << std::endl;
 
@@ -43,7 +43,7 @@ int main()
         t.begin();
         L3::SE3 pose( random()%100, random()%100, random()%100, (random()%10)/1000, (random()%10)/1000, (random()%10)/100);
         L3::transform( cloud, &pose );
-        elapsed = t.end();
+        elapsed = t.elapsed();
         std::cout << cloud->num_points << " pts translated/rotated in " << elapsed << std::endl;
     }
 
@@ -52,7 +52,7 @@ int main()
         t.begin();
         L3::SE3 pose( random()%100, random()%100, random()%100, (random()%10)/1000, (random()%10)/1000, (random()%10)/100);
         L3::translate( cloud, &pose );
-        elapsed = t.end();
+        elapsed = t.elapsed();
         std::cout << cloud->num_points << " pts translated in " << elapsed << std::endl;
     }
 

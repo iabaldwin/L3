@@ -13,8 +13,8 @@
 #include "Poco/Runnable.h"
 #include "Poco/Mutex.h"
 
-#include "Tools.h"
 #include "Core.h"
+#include "Timing.h"
 #include "Definitions.h"
 #include "AbstractFactory.h"
 
@@ -53,140 +53,21 @@ struct SlidingWindow : Poco::Runnable, TemporalObserver
     typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
     typename std::deque< std::pair< double, boost::shared_ptr<T> > > temp;
 
-    virtual ~SlidingWindow()
-    {
-        if ( input_stream.is_open() )
-            input_stream.close();
-        
-        stop();
-    }
+    virtual ~SlidingWindow();
 
-    void stop()
-    {
-        running = false;
-    }
+    virtual void initialise();
+    void run();
+    void stop();
 
-    bool update( double time )
-    {
-        assert( initialised );
-        
-        current_time = time;
+    bool update( double time );
 
-        mutex.lock();
-        double diff = window.back().first - current_time;
-        mutex.unlock();
+    std::deque< std::pair< double, boost::shared_ptr<T> > > getWindow();
 
-        // Need more data?
-        if (  diff < this->proximity ) 
-        {
-            read_required = true;
-        }
-       
-        return true;
-    }
+    virtual int read();
 
-    std::deque< std::pair< double, boost::shared_ptr<T> > > getWindow()
-    {
-        mutex.lock();
-        temp = window;   
-        mutex.unlock();
-        
-        return temp;
-    }
+    void purge();
 
-
-    void run()
-    {
-        if ( !initialised )
-            throw std::exception();
-
-        while( running )
-        {
-            if ( read_required )
-            {
-                read_required = false;  
-   
-                read();
-                purge();
-
-                if ( !good() )
-                    stop(); // Is the stream finished?
-            }
-        }
-    }
-
-    virtual int read()
-    {
-        int i;
-        std::string line; 
-        
-        typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
-
-        for ( i=0; i<STACK_SIZE; i++ )
-        {
-            // Is the stream good?
-            if ( !good() )
-                break;
-        
-            std::getline( input_stream, line );
-           
-            // Empty newlines?
-            if ( line.size() == 0 )
-                break;
-            
-            tmp.push_back( L3::AbstractFactory<T>::produce( line ) );
-        }
-       
-        mutex.lock();
-        window.insert( window.end(), tmp.begin(), tmp.end() ); 
-        mutex.unlock();
-        
-        return i;
-    }
-
-    virtual void initialise()
-    {
-        input_stream.open(target.c_str()); 
-        
-#ifndef NDEBUG
-        L3::Tools::Timer t;
-        std::cout << "Buffering...";
-
-        t.begin();
-#endif
-        double duration = 0;
-
-        while ( duration < window_duration )
-        {
-            int entries_read = read();
-
-            if ( entries_read != STACK_SIZE )
-            {
-                // End of stream, this is all we have
-                return;
-            }
-
-            duration = window.back().first - window.front().first;
-        }
-#ifndef NDEBUG
-        std::cout << window.size() << " entries read in " << t.end() << "s" << std::endl;
-#endif
-
-        initialised = true;
-    }
-
-    void purge()
-    {
-        mutex.lock(); 
-        while( current_time  - window.front().first > window_duration )
-            window.pop_front();
-        mutex.unlock();
-    }
-
-    bool good()
-    {
-        return input_stream.good() ? true : false; 
-    };
+    bool good();
 
 };
 
@@ -208,7 +89,7 @@ struct SlidingWindowBinary : SlidingWindow<T>
         this->input_stream.open( this->target.c_str(), std::ios::binary ); 
     
 #ifndef NDEBUG
-        L3::Tools::Timer t;
+        L3::Timing::SysTimer t;
         std::cout << "Buffering...";
         t.begin();
 #endif
@@ -225,7 +106,7 @@ struct SlidingWindowBinary : SlidingWindow<T>
             duration = this->window.back().first - this->window.front().first;
         }
 #ifndef NDEBUG
-        std::cout << this->window.size() << " entries read in " << t.end() << "s" << std::endl;
+        std::cout << this->window.size() << " entries read in " << t.elapsed() << "s" << std::endl;
 #endif
         this->initialised = true;
     }

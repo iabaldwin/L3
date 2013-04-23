@@ -39,7 +39,7 @@ int main()
     /*
      *  Run
      */
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
     double increment = 1.0;
     while( true )
     {
@@ -50,7 +50,7 @@ int main()
         if ( !swathe_builder.update( time += increment ))
             throw std::exception();
 
-        double end_time = t.end(); 
+        double end_time = t.elapsed(); 
         //std::cout << cloud.size() << " pts\t " << end_time << "s" << "\t" << "[" << (double)cloud.size()/end_time << " pts/s" << "]" << " :" << swathe_builder.window_duration << std::endl;
         std::cout << end_time << std::endl;
     

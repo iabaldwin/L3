@@ -32,8 +32,6 @@ int main()
 
     runner.start( dataset.start_time );
 
-    //L3::Tools::Timer t;
-
     //Run
     //double increment = .02;
     //while (true)

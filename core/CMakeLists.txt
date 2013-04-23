@@ -3,6 +3,7 @@ add_library( L3
     Datatypes.cpp 
     AbstractFactory.cpp 
     Iterator.cpp 
+    Windower.cpp 
     PointCloud.cpp 
     Utils.cpp 
     Writer.cpp 

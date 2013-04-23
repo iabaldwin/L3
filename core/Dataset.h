@@ -14,7 +14,7 @@
 #include "Poco/Runnable.h"
 #include "Poco/Thread.h"
 
-#include "Tools.h"
+#include "Timing.h"
 #include "WindowerFactory.h"
 
 namespace L3

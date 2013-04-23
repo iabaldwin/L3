@@ -4,7 +4,7 @@
 #include <cmath>
 #include <omp.h>
 
-#include "Tools.h"
+#include "Timing.h"
 #include "PointCloud.h"
 #include "Definitions.h"
 #include "Datatypes.h"

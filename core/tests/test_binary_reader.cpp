@@ -4,7 +4,7 @@ int main()
 {
     std::cout.precision( 12 );
 
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
 
     for ( int i=100; i < 2000; i+= 50 )
     {
@@ -22,7 +22,7 @@ int main()
                 window->read();
             }
 
-            std::cout << window->STACK_SIZE << " entries in an average of " << t.end()/(double)j << "s" << std::endl;
+            std::cout << window->STACK_SIZE << " entries in an average of " << t.elapsed()/(double)j << "s" << std::endl;
         }
         catch( L3::no_such_file& e  )
         {

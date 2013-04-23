@@ -32,10 +32,10 @@ int main()
 
     L3::Smoother<double,5>* smoother = new L3::BoxSmoother<double,5>();
 
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
     t.begin();
     smoother->smooth( histogram.get() );
-    std::cout << t.end() << std::endl;
+    std::cout << t.elapsed() << std::endl;
 
     stream.open( "hist.new" );
     stream << *histogram;

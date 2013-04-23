@@ -27,7 +27,7 @@ int main()
     L3::ConstantTimeWindower<L3::LHLV> pose_windower( &LHLV_iterator );
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
 
     // Run
     double increment = .02;
@@ -36,6 +36,6 @@ int main()
         usleep( increment*1e6 );
         t.begin();
         swathe_builder.update( time += increment ) ;
-        std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << "\t(" << swathe_builder.swathe.size() << ")" << std::endl;
+        std::cout << __PRETTY_FUNCTION__ << ":" << t.elapsed() << "\t(" << swathe_builder.swathe.size() << ")" << std::endl;
     } 
 }

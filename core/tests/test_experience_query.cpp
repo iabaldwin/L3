@@ -11,14 +11,14 @@ int main()
 
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
     for ( int i=0; i<100; i-- )
     {
         experience->update( random()%100, random()%100 );
     
         t.begin();
         L3::ReadLock( experience->experience_histogram->mutex );
-        std::cout << experience->experience_histogram->x_bins<< " x" << experience->experience_histogram->y_bins << " in " << t.end() << "s" << std::endl;
+        std::cout << experience->experience_histogram->x_bins<< " x" << experience->experience_histogram->y_bins << " in " << t.elapsed() << "s" << std::endl;
     }
 
 }

@@ -40,7 +40,7 @@ int main()
     
     L3::Projector<double> projector( &calibration, cloud );
 
-    L3::Tools::Timer t;
+    L3::Timing::SysTimer t;
 
     // Run
     double time = dataset.start_time;
@@ -54,7 +54,7 @@ int main()
         t.begin();
         swathe_builder.update( time += increment ) ;
         projector.project( swathe_builder.swathe );
-        std::cout << __PRETTY_FUNCTION__ << ":" << t.end() << "\t(" << swathe_builder.swathe.size() << ")" << std::endl;
+        std::cout << __PRETTY_FUNCTION__ << ":" << t.elapsed() << "\t(" << swathe_builder.swathe.size() << ")" << std::endl;
 
         if (counter++ > 180 )
             break;

@@ -8,8 +8,7 @@ namespace L3
     
         std::cout.precision( 16 );
    
-        //L3::Tools::Timer t;
-        boost::timer t;
+        L3::Timing::ChronoTimer t;
 
         double start_time = current_time;
 
@@ -18,7 +17,9 @@ namespace L3
         while( running )
         {
             current = start_time + t.elapsed();
-            
+
+            std::cout << current << std::endl;
+
             /*
              *  Update all watchers
              */

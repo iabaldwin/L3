@@ -8,7 +8,7 @@ namespace L3
     {
 
 #ifndef NDEBUG
-        L3::Tools::Timer t;
+        L3::Timing::SysTimer t;
         t.begin();
 #endif
         int scan_counter, pair_counter, n = swathe.size();
