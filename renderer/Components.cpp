@@ -128,10 +128,14 @@ void HistogramPixelRenderer::update()
 {
     L3::Histogram<double> tmp;
     
+    if( hist->empty() )
+        return;
+
     L3::ReadLock lock( hist->mutex );
     L3::clone( hist.get(), &tmp );
     lock.unlock();   
 
+    
     //L3::ReadLock( hist->mutex );
     // Aspect ratio?
     //float aspect_ratio = (float)hist->y_bins/(float)hist->x_bins;
