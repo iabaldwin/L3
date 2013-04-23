@@ -58,22 +58,26 @@ void Experience::run()
     {
         std::vector< std::pair< double, unsigned int > > distances;
 
+        //std::cout << "Distances: ";
         // Calculate distances to all sections
         for( unsigned int i=0; i<sections.size(); i++ )
             distances.push_back( std::make_pair( norm( std::make_pair( _x, _y ), std::make_pair( sections[i].x, sections[i].y)  ), i ) ); 
 
         // Sort the distances
+        //std::cout << "Sorting( " << distances.size() << "): ";
         std::sort( distances.begin(), distances.end() );
         std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
 
         /*
          *  Build up a list of required sections
          */
+        //std::cout << "Required: ";
         std::list<unsigned int> required_sections;
         for( unsigned int i=0; i<window-1 && i<distances.size(); i++ )
             required_sections.push_front( distances_iterator++->second );
 
         // Mark everything as *NOT* required
+        //std::cout << "Mark : ";
         for( std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.begin();
                 map_it != resident_sections.end();
                 map_it++ )
@@ -82,6 +86,7 @@ void Experience::run()
         /*
          *  Search
          */
+        //std::cout << "Search : ";
         std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds;
 
         bool update_required = false;
@@ -116,6 +121,7 @@ void Experience::run()
         /*
          *Erase everything *NOT* required
          */
+        //std::cout << "Mark : ";
         for( std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.begin();
                 map_it != resident_sections.end();
                 map_it++ )
@@ -130,9 +136,12 @@ void Experience::run()
             
         }
 
+        //std::cout.flush();
+
         // Assign the resident cloud
         if (update_required)
         {
+            //std::cout << "Update" << std::endl;
             //WriteLock writer( experience_histogram->mutex );
             WriteLock( experience_histogram->mutex );
             
@@ -145,18 +154,22 @@ void Experience::run()
             std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
 
             boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(experience_histogram)->create( means.first, 
-                    min_bound.first, 
-                    max_bound.first,
-                    means.second, 
-                    min_bound.second, 
-                    max_bound.second );
+                                                                                                                min_bound.first, 
+                                                                                                                max_bound.first,
+                                                                                                                means.second, 
+                                                                                                                min_bound.second, 
+                                                                                                                max_bound.second );
 
-            (*experience_histogram)( &*resident_point_cloud );
-        
+            //(*experience_histogram)( &*resident_point_cloud );
+            (*experience_histogram)( resident_point_cloud.get() );
+      
+            //L3::Smoother< double, 5 > smoother; 
+            //smoother.smooth( experience_histogram.get() );
+
         }
 
         // Play nice
-        usleep( .1*1e6 );
+        usleep( .05*1e6 );
     }
 }
 

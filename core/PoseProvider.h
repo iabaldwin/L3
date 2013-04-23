@@ -25,7 +25,12 @@ struct PoseProvider : std::unary_function< L3::SE3, void >
  */
 struct CircularPoseProvider : PoseProvider, Poco::Runnable
 {
-    CircularPoseProvider() : counter(0), x(0), y(0), angle(0.0), running(true), frequency(10), update(false)
+    CircularPoseProvider( double frequency=10.0) : counter(0), 
+                                                    x(0), y(0), 
+                                                    angle(0.0), 
+                                                    running(true), 
+                                                    frequency(frequency), 
+                                                    update(false)
     {
         // Go
         thread.start( *this );

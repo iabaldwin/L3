@@ -40,15 +40,26 @@ int main (int argc, char ** argv)
     L3::Visualisers::HistogramVertexRenderer    histogram_renderer(histogram);
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
     L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer( glv::Rect(500,300), histogram );
+   
+    boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_copy( new L3::HistogramUniformDistance<double>() );
+    L3::clone( histogram.get(), histogram_copy.get() );
+    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_copy( glv::Rect(500,300), histogram_copy );
+
+    histogram_pixel_renderer_copy.move( 510, 0 );
+
+    L3::BoxSmoother<double,3> smoother;
+
+    smoother.smooth( histogram_copy.get() );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     boost::shared_ptr< L3::Visualisers::Updater > updater( new L3::Visualisers::Updater() );
   
     updater->operator<< (dynamic_cast<L3::Visualisers::Updateable*>(&histogram_pixel_renderer));
+    updater->operator<< (dynamic_cast<L3::Visualisers::Updateable*>(&histogram_pixel_renderer_copy));
 
     // Add drawables and updateables
-    top << (composite << grid << histogram_renderer <<  histogram_bounds_renderer ) << histogram_pixel_renderer << updater.get();
+    top << (composite << grid << histogram_renderer <<  histogram_bounds_renderer ) << histogram_pixel_renderer << histogram_pixel_renderer_copy << updater.get();
 
     // Go
     win.setGLV(top);

@@ -6,7 +6,6 @@ namespace L3
     template <typename T, int N>
         void Smoother<T,N>::smooth( L3::Histogram<T>* hist ) 
         {
-
             T* result = new T[hist->x_bins*hist->y_bins];
 
             double filter_element=0.0, hist_value=0.0;
@@ -37,17 +36,19 @@ namespace L3
                         }
                     }
 
-                    result [(x * hist->x_bins) + y] = (sum)/9.0;
+                    //result [(x * hist->x_bins) + y] = (sum)/9.0;
+                    result [(x * hist->x_bins) + y] = (sum)/pow(N,2);
                 }
 
             std::copy( result, 
-                    result+(hist->x_bins*hist->y_bins), 
-                    hist->hist->bin );
+                        result+(hist->x_bins*hist->y_bins), 
+                        hist->hist->bin );
         }
 
 }
 
 // Explicit
 template void L3::BoxSmoother<double, 15>::smooth(L3::Histogram<double>*);
+template void L3::BoxSmoother<double, 7>::smooth(L3::Histogram<double>*);
 template void L3::BoxSmoother<double, 5>::smooth(L3::Histogram<double>*);
 template void L3::BoxSmoother<double, 3>::smooth(L3::Histogram<double>*);

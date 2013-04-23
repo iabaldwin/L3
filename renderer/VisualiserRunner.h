@@ -9,7 +9,7 @@ namespace Visualisers
 struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
 {
 
-    VisualiserRunner( double start_time )
+    VisualiserRunner( double start_time=0.0 )
         : time(start_time)
         {
         }

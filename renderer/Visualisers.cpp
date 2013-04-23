@@ -12,7 +12,6 @@ namespace Visualisers
     PoseChainRenderer::PoseChainRenderer( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* poses ) 
     {
         for( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it=poses->begin(); it < poses->end(); it+= 100 )
-            //coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( (it->second) ) ) );
             coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( *(it->second) ) ) );
     }
 
@@ -114,7 +113,6 @@ namespace Visualisers
 
     void ExperienceRenderer::onDraw3D( glv::GLV& g )
     {
-
         // Plot experience section locations
         std::deque<L3::experience_section>::iterator it = experience->sections.begin();
 
@@ -127,11 +125,8 @@ namespace Visualisers
         glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), experience->sections.size());
 
         // Update experience
-        if( pose_provider )
-        {
-            L3::SE3 update = (*pose_provider)();
-            experience->update( update.X(), update.Y() );
-        }
+        L3::SE3 update = (*pose_provider)();
+        experience->update( update.X(), update.Y() );
 
         // Plot experience cloud
         //boost::shared_ptr< L3::PointCloud<double> > cloud;

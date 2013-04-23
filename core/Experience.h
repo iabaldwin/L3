@@ -11,6 +11,7 @@
 #include "Projector.h"
 #include "Configuration.h"
 #include "Histogram.h"
+#include "Smoother.h"
 
 #include <map>
 

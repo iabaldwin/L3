@@ -11,14 +11,13 @@ namespace L3
      * Statistics
      */
     template <typename T>
-
         struct Histogram : Lockable
         {
 
             Histogram() : x_delta(0.0), y_delta(0.0), x_bins(0), y_bins(0), 
-            x_lower(.0f),x_upper(.0f),x_centre(.0f),
-            y_lower(.0f),y_upper(.0f),y_centre(.0f),
-            hist(NULL)
+                            x_lower(.0f),x_upper(.0f),x_centre(.0f),
+                            y_lower(.0f),y_upper(.0f),y_centre(.0f),
+                            hist(NULL)
             {
             }
 
@@ -145,6 +144,9 @@ namespace L3
 
     template <typename T>
         std::ostream& operator<<( std::ostream& o, const Histogram<T>& h );
+
+    template <typename T>
+        void clone( Histogram<T> const* src, Histogram<T> * dest );
 }
 
 #endif

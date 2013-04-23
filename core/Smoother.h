@@ -11,8 +11,15 @@ namespace L3
     template <>
         struct StaticCheck<true>{};
 
+    struct SmootherInterface
+    {
+        virtual ~SmootherInterface()
+        {
+        }
+    };
+
     template <typename T, int N>
-        struct Smoother : StaticCheck<( (N%2) != 0) >
+        struct Smoother : StaticCheck<( (N%2) != 0) >, SmootherInterface
         {
             Smoother()
             {
@@ -34,11 +41,9 @@ namespace L3
         {
             BoxSmoother()
             {
-
                 for( int i=0; i<N; i++ )
                     for( int j=0; j<N; j++ )
                         this->filter[i][j] = 0.111f;
-          
             }
 
             void smooth( L3::Histogram<T>* hist )

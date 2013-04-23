@@ -86,34 +86,35 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
     glv::Point3 quad_vertices[4];
     glv::Color quad_colors[4];
 
-    L3::ReadLock( hist->mutex );
+    L3::Histogram<double> tmp;
+    
+    L3::ReadLock lock( hist->mutex );
+    L3::clone( hist.get(), &tmp );
+    lock.unlock();   
 
-    // We may have acquired the lock, but the histogram might be empty
-    //std::cout << hist->x_delta << ":" << hist->y_delta << std::endl;
+    float x_delta = tmp.x_delta;
+    float y_delta = tmp.y_delta;
 
-    float x_delta = hist->x_delta;
-    float y_delta = hist->y_delta;
-
-    for( unsigned int i=0; i < hist->x_bins; i++ )
+    for( unsigned int i=0; i < tmp.x_bins; i++ )
     {
-        for( unsigned int j=0; j < hist->y_bins; j++ )
+        for( unsigned int j=0; j < tmp.y_bins; j++ )
         {
-            unsigned int val = hist->bin( i, j );
+            unsigned int val = tmp.bin( i, j );
 
-            glv::Color c = glv::Color( val/10.0 );
+            //glv::Color c = glv::Color( val/10.0 );
 
-            std::pair<float,float> coords = hist->coords( i, j);
+            //std::pair<float,float> coords = tmp->coords( i, j);
 
-            quad_colors[0] = c;
-            quad_vertices[0]( coords.first-x_delta/2.5, coords.second-y_delta/2.5, val );
-            quad_colors[1] = c;
-            quad_vertices[1]( coords.first-x_delta/2.5, coords.second+y_delta/2.5, val );
-            quad_colors[2] = c;
-            quad_vertices[2]( coords.first+x_delta/2.5, coords.second+y_delta/2.5, val );
-            quad_colors[3] = c;
-            quad_vertices[3]( coords.first+x_delta/2.5, coords.second-y_delta/2.5, val );
+            //quad_colors[0] = c;
+            //quad_vertices[0]( coords.first-x_delta/2.5, coords.second-y_delta/2.5, val );
+            //quad_colors[1] = c;
+            //quad_vertices[1]( coords.first-x_delta/2.5, coords.second+y_delta/2.5, val );
+            //quad_colors[2] = c;
+            //quad_vertices[2]( coords.first+x_delta/2.5, coords.second+y_delta/2.5, val );
+            //quad_colors[3] = c;
+            //quad_vertices[3]( coords.first+x_delta/2.5, coords.second-y_delta/2.5, val );
 
-            glv::draw::paint( glv::draw::TriangleFan, quad_vertices, quad_colors, 4 );
+            //glv::draw::paint( glv::draw::TriangleFan, quad_vertices, quad_colors, 4 );
 
         }
     }
@@ -125,20 +126,25 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
 
 void HistogramPixelRenderer::update()
 {
-    L3::ReadLock( hist->mutex );
+    L3::Histogram<double> tmp;
+    
+    L3::ReadLock lock( hist->mutex );
+    L3::clone( hist.get(), &tmp );
+    lock.unlock();   
 
+    //L3::ReadLock( hist->mutex );
     // Aspect ratio?
     //float aspect_ratio = (float)hist->y_bins/(float)hist->x_bins;
     //int w = this->width();
     //this->height( w * aspect_ratio );
 
-    data().resize( glv::Data::FLOAT, 1, hist->x_bins, hist->y_bins );
+    data().resize( glv::Data::FLOAT, 1, tmp.x_bins, tmp.y_bins );
 
-    for( unsigned int i=0; i< hist->x_bins; i++ )
+    for( unsigned int i=0; i< tmp.x_bins; i++ )
     {
-        for( unsigned int j=0; j< hist->y_bins; j++ )
+        for( unsigned int j=0; j< tmp.y_bins; j++ )
         {
-            data().assign( hist->bin(i,j)/10.0 , 0, i, j );
+            data().assign( tmp.bin(i,j)/10.0 , 0, i, j );
         }
     }
 }

@@ -15,8 +15,6 @@ namespace L3
         /*
          *  Cost Functions
          */
-
-                
         struct MI :  std::binary_function<double,double,double>
         {
 
@@ -26,7 +24,6 @@ namespace L3
         /*
          *  KL divergence
          */
-
         struct KL : std::binary_function<double,double,double>
         {
             KL( double p_normaliser, double q_normaliser ) : p_norm(p_normaliser), q_norm(q_normaliser)
@@ -43,7 +40,6 @@ namespace L3
 
         };
 
-        
         template <typename T>
             double KLCostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
             {
@@ -65,6 +61,9 @@ namespace L3
             }
 
 
+        /*
+         *  Hypothesis Builder
+         */
         struct HypothesisBuilder
         {
             HypothesisBuilder( L3::PointCloud<double> const * swathe, L3::SE3 const* estimate, L3::Histogram<double> const* experience , CostFunction<double>* cost_function ) 
@@ -75,9 +74,9 @@ namespace L3
             double                          cost;
 
             L3::PointCloud<double> const *  swathe;
-            L3::SE3 const*                  estimate ;
             L3::Histogram<double> const*    experience;
             CostFunction<double> *          cost_function;
+            L3::SE3 const*                  estimate ;
 
             void operator()()
             {
@@ -122,17 +121,16 @@ namespace L3
                 //PointCloud<T>* sampled_swathe = new PointCloud<T>();
                 //L3::sample( swathe, sampled_swathe, 2000 );
 
-                // Smooth
-            
-                L3::Smoother< double, 5 > smoother;
+                /*
+                 *  Smoothing
+                 */
+                //L3::Smoother< double, 5 > smoother;
                 //smoother.smooth( &swathe_histogram );
                 
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
                     group.run( HypothesisBuilder( swathe, &estimate, this->experience_histogram.get() , this->cost_function ) );
-
-                    // Continue
                     it++;
                 }
 

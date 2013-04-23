@@ -22,6 +22,9 @@ target_link_libraries( test_composite GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} 
 add_executable( test_histogram_renderer test_histogram_renderer.cpp )
 target_link_libraries( test_histogram_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
+add_executable( test_histogram_smoothing_visual test_histogram_smoothing.cpp )
+target_link_libraries( test_histogram_smoothing_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
 add_executable( test_smoother_visual test_smoother.cpp )
 target_link_libraries( test_smoother_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 

@@ -18,7 +18,7 @@ namespace L3
         while( running )
         {
             current = start_time + t.elapsed();
-
+            
             /*
              *  Update all watchers
              */

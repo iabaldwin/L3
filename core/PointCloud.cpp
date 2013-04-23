@@ -301,4 +301,5 @@ template std::pair<double,double>       L3::min( PointCloud<double>* );
 
 template void                           L3::gaussianCloud( PointCloud<double>* cloud, double variance );
 
+template std::ostream& L3::operator<<( std::ostream& o, const L3::Point<double>& pt );
 template std::ostream& L3::operator<<( std::ostream& o, const L3::PointCloud<double>& cloud );

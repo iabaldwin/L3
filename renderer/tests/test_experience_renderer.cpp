@@ -29,28 +29,27 @@ int main (int argc, char ** argv)
     }
 
     /*
-     *Visualisation
+     *  Visualisation
      */
     glv::GLV top;
     glv::Window win(1400, 800, "Visualisation::ExperienceRenderer");
 
-    // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
     
     // Point cloud renderer
-    L3::Visualisers::Composite              composite;
-    L3::Visualisers::Controller*            controller = new L3::Visualisers::BasicPanController();
-    L3::Visualisers::Grid                   grid;
-    L3::PoseProvider*                       pose_provider = new L3::CircularPoseProvider();
-    L3::Visualisers::PoseProviderRenderer   pose_provider_renderer( pose_provider );
-    L3::Visualisers::ExperienceRenderer     experience_renderer( experience );
+    L3::Visualisers::Composite                          composite;
+    boost::shared_ptr< L3::Visualisers::Controller >    controller( new L3::Visualisers::BasicPanController() );
+    L3::Visualisers::Grid                               grid;
+    boost::shared_ptr< L3::PoseProvider >               pose_provider( new L3::CircularPoseProvider( 25.0 ) );
+    L3::Visualisers::PoseProviderRenderer               pose_provider_renderer( pose_provider.get() );
+    L3::Visualisers::ExperienceRenderer                 experience_renderer( experience );
 
     // Associate pose provider
-    experience_renderer.addPoseProvider( pose_provider );
+    experience_renderer.addPoseProvider( pose_provider.get() );
 
     // Associate controller
-    composite.addController( controller ).stretch(1,1);
-   
+    composite.addController( controller.get() ).stretch(1,1);
+
     // Combine
     top << (composite << grid << experience_renderer << pose_provider_renderer ) ;
 

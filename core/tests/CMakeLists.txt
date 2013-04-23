@@ -106,4 +106,7 @@ target_link_libraries( test_pipeline_stage_3 config L3 ${Boost_LIBRARIES}  )
 add_executable( test_estimator test_estimator.cpp )
 target_link_libraries( test_estimator config L3 ${Boost_LIBRARIES}  )
 
+add_executable( test_histogram_smoothing test_histogram_smoothing.cpp )
+target_link_libraries( test_histogram_smoothing config L3 ${Boost_LIBRARIES}  )
+
 
