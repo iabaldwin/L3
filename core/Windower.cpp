@@ -132,9 +132,6 @@ namespace L3
     template <typename T>
         void SlidingWindow<T>::purge()
         {
-            if (window.size() == 0 )
-                return;
-
             mutex.lock(); 
             while( (current_time  - window.front().first > window_duration) && (window.size() != 0 ))
                 window.pop_front();
@@ -148,16 +145,12 @@ namespace L3
         };
 }
 
-
-
-
-
-
 template void L3::SlidingWindow<L3::LMS151>::initialise();
 
 template void L3::SlidingWindow<L3::LMS151>::run();
 template bool L3::SlidingWindow<L3::LMS151>::good();
 template int L3::SlidingWindow<L3::LMS151>::read();
+template void L3::SlidingWindow<L3::LMS151>::stop();
 template bool L3::SlidingWindow<L3::LMS151>::update(double);
 template L3::SlidingWindow<L3::LMS151>::~SlidingWindow();
 template std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > L3::SlidingWindow<L3::LMS151>::getWindow();
@@ -165,6 +158,7 @@ template std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > L3::Sl
 template void L3::SlidingWindow<L3::SE3>::run();
 template bool L3::SlidingWindow<L3::SE3>::good();
 template int L3::SlidingWindow<L3::SE3>::read();
+template void L3::SlidingWindow<L3::SE3>::stop();
 template bool L3::SlidingWindow<L3::SE3>::update(double);
 template L3::SlidingWindow<L3::SE3>::~SlidingWindow();
 template std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > L3::SlidingWindow<L3::SE3>::getWindow();
@@ -172,6 +166,7 @@ template std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > L3::Slidi
 template void L3::SlidingWindow<L3::LHLV>::run();
 template bool L3::SlidingWindow<L3::LHLV>::good();
 template int L3::SlidingWindow<L3::LHLV>::read();
+template void L3::SlidingWindow<L3::LHLV>::stop();
 template bool L3::SlidingWindow<L3::LHLV>::update(double);
 template L3::SlidingWindow<L3::LHLV>::~SlidingWindow();
 template std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > L3::SlidingWindow<L3::LHLV>::getWindow();

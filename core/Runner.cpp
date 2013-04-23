@@ -10,6 +10,8 @@ namespace L3
    
         L3::Timing::ChronoTimer t;
 
+        t.begin();
+
         double start_time = current_time;
 
         double current;

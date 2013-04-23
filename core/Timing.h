@@ -49,6 +49,8 @@ namespace Timing
         {
             boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
             //return( boost::chrono::duration<double>( boost::chrono::system_clock::now() - start ) );
+           
+            std::cout << sec.count() << std::endl;
             return sec.count(); 
         }
 
