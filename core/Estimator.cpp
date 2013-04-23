@@ -28,7 +28,7 @@ namespace L3
         {
             KL( double p_normaliser, double q_normaliser ) : p_norm(p_normaliser), q_norm(q_normaliser)
             {
-
+                assert( p_normaliser && q_normaliser );
             }
 
             double p_norm, q_norm;
@@ -67,7 +67,10 @@ namespace L3
         struct HypothesisBuilder
         {
             HypothesisBuilder( L3::PointCloud<double> const * swathe, L3::SE3 const* estimate, L3::Histogram<double> const* experience , CostFunction<double>* cost_function ) 
-                : swathe(swathe), estimate(estimate), experience(experience), cost_function(cost_function)
+                : swathe(swathe), 
+                    estimate(estimate), 
+                    experience(experience), 
+                    cost_function(cost_function)
             {
             }
 
@@ -81,15 +84,23 @@ namespace L3
             void operator()()
             {
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
+             
+                /*
+                 *Point Cloud
+                 */
+                // Copy
                 L3::copy( const_cast<L3::PointCloud<double>* >(swathe), hypothesis.get() );
 
+                // Transform
+                L3::transform( hypothesis.get(), const_cast<L3::SE3*>(estimate) ); 
+
+                /*
+                 *Histogram
+                 */
                 L3::Histogram<double> swathe_histogram;
                
                 L3::copy( experience, &swathe_histogram );
                 
-                // Transform to pose estimate
-                transform( hypothesis.get(), const_cast<L3::SE3*>(estimate) );
-
                 // Histogram 
                 swathe_histogram( hypothesis.get() );
 
@@ -106,14 +117,15 @@ namespace L3
         template <typename T>
             double DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
-                // Lock the experience histogram
-                L3::ReadLock lock( this->experience_histogram->mutex );
-
+            
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
 
                 if ( __builtin_expect( (this->experience_histogram->empty() ) , 0 ) )
                     return std::numeric_limits<T>::infinity();
+
+                // Lock the experience histogram
+                L3::ReadLock lock( this->experience_histogram->mutex );
 
                 /*
                  *  Speed considerations
@@ -137,6 +149,7 @@ namespace L3
                 // Synch
                 group.wait();
 
+                lock.unlock();
             }
 
     }   // Estimator

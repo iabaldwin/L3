@@ -61,7 +61,7 @@ namespace L3
         /*
          *  Estimation
          */
-        //(*estimator)( projector->cloud, predicted );
+        (*estimator)( projector->cloud, predicted );
 
     }
 }

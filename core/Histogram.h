@@ -32,7 +32,7 @@ namespace L3
                 gsl_histogram2d_free( hist );
             }
 
-            bool empty()
+            bool empty() const
             {
                 return ((this->x_bins == 0) || (this->y_bins == 0 ) );
             }
@@ -82,12 +82,12 @@ namespace L3
                 gsl_histogram2d_reset( hist );
             }
 
-            unsigned int bin( size_t x, size_t y  )
+            unsigned int bin( size_t x, size_t y  ) const
             {
                 return gsl_histogram2d_get(hist,x,y); 
             }
 
-            std::pair<float, float> coords( size_t x, size_t y  )
+            std::pair<float, float> coords( size_t x, size_t y  ) const
             {
                 if ( !hist )
                     return std::make_pair( 0, 0 );
