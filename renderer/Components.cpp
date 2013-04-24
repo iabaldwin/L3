@@ -62,17 +62,17 @@ DefaultAxes::DefaultAxes()
     counter = 0;
 
     colors[counter] = c;
-    vertices[counter++]( -100, 0, 0 );
+    vertices[counter++]( -10, 0, 0 );
     colors[counter] = c;
-    vertices[counter++]( 100, 0, 0 );
+    vertices[counter++]( 10, 0, 0 );
     colors[counter] = c;
-    vertices[counter++]( 0 , -100, 0 );
+    vertices[counter++]( 0 , -10, 0 );
     colors[counter] = c;
-    vertices[counter++]( 0 ,100, 0 );
+    vertices[counter++]( 0 ,10, 0 );
     colors[counter] = c;
-    vertices[counter++]( 0 , 0, -100 );
+    vertices[counter++]( 0 , 0, -10 );
     colors[counter] = c;
-    vertices[counter++]( 0 ,0 , 100 );
+    vertices[counter++]( 0 ,0 , 10 );
 
 }
 
@@ -280,17 +280,22 @@ void PointCloudBoundsRenderer::onDraw3D(glv::GLV& g)
     point_cloud_lock.unlock();
 
     bound_vertices[0]( lower_left.first, lower_left.second, 0.0 );
-    bound_colors[0].set( 0, 1, 1 );
+    bound_colors[0].set( 0, 1, 1, 1.0 );
     bound_vertices[1]( lower_left.first, upper_right.second, 0.0 );
-    bound_colors[1].set( 0, 1, 1 );
+    bound_colors[1].set( 0, 1, 1, 0.1 );
     bound_vertices[2]( upper_right.first, upper_right.second, 0.0 );
-    bound_colors[2].set( 0, 1, 1 );
+    bound_colors[2].set( 0, 1, 1, 1.0 );
     bound_vertices[3]( upper_right.first, lower_left.second, 0.0 );
-    bound_colors[3].set( 0, 1, 1 );
+    bound_colors[3].set( 0, 1, 1, 0.1 );
 
-    glv::draw::lineWidth(1.5);
+    glv::draw::enable( glv::draw::LineStipple );
 
+    glv::draw::lineStipple(10, 0xAAAA );
+
+    glv::draw::lineWidth(1);
     glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
+    
+    glv::draw::disable( glv::draw::LineStipple );
 
 }
 
@@ -335,9 +340,9 @@ void DedicatedPoseRenderer::onDraw3D(glv::GLV& g)
    
     //far(1000);
 
-    glv::draw::push3D( -5.0, 5.0, .1f, 150.0, 85 );
+    //glv::draw::push3D( -5.0, 5.0, .1f, 150.0, 35 );
 
-    glv::draw::translateZ( -10 );
+    glv::draw::translateZ( -25 );
     glv::draw::translateY( 1 );
     //glv::draw::rotate( 135 , 0 , 45 );
     //glv::draw::rotate( 45 , 0 , 45 );
@@ -351,7 +356,7 @@ void DedicatedPoseRenderer::onDraw3D(glv::GLV& g)
 
     axes.onDraw3D( g );
 
-    glv::draw::pop3D();
+    //glv::draw::pop3D();
 }
 
 

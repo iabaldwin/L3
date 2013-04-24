@@ -50,9 +50,15 @@ int main( int argc, char* argv[] )
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
     // Projection
-    L3::SE3 projection(0,0,0,.1,.2,.3);
     L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
+    L3::SE3 projection = L3::SE3::ZERO();
+   
+    L3::Configuration::convert( mission.lidars[ mission.declined], projection );
+    
     boost::shared_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
+
+
+
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();

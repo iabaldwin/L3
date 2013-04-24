@@ -220,15 +220,15 @@ class EstimatorLayout : public Layout
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
         
             // Stand-alone pose renderer
-            oracle_rendere.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 200,200 ) ) );
-            oracle_rendere->pos( win.width()-(200+10), 325 );
+            oracle_rendere.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 240,240 ) ) );
+            oracle_rendere->pos( win.width()-(240+10), 325 );
             this->renderables.push_front( oracle_rendere.get() );
             updater->operator<<( oracle_rendere.get() );
        
 
             // Stand-alone pose renderer
-            predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 200,200 ) ) );
-            predicted_pose_renderer->pos( win.width()-(400+20), 325 );
+            predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 240,240 ) ) );
+            predicted_pose_renderer->pos( win.width()-(240*2+20), 325 );
             this->renderables.push_front( predicted_pose_renderer.get() );
             updater->operator<<( predicted_pose_renderer.get() );
        
