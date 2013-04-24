@@ -90,12 +90,12 @@ struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 struct EstimatorRunner : ThreadedTemporalRunner
 {
 
-    L3::Experience*                             experience;
-    L3::PoseProvider*                           provider;
-    L3::ConstantTimeWindower<L3::LHLV>*         windower;
-    L3::SwatheBuilder*                          swathe_builder;
-    L3::Projector<double>*                      projector;
-    L3::Estimator::Estimator<double>*           estimator;
+    L3::Experience*                         experience;
+    L3::PoseProvider*                       provider;
+    L3::ConstantTimeWindower<L3::LHLV>*     windower;
+    L3::SwatheBuilder*                      swathe_builder;
+    L3::Projector<double>*                  projector;
+    L3::Estimator::Estimator<double>*       estimator;
 
     std::list < TemporalObserver* >             observers;
     

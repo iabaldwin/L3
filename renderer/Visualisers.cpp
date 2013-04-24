@@ -39,7 +39,6 @@ namespace Visualisers
         typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
 
         while( it != window.end() )
-            //L3::Visualisers::CoordinateSystem( it++->second ).onDraw3D( g );
             L3::Visualisers::CoordinateSystem( *(it++->second) ).onDraw3D( g );
 
     }
@@ -204,29 +203,15 @@ namespace Visualisers
     /*
      *  Predictor Renderer
      */
-
     void PredictorRenderer::onDraw3D( glv::GLV& g )
     {
-        L3::SE3 predicted = L3::SE3::ZERO();
-        L3::SE3 current = L3::SE3::ZERO();
+        L3::ReadLock( estimator->mutex );
 
-        L3::Predictor predictor;
+        for ( std::vector< L3::SE3 >::iterator it = estimator->estimates.begin();
+                it != estimator->estimates.end(); 
+                it++ )
+            CoordinateSystem( *(it ), 2.0 ).onDraw3D(g);
 
-        if ( std::distance( pose_windower->constant_time_iterator->window.begin(), 
-                    pose_windower->constant_time_iterator->window.end() ) > 0 )
-        {
-            predictor.predict( predicted, 
-                    current, 
-                    pose_windower->constant_time_iterator->window.begin(), 
-                    pose_windower->constant_time_iterator->window.end() );
-
-            for ( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = predictor.chain.begin(); 
-                    it != predictor.chain.end(); 
-                    it++ )
-                //CoordinateSystem( it->second ).onDraw3D(g);
-                CoordinateSystem( *(it->second ) ).onDraw3D(g);
-
-        }
     }
 
 

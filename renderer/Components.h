@@ -91,13 +91,13 @@ struct Composite : glv::View3D
         far( 1000 );
 
         // Appropriate view-point
-        position.z = -500; 
+        //position.z = -500; 
+        position.z = -250; 
     }
 
     control_t                       position ;
     std::list<Leaf*>                components; 
     L3::Visualisers::Controller*    controller;
-
 
     void apply( control_t t )
     {
@@ -144,14 +144,14 @@ struct Composite : glv::View3D
  */
 struct CoordinateSystem
 {
-    //explicit CoordinateSystem( boost::shared_ptr< L3::SE3 > pose  );
-    explicit CoordinateSystem( L3::SE3& pose  );
+    explicit CoordinateSystem( L3::SE3& pose , float scale=10.0f );
 
-    //boost::shared_ptr< L3::SE3 >        pose;
-    L3::SE3&        pose;
+    L3::SE3&                            pose;
     boost::shared_array< glv::Color >   colors;
     boost::shared_array< glv::Point3 >  vertices;
 
+    float scale;
+    
     void onDraw3D(glv::GLV& g);
    
 };
@@ -187,7 +187,6 @@ struct PoseRenderer : Leaf
 
     PoseRenderer( L3::SE3& pose ) : pose(pose)
     {
-
     }
 
     L3::SE3& pose;
@@ -199,6 +198,22 @@ struct PoseRenderer : Leaf
 
 };
 
+/*
+ *  Pose prediction 
+ */
+
+struct PoseEstimatesRenderer : Leaf
+{
+
+    PoseEstimatesRenderer( boost::shared_ptr<L3::Estimator::PoseEstimates> estimates )  : pose_estimates(estimates)
+    {
+    }
+    
+    boost::shared_ptr<L3::Estimator::PoseEstimates> pose_estimates;
+
+    void onDraw3D(glv::GLV& g);
+    
+};
 
 /*
  *  Point cloud renderer
@@ -230,14 +245,27 @@ struct PointCloudBoundsRenderer : Leaf
 
 };
 
-
-
 /*
  *  Grid
  */
 struct Grid : Leaf
 {
     Grid();
+
+    int counter;
+    boost::shared_array< glv::Point3 >  vertices;
+    boost::shared_array< glv::Color >   colors;
+
+    void onDraw3D(glv::GLV& g);
+    
+};
+
+/*
+ *  DefaultAxes
+ */
+struct DefaultAxes : Leaf
+{
+    DefaultAxes();
 
     int counter;
     boost::shared_array< glv::Point3 >  vertices;
@@ -300,22 +328,28 @@ struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Updateable
 };
 
 /*
- *  Pose prediction 
+ *  Single pose orientation renderer
  */
-
-struct PoseEstimatesRenderer : Leaf
+struct DedicatedPoseRenderer : glv::View3D, Updateable
 {
 
-    PoseEstimatesRenderer( boost::shared_ptr<L3::Estimator::PoseEstimates> estimates )  : pose_estimates(estimates)
+    DedicatedPoseRenderer( L3::PoseProvider* provider, const glv::Rect rect = glv::Rect(50,50) ) 
+        : glv::View3D( rect ),
+            provider(provider)
     {
+        pose.reset( new L3::SE3( L3::SE3::ZERO() ) );
     }
-    
-    boost::shared_ptr<L3::Estimator::PoseEstimates> pose_estimates;
 
-    void onDraw3D(glv::GLV& g);
+    L3::PoseProvider* provider;
+
+    boost::shared_ptr<L3::SE3> pose;
     
+    L3::Visualisers::DefaultAxes axes;
+
+    void update();
+
+    void onDraw3D( glv::GLV& g );
 };
-
 
 }
 }

@@ -187,12 +187,12 @@ struct EstimatorRenderer : Leaf
  */
 struct PredictorRenderer : Leaf
 {
-    PredictorRenderer( L3::ConstantTimeWindower<L3::LHLV>* windower ) : pose_windower(windower)
+    PredictorRenderer( boost::shared_ptr< L3::Estimator::PoseEstimates > estimator ) : estimator(estimator)
     {
 
     }
     
-    L3::ConstantTimeWindower<L3::LHLV>* pose_windower ;
+    boost::shared_ptr< L3::Estimator::PoseEstimates > estimator;
 
     void onDraw3D( glv::GLV& g );
 

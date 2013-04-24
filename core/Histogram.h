@@ -95,6 +95,11 @@ namespace L3
                     return std::make_pair( hist->xrange[x], hist->yrange[y] );
             }
 
+            double normalizer() const
+            {
+                return gsl_histogram2d_sum( hist );
+            }
+
             // Histogram an entire cloud
             void operator()( L3::PointCloud<T>* cloud )
             {

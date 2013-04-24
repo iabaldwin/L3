@@ -191,7 +191,7 @@ class EstimatorLayout : public Layout
         {
             // Histogram voxels
             histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramPixelRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
-            histogram_pixel_renderer_experience->pos(win.width()-510,10);
+            histogram_pixel_renderer_experience->pos(win.width()-(500+10),10);
             this->renderables.push_front( histogram_pixel_renderer_experience.get() );
             updater->operator<<( dynamic_cast<Updateable*>(histogram_pixel_renderer_experience.get()) );
             
@@ -214,6 +214,25 @@ class EstimatorLayout : public Layout
             // Current pose estimate
             pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
+        
+            // Predicted estimates
+            predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( runner->estimator->pose_estimates ) ); 
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
+        
+            // Stand-alone pose renderer
+            oracle_rendere.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 200,200 ) ) );
+            oracle_rendere->pos( win.width()-(200+10), 325 );
+            this->renderables.push_front( oracle_rendere.get() );
+            updater->operator<<( oracle_rendere.get() );
+       
+
+            // Stand-alone pose renderer
+            predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 200,200 ) ) );
+            predicted_pose_renderer->pos( win.width()-(400+20), 325 );
+            this->renderables.push_front( predicted_pose_renderer.get() );
+            updater->operator<<( predicted_pose_renderer.get() );
+       
+
         }
     
         L3::EstimatorRunner* runner;
@@ -221,6 +240,11 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
 
         boost::shared_ptr< L3::Experience> experience ;
+        
+        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      oracle_rendere;
+        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      predicted_pose_renderer;
+        
+        boost::shared_ptr< L3::Visualisers::PredictorRenderer >         predictor_renderer;
         boost::shared_ptr< L3::Visualisers::PointCloudRenderer >        runtime_cloud_renderer; 
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >   histogram_bounds_renderer;
         boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >  point_cloud_bounds_renderer;

@@ -50,6 +50,39 @@ void Grid::onDraw3D(glv::GLV& g)
 }
 
 /*
+ *  Components :: DefaultAxes
+ */
+DefaultAxes::DefaultAxes()
+{
+    vertices.reset( new glv::Point3[ 6 ] );
+    colors.reset( new glv::Color[ 6 ] );
+    
+    glv::Color c =  glv::Color( 112.f/255.f, 138.f/255.f, 144.f/255.f ) ; 
+    
+    counter = 0;
+
+    colors[counter] = c;
+    vertices[counter++]( -100, 0, 0 );
+    colors[counter] = c;
+    vertices[counter++]( 100, 0, 0 );
+    colors[counter] = c;
+    vertices[counter++]( 0 , -100, 0 );
+    colors[counter] = c;
+    vertices[counter++]( 0 ,100, 0 );
+    colors[counter] = c;
+    vertices[counter++]( 0 , 0, -100 );
+    colors[counter] = c;
+    vertices[counter++]( 0 ,0 , 100 );
+
+}
+
+void DefaultAxes::onDraw3D(glv::GLV& g)
+{ 
+    glv::draw::lineWidth( .01 );
+    glv::draw::paint( glv::draw::Lines, vertices.get(), colors.get(), counter );
+}
+
+/*
  *  Components :: HistogramBoundsRenderer
  */
 void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)
@@ -101,20 +134,20 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
         {
             unsigned int val = tmp.bin( i, j );
 
-            //glv::Color c = glv::Color( val/10.0 );
+            glv::Color c = glv::Color( val/10.0 );
 
-            //std::pair<float,float> coords = tmp->coords( i, j);
+            std::pair<float,float> coords = tmp.coords( i, j);
 
-            //quad_colors[0] = c;
-            //quad_vertices[0]( coords.first-x_delta/2.5, coords.second-y_delta/2.5, val );
-            //quad_colors[1] = c;
-            //quad_vertices[1]( coords.first-x_delta/2.5, coords.second+y_delta/2.5, val );
-            //quad_colors[2] = c;
-            //quad_vertices[2]( coords.first+x_delta/2.5, coords.second+y_delta/2.5, val );
-            //quad_colors[3] = c;
-            //quad_vertices[3]( coords.first+x_delta/2.5, coords.second-y_delta/2.5, val );
+            quad_colors[0] = c;
+            quad_vertices[0]( coords.first-x_delta/2.5, coords.second-y_delta/2.5, val );
+            quad_colors[1] = c;
+            quad_vertices[1]( coords.first-x_delta/2.5, coords.second+y_delta/2.5, val );
+            quad_colors[2] = c;
+            quad_vertices[2]( coords.first+x_delta/2.5, coords.second+y_delta/2.5, val );
+            quad_colors[3] = c;
+            quad_vertices[3]( coords.first+x_delta/2.5, coords.second-y_delta/2.5, val );
 
-            //glv::draw::paint( glv::draw::TriangleFan, quad_vertices, quad_colors, 4 );
+            glv::draw::paint( glv::draw::TriangleFan, quad_vertices, quad_colors, 4 );
 
         }
     }
@@ -156,12 +189,9 @@ void HistogramPixelRenderer::update()
 /*
  *Components :: CoordinateSystem
  */
-//CoordinateSystem::CoordinateSystem( boost::shared_ptr< L3::SE3 > pose ) : pose( pose )
-CoordinateSystem::CoordinateSystem( L3::SE3& pose ) : pose( pose )
+CoordinateSystem::CoordinateSystem( L3::SE3& pose, float scale ) : pose( pose ), scale(scale)
 {
     vertices.reset( new glv::Point3[6] );
-
-    float scale = 10.0f;
 
     vertices[0]( 0, 0, 0 ); 
     vertices[1]( scale, 0, 0 ); 
@@ -284,6 +314,46 @@ void PoseEstimatesRenderer::onDraw3D( glv::GLV& g )
 
     glv::draw::paint( glv::draw::Points, points, colors, counter );
 }
+
+/*
+ *  Single pose orientation renderer
+ */
+
+void DedicatedPoseRenderer::update()
+{
+    *pose = provider->operator()();
+}
+
+void DedicatedPoseRenderer::onDraw3D(glv::GLV& g)
+{
+    L3::SE3 tmp( *pose );
+
+    // Centre
+    tmp.X( 0 );
+    tmp.Y( 0 );
+    tmp.Z( 0 );
+   
+    //far(1000);
+
+    glv::draw::push3D( -5.0, 5.0, .1f, 150.0, 85 );
+
+    glv::draw::translateZ( -10 );
+    glv::draw::translateY( 1 );
+    //glv::draw::rotate( 135 , 0 , 45 );
+    //glv::draw::rotate( 45 , 0 , 45 );
+    //glv::draw::rotate( 0 , 0 , 55 );
+
+    glv::draw::rotateX( 245 );
+    glv::draw::rotateZ( 15 );
+
+    
+    CoordinateSystem( tmp ).onDraw3D( g );
+
+    axes.onDraw3D( g );
+
+    glv::draw::pop3D();
+}
+
 
 }
 }

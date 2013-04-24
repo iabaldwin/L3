@@ -1,5 +1,7 @@
 #include "Estimator.h"
+
 #include <iterator>
+#include <fstream>
 #include <numeric>
 #include <boost/timer.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -7,10 +9,11 @@
 namespace L3
 {
     /*
-     *Estimator types
+     *  Estimator types
      */
     namespace Estimator
     {
+
 
         /*
          *  Cost Functions
@@ -24,14 +27,17 @@ namespace L3
         /*
          *  KL divergence
          */
-        struct KL : std::binary_function<double,double,double>
+        template <typename T>
+            struct KL : std::binary_function<double,double,double>
         {
-            KL( double p_normaliser, double q_normaliser ) : p_norm(p_normaliser), q_norm(q_normaliser)
+            KL( double p_normalizer, double q_normalizer, SmoothingPolicy<T>* policy ) : p_norm(p_normalizer), q_norm(q_normalizer)
             {
-                assert( p_normaliser && q_normaliser );
+                assert( p_normalizer && q_normalizer );
             }
 
             double p_norm, q_norm;
+
+            SmoothingPolicy<T>* policy;
 
             double operator()( double p, double q )
             {
@@ -40,14 +46,16 @@ namespace L3
 
         };
 
-        template <typename T>
+        template < typename T >
             double KLCostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
             {
                 // Convert to probability
-                double experience_normaliser = gsl_histogram2d_sum( experience.hist );
-                double swathe_normaliser     = gsl_histogram2d_sum( swathe.hist );
+                double experience_normalizer = experience.normalizer();
+                double swathe_normalizer     = swathe.normalizer();
 
-                KL kl( experience_normaliser, swathe_normaliser );
+                NoneSmoothing<T> no_smoothing;
+
+                KL<T> kl( experience_normalizer, swathe_normalizer, &no_smoothing );
 
                 double* kl_estimate = new double[(experience.x_bins * experience.y_bins)];
 
@@ -64,44 +72,44 @@ namespace L3
         /*
          *  Hypothesis Builder
          */
-        struct HypothesisBuilder
+        struct Hypothesis
         {
-            HypothesisBuilder( L3::PointCloud<double> const * swathe, L3::SE3 const* estimate, L3::Histogram<double> const* experience , CostFunction<double>* cost_function ) 
+            Hypothesis( L3::PointCloud<double> const * swathe, 
+                    L3::SE3 const* estimate, 
+                    L3::Histogram<double> const* experience , 
+                    CostFunction<double>* cost_function ) 
                 : swathe(swathe), 
-                    estimate(estimate), 
-                    experience(experience), 
-                    cost_function(cost_function)
+                estimate(estimate), 
+                experience(experience), 
+                cost_function(cost_function)
             {
             }
 
             double                          cost;
 
-            L3::PointCloud<double> const *  swathe;
-            L3::Histogram<double> const*    experience;
+            L3::SE3 const*                  estimate;
             CostFunction<double> *          cost_function;
-            L3::SE3 const*                  estimate ;
+            L3::Histogram<double> const*    experience;
+            L3::PointCloud<double> const *  swathe;
 
             void operator()()
             {
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
-             
+
                 /*
-                 *Point Cloud
+                 *  Point Cloud
                  */
-                // Copy
                 L3::copy( const_cast<L3::PointCloud<double>* >(swathe), hypothesis.get() );
 
-                // Transform
                 L3::transform( hypothesis.get(), const_cast<L3::SE3*>(estimate) ); 
 
                 /*
-                 *Histogram
+                 *  Histogram
                  */
                 L3::Histogram<double> swathe_histogram;
-               
+
                 L3::copy( experience, &swathe_histogram );
-                
-                // Histogram 
+
                 swathe_histogram( hypothesis.get() );
 
                 // Compute cost
@@ -114,14 +122,14 @@ namespace L3
         /*
          *  Discrete Estimator
          */
-        template <typename T>
+        template < typename T >
             double DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
-            
+
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
 
-                if ( __builtin_expect( (this->experience_histogram->empty() ) , 0 ) )
+                if ( this->experience_histogram->empty() )
                     return std::numeric_limits<T>::infinity();
 
                 // Lock the experience histogram
@@ -138,11 +146,12 @@ namespace L3
                  */
                 //L3::Smoother< double, 5 > smoother;
                 //smoother.smooth( &swathe_histogram );
+
                 
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
-                    group.run( HypothesisBuilder( swathe, &estimate, this->experience_histogram.get() , this->cost_function ) );
+                    group.run( Hypothesis( swathe, &*it, this->experience_histogram.get() , this->cost_function ) );
                     it++;
                 }
 
@@ -156,5 +165,5 @@ namespace L3
 }       // L3
 
 // Explicit instantiations
-template double L3::Estimator::KLCostFunction<double>::operator()( const Histogram<double>& exp, const Histogram<double>& swathe );
-template double L3::Estimator::DiscreteEstimator<double>::operator()( PointCloud<double>* swathe, SE3 estimate );
+template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
+template double L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
