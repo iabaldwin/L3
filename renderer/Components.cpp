@@ -219,8 +219,8 @@ void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
 
     int counter = 0;
 
-    glv::Point3 vertices[4];
-    glv::Point3 colors[4];
+    //glv::Point3 vertices[4];
+    //glv::Point3 colors[4];
 
     for( unsigned int i=0; i< tmp.x_bins; i++ )
     {

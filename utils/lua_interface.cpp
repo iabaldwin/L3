@@ -7,8 +7,6 @@ extern "C"
        #include "lualib.h"
 }
 
-#include <iostream>
-
 lua_State* l;
 int main()
 {

@@ -9,3 +9,4 @@
 add_executable( lua_interface lua_interface.cpp )
 target_link_libraries( lua_interface lua )
 
+add_subdirectory( tests )

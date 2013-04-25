@@ -38,6 +38,7 @@ include_directories( ${GSL_INCLUDE_DIRS} )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/utils )
 
 # GLV custom build directory
 include_directories( $ENV{GLV_DIR} )
