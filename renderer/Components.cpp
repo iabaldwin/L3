@@ -103,13 +103,13 @@ void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)
     std::pair<float, float> lower_left = hist->coords(0,0);
     std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
 
-    bound_vertices[0]( lower_left.first, lower_left.second, -3.0 );
+    bound_vertices[0]( lower_left.first, lower_left.second, -5.0 );
     bound_colors[0].set( 1, 1, 0, .25 );
-    bound_vertices[1]( lower_left.first, upper_right.second, -3.0 );
+    bound_vertices[1]( lower_left.first, upper_right.second, -5.0 );
     bound_colors[1].set( 1, 1, 0, .25);
-    bound_vertices[2]( upper_right.first, upper_right.second, -3.0 );
+    bound_vertices[2]( upper_right.first, upper_right.second, -5.0 );
     bound_colors[2].set( 1, 1, 0, .25 );
-    bound_vertices[3]( upper_right.first, lower_left.second, -3.0 );
+    bound_vertices[3]( upper_right.first, lower_left.second, -5.0 );
     bound_colors[3].set( 1, 1, 0, .25 );
 
     glv::draw::enable( glv::draw::LineStipple );
@@ -295,13 +295,13 @@ void PointCloudBoundsRenderer::onDraw3D(glv::GLV& g)
 
     glv::draw::blendTrans();
 
-    bound_vertices[0]( lower_left.first, lower_left.second, -5.0 );
+    bound_vertices[0]( lower_left.first, lower_left.second, -3.0 );
     bound_colors[0].set( 0, 1, 1, .25 );
-    bound_vertices[1]( lower_left.first, upper_right.second, -5.0 );
+    bound_vertices[1]( lower_left.first, upper_right.second, -3.0 );
     bound_colors[1].set( 0, 1, 1, .25 );
-    bound_vertices[2]( upper_right.first, upper_right.second, -5.0 );
+    bound_vertices[2]( upper_right.first, upper_right.second, -3.0 );
     bound_colors[2].set( 0, 1, 1, .25 );
-    bound_vertices[3]( upper_right.first, lower_left.second, -5.0 );
+    bound_vertices[3]( upper_right.first, lower_left.second, -3.0 );
     bound_colors[3].set( 0, 1, 1, .25 );
    
     glv::draw::enable( glv::draw::LineStipple );

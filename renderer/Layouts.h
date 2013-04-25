@@ -206,7 +206,7 @@ class EstimatorLayout : public Layout
         {
            
             /*
-             *Composite Leafs
+             *  Composite Leafs
              */
             // Histogram Bounds
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
@@ -220,7 +220,6 @@ class EstimatorLayout : public Layout
             runtime_cloud_renderer.reset( new L3::Visualisers::PointCloudRenderer( run_time_swathe ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
 
-
             // Current pose estimate
             pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
@@ -230,7 +229,7 @@ class EstimatorLayout : public Layout
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
 
             /*
-             *Stand-alone plots
+             *  Stand-alone plots
              */
 
             // Velocity plots
@@ -249,24 +248,25 @@ class EstimatorLayout : public Layout
             this->renderables.push_front( histogram_label.get() );
                                
             // Stand-alone pose renderer
-            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 240,240 ) ) );
-            oracle_renderer->pos( win.width()-(240+10), 335 );
+            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
+            oracle_renderer->pos( win.width()-(150+10), 335 );
             this->renderables.push_front( oracle_renderer.get() );
             updater->operator<<( oracle_renderer.get() );
        
             boost::shared_ptr< glv::View > oracle_label( new glv::Label("Estimate::INS") );
-            oracle_label->pos( win.width()-(240+10), 335+250 );
+            oracle_label->pos( win.width()-(150+10), 335+250 );
             this->labels.push_front( oracle_label );
             this->renderables.push_front( oracle_label.get() );
              
             // Stand-alone pose renderer
-            predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 240,240 ) ) );
-            predicted_pose_renderer->pos( win.width()-(240*2+30), 335 );
+            predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
+            predicted_pose_renderer->pos( win.width()-(150*2+30), 335 );
             this->renderables.push_front( predicted_pose_renderer.get() );
             updater->operator<<( predicted_pose_renderer.get() );
 
+            // ::Label
             boost::shared_ptr< glv::View > predicted_pose_label( new glv::Label("Estimate::L3") );
-            predicted_pose_label->pos( win.width()-(240*2+30), 335+250 );
+            predicted_pose_label->pos( win.width()-(150*2+30), 335+250 );
             this->labels.push_front( predicted_pose_label );
             this->renderables.push_front( predicted_pose_label.get() );
             
