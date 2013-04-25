@@ -133,8 +133,10 @@ namespace L3
 
 
     template <typename T>
-        void copy( Histogram<T> const* src, Histogram<T> * dest )
+        void copy( Histogram<T>* src, Histogram<T>* dest )
         {
+            //L3::ReadLock(src->mutex);
+            L3::WriteLock(dest->mutex);
             dest->create( src->x_centre,     
                     src->x_lower,
                     src->x_upper,
@@ -151,7 +153,7 @@ namespace L3
         std::ostream& operator<<( std::ostream& o, const Histogram<T>& h );
 
     template <typename T>
-        void clone( Histogram<T> const* src, Histogram<T> * dest );
+        void clone( Histogram<T>* src, Histogram<T> * dest );
 }
 
 #endif

@@ -5,7 +5,6 @@ namespace L3
     template <typename T>
         std::ostream& operator<<( std::ostream& o, const Histogram<T>& h )
         {
-
             o << h.x_centre  << ", "      << 
                 h.x_lower   << ", "<< 
                 h.x_upper   << ", "<< 
@@ -30,15 +29,26 @@ namespace L3
         }
 
     template <typename T>
-        void clone( Histogram<T> const* src, Histogram<T> * dest )
+        void clone( Histogram<T>* src, Histogram<T> * dest )
         {
+            //L3::ReadLock(src->mutex);
+            L3::WriteLock(dest->mutex);
+            
             // Parameter copy
-            copy( src, dest );
-         
+            dest->create( src->x_centre,     
+                    src->x_lower,
+                    src->x_upper,
+                    src->y_centre,
+                    src->y_lower,
+                    src->y_upper,      
+                    src->x_bins,
+                    src->y_bins 
+                    );
+           
             // Data copy
             gsl_histogram2d_memcpy( dest->hist, src->hist );
         }
 }
 
 template std::ostream& L3::operator<<( std::ostream& o, const Histogram<double>& h );
-template void L3::clone<double>(L3::Histogram<double> const*, L3::Histogram<double>*);
+template void L3::clone<double>(L3::Histogram<double>*, L3::Histogram<double>*);

@@ -108,7 +108,7 @@ namespace L3
                  */
                 L3::Histogram<double> swathe_histogram;
 
-                L3::copy( experience, &swathe_histogram );
+                L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram );
 
                 swathe_histogram( hypothesis.get() );
 
