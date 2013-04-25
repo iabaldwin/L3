@@ -20,7 +20,8 @@ struct Updateable
     virtual void update() = 0;
 };
 
-struct Updater : glv::View
+//struct Updater : glv::View
+struct Updater : glv::Plot
 {
     void onDraw(glv::GLV& g)
     {
@@ -313,18 +314,35 @@ struct HistogramVertexRenderer : HistogramRenderer, Leaf
 };
 
 /*
- *  Histogram :: Pixel renderer
+ *  Histogram :: Density renderer
  */
-struct HistogramPixelRenderer : glv::Plot, HistogramRenderer, Updateable
+struct HistogramDensityRenderer : glv::Plot, HistogramRenderer, Updateable
 {
-	HistogramPixelRenderer(const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram  )
-        : glv::Plot(r), HistogramRenderer(histogram)
+	HistogramDensityRenderer(const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram )
+        : glv::Plot(r), 
+        HistogramRenderer(histogram)
     {
         // Assign density plot
         this->add(*new glv::PlotDensity( glv::Color(1)) );
     }
 
     void update();
+};
+
+/*
+ *  Histogram :: Voxel Renderer
+ */
+struct HistogramVoxelRenderer : glv::View3D, HistogramRenderer, Updateable
+{
+	HistogramVoxelRenderer(boost::shared_ptr<L3::Histogram<double> > histogram  )
+        : HistogramRenderer(histogram)
+    {
+        this->set(0, 0, 250, 250 );
+    }
+
+    void onDraw3D( glv::GLV& g );
+
+    void update(){};
 };
 
 /*

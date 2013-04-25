@@ -39,11 +39,11 @@ int main (int argc, char ** argv)
     
     L3::Visualisers::HistogramVertexRenderer    histogram_renderer(histogram);
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
-    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer( glv::Rect(500,300), histogram );
+    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer( glv::Rect(500,300), histogram );
    
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_copy( new L3::HistogramUniformDistance<double>() );
     L3::clone( histogram.get(), histogram_copy.get() );
-    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_copy( glv::Rect(500,300), histogram_copy );
+    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer_copy( glv::Rect(500,300), histogram_copy );
 
     histogram_pixel_renderer_copy.move( 510, 0 );
 

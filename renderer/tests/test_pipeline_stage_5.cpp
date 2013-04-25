@@ -68,8 +68,8 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::BasicPanController         controller;
     L3::Visualisers::Grid                       grid;
-    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), experience->experience_histogram );
-    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_swathe( glv::Rect(50, 400, 500, 300 ), estimator.swathe_histogram );
+    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), experience->experience_histogram );
+    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer_swathe( glv::Rect(50, 400, 500, 300 ), estimator.swathe_histogram );
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer( experience->experience_histogram );
     L3::Visualisers::PointCloudBoundsRenderer   point_cloud_bounds_renderer( point_cloud );
     L3::Visualisers::PointCloudRenderer         runtime_cloud_renderer( point_cloud );

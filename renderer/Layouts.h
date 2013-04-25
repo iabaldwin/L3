@@ -233,7 +233,7 @@ class EstimatorLayout : public Layout
             addRotationalVelocityPlot( runner->windower->constant_time_iterator );
 
             // Histogram voxel
-            histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramPixelRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
+            histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramDensityRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
             histogram_pixel_renderer_experience->pos(win.width()-(500+10),10);
             this->renderables.push_front( histogram_pixel_renderer_experience.get() );
             updater->operator<<( dynamic_cast<Updateable*>(histogram_pixel_renderer_experience.get()) );
@@ -314,7 +314,7 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::PointCloudRenderer >        runtime_cloud_renderer; 
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >   histogram_bounds_renderer;
         boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >  point_cloud_bounds_renderer;
-        boost::shared_ptr< L3::Visualisers::HistogramPixelRenderer >    histogram_pixel_renderer_experience;
+        boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer >    histogram_pixel_renderer_experience;
 
 };
 

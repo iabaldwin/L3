@@ -169,10 +169,10 @@ void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
 }
 
 /*
- *  Components :: HistogramPixelRenderer
+ *  Components :: HistogramDensityRenderer
  */
 
-void HistogramPixelRenderer::update()
+void HistogramDensityRenderer::update()
 {
     L3::Histogram<double> tmp;
     
@@ -198,6 +198,49 @@ void HistogramPixelRenderer::update()
         }
     }
 }
+
+/*
+ *  Components :: HistogramVoxelRenderer
+ */
+void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
+{
+
+    L3::Histogram<double> tmp;
+    
+    if( hist->empty() )
+        return;
+
+    L3::ReadLock lock( hist->mutex );
+    L3::clone( hist.get(), &tmp );
+    lock.unlock();   
+  
+    glv::Point3 points[tmp.x_bins*tmp.y_bins];
+    glv::Color  colors[tmp.x_bins*tmp.y_bins];
+
+    int counter = 0;
+
+    glv::Point3 vertices[4];
+    glv::Point3 colors[4];
+
+    for( unsigned int i=0; i< tmp.x_bins; i++ )
+    {
+        for( unsigned int j=0; j< tmp.y_bins; j++ )
+        {
+            //points[counter++]( i, j, 0 ); 
+     
+            // This is where resizing is going to be exciting
+            //vertices[0]( i-tmp.x_delta, j
+
+        }
+    }
+
+    glv::draw::translateZ( -25 );
+
+    glv::draw::paint( glv::draw::Points, points, colors, counter );
+}
+
+
+
 
 /*
  *Components :: CoordinateSystem

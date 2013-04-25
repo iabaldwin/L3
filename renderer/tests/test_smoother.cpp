@@ -47,8 +47,8 @@ int main (int argc, char ** argv)
     
     L3::Visualisers::HistogramVertexRenderer    histogram_renderer(histogram_1);
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram_1);
-    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_1( glv::Rect(400,300), histogram_1 );
-    L3::Visualisers::HistogramPixelRenderer     histogram_pixel_renderer_2( glv::Rect(410,0,400,300), histogram_2 );
+    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer_1( glv::Rect(400,300), histogram_1 );
+    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer_2( glv::Rect(410,0,400,300), histogram_2 );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
