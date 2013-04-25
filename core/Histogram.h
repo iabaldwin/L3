@@ -46,7 +46,7 @@ namespace L3
                     unsigned int x_bins,
                     unsigned int y_bins )
             {
-                if ( hist )
+                if ( hist ) // Re-create
                     gsl_histogram2d_free( hist );
 
                 this->x_centre= x_centre;
@@ -82,7 +82,7 @@ namespace L3
                 gsl_histogram2d_reset( hist );
             }
 
-            unsigned int bin( size_t x, size_t y  ) const
+            inline unsigned int bin( size_t x, size_t y  ) const
             {
                 return gsl_histogram2d_get(hist,x,y); 
             }

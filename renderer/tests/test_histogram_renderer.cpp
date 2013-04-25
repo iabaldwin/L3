@@ -18,8 +18,19 @@ int main (int argc, char ** argv)
 
     L3::gaussianCloud( &cloud );
 
+    //L3::SE3 pose( 100,100,0,0,0,0 );
+    //L3::translate(  &cloud, &pose );
+
+    std::pair<double,double> ll = L3::min( &cloud );
+    std::pair<double,double> ur = L3::max( &cloud );
+
+
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram( new L3::HistogramUniformDistance<double>() );
-    histogram->create(0, -50, 50, 0, -50, 50 );
+    
+    double x_centre =  (ll.first + ur.first)/2.0;
+    double y_centre =  (ll.second + ur.second)/2.0;
+    histogram->create( x_centre, x_centre-50, x_centre + 50, 
+                        y_centre, y_centre - 50, y_centre + 50 );
 
     (*histogram)( &cloud );
 
@@ -39,18 +50,18 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::BasicPanController         controller;
     
-    L3::Visualisers::HistogramVertexRenderer    histogram_renderer(histogram);
-    L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
-    L3::Visualisers::HistogramDensityRenderer   histogram_density_renderer( glv::Rect(500,300), histogram );
-    L3::Visualisers::HistogramVoxelRenderer     histogram_voxel_renderer( histogram );
+    //L3::Visualisers::HistogramVertexRenderer        histogram_vertex_renderer(histogram);
+    L3::Visualisers::HistogramBoundsRenderer        histogram_bounds_renderer(histogram);
+    //L3::Visualisers::HistogramDensityRenderer       histogram_density_renderer( glv::Rect(500,300), histogram );
+    L3::Visualisers::HistogramVoxelRendererLeaf     histogram_voxel_renderer_leaf( histogram );
+    //L3::Visualisers::HistogramVoxelRendererView     histogram_voxel_renderer_view( glv::Rect(500,0,500,300), histogram );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
-
-    updater->operator<< (dynamic_cast<L3::Visualisers::Updateable*>(&histogram_density_renderer));
-    updater->operator<< (dynamic_cast<L3::Visualisers::Updateable*>(&histogram_voxel_renderer));
+    //updater->operator<< (dynamic_cast<L3::Visualisers::Updateable*>(&histogram_density_renderer));
 
     // Add drawables and updateables
-    top << (composite << grid << histogram_renderer <<  histogram_bounds_renderer ) << histogram_density_renderer << &histogram_voxel_renderer <<  updater.get();
+    //top << (composite << grid << histogram_bounds_renderer << histogram_voxel_renderer_leaf << histogram_vertex_renderer) << histogram_density_renderer << histogram_voxel_renderer_view << updater.get();
+    top << (composite << grid << histogram_bounds_renderer << histogram_voxel_renderer_leaf ) << updater.get();
 
     // Go
     win.setGLV(top);

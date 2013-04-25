@@ -20,7 +20,6 @@ struct Updateable
     virtual void update() = 0;
 };
 
-//struct Updater : glv::View
 struct Updater : glv::Plot
 {
     void onDraw(glv::GLV& g)
@@ -39,7 +38,7 @@ struct Updater : glv::Plot
 
 
 /*
- *Single entity for 3D rendering
+ *  Single entity for 3D rendering
  */
 struct Component : glv::View3D
 {
@@ -71,8 +70,8 @@ struct Component : glv::View3D
  */
 struct Leaf 
 {
-    virtual void onDraw3D( glv::GLV& g )
-    {}
+
+    virtual void onDraw3D( glv::GLV& g ) = 0;
 
     double time;
 };
@@ -332,17 +331,68 @@ struct HistogramDensityRenderer : glv::Plot, HistogramRenderer, Updateable
 /*
  *  Histogram :: Voxel Renderer
  */
-struct HistogramVoxelRenderer : glv::View3D, HistogramRenderer, Updateable
+struct HistogramVoxelRenderer : HistogramRenderer, Updateable
 {
 	HistogramVoxelRenderer(boost::shared_ptr<L3::Histogram<double> > histogram  )
         : HistogramRenderer(histogram)
     {
-        this->set(0, 0, 250, 250 );
     }
+
+    L3::Histogram<double> tmp;
 
     void onDraw3D( glv::GLV& g );
 
     void update(){};
+};
+
+
+struct HistogramVoxelRendererView : HistogramVoxelRenderer, glv::View3D
+{
+	HistogramVoxelRendererView( const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram  )
+        : HistogramVoxelRenderer(histogram), glv::View3D(r)
+    {
+    }
+    
+    void onDraw3D( glv::GLV& g )
+    {
+        glv::draw::translateZ( -50 );
+        
+        L3::ReadLock lock( hist->mutex );
+        L3::clone( hist.get(), &tmp );
+     
+        std::pair<float, float> lower_left = hist->coords(0,0);
+        std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
+
+        float x_delta = (upper_right.first +lower_left.first)/2.0;
+        float y_delta = (upper_right.second +lower_left.second)/2.0;
+
+
+
+        glv::draw::translate( -1*x_delta, -1*y_delta, 0.0  );
+
+
+
+        HistogramVoxelRenderer::onDraw3D(g);    
+   
+    }
+
+};
+
+
+struct HistogramVoxelRendererLeaf : HistogramVoxelRenderer, Leaf
+{
+	HistogramVoxelRendererLeaf(boost::shared_ptr<L3::Histogram<double> > histogram  )
+        : HistogramVoxelRenderer(histogram)
+    {
+    }
+    
+    void onDraw3D( glv::GLV& g )
+    {
+        L3::ReadLock lock( hist->mutex );
+        L3::clone( hist.get(), &tmp );
+        HistogramVoxelRenderer::onDraw3D(g);    
+    }
+
 };
 
 /*

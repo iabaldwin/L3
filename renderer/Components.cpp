@@ -204,43 +204,113 @@ void HistogramDensityRenderer::update()
  */
 void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
 {
-
-    L3::Histogram<double> tmp;
-    
-    if( hist->empty() )
-        return;
-
-    L3::ReadLock lock( hist->mutex );
-    L3::clone( hist.get(), &tmp );
-    lock.unlock();   
-  
-    glv::Point3 points[tmp.x_bins*tmp.y_bins];
-    glv::Color  colors[tmp.x_bins*tmp.y_bins];
+    glv::Point3 points[tmp.x_bins*tmp.y_bins*4*6];
+    glv::Color  colors[tmp.x_bins*tmp.y_bins*4*6];
 
     int counter = 0;
 
-    //glv::Point3 vertices[4];
-    //glv::Point3 colors[4];
+    //glv::draw::blendTrans();
+    //glv::draw::enable( glv::draw::DepthTest );
+
+    unsigned int max = gsl_histogram2d_max_val( tmp.hist );
 
     for( unsigned int i=0; i< tmp.x_bins; i++ )
     {
         for( unsigned int j=0; j< tmp.y_bins; j++ )
         {
-            //points[counter++]( i, j, 0 ); 
-     
-            // This is where resizing is going to be exciting
-            //vertices[0]( i-tmp.x_delta, j
+            unsigned int val = tmp.bin( i, j );
+
+            if (val > 0)
+            {
+                float x = tmp.hist->xrange[i];
+                float y = tmp.hist->yrange[j];
+
+                float x_delta = tmp.x_delta;
+                float y_delta = tmp.y_delta;
+
+                // Bottom
+                float scale = float(val)/float(max);
+
+                float z_val = scale*50.0;
+
+                colors[counter].set( 0, 0, 1, 1 );
+                points[counter++]( x+x_delta, y+y_delta, z_val );
+                colors[counter].set( 0, 0, 1, 1 );
+                points[counter++]( x+x_delta, y-y_delta, z_val );
+                colors[counter].set( 0, 0, 1, 1 );
+                points[counter++]( x-x_delta, y-y_delta, z_val );
+                colors[counter].set( 0, 0, 1, 1 );
+                points[counter++]( x-x_delta, y+y_delta, z_val );
+
+                // Top
+                colors[counter].set( 0, 0, 1, 1 );
+                points[counter++]( x+x_delta, y+y_delta, z_val );
+                colors[counter].set( 0, 0, 1, 1 );
+                points[counter++]( x+x_delta, y-y_delta, z_val );
+                colors[counter].set( 0, 0, 1, 1 );
+                points[counter++]( x-x_delta, y-y_delta, z_val );
+                colors[counter].set( 0, 0, 1, 1 );
+                points[counter++]( x-x_delta, y+y_delta, z_val );
+
+
+                // Side 1
+                float x_val = x+x_delta;
+
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x_val, y-y_delta, 0 );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x_val, y+y_delta, 0 );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x_val, y+y_delta, z_val );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x_val, y-y_delta, z_val );
+
+                // Side 2
+                x_val = x-x_delta;
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x_val, y-y_delta, 0 );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x_val, y+y_delta, 0 );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x_val, y+y_delta, z_val );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x_val, y-y_delta, z_val );
+
+                // Front 
+                float y_val = y-x_delta;
+
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x-x_delta, y_val, 0 );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x+x_delta, y_val, 0 );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x+x_delta, y_val, z_val );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x-x_delta, y_val, z_val );
+
+                // Back
+                y_val = y+x_delta;
+
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x-x_delta, y_val, 1 );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x+x_delta, y_val, 1 );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x+x_delta, y_val, z_val );
+                colors[counter].set( 0, 0, 1, scale );
+                points[counter++]( x-x_delta, y_val, z_val );
+
+            }
 
         }
+
     }
 
-    glv::draw::translateZ( -25 );
+    glv::draw::enable( glv::draw::Blend );
+    glv::draw::paint( glv::draw::Quads, points, colors, counter );
+    glv::draw::disable( glv::draw::Blend );
 
-    glv::draw::paint( glv::draw::Points, points, colors, counter );
 }
-
-
-
 
 /*
  *Components :: CoordinateSystem
