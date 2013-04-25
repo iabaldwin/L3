@@ -96,7 +96,7 @@ struct PoseWindower : PoseProvider, TemporalObserver
  *  Constant time INS windower
  */
 template <typename T>
-class ConstantTimeWindower : public PoseWindower
+class ConstantTimeWindower : public PoseWindower, Lockable
 {
     public:
         
@@ -110,11 +110,14 @@ class ConstantTimeWindower : public PoseWindower
 
         bool update( double t)
         {
+            L3::WriteLock( this->mutex );
             constant_time_iterator->update(t);
         }
 
         L3::SE3 operator()( void )
         {
+            L3::ReadLock( this->mutex );
+
             if ( this->constant_time_iterator->window.size() > 0 )
                 return *(this->constant_time_iterator->window.back().second);
             else

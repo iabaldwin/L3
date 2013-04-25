@@ -40,25 +40,23 @@ int main( int argc, char* argv[] )
     L3::ConstantTimeIterator< L3::LHLV >    integrated_pose_iterator( dataset.LHLV_reader );
 
     // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151 >  LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
+    L3::ConstantTimeIterator< L3::LMS151 >  vertical_LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
+    L3::ConstantTimeIterator< L3::LMS151 >  horizontal_LIDAR_iterator( dataset.LIDAR_readers[ mission.horizontal ] );
   
     // Pose Windower
     L3::ConstantTimeWindower<L3::SE3>   oracle( &oracle_source);
     L3::ConstantTimeWindower<L3::LHLV>  pose_windower( &integrated_pose_iterator );
     
     // Swathe builder
-    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
+    L3::SwatheBuilder swathe_builder( &pose_windower, &vertical_LIDAR_iterator );
 
     // Projection
-    L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
+    boost::shared_ptr< L3::PointCloud<double> > point_cloud = boost::make_shared<L3::PointCloud<double> >();
     L3::SE3 projection = L3::SE3::ZERO();
    
     L3::Configuration::convert( mission.lidars[ mission.declined], projection );
     
-    boost::shared_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
-
-
-
+    boost::shared_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud.get() ) );
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
@@ -67,7 +65,8 @@ int main( int argc, char* argv[] )
     // Create runner
     L3::EstimatorRunner runner;
 
-    runner << &LIDAR_iterator << &pose_windower;
+    // Updateables
+    runner << &vertical_LIDAR_iterator << &horizontal_LIDAR_iterator << &pose_windower;
 
     runner.setExperience( &*experience )
           .setPoseWindower( &pose_windower )
@@ -79,7 +78,7 @@ int main( int argc, char* argv[] )
 
     glv::Window win(1400, 800, "Visualisation::EstimatorLayout");
 
-    L3::Visualisers::EstimatorLayout layout(win, &runner, experience, point_cloud );
+    L3::Visualisers::EstimatorLayout layout(win, &runner, experience, point_cloud.get() );
 
     glv::GLV top;
 

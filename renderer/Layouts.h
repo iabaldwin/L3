@@ -88,8 +88,14 @@ class Layout
             
             // Add rendererable
             this->renderables.push_front( plot_region.get() );
-
+            // Mark as updateable
             updater->operator<<( dynamic_cast<Updateable*>(plotter.get()) );
+        
+            boost::shared_ptr< glv::View > velocity_label( new glv::Label("Rot. (rad/s)", true ) );
+            velocity_label->pos( .6*window.width()+10, 675 );
+            this->labels.push_front( velocity_label );
+            this->renderables.push_front( velocity_label.get() );
+             
         }
 
 
@@ -119,8 +125,14 @@ class Layout
             
             // Add rendererable
             this->renderables.push_front( plot_region.get() );
-
+            // Mark as updateable
             updater->operator<<( dynamic_cast<Updateable*>(plotter.get()) );
+        
+            boost::shared_ptr< glv::View > velocity_label( new glv::Label("Lin. (m/s)", true ) );
+            velocity_label->pos( .6*window.width()+10, 540 );
+            this->labels.push_front( velocity_label );
+            this->renderables.push_front( velocity_label.get() );
+             
         }
 
     protected:
@@ -128,7 +140,10 @@ class Layout
         glv::View*   main_view;
         glv::Window& window; 
 
-        std::list< glv::View* > renderables;
+        
+        std::list< glv::View* >     renderables;
+
+        std::list< boost::shared_ptr< glv::View > >     labels;
         
         boost::shared_ptr< Updater >                    updater;
         boost::shared_ptr<L3::Visualisers::Grid>        grid;
@@ -189,12 +204,10 @@ class EstimatorLayout : public Layout
         EstimatorLayout( glv::Window& win, L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, L3::PointCloud<double>* run_time_swathe ) 
             : Layout(win), runner(runner), experience(experience)
         {
-            // Histogram voxels
-            histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramPixelRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
-            histogram_pixel_renderer_experience->pos(win.width()-(500+10),10);
-            this->renderables.push_front( histogram_pixel_renderer_experience.get() );
-            updater->operator<<( dynamic_cast<Updateable*>(histogram_pixel_renderer_experience.get()) );
-            
+           
+            /*
+             *Composite Leafs
+             */
             // Histogram Bounds
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
@@ -207,9 +220,6 @@ class EstimatorLayout : public Layout
             runtime_cloud_renderer.reset( new L3::Visualisers::PointCloudRenderer( run_time_swathe ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
 
-            // Velocity plots
-            addLinearVelocityPlot( runner->windower->constant_time_iterator );
-            addRotationalVelocityPlot( runner->windower->constant_time_iterator );
 
             // Current pose estimate
             pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
@@ -218,30 +228,62 @@ class EstimatorLayout : public Layout
             // Predicted estimates
             predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( runner->estimator->pose_estimates ) ); 
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
-        
-            // Stand-alone pose renderer
-            oracle_rendere.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 240,240 ) ) );
-            oracle_rendere->pos( win.width()-(240+10), 325 );
-            this->renderables.push_front( oracle_rendere.get() );
-            updater->operator<<( oracle_rendere.get() );
-       
 
+            /*
+             *Stand-alone plots
+             */
+
+            // Velocity plots
+            addLinearVelocityPlot( runner->windower->constant_time_iterator );
+            addRotationalVelocityPlot( runner->windower->constant_time_iterator );
+
+            // Histogram voxel
+            histogram_pixel_renderer_experience.reset( new L3::Visualisers::HistogramPixelRenderer( glv::Rect(500, 300 ), experience->experience_histogram ) ) ;
+            histogram_pixel_renderer_experience->pos(win.width()-(500+10),10);
+            this->renderables.push_front( histogram_pixel_renderer_experience.get() );
+            updater->operator<<( dynamic_cast<Updateable*>(histogram_pixel_renderer_experience.get()) );
+ 
+            boost::shared_ptr< glv::View > histogram_label( new glv::Label("Experience histogram") );
+            histogram_label->pos( 1050,315 );
+            this->labels.push_front( histogram_label );
+            this->renderables.push_front( histogram_label.get() );
+                               
+            // Stand-alone pose renderer
+            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 240,240 ) ) );
+            oracle_renderer->pos( win.width()-(240+10), 335 );
+            this->renderables.push_front( oracle_renderer.get() );
+            updater->operator<<( oracle_renderer.get() );
+       
+            boost::shared_ptr< glv::View > oracle_label( new glv::Label("Estimate::INS") );
+            oracle_label->pos( win.width()-(240+10), 335+250 );
+            this->labels.push_front( oracle_label );
+            this->renderables.push_front( oracle_label.get() );
+             
             // Stand-alone pose renderer
             predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 240,240 ) ) );
-            predicted_pose_renderer->pos( win.width()-(240*2+20), 325 );
+            predicted_pose_renderer->pos( win.width()-(240*2+30), 335 );
             this->renderables.push_front( predicted_pose_renderer.get() );
             updater->operator<<( predicted_pose_renderer.get() );
-       
 
+            boost::shared_ptr< glv::View > predicted_pose_label( new glv::Label("Estimate::L3") );
+            predicted_pose_label->pos( win.width()-(240*2+30), 335+250 );
+            this->labels.push_front( predicted_pose_label );
+            this->renderables.push_front( predicted_pose_label.get() );
+            
+            //lua_interface.reset( new glv::TextView( glv::Rect(win.width()-200,win.height()-100), 8));
+            lua_interface.reset( new glv::TextView( glv::Rect(200,150), 8));
+            lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
+            this->renderables.push_front( lua_interface.get() );
         }
     
         L3::EstimatorRunner* runner;
-      
-        boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
+            
+        boost::shared_ptr< glv::TextView > lua_interface;
 
-        boost::shared_ptr< L3::Experience> experience ;
+        boost::shared_ptr< L3::Experience>                  experience ;
+        boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
         
-        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      oracle_rendere;
+        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      oracle_renderer;
         boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      predicted_pose_renderer;
         
         boost::shared_ptr< L3::Visualisers::PredictorRenderer >         predictor_renderer;

@@ -1,6 +1,8 @@
 #include "Components.h"
 
 #include <boost/scoped_ptr.hpp>
+#include <GL/freeglut.h>
+#include <GL/freeglut_ext.h>
 
 namespace L3
 {
@@ -77,9 +79,15 @@ DefaultAxes::DefaultAxes()
 }
 
 void DefaultAxes::onDraw3D(glv::GLV& g)
-{ 
+{
+        
+    glv::draw::enable( glv::draw::LineStipple );
+    
+    glv::draw::lineStipple(4, 0xAAAA );
     glv::draw::lineWidth( .01 );
     glv::draw::paint( glv::draw::Lines, vertices.get(), colors.get(), counter );
+    
+    glv::draw::disable( glv::draw::LineStipple );
 }
 
 /*
@@ -95,18 +103,25 @@ void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)
     std::pair<float, float> lower_left = hist->coords(0,0);
     std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
 
-    bound_vertices[0]( lower_left.first, lower_left.second, 0.0 );
-    bound_colors[0].set( 1, 1, 0 );
-    bound_vertices[1]( lower_left.first, upper_right.second, 0.0 );
-    bound_colors[1].set( 1, 1, 0 );
-    bound_vertices[2]( upper_right.first, upper_right.second, 0.0 );
-    bound_colors[2].set( 1, 1, 0 );
-    bound_vertices[3]( upper_right.first, lower_left.second, 0.0 );
-    bound_colors[3].set( 1, 1, 0 );
+    bound_vertices[0]( lower_left.first, lower_left.second, -3.0 );
+    bound_colors[0].set( 1, 1, 0, .25 );
+    bound_vertices[1]( lower_left.first, upper_right.second, -3.0 );
+    bound_colors[1].set( 1, 1, 0, .25);
+    bound_vertices[2]( upper_right.first, upper_right.second, -3.0 );
+    bound_colors[2].set( 1, 1, 0, .25 );
+    bound_vertices[3]( upper_right.first, lower_left.second, -3.0 );
+    bound_colors[3].set( 1, 1, 0, .25 );
 
-    glv::draw::lineWidth(1.5);
-
+    glv::draw::enable( glv::draw::LineStipple );
+    glv::draw::lineStipple(4, 0xAAAA );
+    glv::draw::lineWidth(.1);
     glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
+    glv::draw::disable( glv::draw::LineStipple );
+
+
+    glv::draw::enable( glv::draw::Blend );
+    glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
+    glv::draw::disable( glv::draw::Blend );
 }
 
 
@@ -167,7 +182,6 @@ void HistogramPixelRenderer::update()
     L3::ReadLock lock( hist->mutex );
     L3::clone( hist.get(), &tmp );
     lock.unlock();   
-
     
     //L3::ReadLock( hist->mutex );
     // Aspect ratio?
@@ -279,23 +293,27 @@ void PointCloudBoundsRenderer::onDraw3D(glv::GLV& g)
     std::pair<double, double> upper_right = max(cloud);
     point_cloud_lock.unlock();
 
-    bound_vertices[0]( lower_left.first, lower_left.second, 0.0 );
-    bound_colors[0].set( 0, 1, 1, 1.0 );
-    bound_vertices[1]( lower_left.first, upper_right.second, 0.0 );
-    bound_colors[1].set( 0, 1, 1, 0.1 );
-    bound_vertices[2]( upper_right.first, upper_right.second, 0.0 );
-    bound_colors[2].set( 0, 1, 1, 1.0 );
-    bound_vertices[3]( upper_right.first, lower_left.second, 0.0 );
-    bound_colors[3].set( 0, 1, 1, 0.1 );
+    glv::draw::blendTrans();
 
+    bound_vertices[0]( lower_left.first, lower_left.second, -5.0 );
+    bound_colors[0].set( 0, 1, 1, .25 );
+    bound_vertices[1]( lower_left.first, upper_right.second, -5.0 );
+    bound_colors[1].set( 0, 1, 1, .25 );
+    bound_vertices[2]( upper_right.first, upper_right.second, -5.0 );
+    bound_colors[2].set( 0, 1, 1, .25 );
+    bound_vertices[3]( upper_right.first, lower_left.second, -5.0 );
+    bound_colors[3].set( 0, 1, 1, .25 );
+   
     glv::draw::enable( glv::draw::LineStipple );
-
-    glv::draw::lineStipple(10, 0xAAAA );
-
-    glv::draw::lineWidth(1);
+    glv::draw::lineStipple(4, 0xAAAA );
+    glv::draw::lineWidth(.1);
     glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
-    
     glv::draw::disable( glv::draw::LineStipple );
+
+    glv::draw::enable( glv::draw::Blend );
+    glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
+    glv::draw::disable( glv::draw::Blend );
+
 
 }
 
@@ -340,7 +358,7 @@ void DedicatedPoseRenderer::onDraw3D(glv::GLV& g)
    
     //far(1000);
 
-    //glv::draw::push3D( -5.0, 5.0, .1f, 150.0, 35 );
+    glv::draw::push3D( -1.0, 1.0, 20.0,  150.0, 35 );
 
     glv::draw::translateZ( -25 );
     glv::draw::translateY( 1 );
@@ -355,8 +373,13 @@ void DedicatedPoseRenderer::onDraw3D(glv::GLV& g)
     CoordinateSystem( tmp ).onDraw3D( g );
 
     axes.onDraw3D( g );
+const char* test = "TEST";
+    //glutStrokeString( GLUT_BITMAP_HELVETICA_18, reinterpret_cast< const unsigned char*>( test ) );
+    glutBitmapString( GLUT_BITMAP_HELVETICA_18, reinterpret_cast< const unsigned char*>( test ) );
 
-    //glv::draw::pop3D();
+    //glv::draw::pop();
+
+    glv::draw::pop3D();
 }
 
 
