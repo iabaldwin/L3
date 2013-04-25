@@ -8,9 +8,6 @@
 #include "Visualisers.h"
 #include "Plotters.h"
 
-/*
- *Arbitrary text renderer
- */
 namespace L3
 {
 namespace Visualisers
@@ -137,9 +134,8 @@ class Layout
 
     protected:
 
-        glv::View*   main_view;
-        glv::Window& window; 
-
+        glv::View*       main_view;
+        glv::Window&     window; 
         
         std::list< glv::View* >     renderables;
 
@@ -254,26 +250,50 @@ class EstimatorLayout : public Layout
             updater->operator<<( oracle_renderer.get() );
        
             boost::shared_ptr< glv::View > oracle_label( new glv::Label("Estimate::INS") );
-            oracle_label->pos( win.width()-(150+10), 335+250 );
+            oracle_label->pos( win.width()-(150+10), 335+160 );
             this->labels.push_front( oracle_label );
             this->renderables.push_front( oracle_label.get() );
              
             // Stand-alone pose renderer
-            predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
-            predicted_pose_renderer->pos( win.width()-(150*2+30), 335 );
-            this->renderables.push_front( predicted_pose_renderer.get() );
-            updater->operator<<( predicted_pose_renderer.get() );
+            //predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
+            //predicted_pose_renderer->pos( win.width()-(150*2+30), 335 );
+            //this->renderables.push_front( predicted_pose_renderer.get() );
+            //updater->operator<<( predicted_pose_renderer.get() );
 
-            // ::Label
-            boost::shared_ptr< glv::View > predicted_pose_label( new glv::Label("Estimate::L3") );
-            predicted_pose_label->pos( win.width()-(150*2+30), 335+250 );
-            this->labels.push_front( predicted_pose_label );
-            this->renderables.push_front( predicted_pose_label.get() );
-            
+            //// ::Label
+            //boost::shared_ptr< glv::View > predicted_pose_label( new glv::Label("Estimate::L3") );
+            //predicted_pose_label->pos( win.width()-(150*2+30), 335+250 );
+            //this->labels.push_front( predicted_pose_label );
+            //this->renderables.push_front( predicted_pose_label.get() );
+          
+            // Stand-alone scan renderer :: Horizontal
+            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2D( runner->horizontal_LIDAR, glv::Rect( 150,150 ) ) );
+            horizontal_scan_renderer->pos( win.width()-(150*3+60), 335 );
+            this->renderables.push_front( horizontal_scan_renderer.get() );
+            updater->operator<<( horizontal_scan_renderer.get() );
+
+            boost::shared_ptr< glv::View > horizontal_scan_renderer_label( new glv::Label("LMS151::Horizontal") );
+            horizontal_scan_renderer_label->pos( win.width()-(150*3+60), 335+160 );
+            this->labels.push_front( horizontal_scan_renderer_label );
+            this->renderables.push_front( horizontal_scan_renderer_label.get() );
+             
+            // Stand-alone scan renderer
+            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2D( runner->vertical_LIDAR, glv::Rect( 150,150 ) ) );
+            vertical_scan_renderer->pos( win.width()-(150*2+30), 335 );
+            this->renderables.push_front( vertical_scan_renderer.get() );
+            updater->operator<<( vertical_scan_renderer.get() );
+
+            boost::shared_ptr< glv::View > vertical_scan_renderer_label( new glv::Label("LMS151::Vertical") );
+            vertical_scan_renderer_label->pos( win.width()-(150*2+30), 335+160 );
+            this->labels.push_front( vertical_scan_renderer_label );
+            this->renderables.push_front( vertical_scan_renderer_label.get() );
+             
+
             //lua_interface.reset( new glv::TextView( glv::Rect(win.width()-200,win.height()-100), 8));
             lua_interface.reset( new glv::TextView( glv::Rect(200,150), 8));
             lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
             this->renderables.push_front( lua_interface.get() );
+
         }
     
         L3::EstimatorRunner* runner;
@@ -282,7 +302,11 @@ class EstimatorLayout : public Layout
 
         boost::shared_ptr< L3::Experience>                  experience ;
         boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
-        
+
+
+        boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  horizontal_scan_renderer;
+        boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  vertical_scan_renderer;
+
         boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      oracle_renderer;
         boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      predicted_pose_renderer;
         

@@ -183,7 +183,6 @@ void HistogramPixelRenderer::update()
     L3::clone( hist.get(), &tmp );
     lock.unlock();   
     
-    //L3::ReadLock( hist->mutex );
     // Aspect ratio?
     //float aspect_ratio = (float)hist->y_bins/(float)hist->x_bins;
     //int w = this->width();
@@ -382,6 +381,62 @@ const char* test = "TEST";
     glv::draw::pop3D();
 }
 
+/*
+ *  2D Scan renderer
+ */
+
+void ScanRenderer2D::onDraw3D( glv::GLV& g )
+{
+    int draw_counter = 0;
+
+    glv::Point3 points[541];
+    glv::Color  fan[541];
+    glv::Color  perimeter[541];
+
+    // Draw the front
+    for (int scan_counter=0; scan_counter<541; scan_counter++) 
+    {
+        double range = scan->ranges[scan_counter];  
+
+        if (range < 1 )
+            continue;
+
+        draw_counter++;
+
+        // Compute angle 
+        double angle = scan_counter*scan->angle_spacing +  scan->angle_start; 
+
+        double x = range*cos( angle );
+        double y = range*sin( angle );
+
+        points[draw_counter]( x, y, 0 );
+        perimeter[draw_counter].set( color, .75 );
+        fan[draw_counter].set( color, .5 );
+
+    }
+    
+    glv::draw::translateZ( -45 );
+    glv::draw::rotateZ( rotate_z );
+
+    glv::draw::blendTrans();
+    
+    glv::draw::lineWidth(1);
+    glv::draw::paint( glv::draw::LineLoop, points, perimeter, draw_counter );
+
+    glv::draw::enable( glv::draw::Blend );
+    glv::draw::paint( glv::draw::TriangleFan, points, fan, draw_counter );
+    glv::draw::disable( glv::draw::Blend );
+
+}
+
+void ScanRenderer2D::update()
+{
+    std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
+
+    windower->getWindow( window );
+
+    scan = window.back().second;
+}
 
 }
 }

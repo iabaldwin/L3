@@ -74,6 +74,8 @@ int main( int argc, char* argv[] )
           .setProjector( &*projector )
           .setEstimator( &estimator  )
           .setSwatheBuilder( &swathe_builder )
+          .setHorizontalLIDAR( &horizontal_LIDAR_iterator )
+          .setVerticalLIDAR( &vertical_LIDAR_iterator )
           .start( dataset.start_time );
 
     glv::Window win(1400, 800, "Visualisation::EstimatorLayout");

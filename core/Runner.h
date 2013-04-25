@@ -97,6 +97,9 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::Projector<double>*                  projector;
     L3::Estimator::Estimator<double>*       estimator;
 
+    L3::ConstantTimeIterator< L3::LMS151 >* vertical_LIDAR;
+    L3::ConstantTimeIterator< L3::LMS151 >* horizontal_LIDAR;
+
     std::list < TemporalObserver* >             observers;
     
     L3::SE3* current;
@@ -153,6 +156,21 @@ struct EstimatorRunner : ThreadedTemporalRunner
         this->estimator = estimator;
         return *this;
     }
+
+    EstimatorRunner& setHorizontalLIDAR( L3::ConstantTimeIterator< L3::LMS151 >* windower )
+    {
+        this->horizontal_LIDAR = windower;
+        return *this;
+    }
+
+    EstimatorRunner& setVerticalLIDAR( L3::ConstantTimeIterator< L3::LMS151 >* windower )
+    {
+        this->vertical_LIDAR = windower;
+        return *this;
+    }
+
+
+
 
     EstimatorRunner& operator<<( L3::TemporalObserver* observer )
     {

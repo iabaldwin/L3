@@ -73,3 +73,4 @@ template class L3::ConstantTimeIterator<L3::LMS151>;
 
 template void L3::Iterator<L3::LHLV>::getWindow( std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > >& window) ;
 template void L3::Iterator<L3::SE3>::getWindow(std::deque<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > >&);
+template void L3::Iterator<L3::LMS151>::getWindow(std::deque<std::pair<double, boost::shared_ptr<L3::LMS151> >, std::allocator<std::pair<double, boost::shared_ptr<L3::LMS151> > > >&);

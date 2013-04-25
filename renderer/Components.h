@@ -351,6 +351,60 @@ struct DedicatedPoseRenderer : glv::View3D, Updateable
     void onDraw3D( glv::GLV& g );
 };
 
+/*
+ *  Raw scan renderer
+ */
+struct ScanRenderer2D : glv::View3D, Updateable
+{
+
+    ScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& r, glv::Color color ) 
+        : glv::View3D( r ),
+            color(color),
+            windower(windower)
+    {
+        scan.reset( new L3::LMS151() );
+    }
+
+    virtual ~ScanRenderer2D()
+    {
+    }
+
+    L3::ConstantTimeIterator< L3::LMS151 >* windower;
+
+    boost::shared_ptr<L3::LMS151> scan;
+  
+    glv::Color color;
+
+    float rotate_z;
+
+    void onDraw3D( glv::GLV& g );
+
+    void update();
+};
+
+
+struct HorizontalScanRenderer2D : ScanRenderer2D
+{
+
+    HorizontalScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
+        : ScanRenderer2D( windower, rect, glv::Color(1,0,0) )
+    {
+        rotate_z = 0;
+    }
+};
+
+struct VerticalScanRenderer2D : ScanRenderer2D
+{
+
+    VerticalScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
+        : ScanRenderer2D( windower, rect, glv::Color(0,0,1) )
+    {
+        rotate_z = 180;
+    }
+};
+
+
+
 }
 }
 
