@@ -1,4 +1,9 @@
-add_library( L3Vis Visualisers.cpp Controller.cpp Components.cpp )
+add_library( L3Vis 
+                Visualisers.cpp 
+                Controller.cpp 
+                Components.cpp 
+                Layouts.cpp 
+                )
 target_link_libraries( L3Vis L3 GLV glut )
 
 add_subdirectory( apps )

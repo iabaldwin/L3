@@ -81,7 +81,8 @@ int main( int argc, char* argv[] )
 
     glv::Window win(1400, 800, "Visualisation::EstimatorLayout");
 
-    L3::Visualisers::EstimatorLayout layout(win, &runner, experience, point_cloud.get() );
+    //L3::Visualisers::EstimatorLayout layout(win, &runner, experience, point_cloud.get() );
+    L3::Visualisers::EstimatorLayout layout(win, &runner, experience, point_cloud );
 
     glv::GLV top;
 

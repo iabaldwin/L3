@@ -39,8 +39,8 @@ int main (int argc, char ** argv)
 
     // Projection
     L3::SE3 projection(0,0,0,.1,.2,.3);
-    L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
-    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud) );
+    boost::shared_ptr< L3::PointCloud<double> > point_cloud(new L3::PointCloud<double>() );
+    std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud.get() ) );
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();

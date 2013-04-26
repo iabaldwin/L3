@@ -220,12 +220,13 @@ struct PoseEstimatesRenderer : Leaf
  */
 struct PointCloudRenderer 
 {
-    PointCloudRenderer( L3::PointCloud<double>* cloud );
+    PointCloudRenderer( boost::shared_ptr< L3::PointCloud<double> > cloud );
 
     boost::shared_array< glv::Color >   colors;
     boost::shared_array< glv::Point3 >  vertices;
    
-    L3::PointCloud<double>*                     cloud;
+    boost::shared_ptr< L3::PointCloud<double> > cloud;
+    boost::shared_ptr< L3::PointCloud<double> > point_cloud;
     boost::shared_ptr< L3::PointCloud<double> > plot_cloud;
 
     void onDraw3D( glv::GLV& g );
@@ -237,30 +238,34 @@ struct PointCloudRenderer
  */
 struct PointCloudRendererLeaf : PointCloudRenderer, Leaf
 {
-    PointCloudRendererLeaf( L3::PointCloud<double>* cloud ) : PointCloudRenderer(cloud)
+    PointCloudRendererLeaf( boost::shared_ptr< L3::PointCloud<double> > cloud ) : PointCloudRenderer(cloud)
     {
         
     }
 
-    void onDraw3D( glv::GLV& g )
-    {
-        PointCloudRenderer::onDraw3D(g);    
-    }
-    
+    void onDraw3D( glv::GLV& g );
 };
 
 /*
  *  Point cloud renderer, view
  */
-struct PointCloudRendererView: PointCloudRenderer, glv::View3D
+struct PointCloudRendererView: PointCloudRenderer, glv::View3D, Updateable
 {
-    PointCloudRendererView( const glv::Rect& r, L3::PointCloud<double>* cloud ) : PointCloudRenderer(cloud),
-                                                                                    glv::View3D(r)
+    PointCloudRendererView( const glv::Rect& r, boost::shared_ptr< L3::PointCloud<double> > cloud, L3::SE3* estimate ) 
+        : PointCloudRenderer(cloud),
+            glv::View3D(r),
+            current_estimate(estimate)
+
     {
     }
 
+       
+    L3::SE3* current_estimate;
+
+    void update();
+
     void onDraw3D( glv::GLV& g );
-    
+   
 };
 
 
@@ -272,9 +277,11 @@ struct PointCloudRendererView: PointCloudRenderer, glv::View3D
  */
 struct PointCloudBoundsRenderer : Leaf
 {
-    L3::PointCloud<double>*  cloud;
+    boost::shared_ptr< L3::PointCloud<double> > cloud;
 
-    PointCloudBoundsRenderer( L3::PointCloud<double>* point_cloud );
+    PointCloudBoundsRenderer( boost::shared_ptr< L3::PointCloud<double> > point_cloud ) : cloud(point_cloud)
+    {
+    }
     
     void onDraw3D(glv::GLV& g);
 

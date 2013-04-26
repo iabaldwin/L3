@@ -348,8 +348,9 @@ namespace Visualisers
     /*
      *  Component :: Point cloud renderer
      */
-    PointCloudRenderer::PointCloudRenderer( L3::PointCloud<double>* cloud ) : cloud(cloud)
+    PointCloudRenderer::PointCloudRenderer( boost::shared_ptr< L3::PointCloud<double> > cloud  ) : cloud(cloud)
     {
+        // Construct the plot cloud
         plot_cloud.reset( new L3::PointCloud<double>() );
 
         L3::allocate( plot_cloud.get(), 5*1000 );
@@ -357,29 +358,34 @@ namespace Visualisers
         colors.reset( new glv::Color[plot_cloud->num_points] );
         vertices.reset( new glv::Point3[plot_cloud->num_points] );
 
+        point_cloud.reset( new L3::PointCloud<double>() );
     };
 
     void PointCloudRenderer::onDraw3D( glv::GLV& g )
     {
-        boost::scoped_ptr< L3::PointCloud<double> > point_cloud( new L3::PointCloud<double>()  );
-
-        L3::ReadLock lock( cloud->mutex );
-        L3::copy( cloud, point_cloud.get() );
-        lock.unlock();
-
         if ( point_cloud->num_points > 0 )
         {
-            L3::sample( point_cloud.get(), plot_cloud.get(), plot_cloud->num_points );
 
             for( int i=0; i<plot_cloud->num_points; i++) 
                 vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
-            //colors[i].set(  
 
             glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
+            L3::sample( point_cloud.get(), plot_cloud.get(), plot_cloud->num_points );
 
         }
     }
-
+    
+    /*
+     *  Components :: Point cloud renderer (leaf)
+     */
+    void PointCloudRendererLeaf::onDraw3D( glv::GLV& g )
+    {
+        //L3::ReadLock lock( cloud->mutex );
+        L3::copy( cloud.get(), point_cloud.get() );
+        //lock.unlock();
+        PointCloudRenderer::onDraw3D(g);    
+    }
+    
     /*
      *  Components :: Point cloud renderer (view)
      */
@@ -388,18 +394,30 @@ namespace Visualisers
     {
         far(500);
         glv::draw::translateZ(-250 );
+        
+
         PointCloudRenderer::onDraw3D(g);    
+    }
+
+    void PointCloudRendererView::update()
+    {
+        L3::ReadLock lock( cloud->mutex );
+        L3::copy( cloud.get(), point_cloud.get() );
+        lock.unlock();
+
+        L3::SE3 tmp( *current_estimate );
+
+        Eigen::Matrix4f h = tmp.getHomogeneous();
+
+        tmp.setHomogeneous( h.inverse() );
+
+        L3::transform( point_cloud.get(), &tmp );
+
     }
 
     /*
      *  Point cloud :: bounds renderer
      */
-
-    PointCloudBoundsRenderer::PointCloudBoundsRenderer( L3::PointCloud<double>* point_cloud ) :
-        cloud(point_cloud)
-    {
-    }
-
     void PointCloudBoundsRenderer::onDraw3D(glv::GLV& g)
     { 
 
@@ -407,8 +425,8 @@ namespace Visualisers
         glv::Color  bound_colors[4];
 
         L3::ReadLock point_cloud_lock( cloud->mutex );
-        std::pair<double, double> lower_left = min( cloud );
-        std::pair<double, double> upper_right = max(cloud);
+        std::pair<double, double> lower_left = min( cloud.get() );
+        std::pair<double, double> upper_right = max(cloud.get() );
         point_cloud_lock.unlock();
 
         glv::draw::blendTrans();

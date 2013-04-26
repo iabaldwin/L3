@@ -41,6 +41,7 @@ struct TemporalRunner : Runner, TemporalObserver
         for( std::list< L3::Observer* >::iterator it = observables.begin(); 
                 it != observables.end();
                 it++ )
+            
             // Dangerous
             static_cast<L3::TemporalObserver*>( *it )->update( t);
             //L3::TemporalObserver* observer = dynamic_cast<L3::TemporalObserver*>( *it );
@@ -97,10 +98,10 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::Projector<double>*                  projector;
     L3::Estimator::Estimator<double>*       estimator;
 
+    std::list < TemporalObserver* >             observers;
+    
     L3::ConstantTimeIterator< L3::LMS151 >* vertical_LIDAR;
     L3::ConstantTimeIterator< L3::LMS151 >* horizontal_LIDAR;
-
-    std::list < TemporalObserver* >             observers;
     
     L3::SE3* current;
 

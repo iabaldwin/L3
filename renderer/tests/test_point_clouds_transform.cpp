@@ -38,11 +38,11 @@ struct Transformer : L3::Visualisers::Leaf
 
 int main (int argc, char ** argv)
 {
-    L3::PointCloud<double>* cloud = new L3::PointCloud<double>();
+    boost::shared_ptr< L3::PointCloud<double> >cloud( new L3::PointCloud<double>()  );
 
-    L3::allocate( cloud, 20*1000 );
+    L3::allocate( cloud.get(), 20*1000 );
 
-    L3::gaussianCloud( cloud );
+    L3::gaussianCloud( cloud.get() );
 
     /*
      *Visualisation
@@ -59,7 +59,7 @@ int main (int argc, char ** argv)
     composite_view.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Transform tester
-    Transformer<double> transformer( cloud );
+    Transformer<double> transformer( cloud.get() );
 
     // Point cloud renderer
     L3::Visualisers::PointCloudRendererLeaf cloud_renderer( cloud );
