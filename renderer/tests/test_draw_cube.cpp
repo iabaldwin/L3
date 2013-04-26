@@ -122,7 +122,7 @@ int main (int argc, char ** argv)
 
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::Composite                  composite;
-    L3::Visualisers::BasicPanController         controller;
+    L3::Visualisers::BasicPanController         controller( composite.position );
   
     Cube c;
 

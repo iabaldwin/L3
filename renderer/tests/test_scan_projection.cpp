@@ -50,7 +50,7 @@ int main (int argc, char ** argv)
 
     // Point cloud renderer
     L3::Visualisers::Composite              composite;
-    L3::Visualisers::Controller*            controller = new L3::Visualisers::BasicPanController();
+    L3::Visualisers::Controller*            controller = new L3::Visualisers::BasicPanController( composite.position );
     L3::Visualisers::Grid                   grid;
     L3::Visualisers::ScanRenderer           scan_renderer( &swathe_builder ); 
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 

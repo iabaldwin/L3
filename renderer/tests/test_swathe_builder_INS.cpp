@@ -43,7 +43,7 @@ int main (int argc, char ** argv)
     
     // Point cloud renderer
     L3::Visualisers::Composite              composite;
-    L3::Visualisers::BasicPanController     controller;
+    L3::Visualisers::BasicPanController     controller( composite.position );
     L3::Visualisers::Grid                   grid;
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 

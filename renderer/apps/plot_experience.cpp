@@ -59,8 +59,8 @@ struct Section
                     break;
 
                 default:
-                    std::cerr << "Error..." << std::endl;
-                    break;
+                    throw std::exception();  
+   
             };
         }
     
@@ -85,9 +85,6 @@ struct ColoredExperienceRenderer : L3::Visualisers::Leaf
     {
         experience->running = false;
 
-        std::cout << "Synching..." << std::endl;
-        //usleep( 2*1e6 );
-        
         int section_counter = 0;
      
         ColorCycler cycler;
@@ -148,10 +145,30 @@ int main (int argc, char ** argv)
     /*
      *L3
      */
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
-    L3::ExperienceLoader experience_loader( dataset );
+    
+    if ( argc != 2 ) 
+    {
+        std::cerr << "Usage: " << argv[0] << " <dataset>" << std::endl;
+        exit(-1);
+    }
 
-    boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
+    char* dataset_directory = argv[1];
+ 
+    L3::Dataset dataset( dataset_directory );
+
+    boost::shared_ptr< L3::ExperienceLoader > experience_loader;
+
+    try
+    {
+        experience_loader.reset( new L3::ExperienceLoader( dataset ) );
+    }
+    catch( L3::no_such_file )
+    {
+        std::cerr << "No experience data for " << dataset_directory << std::endl;
+        exit(-1);
+    }
+
+    boost::shared_ptr<L3::Experience> experience = experience_loader->experience;
 
     /*
      *Visualisation
@@ -164,7 +181,7 @@ int main (int argc, char ** argv)
 
     // Point cloud renderer
     L3::Visualisers::Composite              composite;
-    L3::Visualisers::Controller*            controller = new L3::Visualisers::BasicPanController();
+    L3::Visualisers::Controller*            controller = new L3::Visualisers::BasicPanController( composite.position );
     L3::Visualisers::Grid                   grid;
     ColoredExperienceRenderer               colored_experience_renderer( experience );
     

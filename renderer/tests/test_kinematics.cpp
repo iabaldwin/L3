@@ -129,7 +129,7 @@ int main (int argc, char ** argv)
 
     // Point cloud renderer
     L3::Visualisers::Composite      composite;
-    L3::Visualisers::Controller*    controller = new L3::Visualisers::FPSController();
+    L3::Visualisers::Controller*    controller = new L3::Visualisers::FPSController( composite.position );
     L3::Visualisers::Grid           grid;
 
     Kinematics k;

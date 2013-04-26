@@ -38,7 +38,7 @@ int main (int argc, char ** argv)
     
     // Point cloud renderer
     L3::Visualisers::Composite                          composite;
-    boost::shared_ptr< L3::Visualisers::Controller >    controller( new L3::Visualisers::BasicPanController() );
+    boost::shared_ptr< L3::Visualisers::Controller >    controller( new L3::Visualisers::BasicPanController( composite.position ) );
     L3::Visualisers::Grid                               grid;
     boost::shared_ptr< L3::PoseProvider >               pose_provider( new L3::CircularPoseProvider( 25.0 ) );
     L3::Visualisers::PoseProviderRenderer               pose_provider_renderer( pose_provider.get() );

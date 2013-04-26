@@ -159,8 +159,8 @@ struct ExperienceBuilder
 
         std::cout << calibration << std::endl;
 
-        L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
-        std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &calibration, point_cloud ) );
+        boost::shared_ptr< L3::PointCloud<double> > point_cloud( new L3::PointCloud<double>() );
+        boost::shared_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &calibration, point_cloud.get() ) );
 
         int id = 0;
         double accumulate = 0.0;
@@ -203,11 +203,13 @@ struct ExperienceBuilder
   
             swathe.push_back( std::make_pair( matched[0].second, scans[0].second ) );
 
+            //yaw, is 0
+            //std::cout << *matched[0].second << std::endl;
+
             if ( accumulate > threshold )
             {
                 // Reset
                 accumulate = 0.0;
-
 #ifndef NDEBUG
                 L3::Timing::SysTimer t;
                 t.begin();
@@ -219,7 +221,7 @@ struct ExperienceBuilder
                 std::cout << point_cloud->num_points << " points in " << t.elapsed() << "s" << std::endl;
 #endif
                 // Compute mean
-                std::pair<double,double> means = mean( point_cloud );
+                std::pair<double,double> means = mean( point_cloud.get()  );
 
                 std::cout << means.first << " " << means.second << std::endl;
               
@@ -227,7 +229,6 @@ struct ExperienceBuilder
                 //  1. Write points 
                 unsigned int payload_size = point_cloud->num_points*sizeof(L3::Point<double>);
                 experience_data.write( (char*)( point_cloud->points ), payload_size );
-
                 //  Writing : INDEX
                 //  1. Write the ID
                 experience_index.write( (char*)(&id), sizeof(int) ); id++;

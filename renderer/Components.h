@@ -91,18 +91,12 @@ struct Composite : glv::View3D
         far( 1000 );
 
         // Appropriate view-point
-        //position.z = -500; 
-        position.z = -250; 
+        position.translateZ( -250 );
     }
 
-    control_t                       position ;
+    control_t                       position;
     std::list<Leaf*>                components; 
     L3::Visualisers::Controller*    controller;
-
-    void apply( control_t t )
-    {
-        position += t;
-    }
 
     Composite& addController( L3::Visualisers::Controller* c )
     {
@@ -113,24 +107,13 @@ struct Composite : glv::View3D
     bool onEvent( glv::Event::t type, glv::GLV& g )
     {
         if (controller)
-            apply( controller->onEvent( type, g ) );
+            controller->onEvent( type, g );
 
         return true;
     }
 
-    void onDraw3D( glv::GLV& g )
-    {
-        glv::draw::translate( position.x, position.y, position.z );
-        glv::draw::rotate( position.r, position.p, position.q );
-
-        std::list<Leaf*>::iterator leaf_iterator = components.begin();
-        while( leaf_iterator != components.end() )
-        {
-            (*leaf_iterator)->onDraw3D( g );
-            leaf_iterator++;
-        }
-    }
-
+    void onDraw3D( glv::GLV& g );
+    
     Composite& operator<<( Leaf& leaf )
     {
         components.push_back( &leaf );

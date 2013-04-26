@@ -47,20 +47,7 @@ struct BinaryExtractor
     int counter, index;
     std::vector<double> buffer;
 
-    void operator()( double d )
-    {
-        index = (counter % L3::Sizes<T>::elements );
-        
-        counter++;
-   
-        if ( index == L3::Sizes<T>::elements -1 ) 
-        {
-            elements.push_back( AbstractFactory<T>::produce( buffer ) );
-        }
-        else
-            buffer[index] = d;
-    }
-
+    void operator()( double d );
 };
 
 /*

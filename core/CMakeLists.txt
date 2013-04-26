@@ -6,6 +6,7 @@ add_library( L3
     Windower.cpp 
     PointCloud.cpp 
     Utils.cpp 
+    Reader.cpp 
     Writer.cpp 
     Experience.cpp 
     Projector.cpp 

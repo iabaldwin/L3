@@ -35,11 +35,11 @@ int main (int argc, char ** argv)
     // Renderer
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::Composite                  composite;
-    L3::Visualisers::BasicPanController         controller;
+    L3::Visualisers::BasicPanController         controller(composite.position);
     
     L3::Visualisers::HistogramVertexRenderer    histogram_renderer(histogram);
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
-    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer( glv::Rect(500,300), histogram );
+    L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer( glv::Rect(500,300), histogram );
    
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_copy( new L3::HistogramUniformDistance<double>() );
     L3::clone( histogram.get(), histogram_copy.get() );

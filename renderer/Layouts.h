@@ -30,7 +30,7 @@ class Layout
             grid.reset( new L3::Visualisers::Grid() );
            
             // Basic controller
-            controller.reset( new L3::Visualisers::BasicPanController() );
+            controller.reset( new L3::Visualisers::BasicPanController( composite->position ) );
         
             composite->addController( &*controller );
 

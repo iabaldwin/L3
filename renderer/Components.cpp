@@ -9,6 +9,27 @@ namespace L3
 namespace Visualisers
 {
 
+    void Composite::onDraw3D( glv::GLV& g )
+    {
+        glv::draw::push();
+        glMultMatrixf( position.homogeneous.data() );
+
+        //Can't form reference to reference
+        //std::for_each( components.begin(), components.end(), std::bind2nd( std::mem_fun ( &Leaf::onDraw3D ), g ) );
+
+        std::list<Leaf*>::iterator leaf_iterator = components.begin();
+        while( leaf_iterator != components.end() )
+        {
+            (*leaf_iterator)->onDraw3D( g );
+            leaf_iterator++;
+        }
+
+        glv::draw::pop();
+    }
+
+
+
+
     /*
      *  Components :: Grid
      */
@@ -336,12 +357,8 @@ namespace Visualisers
     void CoordinateSystem::onDraw3D(glv::GLV& g)
     { 
         glv::draw::push();
-
-        //glMultMatrixf( pose->getHomogeneous().data() );
         glMultMatrixf( pose.getHomogeneous().data() );
-
         glv::draw::paint( glv::draw::LineStrip, vertices.get(), colors.get(), 6 );
-
         glv::draw::pop();
     }
 

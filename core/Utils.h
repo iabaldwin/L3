@@ -123,36 +123,25 @@ struct matcher
 {
 
     matcher( std::vector< std::pair< double, boost::shared_ptr<T1> > >* ELEMENTS,
-            std::vector< std::pair< double, boost::shared_ptr<T1> > >* MATCHED
-            ) : elements( ELEMENTS ), matched(MATCHED)
+            std::vector< std::pair< double, boost::shared_ptr<T1> > >* MATCHED ) 
+                : elements( ELEMENTS ), matched(MATCHED)
     {
 
     }
 
-    L3::Comparator< std::pair< double, boost::shared_ptr<T1> > > _comparator;
+    L3::Comparator< std::pair< double, boost::shared_ptr<T1> > > comparator;
     
-    // Search by time
-    void operator()( double data )
-    {
-
-    }
-
     // Search by time
     void operator()( std::pair< double, boost::shared_ptr<T2> > data  )
     {
         typename std::vector< std::pair< double, boost::shared_ptr<T1> > >::iterator index = std::lower_bound( (*elements).begin(), 
-                                                                                                        (*elements).end(), 
-                                                                                                        data.first,
-                                                                                                        _comparator );
+                                                                                                                (*elements).end(), 
+                                                                                                                data.first,
+                                                                                                                comparator );
 
         // TODO:
         // Is this ok? Check the time here, don't assume
-        if ( index == elements->end() ) 
-        {
-            index--; 
-            std::cout << index->first - data.first << std::endl; 
-        }
-
+        
         matched->push_back( *index );
     }
 

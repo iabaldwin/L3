@@ -38,7 +38,7 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
     
     L3::Visualisers::Composite              composite;
-    L3::Visualisers::BasicPanController     controller;
+    L3::Visualisers::BasicPanController     controller( composite.position );
     L3::Visualisers::Grid                   grid;
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
