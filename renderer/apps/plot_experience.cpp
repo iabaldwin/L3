@@ -86,7 +86,7 @@ struct ColoredExperienceRenderer : L3::Visualisers::Leaf
         experience->running = false;
 
         std::cout << "Synching..." << std::endl;
-        usleep( 2*1e6 );
+        //usleep( 2*1e6 );
         
         int section_counter = 0;
      
@@ -167,8 +167,9 @@ int main (int argc, char ** argv)
     L3::Visualisers::Controller*            controller = new L3::Visualisers::BasicPanController();
     L3::Visualisers::Grid                   grid;
     ColoredExperienceRenderer               colored_experience_renderer( experience );
+    
     // Associate controller
-    composite.addController( controller );
+    composite.addController( controller ).stretch(1,1);
 
     // Combine
     top << (composite << grid << colored_experience_renderer ) ;

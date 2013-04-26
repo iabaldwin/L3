@@ -157,6 +157,8 @@ struct ExperienceBuilder
         L3::SE3 calibration = L3::SE3::ZERO();
         L3::Configuration::convert( mission.lidars[ mission.declined ], calibration );
 
+        std::cout << calibration << std::endl;
+
         L3::PointCloud<double>* point_cloud = new L3::PointCloud<double>();
         std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &calibration, point_cloud ) );
 
