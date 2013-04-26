@@ -216,21 +216,56 @@ struct PoseEstimatesRenderer : Leaf
 };
 
 /*
- *  Point cloud renderer
+ *  Point cloud renderer core
  */
-struct PointCloudRenderer : Leaf
+struct PointCloudRenderer 
 {
     PointCloudRenderer( L3::PointCloud<double>* cloud );
 
-    L3::PointCloud<double>*                     cloud;
-    boost::shared_ptr<L3::PointCloud<double> >  plot_cloud;
-    
     boost::shared_array< glv::Color >   colors;
     boost::shared_array< glv::Point3 >  vertices;
+   
+    L3::PointCloud<double>*                     cloud;
+    boost::shared_ptr< L3::PointCloud<double> > plot_cloud;
 
     void onDraw3D( glv::GLV& g );
     
 };
+
+/*
+ *  Point cloud renderer, composite
+ */
+struct PointCloudRendererLeaf : PointCloudRenderer, Leaf
+{
+    PointCloudRendererLeaf( L3::PointCloud<double>* cloud ) : PointCloudRenderer(cloud)
+    {
+        
+    }
+
+    void onDraw3D( glv::GLV& g )
+    {
+        PointCloudRenderer::onDraw3D(g);    
+    }
+    
+};
+
+/*
+ *  Point cloud renderer, view
+ */
+struct PointCloudRendererView: PointCloudRenderer, glv::View3D
+{
+    PointCloudRendererView( const glv::Rect& r, L3::PointCloud<double>* cloud ) : PointCloudRenderer(cloud),
+                                                                                    glv::View3D(r)
+    {
+    }
+
+    void onDraw3D( glv::GLV& g );
+    
+};
+
+
+
+
 
 /*
  *Point cloud bounds renderer

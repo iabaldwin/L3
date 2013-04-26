@@ -33,6 +33,8 @@ namespace L3
     }
 
     L3::Predictor predictor;
+        
+    boost::shared_ptr< L3::PointCloud<double> > cloud;
 
     bool EstimatorRunner::update( double time )
     {
@@ -53,16 +55,21 @@ namespace L3
         /*
          *  Point cloud generation, projection
          */
+        cloud.reset( new L3::PointCloud<double>() );
+        
         L3::WriteLock point_cloud_lock( projector->cloud->mutex );
         projector->project( swathe_builder->swathe );
-        L3::transform( projector->cloud, &predicted );  
+        L3::copy( projector->cloud, cloud.get() );
         point_cloud_lock.unlock();
+                
+        //L3::transform( projector->cloud, &predicted );  
+        L3::transform( cloud.get(), &predicted );  
 
         /*
          *  Estimation
          */
-       
-        (*estimator)( projector->cloud, predicted );
+        //(*estimator)( projector->cloud, predicted );
+        (*estimator)( cloud.get(), predicted );
 
     }
 }

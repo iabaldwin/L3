@@ -69,11 +69,11 @@ int main (int argc, char ** argv)
     L3::Visualisers::BasicPanController         controller;     // Control type
     L3::Visualisers::Grid                       grid;           // Grid spacing
     L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
-    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), experience->experience_histogram );
-    L3::Visualisers::HistogramDensityRenderer     histogram_pixel_renderer_swathe( glv::Rect(50, 400, 500, 300 ), estimator.swathe_histogram );
+    L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), experience->experience_histogram );
+    L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer_swathe( glv::Rect(50, 400, 500, 300 ), estimator.swathe_histogram );
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer( experience->experience_histogram );
     L3::Visualisers::PointCloudBoundsRenderer   point_cloud_bounds_renderer( point_cloud );
-    L3::Visualisers::PointCloudRenderer         runtime_cloud_renderer( point_cloud );
+    L3::Visualisers::PointCloudRendererLeaf     runtime_cloud_renderer( point_cloud );
     L3::Visualisers::PoseEstimatesRenderer      pose_estimates_renderer( estimator.pose_estimates );
     
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);

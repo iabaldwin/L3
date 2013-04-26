@@ -217,8 +217,8 @@ class EstimatorLayout : public Layout
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
 
             // Swathe Cloud
-            runtime_cloud_renderer.reset( new L3::Visualisers::PointCloudRenderer( run_time_swathe ));
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer.get() ) ) );
+            runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( run_time_swathe ));
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
 
             // Current pose estimate
             pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
@@ -299,6 +299,14 @@ class EstimatorLayout : public Layout
             lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
             this->renderables.push_front( lua_interface.get() );
 
+
+            // Swathe Cloud
+            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(500+10),10, 500, 300 ), run_time_swathe ));
+            this->renderables.push_front( runtime_cloud_renderer_view.get() );
+            
+            //updater->operator<<( vertical_scan_renderer.get() );
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_view.get() ) ) );
+
         }
     
         L3::EstimatorRunner* runner;
@@ -316,7 +324,8 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      predicted_pose_renderer;
         
         boost::shared_ptr< L3::Visualisers::PredictorRenderer >             predictor_renderer;
-        boost::shared_ptr< L3::Visualisers::PointCloudRenderer >            runtime_cloud_renderer; 
+        boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        runtime_cloud_renderer_leaf; 
+        boost::shared_ptr< L3::Visualisers::PointCloudRendererView >        runtime_cloud_renderer_view; 
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
         boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >      point_cloud_bounds_renderer;
         boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
