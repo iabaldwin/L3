@@ -143,7 +143,7 @@ struct LMS151 : LIDAR
         
         angle_spacing = (angle_end - angle_start ) / (double)num_scans;
             
-        ranges.resize( num_scans );
+        ranges.resize( num_scans, 0 );
    
     }
 

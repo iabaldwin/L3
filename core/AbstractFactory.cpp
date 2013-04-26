@@ -3,6 +3,45 @@
 namespace L3
 {
 
+template <typename T>
+struct MaskPolicy
+{
+        virtual void operator()( std::vector<T>& data ) 
+        {
+        }
+        
+};
+    
+template <typename T>
+struct RangeMask : MaskPolicy<T>
+{
+
+    RangeMask( T range ) : range(range)
+    {
+    }
+
+    T range;
+
+    void operator()( std::vector<T>& data ) 
+    {
+        for (  typename std::vector<T>::iterator it = data.begin();
+                it != data.end();
+                it++ )
+        {
+           if( (*it ) > range )
+           {
+               std::cout << *it << std::endl;
+               *it = 0.0;
+               std::cout << *it << std::endl;
+           }
+        }
+    }
+
+};
+
+
+
+
 /*
  *Base type
  */
@@ -31,61 +70,78 @@ std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::vect
     return std::make_pair( time, boost::make_shared<T>( elements ) );
 }
 
-std::pair< double, boost::shared_ptr<L3::SE3> > AbstractFactory<L3::SE3>::produce( std::string& str )
-{
-    std::stringstream ss( str );
-    std::vector< double > elements;
+/*
+ *  SE3
+ */
+//std::pair< double, boost::shared_ptr<L3::SE3> > AbstractFactory<L3::SE3>::produce( std::string& str )
+//{
+    //std::stringstream ss( str );
+    //std::vector< double > elements;
     
-    double tmp;
+    //double tmp;
     
-    while ( ss >> tmp )
-        elements.push_back( tmp ); 
+    //while ( ss >> tmp )
+        //elements.push_back( tmp ); 
 
 
-    return AbstractFactory<L3::SE3>::produce( elements );
-}
+    //return AbstractFactory<L3::SE3>::produce( elements );
+//}
         
-std::pair< double, boost::shared_ptr<L3::SE3> >  AbstractFactory<L3::SE3>::produce( std::vector<double> elements )
-{
-    assert( elements.size() > 0 );
+//std::pair< double, boost::shared_ptr<L3::SE3> >  AbstractFactory<L3::SE3>::produce( std::vector<double> elements )
+//{
+    //assert( elements.size() > 0 );
 
-    double time = elements[0];
-    elements.erase( elements.begin() );
+    //double time = elements[0];
+    //elements.erase( elements.begin() );
 
-    return std::make_pair( time, boost::make_shared<L3::SE3>( elements ) );
-}
+    //return std::make_pair( time, boost::make_shared<L3::SE3>( elements ) );
+//}
 
-std::pair< double, boost::shared_ptr<L3::LIDAR> >  AbstractFactory<L3::LIDAR>::produce( std::string& str )
-{
-    std::stringstream ss( str );
-    std::vector< double > elements;
+/*
+ *  LIDAR
+ */
+        
+//std::pair< double, boost::shared_ptr<L3::LIDAR> > AbstractFactory<L3::LIDAR>::produce( std::string& str, MaskPolicy<double>* mask )
+//{
+    //std::stringstream ss( str );
+    //std::vector< double > elements;
 
-    double tmp;
+    //double tmp;
     
-    while ( ss >> tmp )
-        elements.push_back( tmp ); 
+    //while ( ss >> tmp )
+        //elements.push_back( tmp ); 
     
-    return AbstractFactory<L3::LIDAR>::produce( elements );
-}
+    //return AbstractFactory<L3::LIDAR>::produce( elements, mask );
+//}
 
-std::pair< double, boost::shared_ptr<L3::LIDAR> > AbstractFactory<L3::LIDAR>::produce( std::vector<double> elements )
-{
-    assert( elements.size() > 0 );
+//std::pair< double, boost::shared_ptr<L3::LIDAR> > AbstractFactory<L3::LIDAR>::produce( std::vector<double> elements, MaskPolicy<double>* mask )
+//{
+    //assert( elements.size() > 0 );
 
-    double time = elements[0];
-    elements.erase( elements.begin() );
-    switch (elements.size())
-    {
-        case 541:
-            return std::make_pair( time, boost::make_shared<L3::LMS151>( elements ) );
+    //double time = elements[0];
+   
+    //// Offset by time
+    //elements.erase( elements.begin() );
 
-        default:
-            throw std::exception();
+    //// Mask
+    //mask->operator()( elements );
 
-    }
+    //switch (elements.size())
+    //{
+        //case 541:
+            //throw std::exception();
+            ////return std::make_pair( time, boost::make_shared<L3::LMS151>( elements ) );
 
-}
+        //default:
+            //throw std::exception();
 
+    //}
+
+//}
+
+/*
+ *  Pose
+ */
 std::pair< double, boost::shared_ptr<L3::Pose> >  AbstractFactory<L3::Pose>::produce( std::string& str )
 {
     std::stringstream ss( str );
@@ -125,6 +181,6 @@ std::pair< double, boost::shared_ptr<L3::Pose> > AbstractFactory<L3::Pose>::prod
 } // L3
 
 // Explicit instantiations
-template class L3::AbstractFactory<L3::LMS151>;
 template class L3::AbstractFactory<L3::LHLV>;
-
+template class L3::AbstractFactory<L3::LMS151>;
+template std::pair< double, boost::shared_ptr<L3::SE3> > L3::AbstractFactory<L3::SE3>::produce(std::basic_string<char, std::char_traits<char>, std::allocator<char> >&);

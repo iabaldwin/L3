@@ -18,23 +18,22 @@ class AbstractFactory
         static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double> elements );
 };
 
-template <>
-class AbstractFactory<L3::SE3>
-{
-    public:
-        static std::pair< double, boost::shared_ptr<L3::SE3> > produce( std::string& str );
-        static std::pair< double, boost::shared_ptr<L3::SE3> > produce( std::vector<double> elements );
+//template <>
+//class AbstractFactory<L3::SE3>
+//{
+    //public:
+        //static std::pair< double, boost::shared_ptr<L3::SE3> > produce( std::string& str );
+        //static std::pair< double, boost::shared_ptr<L3::SE3> > produce( std::vector<double> elements );
         
-};
+//};
 
-
-template <>
-class AbstractFactory<L3::LIDAR>
-{
-    public:
-        static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::string& str );
-        static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::vector<double> elements );
-};
+//template <>
+//class AbstractFactory<L3::LIDAR>
+//{
+    //public:
+        //static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::string& str );
+        //static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::vector<double> elements );
+//};
 
 template <>
 class AbstractFactory<L3::Pose>

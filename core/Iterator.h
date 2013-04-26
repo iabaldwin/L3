@@ -10,7 +10,6 @@
 #include "Definitions.h"
 #include "Windower.h"
 #include "Timing.h"
-#include "AbstractFactory.h"
 
 namespace L3
 {

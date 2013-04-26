@@ -204,13 +204,10 @@ void HistogramDensityRenderer::update()
  */
 void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
 {
-    glv::Point3 points[tmp.x_bins*tmp.y_bins*4*6];
-    glv::Color  colors[tmp.x_bins*tmp.y_bins*4*6];
+    boost::shared_array< glv::Point3> points( new glv::Point3[tmp.x_bins*tmp.y_bins*4*6] );
+    boost::shared_array< glv::Color > colors( new glv::Color[tmp.x_bins*tmp.y_bins*4*6] );
 
     int counter = 0;
-
-    //glv::draw::blendTrans();
-    //glv::draw::enable( glv::draw::DepthTest );
 
     unsigned int max = gsl_histogram2d_max_val( tmp.hist );
 
@@ -307,7 +304,7 @@ void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
     }
 
     glv::draw::enable( glv::draw::Blend );
-    glv::draw::paint( glv::draw::Quads, points, colors, counter );
+    glv::draw::paint( glv::draw::Quads, points.get(), colors.get(), counter );
     glv::draw::disable( glv::draw::Blend );
 
 }
