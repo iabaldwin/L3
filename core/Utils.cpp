@@ -18,26 +18,22 @@ double radiansToDegrees( double radians )
 }
 
 
+L3::SE3 poseFromRotation( const Eigen::Matrix4f& mat )
+    {
+        double x = mat(0, 3 );
+        double y = mat(1, 3 );
+        double z = mat(2, 3 );
+    
+        double q = atan2( mat(1,0), mat( 0, 0 ) );
+        double r = atan2( -1* mat(2, 0), sqrt( pow( mat(2,1),2 )+ pow( mat(2,2) ,2) ) );
+        double p = atan2( mat(2,1), mat(2,2) );
+
+        return L3::SE3( x,y,z,r,p,q );
+
+    }
+
 } // Math
 
-void localisePoseChainToOrigin( POSE_SEQUENCE& poses )
-{
-
-    //double origin_x = poses.front().second->x;
-    //double origin_y = poses.front().second->y;
-
-    //POSE_SEQUENCE_ITERATOR it = poses.begin();
-
-    //while( it != poses.end() )
-    //{
-        //(*it).second->x -= origin_x;
-        //(*it).second->y -= origin_y;
-
-        //(*it).second->_update();
-
-        //it++;
-    //}
-}
 
 
 

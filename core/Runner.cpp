@@ -53,17 +53,16 @@ namespace L3
         /*
          *  Point cloud generation, projection
          */
-        L3::WriteLock projector_lock( projector->cloud->mutex );
+        L3::WriteLock point_cloud_lock( projector->cloud->mutex );
+        
         projector->project( swathe_builder->swathe );
         L3::transform( projector->cloud, &predicted );  
-        projector_lock.unlock();
-                
         
+        point_cloud_lock.unlock();
         /*
          *  Estimate
          */
         (*estimator)( projector->cloud, predicted );
-
     }
 }
 

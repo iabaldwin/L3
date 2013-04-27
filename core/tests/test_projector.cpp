@@ -34,7 +34,6 @@ int main()
      */
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
-
     /*
      *Projector  
      */
@@ -43,14 +42,19 @@ int main()
    
     std::auto_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud ) );
 
-    double time  = dataset.start_time;
-    swathe_builder.update( dataset.start_time + 30 );
+    double time  = dataset.start_time + 30;
+    pose_iterator.update( time );
+    LIDAR_iterator.update( time );
+    swathe_builder.update( time );
 
+    
     /*
      *Do Projection, & average
      */
     L3::Timing::SysTimer t;
-    for ( int i=0; i< 1000; i++ )
+    //for ( int i=0; i< 1000; i++ )
+    //{
+    while( true )
     {
         t.begin();
         projector->project( swathe_builder.swathe );
@@ -58,5 +62,9 @@ int main()
         std::cout << point_cloud->num_points << " pts in " << end_time << "s" << std::endl;
         std::cout << (double)point_cloud->num_points/end_time << " pts/s" << std::endl;
     
+        //std::ofstream output( "output.dat" );
+        //output << *point_cloud << std::endl;
+        //exit(-1);
+
     }
 }

@@ -1,3 +1,12 @@
+add_executable( test_component test_component.cpp )
+target_link_libraries( test_component GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
+add_executable( test_composite test_composite.cpp )
+target_link_libraries( test_composite GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
+add_executable( test_controller test_controller.cpp )
+target_link_libraries( test_controller GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
 add_executable( test_iterator_visual test_iterator.cpp )
 target_link_libraries( test_iterator_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
@@ -12,12 +21,6 @@ target_link_libraries( test_swathe_builder_LHLV_visual GLV ${GLUT_LIBRARIES} ${O
 
 add_executable( test_renderer_pipeline test_renderer_pipeline.cpp )
 target_link_libraries( test_renderer_pipeline GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
-add_executable( test_component test_component.cpp )
-target_link_libraries( test_component GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
-add_executable( test_composite test_composite.cpp )
-target_link_libraries( test_composite GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_draw_cube test_draw_cube.cpp )
 target_link_libraries( test_draw_cube GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})

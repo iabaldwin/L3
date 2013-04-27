@@ -3,50 +3,29 @@
 namespace L3
 {
 
-template <typename T>
-struct MaskPolicy
+/*
+ *  Masking policy
+ */
+boost::shared_ptr<L3::LMS151> MaskPolicy<L3::LMS151>::operator()( boost::shared_ptr<L3::LMS151> t ) 
 {
-        virtual void operator()( std::vector<T>& data ) 
-        {
-        }
-        
-};
-    
-template <typename T>
-struct RangeMask : MaskPolicy<T>
-{
-
-    RangeMask( T range ) : range(range)
+    for( std::vector<float>::iterator it = t->ranges.begin(); 
+            it != t->ranges.end();
+            it++ )
     {
+        if ( *it < cull )
+            *it = 0.0;
     }
 
-    T range;
-
-    void operator()( std::vector<T>& data ) 
-    {
-        for (  typename std::vector<T>::iterator it = data.begin();
-                it != data.end();
-                it++ )
-        {
-           if( (*it ) > range )
-           {
-               std::cout << *it << std::endl;
-               *it = 0.0;
-               std::cout << *it << std::endl;
-           }
-        }
-    }
-
-};
-
+    return t;
+}
 
 
 
 /*
- *Base type
+ *  Base type
  */
 template <typename T>
-std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::string& str )
+std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::string& str, MaskPolicy<T> mask_policy )
 {
     std::stringstream ss( str );
     std::vector< double > elements;
@@ -56,18 +35,18 @@ std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::stri
     while ( ss >> tmp )
         elements.push_back( tmp ); 
 
-    return AbstractFactory<T>::produce( elements );
+    return AbstractFactory<T>::produce( elements, mask_policy );
 }
 
 template <typename T>
-std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::vector<double> elements )
+std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::vector<double> elements, MaskPolicy<T> mask_policy )
 {
     assert( elements.size() > 0 );
 
     double time = elements[0];
     elements.erase( elements.begin() );
 
-    return std::make_pair( time, boost::make_shared<T>( elements ) );
+    return std::make_pair( time, mask_policy( boost::make_shared<T>( elements ) ) );
 }
 
 /*
@@ -183,4 +162,4 @@ std::pair< double, boost::shared_ptr<L3::Pose> > AbstractFactory<L3::Pose>::prod
 // Explicit instantiations
 template class L3::AbstractFactory<L3::LHLV>;
 template class L3::AbstractFactory<L3::LMS151>;
-template std::pair< double, boost::shared_ptr<L3::SE3> > L3::AbstractFactory<L3::SE3>::produce(std::basic_string<char, std::char_traits<char>, std::allocator<char> >&);
+template std::pair< double, boost::shared_ptr<L3::SE3> > L3::AbstractFactory<L3::SE3>::produce(std::basic_string<char, std::char_traits<char>, std::allocator<char> >&, L3::MaskPolicy<L3::SE3>);

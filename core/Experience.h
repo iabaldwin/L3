@@ -178,7 +178,9 @@ struct ExperienceBuilder
         {
             // Extract scan
             LIDAR_reader->extract( scans );
-      
+
+            //exit(-1);
+
             if (absolute_start_time == 0)
                 absolute_start_time = scans[0].first;
 

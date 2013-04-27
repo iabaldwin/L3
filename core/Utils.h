@@ -23,6 +23,9 @@ namespace Math
 {
     double degreesToRadians( double degrees );
     double radiansToDegrees( double radians );
+
+    L3::SE3 poseFromRotation( const Eigen::Matrix4f& mat );
+    
 }
 
 struct Accumulator

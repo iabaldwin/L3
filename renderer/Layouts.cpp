@@ -25,8 +25,8 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
 
             // Swathe Cloud
-            //runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( run_time_swathe ));
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
+            runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( run_time_swathe ));
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
 
             // Current pose estimate
             pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
@@ -106,9 +106,9 @@ namespace L3
             this->renderables.push_front( lua_interface.get() );
 
             // Swathe Cloud
-            //runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(500+10),10, 500, 300 ), run_time_swathe, runner->current ));
-            //this->renderables.push_front( runtime_cloud_renderer_view.get() );
-            //updater->operator<<( runtime_cloud_renderer_view.get() );
+            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(500+10),10, 500, 300 ), run_time_swathe, runner->current ));
+            this->renderables.push_front( runtime_cloud_renderer_view.get() );
+            updater->operator<<( runtime_cloud_renderer_view.get() );
         }
     }
 }

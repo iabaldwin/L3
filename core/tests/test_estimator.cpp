@@ -68,7 +68,7 @@ int main( int argc, char* argv[] )
 
     while( true )
     {
-        usleep( .5*1e6 ); 
+        usleep( 1*1e6 ); 
     }
 }
 

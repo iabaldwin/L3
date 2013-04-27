@@ -16,17 +16,7 @@ namespace Visualisers
 
     control_t& control_t::operator+=( control_t& rhs  )
     {
-        //this->homogeneous *= rhs.homogeneous;
-        this->homogeneous = (rhs.homogeneous *= this->homogeneous );
-
-        //this->x += rhs.x;
-        //this->y += rhs.y;
-        //this->z += rhs.z;
-        //this->r += rhs.r;
-        //this->p += rhs.p;
-        //this->q += rhs.q;
-
-        return *this;
+        //L3::SE3 pose = L3::Utils::Math::poseFromRotation( this->homogeneous );
     }
 
     control_t& control_t::translateZ( float z )
@@ -73,8 +63,6 @@ namespace Visualisers
  */
 void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
     {
-        control_t t;
-      
         double pitch;
 
         switch (type)
@@ -94,22 +82,40 @@ void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
              
                 if ( g.keyboard().shift() )
                 {
-                    t.x = (double)(g.mouse().x() - origin_x) /100;
-                    t.y = -1*(double)(g.mouse().y() - origin_y) /100;
+                    double x = (double)(g.mouse().x() - origin_x) /100;
+                    double y = (double)(g.mouse().y() - origin_y) /100;
+                   
+                    Eigen::Matrix4f tmp = current.homogeneous;
+
+                    tmp( 0,3 ) = 0;
+                    tmp( 1,3 ) = 0;
+                    tmp( 2,3 ) = 0;
+
+                    // New point
+                    Eigen::Matrix4f delta = Eigen::Matrix4f::Identity(); 
+
+                    delta(0,3) = x;
+                    delta(1,3) = -1*y;
+
+                    delta *= tmp;
+                       
+                    current.x += delta(0,3);
+                    current.y += delta(1,3);
+
+                    current.updateHomogeneous();
                 }
 
                 else
                 {
-                    t.q = -1*(double)(g.mouse().x() - origin_x) /10000;
-                    t.p = -1*(double)(g.mouse().y() - origin_y) /10000;
-                    
-                    // Clamp
-                    //t.r = pitch;
-                    //pitch = (double)(g.mouse().y() - origin_y) /1000;
-
-                    //if (estimate.r > -60 || (pitch > 0 ))
-                        //t.r = pitch;
-               
+                    current.q += (double)(g.mouse().x() - origin_x) /100;
+                   
+                    double r = (double)(g.mouse().y() - origin_y) /100;
+                  
+                    if ( current.r > -70 || r > 0 )
+                        current.r += r;
+                    else
+                        current.r = -70;
+              
                 }
                                 
                 break;
@@ -122,8 +128,7 @@ void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
 
         }
 
-        current += (t.updateHomogeneous());
-        
+        current.updateHomogeneous();
     }
 
 /*

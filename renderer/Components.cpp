@@ -11,9 +11,9 @@ namespace Visualisers
 
     void Composite::onDraw3D( glv::GLV& g )
     {
-        glv::draw::push();
-        glMultMatrixf( position.homogeneous.data() );
-
+        glv::draw::translate( position.x, position.y, position.z );
+        glv::draw::rotate( position.r, position.p, position.q );
+        
         //Can't form reference to reference
         //std::for_each( components.begin(), components.end(), std::bind2nd( std::mem_fun ( &Leaf::onDraw3D ), g ) );
 
@@ -24,7 +24,6 @@ namespace Visualisers
             leaf_iterator++;
         }
 
-        glv::draw::pop();
     }
 
 
@@ -35,8 +34,8 @@ namespace Visualisers
      */
     Grid::Grid()
     {
-        vertices.reset( new glv::Point3[ 100*4 ] );
-        colors.reset( new glv::Color[ 100*4 ] );
+        vertices.reset( new glv::Point3[ 101*4 ] );
+        colors.reset( new glv::Color[ 101*4 ] );
 
         counter = 0;
         float spacing = 50; 
@@ -44,7 +43,7 @@ namespace Visualisers
         float upper = 500;
 
         // Add horizontal
-        for ( int i=lower; i<upper; i+=spacing )
+        for ( int i=lower; i <= upper; i+=spacing )
         {
             glv::Color c = (counter % 4 == 0 ) ? glv::Color( .82 ) : glv::Color( 112.f/255.f, 138.f/255.f, 144.f/255.f ) ; 
 
@@ -53,8 +52,9 @@ namespace Visualisers
             colors[counter] = c; 
             vertices[counter++]( i, upper, 0);
         }
+            
 
-        for ( int i=lower; i<upper; i+=spacing )
+        for ( int i=lower; i<=upper; i+=spacing )
         {
             glv::Color c = (counter % 4 == 0 ) ? glv::Color( .82 ) : glv::Color( 112.f/255.f, 138.f/255.f, 144.f/255.f ) ; 
 

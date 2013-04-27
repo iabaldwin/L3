@@ -133,7 +133,8 @@ namespace L3
                     return std::numeric_limits<T>::infinity();
 
                 // Lock the experience histogram
-                L3::ReadLock lock( this->experience_histogram->mutex );
+                L3::ReadLock histogram_lock( this->experience_histogram->mutex );
+                L3::ReadLock swathe_lock( swathe->mutex );
 
                 /*
                  *  Speed considerations
@@ -147,7 +148,6 @@ namespace L3
                 //L3::Smoother< double, 5 > smoother;
                 //smoother.smooth( &swathe_histogram );
 
-                
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
@@ -158,7 +158,6 @@ namespace L3
                 // Synch
                 group.wait();
 
-                lock.unlock();
             }
 
     }   // Estimator

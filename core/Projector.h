@@ -37,7 +37,7 @@ class Projector
             allocated_size = size;
         }
 
-        void project( SWATHE& swathe );
+        void project( SWATHE& swathe, size_t skip = 2  );
         
     };
 
