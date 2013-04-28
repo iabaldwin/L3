@@ -9,8 +9,7 @@
 #include "Visualisers.h"
 #include "VisualiserRunner.h"
 
-//struct Visualiser : L3::Visualisers::Updateable
-struct Visualiser : L3::Visualisers::Leaf
+struct Visualiser : L3::Visualisers::Updateable, L3::Visualisers::Leaf
 {
     Visualiser( boost::shared_ptr< L3::PointCloud<double> > cloud, 
                 boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator )
@@ -23,12 +22,11 @@ struct Visualiser : L3::Visualisers::Leaf
         L3::copy( cloud.get(), cpy_a.get() );
         lock.unlock();
    
-        cpy_b.reset( new  L3::PointCloud<double>() );
-    
-   
         num_clouds = estimator->pose_estimates->estimates.size();
    
         counter = 0;
+        
+        cpy_b.reset( new  L3::PointCloud<double>() );
     }
     
        
@@ -39,27 +37,38 @@ struct Visualiser : L3::Visualisers::Leaf
     boost::shared_ptr< L3::PointCloud<double> > cloud;
     boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator;
 
-    void onDraw3D( glv::GLV& g )
-    {
 
+    void update()
+    {
         L3::SE3 pose = estimator->pose_estimates->estimates[counter++];
 
         if (counter == num_clouds)
             counter = 0;
-
-        //for ( std::vector< L3::SE3 >::iterator it = estimator->pose_estimates->estimates.begin();
-                //it != estimator->pose_estimates->estimates.end(); 
-                //it++ )
-        //{
-       
-            L3::copy( cpy_a.get(), cpy_b.get() );
-            L3::transform(  cpy_b.get(), &pose );
-
-            L3::Visualisers::PointCloudRendererLeaf( cpy_b ).onDraw3D( g );
-
-            //estimator->operator()( cloud.get(), L3::SE3::ZERO() );
-        //} 
         
+        cpy_b.reset( new L3::PointCloud<double>() );
+      
+        L3::copy( cpy_a.get(), cpy_b.get() );
+
+        L3::WriteLock lock( cpy_b->mutex );
+        L3::transform(  cpy_b.get(), &pose );
+        lock.unlock();
+    
+        //estimator->operator()( cloud_copy.get(), L3::SE3::ZERO() );
+    }
+
+    void onDraw3D( glv::GLV& g )
+    {
+
+        for ( std::vector< L3::SE3 >::iterator it = estimator->pose_estimates->estimates.begin();
+                it != estimator->pose_estimates->estimates.end();
+                it++ )
+        {
+            //L3::Visualisers::CoordinateSystem( *it).onDraw3D( g) ;
+        }
+
+        L3::ReadLock lock( cpy_b->mutex );
+        L3::Visualisers::PointCloudRendererLeaf( cpy_b ).onDraw3D( g );
+        lock.unlock();
     }
 };
 
@@ -71,46 +80,36 @@ int main (int argc, char ** argv)
      */
     boost::shared_ptr< L3::PointCloud<double> > cloud( new L3::PointCloud<double>() );
   
-    size_t pts = 1000;
+    size_t pts = 10*1000;
 
     cloud->points = new L3::Point<double>[pts];
     cloud->num_points = pts;
 
     // Create a gaussian cloud
     L3::gaussianCloud( cloud.get() );
+    
+    // Make a copy
+    boost::shared_ptr< L3::PointCloud<double> > cloud_copy( new L3::PointCloud<double>() );
+    L3::copy( cloud.get(), cloud_copy.get() );
 
-    std::pair<double,double> ll = L3::min( cloud.get() );
-    std::pair<double,double> ur = L3::max( cloud.get() );
+    L3::SE3 delta( -25, -25, 0, 0, 0, 0 );
+    L3::transform( cloud.get(), &delta );
 
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram( new L3::HistogramUniformDistance<double>() );
     
-    double x_centre =  (ll.first + ur.first)/2.0;
-    double y_centre =  (ll.second + ur.second)/2.0;
-    histogram->create( x_centre, x_centre-50, x_centre + 50, 
-                        y_centre, y_centre - 50, y_centre + 50 );
+    histogram->create( 0, -50, 50, 
+                        0, -50, 50 );
 
     histogram->operator()( cloud.get() );
-
-
-    /*
-     *  Point cloud 2
-     */
-
-    // Copy
-    boost::shared_ptr< L3::PointCloud<double> > cloud_copy( new L3::PointCloud<double>() ); 
-    L3::copy( cloud.get(), cloud_copy.get() );
-    L3::SE3 pose( 25,30,0,0,0,0 );
-    L3::translate( cloud_copy.get(), &pose );
 
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
     boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator = boost::make_shared<L3::Estimator::DiscreteEstimator<double> >( kl_cost_function, histogram );
 
     estimator->pose_estimates.reset( new L3::Estimator::GridEstimates(40, 40, 2) );
 
-    estimator->operator()( cloud.get(), L3::SE3::ZERO() );
+    estimator->operator()( cloud_copy.get(), L3::SE3::ZERO() );
                 
-    Visualiser visualiser( cloud, estimator );
-
+    Visualiser visualiser( cloud_copy, estimator );
 
     /*
      *  Visualisation
@@ -121,7 +120,9 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     boost::shared_ptr< L3::Visualisers::Updater > updater( new L3::Visualisers::Updater() );
-    
+  
+    (*updater) << &visualiser;
+
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::BasicPanController         controller( composite.position );
@@ -133,11 +134,10 @@ int main (int argc, char ** argv)
 
     // Point clouds
     L3::Visualisers::PointCloudRendererLeaf cloud_view( cloud );
-    L3::Visualisers::PointCloudRendererLeaf cloud_copy_view( cloud_copy );
 
     L3::Visualisers::CompositeCloudRendererLeaf point_cloud_composite;
 
-    point_cloud_composite << &cloud_view << &cloud_copy_view;
+    point_cloud_composite << &cloud_view;
 
     // Costs
     L3::Visualisers::CostRendererLeaf cost_renderer(*( estimator->pose_estimates ) );
