@@ -19,9 +19,9 @@ int main (int argc, char ** argv)
     cloud->points = new L3::Point<double>[10000];
     cloud->num_points = 10000;
 
+    // Create a gaussian cloud
     L3::gaussianCloud( cloud.get() );
 
-    
     std::pair<double,double> ll = L3::min( cloud.get() );
     std::pair<double,double> ur = L3::max( cloud.get() );
 
@@ -42,30 +42,24 @@ int main (int argc, char ** argv)
     // Copy
     boost::shared_ptr< L3::PointCloud<double> > cloud_copy( new L3::PointCloud<double>() ); 
     L3::copy( cloud.get(), cloud_copy.get() );
-    L3::SE3 pose( 10,10,0,0,0,0 );
+    L3::SE3 pose( 25,30,0,0,0,0 );
     L3::translate( cloud_copy.get(), &pose );
-
-    boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_copy( new L3::HistogramUniformDistance<double>() );
-
-    L3::copy( histogram.get(), histogram_copy.get() );
-
-    histogram_copy->operator()( cloud_copy.get() );
-
-    L3::SE3 origin = L3::SE3::ZERO();
 
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
     L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, histogram );
 
-    estimator( cloud_copy.get(), origin );
+    estimator.pose_estimates.reset( new L3::Estimator::GridEstimates(40, 40, 2) );
 
-    std::ofstream stream( "hist.a" );
-  
-    stream << *histogram << std::endl;
+    /*
+     *  Now - pass it the cloud at the origin
+     *  The reason for this, is that we are expecting 
+     *  a point-cloud that is centered at ZERO, as
+     *  built from the swathe-building process.
+     */
+    L3::SE3 delta( -20,-20,0,0,0,0 );
+    L3::translate( cloud.get(), &delta );
 
-    stream.close();
-    stream.open( "hist.b" );
-
-    stream << *histogram_copy<< std::endl;
+    estimator( cloud.get(), L3::SE3::ZERO() );
 
     /*
      *  Visualisation
@@ -92,19 +86,18 @@ int main (int argc, char ** argv)
 
     point_cloud_composite << &cloud_view << &cloud_copy_view;
 
+    // Costs
+    L3::Visualisers::CostRendererLeaf cost_renderer( *estimator.pose_estimates );
 
     // Pose estimates
     boost::shared_ptr< L3::Visualisers::PredictorRenderer > predictor_renderer;
     predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( estimator.pose_estimates ) );
-    composite<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
+    //composite<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add drawables and updateables
-    //top << (composite << grid << histogram_bounds_renderer << histogram_voxel_renderer_leaf ) << updater.get() << cloud_view;
-    //top << (composite << grid << histogram_bounds_renderer ) << updater.get() << cloud_view;
-    //top << (composite << grid << histogram_bounds_renderer << point_cloud_composite ) << updater.get();
-    top << (composite << grid << point_cloud_composite ) << updater.get();
+    top << (composite << grid << histogram_bounds_renderer << point_cloud_composite << cost_renderer ) << updater.get();
 
     // Go
     win.setGLV(top);

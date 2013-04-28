@@ -12,14 +12,13 @@ namespace L3
 namespace Estimator
 {
 
-    struct Costs : Lockable
-    {
-        std::vector<double> costs;
-    };
-
     struct PoseEstimates : Lockable
     {
+        std::vector<double> costs;
+        
         std::vector< L3::SE3 > estimates;
+
+        typedef std::vector< L3::SE3 >::iterator ESTIMATES_ITERATOR; 
 
         virtual void operator()( const L3::SE3& pose ) 
         {}
@@ -140,7 +139,6 @@ namespace Estimator
                 pose_estimates.reset( new GridEstimates(2, 2, 1 ) );
             }
 
-            Costs               costs;
             CostFunction<T>*    cost_function;
             boost::shared_ptr<PoseEstimates>        pose_estimates;
             boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;

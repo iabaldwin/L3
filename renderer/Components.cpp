@@ -387,9 +387,9 @@ namespace Visualisers
             for( int i=0; i<plot_cloud->num_points; i++) 
             {
                 vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
-                //colors[i] = color; 
-                colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
-            
+                colors[i] = color; 
+                //colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
+                // TODO: Have a color policy
             }
 
             glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);

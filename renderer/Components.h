@@ -531,29 +531,43 @@ struct VerticalScanRenderer2D : ScanRenderer2D
 struct CostRenderer 
 {
 
-    CostRenderer( L3::Estimator::Costs& costs ) : costs(costs)
+    CostRenderer( L3::Estimator::PoseEstimates& estimates ) 
+        : estimates(estimates)
     {
     }
 
-    L3::Estimator::Costs& costs;
+    L3::Estimator::PoseEstimates& estimates;
 
 };
 
 struct CostRendererLeaf : CostRenderer, Leaf
 {
-    CostRendererLeaf( L3::Estimator::Costs& costs ) : CostRenderer(costs)
+    CostRendererLeaf( L3::Estimator::PoseEstimates& estimates ) 
+        : CostRenderer(estimates)    
     {
 
     }
 
     void onDraw3D( glv::GLV& g )
     {
+        glv::Point3 vertices[ estimates.costs.size() ];
+        glv::Color colors[ estimates.costs.size() ];
 
+        int counter = 0;
+        for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
+            it != estimates.estimates.end();
+            it++ )
+        {
+            //vertices[counter]( it->X(), it->Y(), 10*estimates.costs[counter] );
+            vertices[counter]( it->X(), it->Y(), estimates.costs[counter] );
+       
+            counter++;
+        }
+
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
     }
 
 };
-
-
 
 
 }   // Visualisers

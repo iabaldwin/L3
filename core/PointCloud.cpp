@@ -262,7 +262,8 @@ namespace L3
       
             while ( it != cloud->end() )
             {
-                *it++ = L3::Point<double>( var_nor(), var_nor(), var_nor() );
+                //*it++ = L3::Point<double>( var_nor(), var_nor(), var_nor() );
+                *it++ = L3::Point<double>( var_nor(), var_nor(), 0 );
             }
 
         }
