@@ -10,11 +10,15 @@
 #include "L3.h"
 #include "Visualisers.h"
 
+
 struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
 {
 
-    VisualiserRunner( double start_time, L3::ConstantTimeIterator<L3::LHLV>* iterator, L3::PoseWindower* windower ) 
-        : time(start_time), iterator(iterator), windower(windower)
+    VisualiserRunner( double start_time, L3::ConstantTimeIterator<L3::LHLV>* iterator, L3::PoseWindower* windower, L3::Estimator::PoseEstimates* estimates )  
+        : time(start_time), 
+            iterator(iterator), 
+            windower(windower),
+            estimates(estimates)
     {
     }
 
@@ -22,14 +26,17 @@ struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
     L3::Predictor                       predictor;
     L3::PoseWindower*                   windower;
     L3::ConstantTimeIterator<L3::LHLV>* iterator; 
-
+    L3::Estimator::PoseEstimates*       estimates;
     void onDraw3D( glv::GLV& g )
     {
         // Update 
         this->update( time += .5 );
+        
 
         L3::SE3 current = windower->operator()();
         L3::SE3 predicted = L3::SE3::ZERO();
+        
+        estimates->operator()( current );
 
         predictor.predict( predicted, current, iterator->window.begin(), iterator->window.end() );
 
@@ -70,9 +77,10 @@ int main (int argc, char ** argv)
     // Generating swathe
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
+    boost::shared_ptr< L3::Estimator::GridEstimates > estimates( new L3::Estimator::GridEstimates(10,10,5 ) );
 
     /*
-     *  Visualisation
+     *Visualisation
      */
     glv::GLV top;
     glv::Window win(1400, 800, "Visualisation::PointCloud");
@@ -88,16 +96,19 @@ int main (int argc, char ** argv)
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    
+    boost::shared_ptr< L3::Visualisers::PredictorRenderer > predictor_renderer;
+    predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( estimates ) );
 
     // Add watchers
     composite << swathe_renderer << pose_renderer <<  grid;
 
     // Add runner
-    VisualiserRunner runner( dataset.start_time, &LHLV_iterator, &pose_windower ) ;
+    VisualiserRunner runner( dataset.start_time, &LHLV_iterator, &pose_windower, estimates.get() ) ;
 
     runner << &swathe_builder << &pose_windower << &LHLV_iterator;
 
-    top << (composite << runner);
+    top << (composite << runner << (*predictor_renderer) );
 
     win.setGLV(top);
 

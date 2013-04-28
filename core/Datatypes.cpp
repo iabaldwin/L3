@@ -146,7 +146,7 @@ void SE3::Q( double q )
 
 void SE3::updateEuler() 
 {
-    throw std::exception();
+    //L3::SE3 pose = poseFromRotation( const Eigen::Matrix4f& mat );
 }
 
 void SE3::updateHomogeneous() 

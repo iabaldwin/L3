@@ -1,12 +1,12 @@
 #ifndef L3_ESTIMATOR_H
 #define L3_ESTIMATOR_H
 
+#include <Eigen/LU>
 #include <tbb/task.h>
 #include <tbb/task_group.h>
 
 #include "Histogram.h"
 #include "Smoother.h"
-
 namespace L3
 {
 namespace Estimator
@@ -49,9 +49,9 @@ namespace Estimator
                 {
                     L3::SE3 estimate( x_delta, y_delta, 0, 0, 0, 0 ) ;
 
-                    Eigen::Matrix4f res = L3::SE3( 0, 0, 0, 0, 0, pose.Q() ).getHomogeneous()*estimate.getHomogeneous();
+                    Eigen::Matrix4f res = estimate.getHomogeneous()*const_cast<L3::SE3*>(&pose)->getHomogeneous();
 
-                    estimates.push_back( L3::SE3( x_delta+pose.X(), y_delta+pose.Y(), pose.Z(), 0, 0, 0 ) );
+                    estimates.push_back( L3::SE3( res(0,3), res(1,3), res(2,3), pose.R(), pose.P(), pose.Q() ) );
 
                 }
         }

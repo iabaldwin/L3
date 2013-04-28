@@ -70,6 +70,8 @@ target_link_libraries( test_predictor_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBR
 add_executable( test_back_integrator test_back_integrator.cpp )
 target_link_libraries( test_back_integrator GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
+add_executable( test_estimator_prediction test_estimator_prediction.cpp )
+target_link_libraries( test_estimator_prediction GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 #==========
 # Pipelines
