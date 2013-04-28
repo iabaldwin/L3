@@ -368,12 +368,13 @@ namespace Visualisers
     {
         // Construct the plot cloud
         plot_cloud.reset( new L3::PointCloud<double>() );
-
+        // Allocate
         L3::allocate( plot_cloud.get(), 5*1000 );
 
         vertices.reset( new glv::Point3[plot_cloud->num_points] );
         colors.reset( new glv::Color[plot_cloud->num_points] );
 
+        // Allocate blank cloud
         point_cloud.reset( new L3::PointCloud<double>() );
     };
 
@@ -386,7 +387,9 @@ namespace Visualisers
             for( int i=0; i<plot_cloud->num_points; i++) 
             {
                 vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
-                colors[i] = color; 
+                //colors[i] = color; 
+                colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
+            
             }
 
             glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);

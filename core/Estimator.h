@@ -137,9 +137,10 @@ namespace Estimator
             }
 
             CostFunction<T>*                        cost_function;
-            boost::shared_ptr<L3::Histogram<T> >    experience_histogram;
-            boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;
+            std::vector<double>                     costs;
             boost::shared_ptr<PoseEstimates>        pose_estimates;
+            boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;
+            boost::shared_ptr<L3::Histogram<T> >    experience_histogram;
 
             virtual ~Estimator()
             {

@@ -12,6 +12,9 @@
 
 int main (int argc, char ** argv)
 {
+    /*
+     *  Point cloud 1
+     */
     boost::shared_ptr< L3::PointCloud<double> > cloud( new L3::PointCloud<double>() );
     cloud->points = new L3::Point<double>[10000];
     cloud->num_points = 10000;
@@ -39,12 +42,14 @@ int main (int argc, char ** argv)
     // Copy
     boost::shared_ptr< L3::PointCloud<double> > cloud_copy( new L3::PointCloud<double>() ); 
     L3::copy( cloud.get(), cloud_copy.get() );
-    L3::SE3 pose( 50,50,0,0,0,0 );
-    L3::translate(  cloud_copy.get(), &pose );
+    L3::SE3 pose( 10,10,0,0,0,0 );
+    L3::translate( cloud_copy.get(), &pose );
 
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_copy( new L3::HistogramUniformDistance<double>() );
 
     L3::copy( histogram.get(), histogram_copy.get() );
+
+    histogram_copy->operator()( cloud_copy.get() );
 
     L3::SE3 origin = L3::SE3::ZERO();
 
@@ -52,6 +57,15 @@ int main (int argc, char ** argv)
     L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, histogram );
 
     estimator( cloud_copy.get(), origin );
+
+    std::ofstream stream( "hist.a" );
+  
+    stream << *histogram << std::endl;
+
+    stream.close();
+    stream.open( "hist.b" );
+
+    stream << *histogram_copy<< std::endl;
 
     /*
      *  Visualisation

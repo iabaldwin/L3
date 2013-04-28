@@ -1,5 +1,6 @@
 #include "Estimator.h"
 
+#include <iostream>
 #include <iterator>
 #include <fstream>
 #include <numeric>
@@ -45,25 +46,21 @@ namespace L3
 
             SmoothingPolicy<T>* policy;
 
-            double operator()( double p, double q )
+            double operator()( int p, int q )
             {
-                if( (p == 0 ) && ( q==0 ) )
-                    return 0.0;
-                else
-                {
-                    double p_i = p/p_norm;
-                    double q_i = p/p_norm;
+                //std::cout << p << " " << q << std::endl;
 
-                    if ( p_i == 0 )
-                        return 0.0;
-                    else
-                    {
-                        if (q_i == 0)
-                            q_i = policy->Q(q_i);
-                    
-                        return (double)(boost::math::log1p( (p_i/q_i)*p_i));
-                    }
-                }
+                double p_i = p/p_norm;
+                double q_i = q/q_norm;
+
+                p_i = (p_i == 0) ? std::numeric_limits<T>::epsilon() : p_i;
+                q_i = (q_i == 0) ? std::numeric_limits<T>::epsilon() : q_i;
+
+                //std::cout << p_i << " " << q_i << std::endl;
+
+                double val = boost::math::log1p( (p_i/q_i))*p_i;
+
+                return val;
             }
 
         };
@@ -97,29 +94,30 @@ namespace L3
         struct Hypothesis
         {
             Hypothesis( L3::PointCloud<double> const * swathe, 
-                    L3::SE3 const* estimate, 
-                    L3::Histogram<double> const* experience , 
-                    CostFunction<double>* cost_function ) 
-                : swathe(swathe), 
-                estimate(estimate), 
-                experience(experience), 
-                cost_function(cost_function)
+                        L3::SE3 const* estimate, 
+                        L3::Histogram<double> const* experience , 
+                        CostFunction<double>* cost_function, 
+                        __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
+                        : swathe(swathe), 
+                            estimate(estimate), 
+                            experience(experience), 
+                            cost_function(cost_function),
+                            result_iterator(result_iterator)
             {
             }
-
-            double                          cost;
 
             L3::SE3 const*                  estimate;
             CostFunction<double> *          cost_function;
             L3::Histogram<double> const*    experience;
             L3::PointCloud<double> const *  swathe;
-
+            __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator ;
+            
             void operator()()
             {
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
 
                 /*
-                 *  Point Cloud
+                 *  Copy point cloud
                  */
                 L3::copy( const_cast<L3::PointCloud<double>* >(swathe), hypothesis.get() );
 
@@ -135,8 +133,7 @@ namespace L3
                 swathe_histogram( hypothesis.get() );
 
                 // Compute cost
-                cost = cost_function->operator()( *this->experience, swathe_histogram );
-
+                *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
 
         };
@@ -170,10 +167,13 @@ namespace L3
                 //L3::Smoother< double, 5 > smoother;
                 //smoother.smooth( &swathe_histogram );
 
+                this->costs.resize( this->pose_estimates->estimates.size() );
+                std::vector<double>::iterator result_iterator = this->costs.begin();
+
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
-                    group.run( Hypothesis( swathe, &*it, this->experience_histogram.get() , this->cost_function ) );
+                    group.run( Hypothesis( swathe, &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
                     it++;
                 }
 
