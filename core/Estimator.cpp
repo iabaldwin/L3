@@ -167,8 +167,8 @@ namespace L3
                 //L3::Smoother< double, 5 > smoother;
                 //smoother.smooth( &swathe_histogram );
 
-                this->costs.resize( this->pose_estimates->estimates.size() );
-                std::vector<double>::iterator result_iterator = this->costs.begin();
+                this->costs.costs.resize( this->pose_estimates->estimates.size() );
+                std::vector<double>::iterator result_iterator = this->costs.costs.begin();
 
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )

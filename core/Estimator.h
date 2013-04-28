@@ -12,6 +12,11 @@ namespace L3
 namespace Estimator
 {
 
+    struct Costs : Lockable
+    {
+        std::vector<double> costs;
+    };
+
     struct PoseEstimates : Lockable
     {
         std::vector< L3::SE3 > estimates;
@@ -55,12 +60,11 @@ namespace Estimator
     };
 
     /*
-     *Smoothing policy
+     *  Smoothing policy
      */
     template <typename T>
         struct SmoothingPolicy
         {
-
             virtual T  P( T  p ) = 0;
             virtual T  Q( T  q ) = 0;
         };
@@ -136,8 +140,8 @@ namespace Estimator
                 pose_estimates.reset( new GridEstimates(2, 2, 1 ) );
             }
 
-            CostFunction<T>*                        cost_function;
-            std::vector<double>                     costs;
+            Costs               costs;
+            CostFunction<T>*    cost_function;
             boost::shared_ptr<PoseEstimates>        pose_estimates;
             boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;
             boost::shared_ptr<L3::Histogram<T> >    experience_histogram;

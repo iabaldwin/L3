@@ -525,10 +525,39 @@ struct VerticalScanRenderer2D : ScanRenderer2D
     }
 };
 
+/*
+ *  Costs rendering structure
+ */
+struct CostRenderer 
+{
+
+    CostRenderer( L3::Estimator::Costs& costs ) : costs(costs)
+    {
+    }
+
+    L3::Estimator::Costs& costs;
+
+};
+
+struct CostRendererLeaf : CostRenderer, Leaf
+{
+    CostRendererLeaf( L3::Estimator::Costs& costs ) : CostRenderer(costs)
+    {
+
+    }
+
+    void onDraw3D( glv::GLV& g )
+    {
+
+    }
+
+};
 
 
-}
-}
+
+
+}   // Visualisers
+}   // L3
 
 #endif
 
