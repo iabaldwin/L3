@@ -208,8 +208,8 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  horizontal_scan_renderer;
         boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  vertical_scan_renderer;
 
-        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      oracle_renderer;
-        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer>      predicted_pose_renderer;
+        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> oracle_renderer;
+        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> predicted_pose_renderer;
         
         boost::shared_ptr< L3::Visualisers::PredictorRenderer >             predictor_renderer;
         boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        runtime_cloud_renderer_leaf; 
@@ -217,7 +217,7 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
         boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >      point_cloud_bounds_renderer;
         boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
-        boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_pixel_renderer_experience_leaf;
+        boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
 
 };
 

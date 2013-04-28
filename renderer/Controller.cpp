@@ -145,7 +145,6 @@ void FPSController::onEvent( glv::Event::t type, glv::GLV& g )
         {
             case (glv::Event::KeyDown):
             case (glv::Event::KeyRepeat):
-                //std::cout << g.keyboard().key() << std::endl;
                 switch ( g.keyboard().key() )
                 {
                     case 'w':

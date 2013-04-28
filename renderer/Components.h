@@ -5,8 +5,10 @@
 
 #include <GLV/glv.h>
 
-#include "Controller.h"
 #include "L3.h"
+#include "Controller.h"
+
+#include "RenderingUtils.h"
 
 #include <boost/shared_array.hpp>
 
@@ -22,13 +24,14 @@ struct Updateable
 
 struct Updater : glv::Plot
 {
+    std::list < Updateable* > updateables;
+    
     void onDraw(glv::GLV& g)
     {
         for( std::list< Updateable* >::iterator it = updateables.begin(); it != updateables.end(); it++ )
             (*it)->update();
     }
 
-    std::list < Updateable* > updateables;
     Updater& operator<<( Updateable* updateable )
     {
         updateables.push_front( updateable );
@@ -203,7 +206,9 @@ struct PoseEstimatesRenderer : Leaf
  */
 struct PointCloudRenderer 
 {
-    PointCloudRenderer( boost::shared_ptr< L3::PointCloud<double> > cloud );
+    PointCloudRenderer( boost::shared_ptr< L3::PointCloud<double> > cloud, glv::Color c = glv::Color(.5)  );
+
+    glv::Color color;
 
     boost::shared_array< glv::Color >   colors;
     boost::shared_array< glv::Point3 >  vertices;
@@ -217,13 +222,12 @@ struct PointCloudRenderer
 };
 
 /*
- *  Point cloud renderer, composite
+ *  Point cloud renderer
  */
 struct PointCloudRendererLeaf : PointCloudRenderer, Leaf
 {
     PointCloudRendererLeaf( boost::shared_ptr< L3::PointCloud<double> > cloud ) : PointCloudRenderer(cloud)
     {
-        
     }
 
     void onDraw3D( glv::GLV& g );
@@ -251,9 +255,33 @@ struct PointCloudRendererView: PointCloudRenderer, glv::View3D, Updateable
    
 };
 
+/*
+ *  Multi-point cloud renderer
+ */
+struct CompositeCloudRendererLeaf : Leaf
+{
+    ColorCycler cycler;
 
+    std::list< PointCloudRendererLeaf* > renderers;
 
+    CompositeCloudRendererLeaf& operator<<( PointCloudRendererLeaf* renderer )
+    {
+        renderer->color = cycler();
 
+        renderers.push_front( renderer );
+
+        return *this;
+    }
+
+    virtual void onDraw3D( glv::GLV& g )
+    {
+        for( std::list< PointCloudRendererLeaf* >::iterator it = renderers.begin();
+                it != renderers.end();
+                it++ )
+            (*it)->onDraw3D( g );
+
+    }
+};
 
 /*
  *Point cloud bounds renderer
@@ -361,9 +389,10 @@ struct HistogramVoxelRenderer : HistogramRenderer, Updateable
 	HistogramVoxelRenderer(boost::shared_ptr<L3::Histogram<double> > histogram  )
         : HistogramRenderer(histogram)
     {
+        plot_histogram.reset( new L3::Histogram<double>() );
     }
 
-    L3::Histogram<double> tmp;
+    boost::shared_ptr< L3::Histogram<double> > plot_histogram;
 
     void onDraw3D( glv::GLV& g );
 
@@ -383,15 +412,13 @@ struct HistogramVoxelRendererView : HistogramVoxelRenderer, glv::View3D
         glv::draw::translateZ( -50 );
         
         L3::ReadLock lock( hist->mutex );
-        L3::clone( hist.get(), &tmp );
+        L3::clone( hist.get(), plot_histogram.get() );
      
         std::pair<float, float> lower_left = hist->coords(0,0);
         std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
 
         float x_delta = (upper_right.first +lower_left.first)/2.0;
         float y_delta = (upper_right.second +lower_left.second)/2.0;
-
-
 
         glv::draw::translate( -1*x_delta, -1*y_delta, 0.0  );
 
@@ -414,7 +441,9 @@ struct HistogramVoxelRendererLeaf : HistogramVoxelRenderer, Leaf
     void onDraw3D( glv::GLV& g )
     {
         L3::ReadLock lock( hist->mutex );
-        L3::clone( hist.get(), &tmp );
+        L3::clone( hist.get(), plot_histogram.get() );
+        lock.unlock();
+
         HistogramVoxelRenderer::onDraw3D(g);    
     }
 

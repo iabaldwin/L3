@@ -31,6 +31,7 @@ bool ConstantTimeIterator<T>::update( double time )
     {
         std::cout.precision(15);
         std::cout << __PRETTY_FUNCTION__ << time << "->" << this->buffered_window.front().first << ":" << this->buffered_window.back().first << std::endl;
+        //L3::Misc::print_stack_trace();
         return false; 
     }
 

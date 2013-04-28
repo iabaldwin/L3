@@ -62,9 +62,9 @@ struct Comparator
 
 };
 
-typedef boost::shared_mutex Mutex;
-typedef boost::shared_lock<Mutex> ReadLock;
-typedef boost::unique_lock<Mutex> WriteLock;
+//typedef boost::shared_mutex Mutex;
+typedef boost::shared_lock<boost::shared_mutex> ReadLock;
+typedef boost::unique_lock<boost::shared_mutex> WriteLock;
 
 struct Lockable
 {

@@ -17,8 +17,8 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
 
             // Histogram voxel
-            histogram_pixel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( experience->experience_histogram ) ) ;
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_pixel_renderer_experience_leaf.get() ))); 
+            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( experience->experience_histogram ) ) ;
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
 
             // Swathe Bounds
             point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( run_time_swathe ) );

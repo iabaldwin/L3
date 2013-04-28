@@ -21,7 +21,7 @@ std::list <std::string> getDatasetConfigurations();
  */
 const char* demangle(const char* name);
 
-
+void print_stack_trace();
 
 }
 }

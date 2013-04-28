@@ -141,7 +141,7 @@ void Experience::run()
          */
         if (update_required)
         {
-            WriteLock( experience_histogram->mutex );
+            WriteLock lock( experience_histogram->mutex );
             
             // Recompute histogram
             join( clouds, resident_point_cloud );
@@ -159,11 +159,13 @@ void Experience::run()
                                                                                                                 max_bound.second );
 
             //(*experience_histogram)( &*resident_point_cloud );
-            (*experience_histogram)( resident_point_cloud.get() );
+            //(*experience_histogram)( resident_point_cloud.get() );
+            experience_histogram->operator()( resident_point_cloud.get() );
       
             ////L3::Smoother< double, 5 > smoother; 
             ////smoother.smooth( experience_histogram.get() );
 
+            lock.unlock();
         }
 
         // Play nice

@@ -5,6 +5,9 @@
 #include <numeric>
 #include <boost/timer.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_array.hpp>
+
+#include <boost/math/special_functions/log1p.hpp>
 
 namespace L3
 {
@@ -30,7 +33,10 @@ namespace L3
         template <typename T>
             struct KL : std::binary_function<double,double,double>
         {
-            KL( double p_normalizer, double q_normalizer, SmoothingPolicy<T>* policy ) : p_norm(p_normalizer), q_norm(q_normalizer)
+            KL( double p_normalizer, double q_normalizer, SmoothingPolicy<T>* policy ) 
+                : p_norm(p_normalizer), 
+                    q_norm(q_normalizer), 
+                    policy(policy)
             {
                 assert( p_normalizer && q_normalizer );
             }
@@ -41,7 +47,23 @@ namespace L3
 
             double operator()( double p, double q )
             {
-                return log( ((p/p_norm)/(q/q_norm) )) *(p/p_norm);
+                if( (p == 0 ) && ( q==0 ) )
+                    return 0.0;
+                else
+                {
+                    double p_i = p/p_norm;
+                    double q_i = p/p_norm;
+
+                    if ( p_i == 0 )
+                        return 0.0;
+                    else
+                    {
+                        if (q_i == 0)
+                            q_i = policy->Q(q_i);
+                    
+                        return (double)(boost::math::log1p( (p_i/q_i)*p_i));
+                    }
+                }
             }
 
         };
@@ -57,17 +79,17 @@ namespace L3
 
                 KL<T> kl( experience_normalizer, swathe_normalizer, &no_smoothing );
 
-                double* kl_estimate = new double[(experience.x_bins * experience.y_bins)];
+                boost::shared_array<double> kl_estimate( new double[(experience.x_bins * experience.y_bins)] );
 
-                std::transform( experience.hist->bin, experience.hist->bin + (experience.x_bins * experience.y_bins), swathe.hist->bin, kl_estimate, kl );
+                // Compute the cell-wise divergence
+                std::transform( experience.hist->bin, experience.hist->bin + (experience.x_bins * experience.y_bins), swathe.hist->bin, kl_estimate.get(), kl );
 
-                std::accumulate( kl_estimate, kl_estimate+(experience.x_bins * experience.y_bins), 0.0 );
+                // Accumulate 
+                //T divergence = std::accumulate( kl_estimate.get(), kl_estimate.get()+(experience.x_bins * experience.y_bins), T(0) );
+                //delete [] kl_estimate;
 
-                delete [] kl_estimate;
-
-                return std::numeric_limits<T>::infinity();
+                return std::accumulate( kl_estimate.get(), kl_estimate.get()+(experience.x_bins * experience.y_bins), T(0) );
             }
-
 
         /*
          *  Hypothesis Builder

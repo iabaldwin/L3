@@ -26,9 +26,6 @@ namespace Visualisers
 
     }
 
-
-
-
     /*
      *  Components :: Grid
      */
@@ -225,26 +222,26 @@ namespace Visualisers
      */
     void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
     {
-        boost::shared_array< glv::Point3> points( new glv::Point3[tmp.x_bins*tmp.y_bins*4*6] );
-        boost::shared_array< glv::Color > colors( new glv::Color[tmp.x_bins*tmp.y_bins*4*6] );
+        boost::shared_array< glv::Point3> points( new glv::Point3[plot_histogram->x_bins*plot_histogram->y_bins*4*6] );
+        boost::shared_array< glv::Color > colors( new glv::Color[plot_histogram->x_bins*plot_histogram->y_bins*4*6] );
 
         int counter = 0;
 
-        unsigned int max = gsl_histogram2d_max_val( tmp.hist );
+        unsigned int max = gsl_histogram2d_max_val( plot_histogram->hist );
 
-        for( unsigned int i=0; i< tmp.x_bins; i++ )
+        for( unsigned int i=0; i< plot_histogram->x_bins; i++ )
         {
-            for( unsigned int j=0; j< tmp.y_bins; j++ )
+            for( unsigned int j=0; j< plot_histogram->y_bins; j++ )
             {
-                unsigned int val = tmp.bin( i, j );
+                unsigned int val = plot_histogram->bin( i, j );
 
                 if (val > 0)
                 {
-                    float x = tmp.hist->xrange[i];
-                    float y = tmp.hist->yrange[j];
+                    float x = plot_histogram->hist->xrange[i];
+                    float y = plot_histogram->hist->yrange[j];
 
-                    float x_delta = tmp.x_delta;
-                    float y_delta = tmp.y_delta;
+                    float x_delta = plot_histogram->x_delta;
+                    float y_delta = plot_histogram->y_delta;
 
                     // Bottom
                     float scale = float(val)/float(max);
@@ -365,15 +362,17 @@ namespace Visualisers
     /*
      *  Component :: Point cloud renderer
      */
-    PointCloudRenderer::PointCloudRenderer( boost::shared_ptr< L3::PointCloud<double> > cloud  ) : cloud(cloud)
+    PointCloudRenderer::PointCloudRenderer( boost::shared_ptr< L3::PointCloud<double> > cloud , glv::Color color ) 
+        : cloud(cloud),
+            color(color)
     {
         // Construct the plot cloud
         plot_cloud.reset( new L3::PointCloud<double>() );
 
         L3::allocate( plot_cloud.get(), 5*1000 );
 
-        colors.reset( new glv::Color[plot_cloud->num_points] );
         vertices.reset( new glv::Point3[plot_cloud->num_points] );
+        colors.reset( new glv::Color[plot_cloud->num_points] );
 
         point_cloud.reset( new L3::PointCloud<double>() );
     };
@@ -382,12 +381,15 @@ namespace Visualisers
     {
         if ( point_cloud->num_points > 0 )
         {
-
+            L3::sample( point_cloud.get(), plot_cloud.get(), plot_cloud->num_points );
+            
             for( int i=0; i<plot_cloud->num_points; i++) 
+            {
                 vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
+                colors[i] = color; 
+            }
 
             glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
-            L3::sample( point_cloud.get(), plot_cloud.get(), plot_cloud->num_points );
 
         }
     }
@@ -397,9 +399,10 @@ namespace Visualisers
      */
     void PointCloudRendererLeaf::onDraw3D( glv::GLV& g )
     {
-        //L3::ReadLock lock( cloud->mutex );
+        L3::ReadLock lock( cloud->mutex );
         L3::copy( cloud.get(), point_cloud.get() );
-        //lock.unlock();
+        lock.unlock();
+       
         PointCloudRenderer::onDraw3D(g);    
     }
     
