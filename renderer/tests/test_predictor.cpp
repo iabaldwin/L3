@@ -11,30 +11,25 @@
 
 struct Visualiser : L3::Visualisers::Updateable, L3::Visualisers::Leaf
 {
-    Visualiser( boost::shared_ptr< L3::PointCloud<double> > cloud, 
-                boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator )
-                    : cloud(cloud),
-                        estimator(estimator)
+    Visualiser( boost::shared_ptr< L3::PointCloud<double> > experience_cloud, 
+                boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ,
+                boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram )
+                    : experience_cloud(experience_cloud),
+                        experience_histogram( histogram ),
+                        estimator(estimator), 
+                        num_estimates( estimator->pose_estimates->estimates.size() ),
+                        counter(0)
     {
-        cpy_a.reset( new L3::PointCloud<double>() );
-   
-        L3::WriteLock lock( cloud->mutex );
-        L3::copy( cloud.get(), cpy_a.get() );
-        lock.unlock();
-   
-        num_clouds = estimator->pose_estimates->estimates.size();
-   
-        counter = 0;
-        
-        cpy_b.reset( new  L3::PointCloud<double>() );
+        experience_cloud_copy.reset( new L3::PointCloud<double>() );
+    
     }
     
        
     int counter;
-    int num_clouds;
-    boost::shared_ptr< L3::PointCloud<double> > cpy_a;
-    boost::shared_ptr< L3::PointCloud<double> > cpy_b;
-    boost::shared_ptr< L3::PointCloud<double> > cloud;
+    int num_estimates;
+    boost::shared_ptr< L3::PointCloud<double> > experience_cloud;
+    boost::shared_ptr< L3::PointCloud<double> > experience_cloud_copy;
+    boost::shared_ptr< L3::HistogramUniformDistance<double> > experience_histogram ;
     boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator;
 
 
@@ -42,32 +37,32 @@ struct Visualiser : L3::Visualisers::Updateable, L3::Visualisers::Leaf
     {
         L3::SE3 pose = estimator->pose_estimates->estimates[counter++];
 
-        if (counter == num_clouds)
+        if (counter == num_estimates)
             counter = 0;
         
-        cpy_b.reset( new L3::PointCloud<double>() );
+        experience_cloud_copy.reset( new L3::PointCloud<double>() );
       
-        L3::copy( cpy_a.get(), cpy_b.get() );
+        // Move the experience cloud
+        L3::ReadLock read_lock( experience_cloud->mutex );
+        L3::ReadLock write_lock( experience_cloud_copy->mutex );
+        L3::copy( experience_cloud.get(), experience_cloud_copy.get() );
+        L3::transform(  experience_cloud_copy.get(), &pose );
+        read_lock.unlock();
+        write_lock.unlock();
 
-        L3::WriteLock lock( cpy_b->mutex );
-        L3::transform(  cpy_b.get(), &pose );
-        lock.unlock();
+        // Re-histogram it
+        experience_histogram->clear();
+        experience_histogram->operator()( experience_cloud_copy.get() );
+        
+        // Re-estimate 
+        estimator->operator()( experience_cloud.get(), L3::SE3::ZERO() );
     
-        //estimator->operator()( cloud_copy.get(), L3::SE3::ZERO() );
     }
 
     void onDraw3D( glv::GLV& g )
     {
-
-        for ( std::vector< L3::SE3 >::iterator it = estimator->pose_estimates->estimates.begin();
-                it != estimator->pose_estimates->estimates.end();
-                it++ )
-        {
-            //L3::Visualisers::CoordinateSystem( *it).onDraw3D( g) ;
-        }
-
-        L3::ReadLock lock( cpy_b->mutex );
-        L3::Visualisers::PointCloudRendererLeaf( cpy_b ).onDraw3D( g );
+        L3::ReadLock lock( experience_cloud_copy->mutex );
+        L3::Visualisers::PointCloudRendererLeaf( experience_cloud_copy ).onDraw3D( g );
         lock.unlock();
     }
 };
@@ -92,9 +87,6 @@ int main (int argc, char ** argv)
     boost::shared_ptr< L3::PointCloud<double> > cloud_copy( new L3::PointCloud<double>() );
     L3::copy( cloud.get(), cloud_copy.get() );
 
-    L3::SE3 delta( -25, -25, 0, 0, 0, 0 );
-    L3::transform( cloud.get(), &delta );
-
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram( new L3::HistogramUniformDistance<double>() );
     
     histogram->create( 0, -50, 50, 
@@ -106,11 +98,8 @@ int main (int argc, char ** argv)
     boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator = boost::make_shared<L3::Estimator::DiscreteEstimator<double> >( kl_cost_function, histogram );
 
     estimator->pose_estimates.reset( new L3::Estimator::GridEstimates(40, 40, 2) );
-
     estimator->operator()( cloud_copy.get(), L3::SE3::ZERO() );
-                
-    Visualiser visualiser( cloud_copy, estimator );
-
+               
     /*
      *  Visualisation
      */
@@ -121,15 +110,13 @@ int main (int argc, char ** argv)
 
     boost::shared_ptr< L3::Visualisers::Updater > updater( new L3::Visualisers::Updater() );
   
-    (*updater) << &visualiser;
-
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::BasicPanController         controller( composite.position );
     
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
+    
     L3::Visualisers::HistogramDensityRenderer   histogram_density_renderer_view( glv::Rect(600,0,400,400), histogram );
-
     (*updater) << &histogram_density_renderer_view;
 
     // Point clouds
@@ -142,15 +129,14 @@ int main (int argc, char ** argv)
     // Costs
     L3::Visualisers::CostRendererLeaf cost_renderer(*( estimator->pose_estimates ) );
 
-    // Pose estimates
-    boost::shared_ptr< L3::Visualisers::PredictorRenderer > predictor_renderer;
-    predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( estimator->pose_estimates ) );
-    //composite<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
+    Visualiser visualiser( cloud_copy, estimator, histogram  );
+    (*updater) << &visualiser;
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add drawables and updateables
     top << (composite << grid << histogram_bounds_renderer << point_cloud_composite << cost_renderer << visualiser ) << updater.get() << histogram_density_renderer_view;
+    //top << (composite << grid << point_cloud_composite << cost_renderer << visualiser ) << updater.get();
 
     // Go
     win.setGLV(top);

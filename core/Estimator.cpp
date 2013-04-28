@@ -48,15 +48,11 @@ namespace L3
 
             double operator()( int p, int q )
             {
-                //std::cout << p << " " << q << std::endl;
-
                 double p_i = p/p_norm;
                 double q_i = q/q_norm;
 
                 p_i = (p_i == 0) ? std::numeric_limits<T>::epsilon() : p_i;
                 q_i = (q_i == 0) ? std::numeric_limits<T>::epsilon() : q_i;
-
-                //std::cout << p_i << " " << q_i << std::endl;
 
                 double val = boost::math::log1p( (p_i/q_i))*p_i;
 
