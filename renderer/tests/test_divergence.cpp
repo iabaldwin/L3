@@ -4,11 +4,39 @@
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
-
 #include "L3.h"
 #include "Visualisers.h"
 #include "VisualiserRunner.h"
 #include "Components.h"
+
+struct Manipulator : L3::Visualisers::Updateable
+{
+
+    
+    Manipulator( boost::shared_ptr< L3::PointCloud<double> > cloud, 
+                boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator) 
+                    : cloud(cloud),
+                        estimator(estimator)
+    {
+        delta = 1;
+    }
+    
+    int delta;
+
+    boost::shared_ptr< L3::PointCloud<double> > cloud;
+    boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator; 
+
+    void update()
+    {
+        L3::WriteLock lock( cloud->mutex );
+        L3::SE3 pose( delta, 0, 0, 0, 0, 0 );
+        L3::translate( cloud.get(), &pose );
+        lock.unlock();
+    
+        estimator->operator()( cloud.get(), L3::SE3::ZERO() );
+    }
+};
+
 
 int main (int argc, char ** argv)
 {
@@ -16,8 +44,11 @@ int main (int argc, char ** argv)
      *  Point cloud 1
      */
     boost::shared_ptr< L3::PointCloud<double> > cloud( new L3::PointCloud<double>() );
-    cloud->points = new L3::Point<double>[10000];
-    cloud->num_points = 10000;
+  
+    size_t pts = 1000;
+
+    cloud->points = new L3::Point<double>[pts];
+    cloud->num_points = pts;
 
     // Create a gaussian cloud
     L3::gaussianCloud( cloud.get() );
@@ -46,20 +77,12 @@ int main (int argc, char ** argv)
     L3::translate( cloud_copy.get(), &pose );
 
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, histogram );
+    boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator = boost::make_shared<L3::Estimator::DiscreteEstimator<double> >( kl_cost_function, histogram );
 
-    estimator.pose_estimates.reset( new L3::Estimator::GridEstimates(40, 40, 2) );
+    estimator->pose_estimates.reset( new L3::Estimator::GridEstimates(40, 40, 2) );
 
-    /*
-     *  Now - pass it the cloud at the origin
-     *  The reason for this, is that we are expecting 
-     *  a point-cloud that is centered at ZERO, as
-     *  built from the swathe-building process.
-     */
-    L3::SE3 delta( -20,-20,0,0,0,0 );
-    L3::translate( cloud.get(), &delta );
+    Manipulator manipulator( cloud, estimator );
 
-    estimator( cloud.get(), L3::SE3::ZERO() );
 
     /*
      *  Visualisation
@@ -70,13 +93,18 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     boost::shared_ptr< L3::Visualisers::Updater > updater( new L3::Visualisers::Updater() );
+    
+    
+    (*updater) << &manipulator;
  
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::BasicPanController         controller( composite.position );
     
-    L3::Visualisers::HistogramBoundsRenderer        histogram_bounds_renderer(histogram);
-    //L3::Visualisers::HistogramVoxelRendererLeaf     histogram_voxel_renderer_leaf( histogram );
+    L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
+    L3::Visualisers::HistogramDensityRenderer   histogram_density_renderer_view( glv::Rect(600,0,400,400), histogram );
+
+    (*updater) << &histogram_density_renderer_view;
 
     // Point clouds
     L3::Visualisers::PointCloudRendererLeaf cloud_view( cloud );
@@ -87,17 +115,17 @@ int main (int argc, char ** argv)
     point_cloud_composite << &cloud_view << &cloud_copy_view;
 
     // Costs
-    L3::Visualisers::CostRendererLeaf cost_renderer( *estimator.pose_estimates );
+    L3::Visualisers::CostRendererLeaf cost_renderer(*( estimator->pose_estimates ) );
 
     // Pose estimates
     boost::shared_ptr< L3::Visualisers::PredictorRenderer > predictor_renderer;
-    predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( estimator.pose_estimates ) );
+    predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( estimator->pose_estimates ) );
     //composite<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add drawables and updateables
-    top << (composite << grid << histogram_bounds_renderer << point_cloud_composite << cost_renderer ) << updater.get();
+    top << (composite << grid << histogram_bounds_renderer << point_cloud_composite << cost_renderer ) << updater.get() << histogram_density_renderer_view;
 
     // Go
     win.setGLV(top);

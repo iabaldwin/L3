@@ -9,64 +9,153 @@
 #include "Visualisers.h"
 #include "VisualiserRunner.h"
 
+//struct Visualiser : L3::Visualisers::Updateable
+struct Visualiser : L3::Visualisers::Leaf
+{
+    Visualiser( boost::shared_ptr< L3::PointCloud<double> > cloud, 
+                boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator )
+                    : cloud(cloud),
+                        estimator(estimator)
+    {
+        cpy_a.reset( new L3::PointCloud<double>() );
+   
+        L3::WriteLock lock( cloud->mutex );
+        L3::copy( cloud.get(), cpy_a.get() );
+        lock.unlock();
+   
+        cpy_b.reset( new  L3::PointCloud<double>() );
+    
+   
+        num_clouds = estimator->pose_estimates->estimates.size();
+   
+        counter = 0;
+    }
+    
+       
+    int counter;
+    int num_clouds;
+    boost::shared_ptr< L3::PointCloud<double> > cpy_a;
+    boost::shared_ptr< L3::PointCloud<double> > cpy_b;
+    boost::shared_ptr< L3::PointCloud<double> > cloud;
+    boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator;
+
+    void onDraw3D( glv::GLV& g )
+    {
+
+        L3::SE3 pose = estimator->pose_estimates->estimates[counter++];
+
+        if (counter == num_clouds)
+            counter = 0;
+
+        //for ( std::vector< L3::SE3 >::iterator it = estimator->pose_estimates->estimates.begin();
+                //it != estimator->pose_estimates->estimates.end(); 
+                //it++ )
+        //{
+       
+            L3::copy( cpy_a.get(), cpy_b.get() );
+            L3::transform(  cpy_b.get(), &pose );
+
+            L3::Visualisers::PointCloudRendererLeaf( cpy_b ).onDraw3D( g );
+
+            //estimator->operator()( cloud.get(), L3::SE3::ZERO() );
+        //} 
+        
+    }
+};
+
+
 int main (int argc, char ** argv)
 {
     /*
-     *L3
+     *  Point cloud 1
      */
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
-    
-    if( !( dataset.validate() && dataset.load() ) )
-        throw std::exception();
-    
-    L3::Configuration::Mission mission( dataset );
+    boost::shared_ptr< L3::PointCloud<double> > cloud( new L3::PointCloud<double>() );
+  
+    size_t pts = 1000;
 
-    // Constant time iterator over LHLV data
-    L3::ConstantTimeIterator< L3::LHLV >   LHLV_iterator( dataset.LHLV_reader );
-    
-    // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
+    cloud->points = new L3::Point<double>[pts];
+    cloud->num_points = pts;
 
-    double time = dataset.start_time;
-    
-    L3::ConstantTimeWindower<L3::LHLV> pose_windower( &LHLV_iterator );
+    // Create a gaussian cloud
+    L3::gaussianCloud( cloud.get() );
 
-    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
+    std::pair<double,double> ll = L3::min( cloud.get() );
+    std::pair<double,double> ur = L3::max( cloud.get() );
+
+    boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram( new L3::HistogramUniformDistance<double>() );
+    
+    double x_centre =  (ll.first + ur.first)/2.0;
+    double y_centre =  (ll.second + ur.second)/2.0;
+    histogram->create( x_centre, x_centre-50, x_centre + 50, 
+                        y_centre, y_centre - 50, y_centre + 50 );
+
+    histogram->operator()( cloud.get() );
+
+
+    /*
+     *  Point cloud 2
+     */
+
+    // Copy
+    boost::shared_ptr< L3::PointCloud<double> > cloud_copy( new L3::PointCloud<double>() ); 
+    L3::copy( cloud.get(), cloud_copy.get() );
+    L3::SE3 pose( 25,30,0,0,0,0 );
+    L3::translate( cloud_copy.get(), &pose );
+
+    L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
+    boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator = boost::make_shared<L3::Estimator::DiscreteEstimator<double> >( kl_cost_function, histogram );
+
+    estimator->pose_estimates.reset( new L3::Estimator::GridEstimates(40, 40, 2) );
+
+    estimator->operator()( cloud.get(), L3::SE3::ZERO() );
+                
+    Visualiser visualiser( cloud, estimator );
 
 
     /*
      *  Visualisation
      */
     glv::GLV top;
-    glv::Window win(1400, 800, "Visualisation");
+    glv::Window win(1400, 800, "Visualisation::PointCloud");
 
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
+
+    boost::shared_ptr< L3::Visualisers::Updater > updater( new L3::Visualisers::Updater() );
     
-    L3::Visualisers::Composite              composite;
-    L3::Visualisers::Grid                   grid;
-    L3::Visualisers::BasicPanController     controller( composite.position );
-    L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
-    L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
-    //L3::Visualisers::PredictorRenderer      predictor_renderer( &pose_windower ); 
+    L3::Visualisers::Grid                       grid;
+    L3::Visualisers::Composite                  composite;
+    L3::Visualisers::BasicPanController         controller( composite.position );
+    
+    L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
+    L3::Visualisers::HistogramDensityRenderer   histogram_density_renderer_view( glv::Rect(600,0,400,400), histogram );
+
+    (*updater) << &histogram_density_renderer_view;
+
+    // Point clouds
+    L3::Visualisers::PointCloudRendererLeaf cloud_view( cloud );
+    L3::Visualisers::PointCloudRendererLeaf cloud_copy_view( cloud_copy );
+
+    L3::Visualisers::CompositeCloudRendererLeaf point_cloud_composite;
+
+    point_cloud_composite << &cloud_view << &cloud_copy_view;
+
+    // Costs
+    L3::Visualisers::CostRendererLeaf cost_renderer(*( estimator->pose_estimates ) );
+
+    // Pose estimates
+    boost::shared_ptr< L3::Visualisers::PredictorRenderer > predictor_renderer;
+    predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( estimator->pose_estimates ) );
+    //composite<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
-    L3::Visualisers::VisualiserRunner runner( dataset.start_time );
-    runner << &swathe_builder << &pose_windower;
+    // Add drawables and updateables
+    top << (composite << grid << histogram_bounds_renderer << point_cloud_composite << cost_renderer << visualiser ) << updater.get() << histogram_density_renderer_view;
 
-    //top << (composite << swathe_renderer << pose_renderer << grid << predictor_renderer << runner);
-    top << (composite << swathe_renderer << pose_renderer << grid << runner);
-    
+    // Go
     win.setGLV(top);
-  
-    try
-    {
-        glv::Application::run();
-    }
-    catch( L3::end_of_stream& e )
-    {
-        std::cout << "Done" << std::endl;
-    }
+    glv::Application::run();
+
 }
 
 
