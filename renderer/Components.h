@@ -538,6 +538,24 @@ struct CostRenderer
 
     L3::Estimator::PoseEstimates& estimates;
 
+    void onDraw3D( glv::GLV& g )
+    {
+        glv::Point3 vertices[ estimates.costs.size() ];
+        glv::Color colors[ estimates.costs.size() ];
+
+        int counter = 0;
+        for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
+            it != estimates.estimates.end();
+            it++ )
+        {
+            vertices[counter]( it->X(), it->Y(), estimates.costs[counter] );
+            counter++;
+        }
+
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+    }
+
+
 };
 
 struct CostRendererLeaf : CostRenderer, Leaf
@@ -550,24 +568,45 @@ struct CostRendererLeaf : CostRenderer, Leaf
 
     void onDraw3D( glv::GLV& g )
     {
-        glv::Point3 vertices[ estimates.costs.size() ];
-        glv::Color colors[ estimates.costs.size() ];
+        CostRenderer::onDraw3D( g );     
+    }
 
-        int counter = 0;
+};
+
+struct CostRendererView : CostRenderer, glv::View3D
+{
+    CostRendererView( L3::Estimator::PoseEstimates& estimates, const glv::Rect rect = glv::Rect(50,50) ) 
+        : CostRenderer(estimates), 
+            glv::View3D( rect )
+    {
+
+    }
+
+
+    void onDraw3D( glv::GLV& g )
+    {
+        double x=0, y=0;
+       
         for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
             it != estimates.estimates.end();
             it++ )
         {
-            //vertices[counter]( it->X(), it->Y(), 10*estimates.costs[counter] );
-            vertices[counter]( it->X(), it->Y(), estimates.costs[counter] );
-       
-            counter++;
+            x += it->X();
+            y += it->Y();
         }
 
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-    }
+        x/=estimates.estimates.size();
+        y/=estimates.estimates.size();
 
+        glv::draw::translateZ( -50 );
+        glv::draw::translate( x, y, 0 );
+        
+        CostRenderer::onDraw3D( g );     
+    }
 };
+
+
+
 
 
 }   // Visualisers

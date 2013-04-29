@@ -7,11 +7,51 @@
 
 #include "Visualisers.h"
 #include "Plotters.h"
+#include "ExternalInterface.h"
 
 namespace L3
 {
 namespace Visualisers
 {
+
+struct CustomView : glv::View
+{
+
+    CustomView( const glv::Rect rect ) : glv::View(rect)
+    {
+
+    }
+
+    std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> > interfaces;
+
+    void addExternalInterface( glv::Event::t t, L3::Visualisers::ExternalInterface* iface )
+    {
+        std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> >::iterator it = interfaces.find( t ); 
+
+        if ( it != interfaces.end() )
+            it->second.push_front(iface);
+        else
+        {
+            std::list< L3::Visualisers::ExternalInterface*> list;
+            list.push_front( iface );
+            interfaces.insert( std::make_pair( t, list ) );
+        }
+
+
+    }
+
+    bool onEvent( glv::Event::t e, glv::GLV& g)
+    {
+        std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> >::iterator it = interfaces.find( e ); 
+
+        if ( it != interfaces.end() )
+            for (std::list< L3::Visualisers::ExternalInterface*>::iterator list_it = it->second.begin();
+                    list_it != it->second.end();
+                    list_it++ )
+                (*list_it)->onEvent( e, g );
+    }
+
+};
 
 class Layout
 {
@@ -19,9 +59,26 @@ class Layout
         
         Layout( glv::Window& win ) : window(win)
         {
+
+            /*
+             *  Lua interface
+             */
+            //lua_interface.reset( new glv::TextView( glv::Rect(win.width()-200,win.height()-100), 8));
+            //lua_interface.reset( new glv::TextView( glv::Rect(200,150), 8));
+            //lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
+            //this->renderables.push_front( lua_interface.get() );
+
+            lua_interface.reset( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
+            lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
+            this->renderables.push_front( lua_interface.get() );
+
             // Create the main view
-            main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
+            //main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
+            main_view = new CustomView( glv::Rect(0,0, .6*win.width(),500));
             this->renderables.push_front( main_view );
+            
+            main_view->addExternalInterface( glv::Event::KeyDown, dynamic_cast< L3::Visualisers::ExternalInterface* >(lua_interface.get() ) );
+
 
             // Composite view holder
             composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*win.width(), 500 )) );
@@ -134,8 +191,10 @@ class Layout
 
     protected:
 
-        glv::View*       main_view;
-        glv::Window&     window; 
+        CustomView*                     main_view;
+        glv::Window&                    window; 
+        boost::shared_ptr< glv::View >  lua_interface;
+
         
         std::list< glv::View* >     renderables;
 
@@ -201,8 +260,6 @@ class EstimatorLayout : public Layout
 
         L3::EstimatorRunner* runner;
             
-        boost::shared_ptr< glv::TextView > lua_interface;
-
         boost::shared_ptr< L3::Experience>                  experience ;
         boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
         boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  horizontal_scan_renderer;
@@ -218,6 +275,8 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >      point_cloud_bounds_renderer;
         boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
         boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
+        
+        boost::shared_ptr< L3::Visualisers::CostRendererView >    cost_renderer_view;
 
 };
 

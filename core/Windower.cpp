@@ -64,6 +64,8 @@ namespace L3
                     if ( !good() )
                         stop(); // Is the stream finished?
                 }
+
+                usleep( .5*1e6 );
             }
         }
 

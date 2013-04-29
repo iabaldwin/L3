@@ -88,7 +88,7 @@ namespace L3
             this->labels.push_front( horizontal_scan_renderer_label );
             this->renderables.push_front( horizontal_scan_renderer_label.get() );
 
-            // Stand-alone scan renderer
+            // Stand-alone scan renderer : Vertical
             vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2D( runner->vertical_LIDAR, glv::Rect( 150,150 ) ) );
             vertical_scan_renderer->pos( win.width()-(150*2+30), 335 );
             this->renderables.push_front( vertical_scan_renderer.get() );
@@ -100,15 +100,17 @@ namespace L3
             this->renderables.push_front( vertical_scan_renderer_label.get() );
 
 
-            //lua_interface.reset( new glv::TextView( glv::Rect(win.width()-200,win.height()-100), 8));
-            lua_interface.reset( new glv::TextView( glv::Rect(200,150), 8));
-            lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
-            this->renderables.push_front( lua_interface.get() );
-
+            
             // Swathe Cloud
             runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(500+10),10, 500, 300 ), run_time_swathe, runner->current ));
             this->renderables.push_front( runtime_cloud_renderer_view.get() );
             updater->operator<<( runtime_cloud_renderer_view.get() );
+        
+            // Cost visualisation 
+            cost_renderer_view.reset( new L3::Visualisers::CostRendererView( *(runner->estimator->pose_estimates),  glv::Rect( win.width()-250,  win.height()-250, 200, 200 ) ) );
+            this->renderables.push_front( cost_renderer_view.get() );
+
+            
         }
     }
 }
