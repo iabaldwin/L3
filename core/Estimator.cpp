@@ -116,8 +116,6 @@ namespace L3
             {
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
 
-                std::cout << *estimate << std::endl;
-
                 /*
                  *  Copy point cloud
                  */
@@ -147,12 +145,10 @@ namespace L3
         template < typename T >
             double DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
+                L3::WriteLock estimates_lock( this->pose_estimates->mutex );
 
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
-
-                if ( this->experience_histogram->empty() )
-                    return std::numeric_limits<T>::infinity();
 
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
@@ -177,7 +173,6 @@ namespace L3
                 while( it != this->pose_estimates->estimates.end() )
                 {
                     group.run( Hypothesis( swathe, &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                    break; 
                     it++;
                 }
 
@@ -192,18 +187,40 @@ namespace L3
         template < typename T >
             double GroundTruthEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
-                if ( this->experience_histogram->empty() )
-                    throw std::exception();
-
                 // Lock the experience histogram
-                //L3::ReadLock histogram_lock( this->experience_histogram->mutex );
-                //L3::ReadLock swathe_lock( swathe->mutex );
-                
-                //this->pose_estimates->costs.resize( 1 );
-              
-                //std::cout << *(&estimate) << std::endl;
+                L3::ReadLock histogram_lock( this->experience_histogram->mutex );
+               
+                // Lock the swathe
+                L3::ReadLock swathe_lock( swathe->mutex );
 
-                //Hypothesis( swathe, &estimate, this->experience_histogram.get() , this->cost_function, this->pose_estimates->costs.begin() );
+                // Estimates
+                L3::WriteLock estimates_lock( this->pose_estimates->mutex );
+                
+                this->pose_estimates->costs.resize( 1 );
+                this->pose_estimates->estimates.clear();
+                this->pose_estimates->estimates.push_back( estimate );
+
+                //Hypothesis( swathe, &estimate, this->experience_histogram.get() , this->cost_function, this->pose_estimates->costs.begin() )();
+
+                /*
+                 *  Copy point cloud
+                 */
+                boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
+                L3::copy( const_cast<L3::PointCloud<double>* >(swathe), hypothesis.get() );
+
+                L3::transform( hypothesis.get(), &estimate ); 
+
+                /*
+                 *  Histogram
+                 */
+                L3::Histogram<double> swathe_histogram;
+
+                L3::copy( const_cast<L3::Histogram<double>*>(this->experience_histogram.get()), &swathe_histogram );
+
+                // Produce swathe histogram
+                swathe_histogram( hypothesis.get() );
+
+                L3::copy( &swathe_histogram, this->current_histogram.get() );
 
             }
 

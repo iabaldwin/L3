@@ -597,5 +597,42 @@ namespace Visualisers
             scan = window.back().second;
     }
 
+    /*
+     *  Cost Renderer
+     */
+
+    void CostRenderer::onDraw3D( glv::GLV& g )
+    {
+        glv::Point3 vertices[ estimates.costs.size() ];
+        glv::Color colors[ estimates.costs.size() ];
+
+        int counter = 0;
+
+        for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
+            it != estimates.estimates.end();
+            it++ )
+        {
+            vertices[counter]( it->X(), it->Y(), estimates.costs[counter] );
+            counter++;
+        }
+
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+    }
+
+
+    /*
+     *  Cost renderer (View)
+     */
+
+    void CostRendererView::onDraw3D( glv::GLV& g )
+    {
+        L3::ReadLock lock( estimates.mutex );
+
+        glv::draw::translateZ( -50 );
+        glv::draw::translate( estimates.position->X(), estimates.position->Y(), 0 );
+        
+        CostRenderer::onDraw3D( g );     
+    }
+
 }
 }

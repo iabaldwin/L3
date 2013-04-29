@@ -14,12 +14,19 @@ namespace Estimator
 
     struct PoseEstimates : Lockable
     {
-        boost::shared_ptr<L3::SE3> position;
+
+        PoseEstimates() : position( new L3::SE3( L3::SE3::ZERO() ) )
+        {
+
+        }
 
         std::vector<double> costs;
         
         std::vector< L3::SE3 > estimates;
 
+            
+        boost::shared_ptr<L3::SE3> position;
+                
         typedef std::vector< L3::SE3 >::iterator ESTIMATES_ITERATOR; 
 
         virtual void operator()( const L3::SE3& pose ) 
@@ -143,7 +150,7 @@ namespace Estimator
                      experience_histogram(experience)
             {
                 swathe_histogram.reset( new L3::HistogramUniformDistance<double>() );
-                pose_estimates.reset( new GridEstimates(2, 2, 1 ) );
+                current_histogram.reset( new L3::Histogram<double>() );
             }
 
             CostFunction<T>*    cost_function;
@@ -151,6 +158,9 @@ namespace Estimator
             boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;
             boost::shared_ptr<L3::Histogram<T> >    experience_histogram;
 
+            // DGB
+            boost::shared_ptr< L3::Histogram<double> > current_histogram;
+            
             virtual ~Estimator()
             {
             }
@@ -166,6 +176,7 @@ namespace Estimator
 
         DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) : Estimator<T>(f, experience)
         {
+            this->pose_estimates.reset( new GridEstimates(2, 2, 1 ) );
         }
 
         tbb::task_group group;
@@ -179,7 +190,9 @@ namespace Estimator
 
         GroundTruthEstimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) : Estimator<T>(f, experience)
         {
+            this->pose_estimates.reset( new PoseEstimates() );
         }
+
 
         double operator()( PointCloud<T>* swathe, SE3 estimate );
 

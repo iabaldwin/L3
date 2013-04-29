@@ -22,17 +22,27 @@ struct CustomView : glv::View
 
     }
 
-    std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> > interfaces;
+    //std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> > interfaces;
+    std::map< glv::Event::t, std::list< glv::View*> > interfaces;
 
-    void addExternalInterface( glv::Event::t t, L3::Visualisers::ExternalInterface* iface )
+    //void addGlobalInterface( glv::Event::t t, L3::Visualisers::ExternalInterface* iface )
+    void addGlobalInterface( glv::Event::t t, glv::View* iface )
     {
-        std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> >::iterator it = interfaces.find( t ); 
+        if ( !iface )
+        {
+            std::cerr << "Erroneous callback" << std::cout;
+            return;
+        }
+
+        //std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> >::iterator it = interfaces.find( t ); 
+        std::map< glv::Event::t, std::list< glv::View*> >::iterator it = interfaces.find( t ); 
 
         if ( it != interfaces.end() )
             it->second.push_front(iface);
         else
         {
-            std::list< L3::Visualisers::ExternalInterface*> list;
+            //std::list< L3::Visualisers::ExternalInterface*> list;
+            std::list< glv::View*> list;
             list.push_front( iface );
             interfaces.insert( std::make_pair( t, list ) );
         }
@@ -42,10 +52,12 @@ struct CustomView : glv::View
 
     bool onEvent( glv::Event::t e, glv::GLV& g)
     {
-        std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> >::iterator it = interfaces.find( e ); 
+        //std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> >::iterator it = interfaces.find( e ); 
+        std::map< glv::Event::t, std::list< glv::View*> >::iterator it = interfaces.find( e ); 
 
         if ( it != interfaces.end() )
-            for (std::list< L3::Visualisers::ExternalInterface*>::iterator list_it = it->second.begin();
+            //for (std::list< L3::Visualisers::ExternalInterface*>::iterator list_it = it->second.begin();
+            for (std::list< glv::View*>::iterator list_it = it->second.begin();
                     list_it != it->second.end();
                     list_it++ )
                 (*list_it)->onEvent( e, g );
@@ -63,28 +75,16 @@ class Layout
             /*
              *  Lua interface
              */
-            //lua_interface.reset( new glv::TextView( glv::Rect(win.width()-200,win.height()-100), 8));
-            //lua_interface.reset( new glv::TextView( glv::Rect(200,150), 8));
-            //lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
-            //this->renderables.push_front( lua_interface.get() );
-
-            //lua_interface.reset( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
-            //lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
-            //this->renderables.push_front( lua_interface.get() );
-
-            lua_interface.reset( new glv::TextView( glv::Rect(200,160), 8) );
+            lua_interface.reset( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
             lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
             this->renderables.push_front( lua_interface.get() );
 
-            //lua_interface->disable( glv::Visible );
-
             // Create the main view
-            //main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
             main_view = new CustomView( glv::Rect(0,0, .6*win.width(),500));
             this->renderables.push_front( main_view );
 
-            //main_view->addExternalInterface( glv::Event::KeyDown, dynamic_cast< L3::Visualisers::ExternalInterface* >(lua_interface.get() ) );
-
+            // Add it is a global interface
+            main_view->addGlobalInterface( glv::Event::KeyDown, lua_interface.get() );
 
             // Composite view holder
             composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*win.width(), 500 )) );
@@ -94,7 +94,6 @@ class Layout
            
             // Basic controller
             controller.reset( new L3::Visualisers::BasicPanController( composite->position ) );
-        
             composite->addController( &*controller );
 
             // Accumulate views
@@ -117,6 +116,10 @@ class Layout
             for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                 top << *it;
 
+            // Add renderables provided by children
+            for( std::list< glv::Plot* >::iterator it = plottables.begin(); it != plottables.end(); it++ )
+                top << *it;
+
             window.setGLV(top);
 
             glv::Application::run();
@@ -135,7 +138,6 @@ class Layout
 
             plotters.push_front( plotter );
 
-            // Add plot region
             boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plotter ) );
 
             plot_region->range( 0, 1000, 0 );
@@ -197,14 +199,15 @@ class Layout
 
     protected:
 
-        //CustomView*                     main_view;
-        glv::View*                      main_view;
+        CustomView*                     main_view;
+        //glv::View*                      main_view;
         glv::Window&                    window; 
         //boost::shared_ptr< glv::View >  lua_interface;
         boost::shared_ptr< glv::TextView >  lua_interface;
 
         
         std::list< glv::View* >     renderables;
+        std::list< glv::Plot* >     plottables;
 
         std::list< boost::shared_ptr< glv::View > >     labels;
         
@@ -286,6 +289,7 @@ class EstimatorLayout : public Layout
         
         boost::shared_ptr< L3::Visualisers::CostRendererView >    cost_renderer_view;
 
+        std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >  density_renderers;
 };
 
 

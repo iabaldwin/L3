@@ -99,16 +99,35 @@ namespace L3
             this->labels.push_front( vertical_scan_renderer_label );
             this->renderables.push_front( vertical_scan_renderer_label.get() );
             
-            // Swathe Cloud
+            /*
+             *  Swathe Cloud
+             */
             runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(500+10),10, 500, 300 ), run_time_swathe, runner->current ));
             this->renderables.push_front( runtime_cloud_renderer_view.get() );
             updater->operator<<( runtime_cloud_renderer_view.get() );
         
-            // Cost visualisation 
+            /*
+             *  Cost visualisation 
+             */
             cost_renderer_view.reset( new L3::Visualisers::CostRendererView( *(runner->estimator->pose_estimates),  glv::Rect( win.width()-510,  win.height()-250, 200, 200 ) ) );
             this->renderables.push_front( cost_renderer_view.get() );
 
-            
+           
+            /*
+             *  Run-time swathe density renderer
+             */
+            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > swathe_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 600, 0, 200, 200 ), runner->estimator->current_histogram ) );
+            density_renderers.push_back( swathe_density_renderer ); 
+            this->plottables.push_front( dynamic_cast<glv::Plot*>(swathe_density_renderer.get() ) );
+            updater->operator<<( swathe_density_renderer.get() );
+
+            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 800, 0, 200, 200 ), experience->experience_histogram ) );
+            density_renderers.push_back( experience_density_renderer ); 
+            this->plottables.push_front( dynamic_cast<glv::Plot*>(experience_density_renderer.get() ) );
+            updater->operator<<( experience_density_renderer.get() );
+
+
+
         }
     }
 }

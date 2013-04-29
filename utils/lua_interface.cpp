@@ -22,8 +22,20 @@ int main()
     /* run the hello.lua script */
     //dofile = luaL_dofile(l, "hello.lua");
 
-    doString = luaL_dostring( l, "print(\"Hello World\")" );
-    
+    //doString = luaL_dostring( l, "print(\"Hello World\")" );
+
+    //doString =  luaL_dostring( l, "require( \"iuplua\" ) require( \"iupluacontrols\" ) require( \"iuplua_pplot51\"  ) " );
+    doString =  luaL_dostring( l, "require( \"iuplua\" ); print \"HI\" " );
+                                
+
+//plot = iup.pplot{TITLE = \"A simple XY Plot\",
+                                                    //MARGINBOTTOM\="35\",
+                                                    //MARGINLEFT=\"35\",
+                                                    //AXS_XLABEL=\"X\",
+                                                    //AXS_YLABEL=\"Y\"
+                                                    //}" );
+
+
     std::cout << doString << std::endl;
 
     /* cleanup Lua */

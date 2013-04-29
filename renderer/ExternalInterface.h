@@ -31,9 +31,11 @@ namespace Visualisers
                 case glv::Event::MouseDrag:
                     return false;
             }
-
+            
             const glv::Keyboard& k = g.keyboard();
             int key = k.key();
+
+            //std::cout << k.shift() << std::endl;
 
             // Special switch key
             if (key == 96)
@@ -92,7 +94,6 @@ namespace Visualisers
                     return false;
 
                 case glv::Key::Enter:
-                    std::cout << mText << std::endl;
                 case glv::Key::Return:
                     std::cout << mText << std::endl;
                     return false;
@@ -135,8 +136,6 @@ namespace Visualisers
                 glv::draw::color(colors().text);
                 glv::draw::shape(glv::draw::Lines, tl, tt, tl, tb);
             }
-
-            std::cout << tt << ":" << tb << std::endl;
 
             glv::draw::lineWidth(strokeWidth);
             glv::draw::color(colors().text);

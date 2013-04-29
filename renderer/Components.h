@@ -396,7 +396,7 @@ struct HistogramVoxelRenderer : HistogramRenderer, Updateable
 
     void onDraw3D( glv::GLV& g );
 
-    void update(){};
+    virtual void update(){};
 };
 
 
@@ -421,8 +421,6 @@ struct HistogramVoxelRendererView : HistogramVoxelRenderer, glv::View3D
         float y_delta = (upper_right.second +lower_left.second)/2.0;
 
         glv::draw::translate( -1*x_delta, -1*y_delta, 0.0  );
-
-
 
         HistogramVoxelRenderer::onDraw3D(g);    
    
@@ -542,25 +540,7 @@ struct CostRenderer
 
     L3::Estimator::PoseEstimates& estimates;
 
-    void onDraw3D( glv::GLV& g )
-    {
-        glv::Point3 vertices[ estimates.costs.size() ];
-        glv::Color colors[ estimates.costs.size() ];
-
-        int counter = 0;
-        for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
-            it != estimates.estimates.end();
-            it++ )
-        {
-            std::cout << estimates.costs[counter] << " ";
-            vertices[counter]( it->X(), it->Y(), estimates.costs[counter] );
-            counter++;
-        }
-        std::cout << std::endl;
-
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-    }
-
+    void onDraw3D( glv::GLV& g );
 
 };
 
@@ -589,15 +569,8 @@ struct CostRendererView : CostRenderer, glv::View3D
     }
 
 
-    void onDraw3D( glv::GLV& g )
-    {
-        L3::ReadLock lock( estimates.mutex );
-
-        glv::draw::translateZ( -50 );
-        glv::draw::translate( estimates.position->X(), estimates.position->Y(), 0 );
-        
-        CostRenderer::onDraw3D( g );     
-    }
+    void onDraw3D( glv::GLV& g );
+    
 };
 
 
