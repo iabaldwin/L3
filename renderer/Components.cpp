@@ -591,11 +591,10 @@ namespace Visualisers
 
     void ScanRenderer2D::update()
     {
-        std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
-
         windower->getWindow( window );
 
-        scan = window.back().second;
+        if (window.size() > 0)
+            scan = window.back().second;
     }
 
 }

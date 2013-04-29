@@ -98,10 +98,10 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::Projector<double>*                  projector;
     L3::Estimator::Estimator<double>*       estimator;
 
-    std::list < TemporalObserver* >             observers;
+    std::list < TemporalObserver* >         observers;
     
-    L3::ConstantTimeIterator< L3::LMS151 >* vertical_LIDAR;
-    L3::ConstantTimeIterator< L3::LMS151 >* horizontal_LIDAR;
+    L3::ConstantTimeIterator< L3::LMS151 >*     vertical_LIDAR;
+    L3::ConstantTimeIterator< L3::LMS151 >*     horizontal_LIDAR;
     
     L3::SE3* current;
 

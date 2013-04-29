@@ -14,6 +14,8 @@ namespace Estimator
 
     struct PoseEstimates : Lockable
     {
+        boost::shared_ptr<L3::SE3> position;
+
         std::vector<double> costs;
         
         std::vector< L3::SE3 > estimates;
@@ -32,15 +34,20 @@ namespace Estimator
     struct GridEstimates : PoseEstimates
     {
         GridEstimates( float x_width=10.0, float y_width=10.0, float spacing=1.0 ) 
-            : x_width(x_width), y_width(y_width), spacing(spacing)
-        {}
-
+            : x_width(x_width), 
+                y_width(y_width), 
+                spacing(spacing) 
+        {
+            position.reset( new L3::SE3( L3::SE3::ZERO() ) );
+        }
 
         float x_width, y_width, spacing;
 
         virtual void operator()( const L3::SE3& pose ) 
         {
             L3::WriteLock( this->mutex );
+
+            position.reset( new L3::SE3( pose ) );
 
             estimates.clear();
 
@@ -165,6 +172,19 @@ namespace Estimator
         double operator()( PointCloud<T>* swathe, SE3 estimate );
 
     };
+
+    template < typename T >
+        struct GroundTruthEstimator : Estimator<T>
+    {
+
+        GroundTruthEstimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) : Estimator<T>(f, experience)
+        {
+        }
+
+        double operator()( PointCloud<T>* swathe, SE3 estimate );
+
+    };
+
 
 }
 }

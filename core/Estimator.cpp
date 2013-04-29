@@ -17,8 +17,6 @@ namespace L3
      */
     namespace Estimator
     {
-
-
         /*
          *  Cost Functions
          */
@@ -56,6 +54,12 @@ namespace L3
 
                 double val = boost::math::log1p( (p_i/q_i))*p_i;
 
+                if ( std::isnan( val ) )
+                    throw std::exception();
+                //{
+                    //std::cout << p << "," << q << "," << p_i << ":" << q_i << "->" << val <<  std::endl;
+                //}
+
                 return val;
             }
 
@@ -68,6 +72,9 @@ namespace L3
                 double experience_normalizer = experience.normalizer();
                 double swathe_normalizer     = swathe.normalizer();
 
+                if( swathe_normalizer == 0 )
+                    return std::numeric_limits<T>::infinity();
+
                 NoneSmoothing<T> no_smoothing;
 
                 KL<T> kl( experience_normalizer, swathe_normalizer, &no_smoothing );
@@ -78,9 +85,6 @@ namespace L3
                 std::transform( experience.hist->bin, experience.hist->bin + (experience.x_bins * experience.y_bins), swathe.hist->bin, kl_estimate.get(), kl );
 
                 // Accumulate 
-                //T divergence = std::accumulate( kl_estimate.get(), kl_estimate.get()+(experience.x_bins * experience.y_bins), T(0) );
-                //delete [] kl_estimate;
-
                 return std::accumulate( kl_estimate.get(), kl_estimate.get()+(experience.x_bins * experience.y_bins), T(0) );
             }
 
@@ -112,6 +116,8 @@ namespace L3
             {
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
 
+                std::cout << *estimate << std::endl;
+
                 /*
                  *  Copy point cloud
                  */
@@ -126,6 +132,7 @@ namespace L3
 
                 L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram );
 
+                // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
 
                 // Compute cost
@@ -163,7 +170,6 @@ namespace L3
                 //L3::Smoother< double, 5 > smoother;
                 //smoother.smooth( &swathe_histogram );
 
-                //this->costs.resize( this->pose_estimates->estimates.size() );
                 this->pose_estimates->costs.resize( this->pose_estimates->estimates.size() );
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
 
@@ -171,11 +177,33 @@ namespace L3
                 while( it != this->pose_estimates->estimates.end() )
                 {
                     group.run( Hypothesis( swathe, &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
+                    break; 
                     it++;
                 }
 
                 // Synch
                 group.wait();
+
+            }
+
+        /*
+         *  Ground truth Estimator
+         */
+        template < typename T >
+            double GroundTruthEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
+            {
+                if ( this->experience_histogram->empty() )
+                    throw std::exception();
+
+                // Lock the experience histogram
+                //L3::ReadLock histogram_lock( this->experience_histogram->mutex );
+                //L3::ReadLock swathe_lock( swathe->mutex );
+                
+                //this->pose_estimates->costs.resize( 1 );
+              
+                //std::cout << *(&estimate) << std::endl;
+
+                //Hypothesis( swathe, &estimate, this->experience_histogram.get() , this->cost_function, this->pose_estimates->costs.begin() );
 
             }
 
@@ -185,3 +213,4 @@ namespace L3
 // Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template double L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template double L3::Estimator::GroundTruthEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);

@@ -491,6 +491,8 @@ struct ScanRenderer2D : glv::View3D, Updateable
     {
     }
 
+    std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
+    
     L3::ConstantTimeIterator< L3::LMS151 >* windower;
 
     boost::shared_ptr<L3::LMS151> scan;
@@ -500,6 +502,8 @@ struct ScanRenderer2D : glv::View3D, Updateable
     float rotate_z;
 
     void onDraw3D( glv::GLV& g );
+
+        
 
     void update();
 };
@@ -548,9 +552,11 @@ struct CostRenderer
             it != estimates.estimates.end();
             it++ )
         {
+            std::cout << estimates.costs[counter] << " ";
             vertices[counter]( it->X(), it->Y(), estimates.costs[counter] );
             counter++;
         }
+        std::cout << std::endl;
 
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
     }
@@ -585,21 +591,10 @@ struct CostRendererView : CostRenderer, glv::View3D
 
     void onDraw3D( glv::GLV& g )
     {
-        double x=0, y=0;
-       
-        for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
-            it != estimates.estimates.end();
-            it++ )
-        {
-            x += it->X();
-            y += it->Y();
-        }
-
-        x/=estimates.estimates.size();
-        y/=estimates.estimates.size();
+        L3::ReadLock lock( estimates.mutex );
 
         glv::draw::translateZ( -50 );
-        glv::draw::translate( x, y, 0 );
+        glv::draw::translate( estimates.position->X(), estimates.position->Y(), 0 );
         
         CostRenderer::onDraw3D( g );     
     }

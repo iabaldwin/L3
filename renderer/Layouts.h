@@ -68,16 +68,22 @@ class Layout
             //lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
             //this->renderables.push_front( lua_interface.get() );
 
-            lua_interface.reset( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
+            //lua_interface.reset( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
+            //lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
+            //this->renderables.push_front( lua_interface.get() );
+
+            lua_interface.reset( new glv::TextView( glv::Rect(200,160), 8) );
             lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
             this->renderables.push_front( lua_interface.get() );
+
+            //lua_interface->disable( glv::Visible );
 
             // Create the main view
             //main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
             main_view = new CustomView( glv::Rect(0,0, .6*win.width(),500));
             this->renderables.push_front( main_view );
-            
-            main_view->addExternalInterface( glv::Event::KeyDown, dynamic_cast< L3::Visualisers::ExternalInterface* >(lua_interface.get() ) );
+
+            //main_view->addExternalInterface( glv::Event::KeyDown, dynamic_cast< L3::Visualisers::ExternalInterface* >(lua_interface.get() ) );
 
 
             // Composite view holder
@@ -191,9 +197,11 @@ class Layout
 
     protected:
 
-        CustomView*                     main_view;
+        //CustomView*                     main_view;
+        glv::View*                      main_view;
         glv::Window&                    window; 
-        boost::shared_ptr< glv::View >  lua_interface;
+        //boost::shared_ptr< glv::View >  lua_interface;
+        boost::shared_ptr< glv::TextView >  lua_interface;
 
         
         std::list< glv::View* >     renderables;

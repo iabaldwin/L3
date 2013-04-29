@@ -98,8 +98,6 @@ namespace L3
             vertical_scan_renderer_label->pos( win.width()-(150*2+30), 335+160 );
             this->labels.push_front( vertical_scan_renderer_label );
             this->renderables.push_front( vertical_scan_renderer_label.get() );
-
-
             
             // Swathe Cloud
             runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(500+10),10, 500, 300 ), run_time_swathe, runner->current ));
@@ -107,7 +105,7 @@ namespace L3
             updater->operator<<( runtime_cloud_renderer_view.get() );
         
             // Cost visualisation 
-            cost_renderer_view.reset( new L3::Visualisers::CostRendererView( *(runner->estimator->pose_estimates),  glv::Rect( win.width()-250,  win.height()-250, 200, 200 ) ) );
+            cost_renderer_view.reset( new L3::Visualisers::CostRendererView( *(runner->estimator->pose_estimates),  glv::Rect( win.width()-510,  win.height()-250, 200, 200 ) ) );
             this->renderables.push_front( cost_renderer_view.get() );
 
             
