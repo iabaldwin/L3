@@ -439,7 +439,6 @@ namespace Visualisers
      */
     void PointCloudBoundsRenderer::onDraw3D(glv::GLV& g)
     { 
-
         glv::Point3 bound_vertices[4];
         glv::Color  bound_colors[4];
 
@@ -468,7 +467,6 @@ namespace Visualisers
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
         glv::draw::disable( glv::draw::Blend );
-
 
     }
 

@@ -63,7 +63,7 @@ namespace L3
                 {
                     L3::SE3 estimate( x_delta, y_delta, 0, 0, 0, 0 ) ;
 
-                    Eigen::Matrix4f res = estimate.getHomogeneous()*const_cast<L3::SE3*>(&pose)->getHomogeneous();
+                    Eigen::Matrix4f res = const_cast<L3::SE3*>(&pose)->getHomogeneous()*estimate.getHomogeneous();
 
                     estimates.push_back( L3::SE3( res(0,3), res(1,3), res(2,3), pose.R(), pose.P(), pose.Q() ) );
                 }
