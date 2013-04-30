@@ -23,7 +23,6 @@ namespace Estimator
         std::vector<double> costs;
         
         std::vector< L3::SE3 > estimates;
-
             
         boost::shared_ptr<L3::SE3> position;
                 
@@ -50,25 +49,8 @@ namespace Estimator
 
         float x_width, y_width, spacing;
 
-        virtual void operator()( const L3::SE3& pose ) 
-        {
-            L3::WriteLock( this->mutex );
-
-            position.reset( new L3::SE3( pose ) );
-
-            estimates.clear();
-
-            for( float x_delta = -1*x_width; x_delta < x_width; x_delta += spacing )
-                for( float y_delta = -1*y_width; y_delta < y_width; y_delta += spacing )
-                {
-                    L3::SE3 estimate( x_delta, y_delta, 0, 0, 0, 0 ) ;
-
-                    Eigen::Matrix4f res = estimate.getHomogeneous()*const_cast<L3::SE3*>(&pose)->getHomogeneous();
-
-                    estimates.push_back( L3::SE3( res(0,3), res(1,3), res(2,3), pose.R(), pose.P(), pose.Q() ) );
-
-                }
-        }
+        void operator()( const L3::SE3& pose ) ;
+        
 
     };
 
@@ -140,16 +122,18 @@ namespace Estimator
     };
 
     /*
-     *Estimator types
+     * Estimator types
      */
     template < typename T >
-        struct Estimator
+        //struct Estimator : Dumpable
+        struct Estimator 
         {
             Estimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) 
                 : cost_function(f), 
                      experience_histogram(experience)
             {
                 swathe_histogram.reset( new L3::HistogramUniformDistance<double>() );
+                current_swathe.reset( new L3::PointCloud<double>() );
                 current_histogram.reset( new L3::Histogram<double>() );
             }
 
@@ -157,8 +141,8 @@ namespace Estimator
             boost::shared_ptr<PoseEstimates>        pose_estimates;
             boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;
             boost::shared_ptr<L3::Histogram<T> >    experience_histogram;
+            boost::shared_ptr<L3::PointCloud<double> >        current_swathe;
 
-            // DGB
             boost::shared_ptr< L3::Histogram<double> > current_histogram;
             
             virtual ~Estimator()
@@ -178,8 +162,11 @@ namespace Estimator
         {
             this->pose_estimates.reset( new GridEstimates(2, 2, 1 ) );
         }
-
+        
         tbb::task_group group;
+        
+        void dump(){};
+
         double operator()( PointCloud<T>* swathe, SE3 estimate );
 
     };
@@ -193,6 +180,7 @@ namespace Estimator
             this->pose_estimates.reset( new PoseEstimates() );
         }
 
+        void dump();
 
         double operator()( PointCloud<T>* swathe, SE3 estimate );
 

@@ -346,10 +346,12 @@ struct HistogramRenderer
  */
 struct HistogramBoundsRenderer : HistogramRenderer, Leaf
 {
-    HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : HistogramRenderer(histogram)
+    HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : HistogramRenderer(histogram) , depth(-5.0)
     {
     }
-    
+  
+    float depth;
+
     void onDraw3D(glv::GLV& g);
 };
 

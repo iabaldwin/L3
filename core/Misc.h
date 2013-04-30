@@ -23,6 +23,14 @@ const char* demangle(const char* name);
 
 void print_stack_trace();
 
+
+//char spinner()
+//{
+    ////char table[] = { '\\', '|', '/', '-' }
+
+
+//}
+
 }
 }
 #endif

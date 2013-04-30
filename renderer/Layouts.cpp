@@ -16,6 +16,8 @@ namespace L3
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
 
+            histogram_bounds_renderer->depth = -2.0 ;
+
             // Histogram voxel
             histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( experience->experience_histogram ) ) ;
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
@@ -25,8 +27,8 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
 
             // Swathe Cloud
-            runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( run_time_swathe ));
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
+            //runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( run_time_swathe ));
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
 
             // Current pose estimate
             pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
@@ -116,18 +118,33 @@ namespace L3
             /*
              *  Run-time swathe density renderer
              */
-            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > swathe_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 600, 0, 200, 200 ), runner->estimator->current_histogram ) );
+            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > swathe_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 800, 0, 200, 200 ), runner->estimator->current_histogram ) );
             density_renderers.push_back( swathe_density_renderer ); 
-            this->plottables.push_front( dynamic_cast<glv::Plot*>(swathe_density_renderer.get() ) );
+            this->renderables.push_front( dynamic_cast<glv::Plot*>(swathe_density_renderer.get() ) );
             updater->operator<<( swathe_density_renderer.get() );
 
-            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 800, 0, 200, 200 ), experience->experience_histogram ) );
+            swathe_density_renderer->enable( glv::Visible );
+
+            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), experience->experience_histogram ) );
             density_renderers.push_back( experience_density_renderer ); 
-            this->plottables.push_front( dynamic_cast<glv::Plot*>(experience_density_renderer.get() ) );
+            this->renderables.push_front( dynamic_cast<glv::Plot*>(experience_density_renderer.get() ) );
             updater->operator<<( experience_density_renderer.get() );
 
+            experience_density_renderer->bringToFront();
+            experience_density_renderer->enable( glv::Visible );
 
+            dumper.reset( new DataDumper( runner->dumps ) );
+            main_view->addGlobalInterface( glv::Event::KeyDown, dumper.get() );
+       
+            // Truly dbg
+            debug_renderer.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->estimator->current_swathe ));
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_renderer.get() ) ) );
+            debug_renderer->color = glv::Color( 160, 32, 240 ); 
 
+            debug_histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( runner->estimator->current_histogram ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_histogram_bounds_renderer.get() ) ) );
+
+            debug_histogram_bounds_renderer->depth = -12.0;
         }
     }
 }

@@ -98,6 +98,7 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::Projector<double>*                  projector;
     L3::Estimator::Estimator<double>*       estimator;
 
+    std::list < Dumpable* >  dumps;
     std::list < TemporalObserver* >         observers;
     
     L3::ConstantTimeIterator< L3::LMS151 >*     vertical_LIDAR;
@@ -119,6 +120,7 @@ struct EstimatorRunner : ThreadedTemporalRunner
     {
         this->windower = windower;
         (*this) << dynamic_cast<L3::TemporalObserver*>(windower);
+        (*this) << dynamic_cast<L3::Dumpable*>(windower);
         return *this;
     }
 
@@ -127,6 +129,7 @@ struct EstimatorRunner : ThreadedTemporalRunner
     {
         this->provider = provider;
         (*this) << dynamic_cast<L3::TemporalObserver*>(provider);
+        (*this) << dynamic_cast<L3::Dumpable*>(provider);
         return *this;
     }
 
@@ -134,6 +137,7 @@ struct EstimatorRunner : ThreadedTemporalRunner
     {
         // Not temporally updateable
         this->swathe_builder = swathe_builder;
+        (*this) << dynamic_cast<L3::Dumpable*>(swathe_builder);
         return *this;
     }
 
@@ -141,6 +145,7 @@ struct EstimatorRunner : ThreadedTemporalRunner
     {
         // Spatially updateable
         this->experience = experience;
+        (*this) << dynamic_cast<L3::Dumpable*>(experience);
         return *this;
     }
 
@@ -155,28 +160,35 @@ struct EstimatorRunner : ThreadedTemporalRunner
     {
         // ?
         this->estimator = estimator;
+        (*this) << dynamic_cast<L3::Dumpable*>(estimator);
         return *this;
     }
 
     EstimatorRunner& setHorizontalLIDAR( L3::ConstantTimeIterator< L3::LMS151 >* windower )
     {
         this->horizontal_LIDAR = windower;
+        (*this) << dynamic_cast<L3::Dumpable*>(windower);
         return *this;
     }
 
     EstimatorRunner& setVerticalLIDAR( L3::ConstantTimeIterator< L3::LMS151 >* windower )
     {
         this->vertical_LIDAR = windower;
+        (*this) << dynamic_cast<L3::Dumpable*>(windower);
         return *this;
     }
 
-
-
-
     EstimatorRunner& operator<<( L3::TemporalObserver* observer )
     {
-        // All temporally updateable
-        observers.push_front( observer ); 
+        if ( observer )
+            observers.push_front( observer ); 
+        return *this;
+    }
+
+    EstimatorRunner& operator<<( L3::Dumpable* dumpable)
+    {
+        if ( dumpable )
+            dumps.push_front( dumpable ); 
         return *this;
     }
 

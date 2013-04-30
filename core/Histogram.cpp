@@ -32,7 +32,7 @@ namespace L3
         void clone( Histogram<T>* src, Histogram<T> * dest )
         {
             L3::WriteLock(dest->mutex);
-            
+
             // Parameter copy
             dest->create( src->x_centre,     
                     src->x_lower,

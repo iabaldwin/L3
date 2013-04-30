@@ -14,6 +14,39 @@ namespace L3
 namespace Visualisers
 {
 
+struct EventController : glv::View
+{
+	virtual bool onEvent( glv::Event::t e, glv::GLV& g)
+    {
+
+    }
+};
+
+struct DataDumper : EventController
+{
+
+    DataDumper( std::list < L3::Dumpable* > dump_targets ) : targets(dump_targets)
+    {
+
+    }
+
+    std::list < L3::Dumpable* > targets;
+
+	bool onEvent( glv::Event::t e, glv::GLV& g)
+    {
+        const glv::Keyboard& k = g.keyboard();
+        int key = k.key();
+
+        // Special switch key
+        std::cout << "Dumping " << targets.size() << std::endl;
+        if (key == 'd')
+            std::for_each( targets.begin(), targets.end(), std::mem_fun( &Dumpable::dump ) );
+
+        return true;
+    }
+
+};
+
 struct CustomView : glv::View
 {
 
@@ -22,10 +55,8 @@ struct CustomView : glv::View
 
     }
 
-    //std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> > interfaces;
     std::map< glv::Event::t, std::list< glv::View*> > interfaces;
 
-    //void addGlobalInterface( glv::Event::t t, L3::Visualisers::ExternalInterface* iface )
     void addGlobalInterface( glv::Event::t t, glv::View* iface )
     {
         if ( !iface )
@@ -34,29 +65,25 @@ struct CustomView : glv::View
             return;
         }
 
-        //std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> >::iterator it = interfaces.find( t ); 
         std::map< glv::Event::t, std::list< glv::View*> >::iterator it = interfaces.find( t ); 
 
         if ( it != interfaces.end() )
             it->second.push_front(iface);
         else
         {
-            //std::list< L3::Visualisers::ExternalInterface*> list;
             std::list< glv::View*> list;
             list.push_front( iface );
             interfaces.insert( std::make_pair( t, list ) );
         }
-
-
     }
+
+
 
     bool onEvent( glv::Event::t e, glv::GLV& g)
     {
-        //std::map< glv::Event::t, std::list< L3::Visualisers::ExternalInterface*> >::iterator it = interfaces.find( e ); 
         std::map< glv::Event::t, std::list< glv::View*> >::iterator it = interfaces.find( e ); 
 
         if ( it != interfaces.end() )
-            //for (std::list< L3::Visualisers::ExternalInterface*>::iterator list_it = it->second.begin();
             for (std::list< glv::View*>::iterator list_it = it->second.begin();
                     list_it != it->second.end();
                     list_it++ )
@@ -64,6 +91,9 @@ struct CustomView : glv::View
     }
 
 };
+
+
+
 
 class Layout
 {
@@ -117,8 +147,8 @@ class Layout
                 top << *it;
 
             // Add renderables provided by children
-            for( std::list< glv::Plot* >::iterator it = plottables.begin(); it != plottables.end(); it++ )
-                top << *it;
+            //for( std::list< glv::Plot* >::iterator it = plottables.begin(); it != plottables.end(); it++ )
+                //top << *it;
 
             window.setGLV(top);
 
@@ -207,7 +237,7 @@ class Layout
 
         
         std::list< glv::View* >     renderables;
-        std::list< glv::Plot* >     plottables;
+        //std::list< glv::Plot* >     plottables;
 
         std::list< boost::shared_ptr< glv::View > >     labels;
         
@@ -290,6 +320,11 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::CostRendererView >    cost_renderer_view;
 
         std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >  density_renderers;
+
+        boost::shared_ptr< DataDumper > dumper;
+        
+        boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        debug_renderer; 
+        boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       debug_histogram_bounds_renderer;
 };
 
 

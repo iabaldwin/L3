@@ -61,6 +61,10 @@ namespace L3
                 this->y_bins = y_bins;
 
 
+                //TODO
+                wtf()
+                std::cout << x_bins << ":" << y_bins << std::endl;
+
                 // Allocate histogram
                 hist =  gsl_histogram2d_alloc ( x_bins, y_bins );
 

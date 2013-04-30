@@ -10,13 +10,73 @@
 
 #include <boost/math/special_functions/log1p.hpp>
 
+#include "Poco/Runnable.h"
+#include "Poco/Thread.h"
+
+
+template <typename T>
+struct DataWriter : Poco::Runnable
+{
+
+    DataWriter( T* t ) : t(t)
+    {
+        
+    }
+
+    T* t;
+        
+    Poco::Thread thread;
+
+    std::string target;
+
+    ~DataWriter()
+    {
+        std::cout << "Done" << std::endl;
+    }
+
+    virtual void write( std::string target )
+    {
+        this->target = target;
+        thread.start( *this );
+    }
+
+    virtual void run()
+    {
+        std::cout << "Writing to " << target << std::endl;
+        std::ofstream output( target.c_str() );
+        output << *t;
+        output.close(); 
+        std::cout << "Done " << target << std::endl;
+    }
+
+};
+
 namespace L3
 {
+
+    namespace Estimator
+    {
+    void GridEstimates::operator()( const L3::SE3& pose ) 
+        {
+            position.reset( new L3::SE3( pose ) );
+            estimates.clear();
+        
+            for( float x_delta = -1*x_width; x_delta < x_width; x_delta += spacing )
+                for( float y_delta = -1*y_width; y_delta < y_width; y_delta += spacing )
+                {
+                    L3::SE3 estimate( x_delta, y_delta, 0, 0, 0, 0 ) ;
+
+                    Eigen::Matrix4f res = estimate.getHomogeneous()*const_cast<L3::SE3*>(&pose)->getHomogeneous();
+
+                    estimates.push_back( L3::SE3( res(0,3), res(1,3), res(2,3), pose.R(), pose.P(), pose.Q() ) );
+                }
+        }
+
+
+
     /*
      *  Estimator types
      */
-    namespace Estimator
-    {
         /*
          *  Cost Functions
          */
@@ -56,10 +116,7 @@ namespace L3
 
                 if ( std::isnan( val ) )
                     throw std::exception();
-                //{
-                    //std::cout << p << "," << q << "," << p_i << ":" << q_i << "->" << val <<  std::endl;
-                //}
-
+                
                 return val;
             }
 
@@ -130,11 +187,11 @@ namespace L3
 
                 L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram );
 
-                // Produce swathe histogram
-                swathe_histogram( hypothesis.get() );
+                //// Produce swathe histogram
+                //swathe_histogram( hypothesis.get() );
 
-                // Compute cost
-                *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
+                //// Compute cost
+                //*result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
 
         };
@@ -147,9 +204,11 @@ namespace L3
             {
                 L3::WriteLock estimates_lock( this->pose_estimates->mutex );
 
+                std::cout << 1 << std::endl;
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
 
+                std::cout << 2 << std::endl;
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
                 L3::ReadLock swathe_lock( swathe->mutex );
@@ -166,18 +225,27 @@ namespace L3
                 //L3::Smoother< double, 5 > smoother;
                 //smoother.smooth( &swathe_histogram );
 
+                std::cout << 3 << std::endl;
                 this->pose_estimates->costs.resize( this->pose_estimates->estimates.size() );
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
 
+                std::cout << 4 << std::endl;
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
+                    std::cout << std::distance( this->pose_estimates->estimates.begin(), it ) << ":" << this->pose_estimates->estimates.size()  << std::endl;
                     group.run( Hypothesis( swathe, &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
                     it++;
                 }
 
                 // Synch
                 group.wait();
+
+                //L3::clone( &swathe_histogram, this->current_histogram.get() );
+                //L3::copy( swathe, this->current_swathe.get() );
+                //L3::copy( hypothesis.get(), this->current_swathe.get() );
+
+                std::cout << 5 << std::endl;
 
             }
 
@@ -188,39 +256,65 @@ namespace L3
             double GroundTruthEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
                 // Lock the experience histogram
-                L3::ReadLock histogram_lock( this->experience_histogram->mutex );
-               
-                // Lock the swathe
-                L3::ReadLock swathe_lock( swathe->mutex );
-
-                // Estimates
-                L3::WriteLock estimates_lock( this->pose_estimates->mutex );
+                //L3::ReadLock histogram_lock( this->experience_histogram->mutex );
+                //// Lock the swathe
+                //L3::ReadLock swathe_lock( swathe->mutex );
+                //// Estimates
+                //L3::WriteLock estimates_lock( this->pose_estimates->mutex );
                 
-                this->pose_estimates->costs.resize( 1 );
-                this->pose_estimates->estimates.clear();
-                this->pose_estimates->estimates.push_back( estimate );
+                //this->pose_estimates->costs.resize( 1 );
+                //this->pose_estimates->estimates.clear();
+                //this->pose_estimates->estimates.push_back( estimate );
 
-                //Hypothesis( swathe, &estimate, this->experience_histogram.get() , this->cost_function, this->pose_estimates->costs.begin() )();
+                ////Hypothesis( swathe, &estimate, this->experience_histogram.get() , this->cost_function, this->pose_estimates->costs.begin() )();
 
                 /*
                  *  Copy point cloud
                  */
-                boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
-                L3::copy( const_cast<L3::PointCloud<double>* >(swathe), hypothesis.get() );
+                //boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
+                //L3::copy( const_cast<L3::PointCloud<double>* >(swathe), hypothesis.get() );
 
-                L3::transform( hypothesis.get(), &estimate ); 
+                //L3::transform( hypothesis.get(), &estimate ); 
 
                 /*
                  *  Histogram
                  */
-                L3::Histogram<double> swathe_histogram;
+                //L3::Histogram<double> swathe_histogram;
 
-                L3::copy( const_cast<L3::Histogram<double>*>(this->experience_histogram.get()), &swathe_histogram );
+                //L3::copy( const_cast<L3::Histogram<double>*>(this->experience_histogram.get()), &swathe_histogram );
 
-                // Produce swathe histogram
-                swathe_histogram( hypothesis.get() );
+                //// Produce swathe histogram
+                //swathe_histogram( hypothesis.get() );
 
-                L3::copy( &swathe_histogram, this->current_histogram.get() );
+
+                // DBG
+                //L3::clone( &swathe_histogram, this->current_histogram.get() );
+                //L3::copy( swathe, this->current_swathe.get() );
+                //L3::copy( hypothesis.get(), this->current_swathe.get() );
+
+            }
+
+        std::list< boost::shared_ptr< DataWriter<L3::PointCloud<double> > > > cloud_writers;
+        std::list< boost::shared_ptr< DataWriter<L3::Histogram<double> > > > histogram_writers;
+
+        template < typename T >
+            void GroundTruthEstimator<T>::dump()
+            {
+                //boost::shared_ptr< DataWriter< L3::PointCloud<double> > > cloud_writer( new DataWriter< L3::PointCloud<double> >( this->current_swathe.get() ) );
+                //cloud_writer->write(  "point_cloud.dat" );
+                //cloud_writers.push_back( cloud_writer );
+
+                //boost::shared_ptr< DataWriter< L3::Histogram<double> > > histogram_writer( new DataWriter< L3::Histogram<double> >( this->current_histogram.get() ) );
+                //histogram_writer->write(  "histogram.dat" );
+                //histogram_writers.push_back( histogram_writer );
+
+                //std::ofstream point_cloud_file( "point_cloud.dat" );
+                //point_cloud_file << *this->current_swathe;
+                //point_cloud_file.close();
+
+                //std::ofstream histogram_file( "histogram.dat" );
+                //histogram_file << *this->current_histogram;
+                //histogram_file.close();
 
             }
 
@@ -231,3 +325,4 @@ namespace L3
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template double L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template double L3::Estimator::GroundTruthEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template void L3::Estimator::GroundTruthEstimator<double>::dump();

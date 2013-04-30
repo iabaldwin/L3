@@ -137,9 +137,15 @@ namespace Visualisers
                 glv::draw::shape(glv::draw::Lines, tl, tt, tl, tb);
             }
 
+            std::stringstream ss;
+
+            //ss << ">> " << mText;
+            //std::cout << ss.str() << std::endl;
+
             glv::draw::lineWidth(strokeWidth);
             glv::draw::color(colors().text);
             font().render(mText.c_str(), padX, padY);
+            //font().render(ss.str().c_str(), padX, padY);
         }
 
     };

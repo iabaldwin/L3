@@ -71,6 +71,11 @@ struct Lockable
     boost::shared_mutex mutex;
 };
 
+struct Dumpable
+{
+    virtual void dump() = 0;
+};
+
 
 }
 
