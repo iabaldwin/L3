@@ -203,14 +203,14 @@ namespace L3
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
                 L3::ReadLock swathe_lock( swathe->mutex );
 
-                if (this->experience_histogram->empty()  || (swathe->num_points == 0 ))
+                //if (this->experience_pyramid->empty()  || (swathe->num_points == 0 ))
+                if ((swathe->num_points == 0 ))
                     return std::numeric_limits<T>::infinity();
 
                 /*
                  *  Speed considerations
                  */
-                boost::scoped_ptr< PointCloud<T> > sampled_swathe( new PointCloud<T>() );
-                L3::sample( swathe, sampled_swathe.get(), 2000 );
+                L3::sample( swathe, this->sampled_swathe.get(), 2000 );
 
                 /*
                  *  Smoothing
@@ -224,8 +224,8 @@ namespace L3
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
-                    //group.run( Hypothesis( swathe, &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                    group.run( Hypothesis( sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
+                    //group.run( Hypothesis( swathe, &*it, this->experience_pyramid.get() , this->cost_function, result_iterator++ ) );
+                    //group.run( Hypothesis( sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
                     it++;
                 }
 

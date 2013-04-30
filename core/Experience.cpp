@@ -37,12 +37,18 @@ Experience::Experience( std::deque<experience_section>  SECTIONS,
     // Open 
     data.open( fname.c_str(), std::ios::binary );
 
+    // Allocate
+    std::vector<double> densities;
+    densities.push_back( .1 );
+    densities.push_back( 1 );
+    densities.push_back( 2 );
+
+    experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
+    resident_point_cloud.reset( new L3::PointCloud<double>() );
+
     // Go
     thread.start( *this );
 
-    experience_histogram.reset( new L3::HistogramUniformDistance<double>() ); 
-    
-    resident_point_cloud.reset( new L3::PointCloud<double>() );
 }
 
 Experience::~Experience()
@@ -141,9 +147,9 @@ void Experience::run()
          */
         if (update_required)
         {
-            WriteLock lock( experience_histogram->mutex );
+            //WriteLock lock( experience_pyramid->mutex );
             
-            // Recompute histogram
+            // Join clouds
             join( clouds, resident_point_cloud );
 
             // Compute histogram
@@ -151,25 +157,36 @@ void Experience::run()
             std::pair<double,double> max_bound = L3::max<double>( &*resident_point_cloud );
             std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
 
-            boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(experience_histogram)->create( means.first, 
-                                                                                                                min_bound.first, 
-                                                                                                                max_bound.first,
-                                                                                                                means.second, 
-                                                                                                                min_bound.second, 
-                                                                                                                max_bound.second );
+            for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->experience_pyramid->begin();
+                    it != this->experience_pyramid->end();
+                    it++ )
+            {
 
-            //(*experience_histogram)( &*resident_point_cloud );
-            //(*experience_histogram)( resident_point_cloud.get() );
-            experience_histogram->operator()( resident_point_cloud.get() );
-      
-            ////L3::Smoother< double, 5 > smoother; 
-            ////smoother.smooth( experience_histogram.get() );
+                boost::shared_ptr<L3::HistogramUniformDistance<double> > current_histogram = boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(*it);
+            
+                WriteLock lock( current_histogram->mutex );
 
-            lock.unlock();
+                current_histogram->create(  means.first, 
+                                            min_bound.first, 
+                                            max_bound.first,
+                                            means.second,                   
+                                            min_bound.second, 
+                                            max_bound.second );
+
+
+                current_histogram->operator()( resident_point_cloud.get() );
+            
+                lock.unlock();
+            }
+
+            //L3::Smoother< double, 5 > smoother; 
+            //smoother.smooth( experience_histogram.get() );
+
         }
 
         // Play nice
-        usleep( .05*1e6 );
+        //usleep( .05*1e6 );
+        usleep( .1*1e6 );
     }
 }
 

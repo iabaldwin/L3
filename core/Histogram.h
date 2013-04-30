@@ -8,7 +8,7 @@
 namespace L3
 {
     /*
-     * Statistics
+     *  Histogram structure
      */
     template <typename T>
         struct Histogram : Lockable
@@ -154,6 +154,49 @@ namespace L3
 
     template <typename T>
         void clone( Histogram<T>* src, Histogram<T> * dest );
+
+    template <typename T>
+        struct HistogramPyramid : Lockable
+        {
+
+            HistogramPyramid( std::vector<T> densities )
+            {
+                for( typename std::vector<T>::iterator it=densities.begin(); 
+                        it !=densities.end();
+                        it++) 
+                    this->histograms.push_back( 
+                            boost::make_shared<L3::HistogramUniformDistance<T> > ( 
+                                *it ) );
+
+            }
+
+            std::deque< boost::shared_ptr< Histogram<T> > > histograms;
+
+            typedef typename std::deque< boost::shared_ptr< Histogram<T> > >::iterator  PYRAMID_ITERATOR;
+
+            PYRAMID_ITERATOR begin()
+            {
+                return histograms.begin();
+            }
+
+            PYRAMID_ITERATOR end()
+            {
+                return histograms.end();
+            }
+
+            size_t size()
+            {
+                return histograms.size();     
+            }
+
+            boost::shared_ptr< Histogram<T> > operator[]( unsigned int index )
+            {
+                return histograms[index];
+            }
+
+        };
+
+
 }
 
 #endif

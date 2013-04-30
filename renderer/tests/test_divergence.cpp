@@ -66,6 +66,7 @@ int main (int argc, char ** argv)
     histogram->operator()( cloud.get() );
 
 
+
     /*
      *  Point cloud 2
      */

@@ -51,7 +51,7 @@ int main( int argc, char* argv[] )
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
+    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0] );
 
     // Create runner
     L3::EstimatorRunner runner;

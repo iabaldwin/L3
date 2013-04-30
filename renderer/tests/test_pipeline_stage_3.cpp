@@ -44,7 +44,7 @@ int main (int argc, char ** argv)
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
+    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0] );
 
     // Create runner
     L3::EstimatorRunner runner;
@@ -69,9 +69,9 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::SwatheRenderer             swathe_renderer( &swathe_builder ); 
     L3::Visualisers::ExperienceRenderer         experience_renderer( experience );
-    L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), experience->experience_histogram );
+    L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer_experience( glv::Rect(50, 200, 500, 300 ), (*experience->experience_pyramid)[0] );
     L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer_swathe( glv::Rect(50, 400, 500, 300 ), estimator.swathe_histogram );
-    L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer( experience->experience_histogram );
+    L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer( (*experience->experience_pyramid)[0] );
     L3::Visualisers::PointCloudBoundsRenderer   point_cloud_bounds_renderer( point_cloud );
     
     // Link the experience to the current pose generator

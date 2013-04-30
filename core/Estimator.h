@@ -128,22 +128,25 @@ namespace Estimator
         //struct Estimator : Dumpable
         struct Estimator 
         {
-            Estimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) 
+            Estimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<double> > experience ) 
                 : cost_function(f), 
                      experience_histogram(experience)
             {
                 swathe_histogram.reset( new L3::HistogramUniformDistance<double>() );
                 current_swathe.reset( new L3::PointCloud<double>() );
                 current_histogram.reset( new L3::Histogram<double>() );
+           
+                sampled_swathe.reset( new PointCloud<T>() );
             }
 
-            CostFunction<T>*    cost_function;
+            CostFunction<T>*                        cost_function;
             boost::shared_ptr<PoseEstimates>        pose_estimates;
             boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;
+            boost::shared_ptr<L3::Histogram<T> >    current_histogram;
             boost::shared_ptr<L3::Histogram<T> >    experience_histogram;
-            boost::shared_ptr<L3::PointCloud<double> >        current_swathe;
+            boost::shared_ptr<L3::PointCloud<T> >   current_swathe;
 
-            boost::shared_ptr< L3::Histogram<double> > current_histogram;
+            boost::shared_ptr< PointCloud<T> > sampled_swathe;
             
             virtual ~Estimator()
             {
@@ -158,7 +161,8 @@ namespace Estimator
         struct DiscreteEstimator : Estimator<T>
     {
 
-        DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) : Estimator<T>(f, experience)
+        DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<double> > experience ) 
+            : Estimator<T>(f, experience)
         {
             this->pose_estimates.reset( new GridEstimates(2, 2, 1 ) );
         }
@@ -175,7 +179,8 @@ namespace Estimator
         struct GroundTruthEstimator : Estimator<T>
     {
 
-        GroundTruthEstimator( CostFunction<T>* f, boost::shared_ptr<L3::Histogram<double> > experience ) : Estimator<T>(f, experience)
+        GroundTruthEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<double> > experience ) 
+            : Estimator<T>(f, experience)
         {
             this->pose_estimates.reset( new PoseEstimates() );
         }

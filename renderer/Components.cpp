@@ -442,10 +442,14 @@ namespace Visualisers
         glv::Point3 bound_vertices[4];
         glv::Color  bound_colors[4];
 
+        boost::scoped_ptr< L3::PointCloud<double> > tmp( new L3::PointCloud<double>() );
+
         L3::ReadLock point_cloud_lock( cloud->mutex );
-        std::pair<double, double> lower_left = min( cloud.get() );
-        std::pair<double, double> upper_right = max(cloud.get() );
+        L3::copy( cloud.get(), tmp.get() ); 
         point_cloud_lock.unlock();
+
+        std::pair<double, double> lower_left = min( tmp.get() );
+        std::pair<double, double> upper_right = max( tmp.get() );
 
         glv::draw::blendTrans();
 
@@ -603,14 +607,17 @@ namespace Visualisers
         glv::Color current_color;
         
 
+        double cost;
         int counter = 0;
 
         for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
             it != estimates.estimates.end();
             it++ )
         {
-            vertices[counter]( it->X(), it->Y(), std::isinf( estimates.costs[counter] ) ? 0.0 : estimates.costs[counter] );
-            current_color = std::isinf( estimates.costs[counter] ) ? glv::Color(1,0,0) : glv::Color(0,1,0) ;
+
+            cost = std::isinf( estimates.costs[counter] ) ? 0.0 : estimates.costs[counter] ;
+            vertices[counter]( it->X(), it->Y(), cost );
+            current_color = glv::Color( cost/40.0, cost/40.0, cost/40.0);
             colors[counter] = current_color; 
 
             counter++;
@@ -642,13 +649,7 @@ namespace Visualisers
 
         //glv::draw::paint( glv::draw::Points, vertices, colors, 100 );
 
-        //std::cout << *(estimates.position) << std::endl;
-        //glv::draw::rotate( 0, 0, 5 );
-       
 
-        //std::cout << *(estimates.position) << std::endl;
-
-        //glv::draw::rotate( 15, 0, 45 );
         glv::draw::translate( -1*estimates.position->X(), -1*estimates.position->Y(), -30);
         
         L3::ReadLock lock( estimates.mutex );

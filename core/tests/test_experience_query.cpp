@@ -17,8 +17,10 @@ int main()
         experience->update( random()%100, random()%100 );
     
         t.begin();
-        L3::ReadLock( experience->experience_histogram->mutex );
-        std::cout << experience->experience_histogram->x_bins<< " x" << experience->experience_histogram->y_bins << " in " << t.elapsed() << "s" << std::endl;
+        L3::ReadLock( experience->experience_pyramid->mutex );
+        std::cout << (*experience->experience_pyramid)[0]->x_bins<< " x" 
+            << (*experience->experience_pyramid)[0]->y_bins << " in " 
+            << t.elapsed() << "s" << std::endl;
     }
 
 }

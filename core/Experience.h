@@ -49,13 +49,13 @@ struct Experience : SpatialObserver, Poco::Runnable
     std::deque<experience_section>  sections;
     std::ifstream                   data;
     Poco::Thread                    thread;
-    
     unsigned int                    window;
     bool                            running;
+    
     std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
   
     boost::shared_ptr< L3::PointCloud<double> >  resident_point_cloud;
-    boost::shared_ptr< L3::Histogram<double> >   experience_histogram;
+    boost::shared_ptr< L3::HistogramPyramid<double> > experience_pyramid;
 
     ~Experience();
 

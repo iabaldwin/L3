@@ -14,11 +14,46 @@ namespace L3
 namespace Visualisers
 {
 
-struct EventController : glv::View
+    //enum {
+    //};
+
+
+/*
+ *  Custom GLV view
+ */
+struct CustomGLV : glv::GLV
 {
-	virtual bool onEvent( glv::Event::t e, glv::GLV& g)
+    bool onEvent( glv::Event::t e, glv::GLV& g)
     {
 
+        if ( e == glv::Event::KeyDown )
+        {
+            const glv::Keyboard& k = g.keyboard();
+            switch (k.key())
+            {
+                case 96:
+                    this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
+
+                default:
+                    break; 
+            }
+
+        }
+    }
+};
+
+struct EventController : glv::View
+{
+    EventController()
+    {
+        this->disable( glv::Visible );
+    }
+
+	virtual bool onEvent( glv::Event::t e, glv::GLV& g)
+    {
+        if (e == 20)
+        {
+        }
     }
 };
 
@@ -34,11 +69,11 @@ struct DataDumper : EventController
 
 	bool onEvent( glv::Event::t e, glv::GLV& g)
     {
+
         const glv::Keyboard& k = g.keyboard();
         int key = k.key();
 
         // Special switch key
-        std::cout << "Dumping " << targets.size() << std::endl;
         if (key == 'd')
             std::for_each( targets.begin(), targets.end(), std::mem_fun( &Dumpable::dump ) );
 
@@ -106,15 +141,17 @@ class Layout
              *  Lua interface
              */
             lua_interface.reset( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
-            lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
+            //lua_interface.reset( new L3::Visualisers::TestInterface( glv::Rect(1200,800,200,150) ) ) ;
+            //lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
             this->renderables.push_front( lua_interface.get() );
 
             // Create the main view
-            main_view = new CustomView( glv::Rect(0,0, .6*win.width(),500));
+            //main_view = new CustomView( glv::Rect(0,0, .6*win.width(),500));
+            main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
             this->renderables.push_front( main_view );
 
             // Add it is a global interface
-            main_view->addGlobalInterface( glv::Event::KeyDown, lua_interface.get() );
+            //main_view->addGlobalInterface( glv::Event::KeyDown, lua_interface.get() );
 
             // Composite view holder
             composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*win.width(), 500 )) );
@@ -138,17 +175,21 @@ class Layout
         {
         }
 
-        void run( glv::GLV& top )
+        //void run( glv::GLV& top )
+        void run()
         {
+  
+            test_event_controller.reset( new EventController() );
+
+            //glv::GLV top;
+          
+            CustomGLV top;
+
             top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
            
             // Add renderables provided by children
             for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                 top << *it;
-
-            // Add renderables provided by children
-            //for( std::list< glv::Plot* >::iterator it = plottables.begin(); it != plottables.end(); it++ )
-                //top << *it;
 
             window.setGLV(top);
 
@@ -229,11 +270,12 @@ class Layout
 
     protected:
 
-        CustomView*                     main_view;
-        //glv::View*                      main_view;
+        //CustomView*                     main_view;
+        glv::View*                      main_view;
         glv::Window&                    window; 
         //boost::shared_ptr< glv::View >  lua_interface;
         boost::shared_ptr< glv::TextView >  lua_interface;
+        //boost::shared_ptr< L3::Visualisers::TestInterface >  lua_interface;
 
         
         std::list< glv::View* >     renderables;
@@ -249,6 +291,7 @@ class Layout
         std::list< boost::shared_ptr< glv::Plot > >         plots;
         std::list< boost::shared_ptr< VelocityPlotter > >   plotters;
 
+        boost::shared_ptr< EventController > test_event_controller;
 };
 
 

@@ -13,13 +13,14 @@ namespace L3
              *  Composite Leafs
              */
             // Histogram Bounds
-            histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( experience->experience_histogram ) );
+            histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( (*experience->experience_pyramid)[0]) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
 
             histogram_bounds_renderer->depth = -2.0 ;
 
             // Histogram voxel
-            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( experience->experience_histogram ) ) ;
+            //histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( experience->experience_histogram ) ) ;
+            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( (*experience->experience_pyramid)[0] ) ) ;
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
 
             // Swathe Bounds
@@ -125,7 +126,10 @@ namespace L3
 
             swathe_density_renderer->enable( glv::Visible );
 
-            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), experience->experience_histogram ) );
+            //boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), experience->experience_histogram ) );
+            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( 
+                    new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), 
+                        (*experience->experience_pyramid)[0] ) );
             density_renderers.push_back( experience_density_renderer ); 
             this->renderables.push_front( dynamic_cast<glv::Plot*>(experience_density_renderer.get() ) );
             updater->operator<<( experience_density_renderer.get() );
@@ -133,8 +137,8 @@ namespace L3
             experience_density_renderer->bringToFront();
             experience_density_renderer->enable( glv::Visible );
 
-            dumper.reset( new DataDumper( runner->dumps ) );
-            main_view->addGlobalInterface( glv::Event::KeyDown, dumper.get() );
+            //dumper.reset( new DataDumper( runner->dumps ) );
+            //main_view->addGlobalInterface( glv::Event::KeyDown, dumper.get() );
        
             // Truly dbg
             debug_renderer.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->estimator->current_swathe ));

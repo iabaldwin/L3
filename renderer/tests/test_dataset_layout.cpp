@@ -20,7 +20,7 @@ int main( int argc, char* argv[] )
 
         glv::GLV top;
 
-        layout.run( top );
+        //layout.run( top );
 
     }
     catch( L3::no_such_folder )

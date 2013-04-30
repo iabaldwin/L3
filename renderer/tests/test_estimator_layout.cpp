@@ -62,7 +62,7 @@ int main( int argc, char* argv[] )
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
     //L3::Estimator::GroundTruthEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
-    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
+    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0]  );
 
     // Create runner
     L3::EstimatorRunner runner;
@@ -85,8 +85,9 @@ int main( int argc, char* argv[] )
     //L3::Visualisers::EstimatorLayout layout(win, &runner, experience, point_cloud.get() );
     L3::Visualisers::EstimatorLayout layout(win, &runner, experience, point_cloud );
 
-    glv::GLV top;
-
-    layout.run( top );
+    //CustomGLV top;
+    //layout.run( top );
+    
+    layout.run();
 }
 
