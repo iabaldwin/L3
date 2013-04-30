@@ -378,7 +378,7 @@ struct HistogramDensityRenderer : glv::Plot, HistogramRenderer, Updateable
 {
 	HistogramDensityRenderer(const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram )
         : glv::Plot(r), 
-        HistogramRenderer(histogram)
+            HistogramRenderer(histogram)
     {
         // Assign density plot
         this->add(*new glv::PlotDensity( glv::Color(1)) );
@@ -434,7 +434,6 @@ struct HistogramVoxelRendererView : HistogramVoxelRenderer, glv::View3D
 
 };
 
-
 struct HistogramVoxelRendererLeaf : HistogramVoxelRenderer, Leaf
 {
 	HistogramVoxelRendererLeaf(boost::shared_ptr<L3::Histogram<double> > histogram  )
@@ -452,6 +451,48 @@ struct HistogramVoxelRendererLeaf : HistogramVoxelRenderer, Leaf
     }
 
 };
+
+/*
+ *  Pyramid renderer
+ */
+struct HistogramPyramidRenderer
+{
+    HistogramPyramidRenderer( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid) 
+        : pyramid(histogram_pyramid)
+    {
+    }
+    
+    boost::shared_ptr<L3::HistogramPyramid<double> > pyramid;
+    
+};
+
+struct HistogramPyramidRendererView : glv::Group, HistogramPyramidRenderer, Updateable
+{
+    HistogramPyramidRendererView( const glv::Rect& r, boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid) 
+        : glv::Group(r), 
+            HistogramPyramidRenderer(histogram_pyramid)
+    {
+        for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
+                it != this->pyramid->end();
+                it++ )
+        {
+            renderers.push_front( 
+                    boost::make_shared< HistogramDensityRenderer >(
+                        glv::Rect( 200,200 ), *it )
+                    );
+
+        }
+
+        this->fit();
+    }
+
+    void update()
+    {
+    }
+
+    std::list< boost::shared_ptr< HistogramDensityRenderer > > renderers;
+};
+
 
 /*
  *  Single pose orientation renderer

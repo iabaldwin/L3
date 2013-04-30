@@ -362,12 +362,15 @@ class EstimatorLayout : public Layout
         
         boost::shared_ptr< L3::Visualisers::CostRendererView >    cost_renderer_view;
 
+
         std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >  density_renderers;
 
         boost::shared_ptr< DataDumper > dumper;
         
         boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        debug_renderer; 
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       debug_histogram_bounds_renderer;
+        
+        boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
 };
 
 

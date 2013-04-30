@@ -119,12 +119,11 @@ namespace L3
             /*
              *  Run-time swathe density renderer
              */
-            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > swathe_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 800, 0, 200, 200 ), runner->estimator->current_histogram ) );
-            density_renderers.push_back( swathe_density_renderer ); 
-            this->renderables.push_front( dynamic_cast<glv::Plot*>(swathe_density_renderer.get() ) );
-            updater->operator<<( swathe_density_renderer.get() );
-
-            swathe_density_renderer->enable( glv::Visible );
+            //boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > swathe_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 800, 0, 200, 200 ), runner->estimator->current_histogram ) );
+            //density_renderers.push_back( swathe_density_renderer ); 
+            //this->renderables.push_front( dynamic_cast<glv::Plot*>(swathe_density_renderer.get() ) );
+            //updater->operator<<( swathe_density_renderer.get() );
+            //swathe_density_renderer->enable( glv::Visible );
 
             //boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), experience->experience_histogram ) );
             boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( 
@@ -149,6 +148,9 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_histogram_bounds_renderer.get() ) ) );
 
             debug_histogram_bounds_renderer->depth = -12.0;
+        
+            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 800, 0, 200, 200 ), experience->experience_pyramid) );
+            this->renderables.push_front( pyramid_renderer.get() );
         }
     }
 }
