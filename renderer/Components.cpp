@@ -29,15 +29,13 @@ namespace Visualisers
     /*
      *  Components :: Grid
      */
-    Grid::Grid()
+    Grid::Grid( float lower, float upper, float spacing) 
+        : lower(lower), upper(upper), spacing(spacing)
     {
         vertices.reset( new glv::Point3[ 101*4 ] );
         colors.reset( new glv::Color[ 101*4 ] );
 
         counter = 0;
-        float spacing = 50; 
-        float lower = -500;
-        float upper = 500;
 
         // Add horizontal
         for ( int i=lower; i <= upper; i+=spacing )
@@ -428,13 +426,11 @@ namespace Visualisers
         L3::copy( cloud.get(), point_cloud.get() );
         lock.unlock();
 
-        L3::SE3 tmp( *current_estimate );
-
-        Eigen::Matrix4f h = tmp.getHomogeneous();
-
-        tmp.setHomogeneous( h.inverse() );
-
-        L3::transform( point_cloud.get(), &tmp );
+        //This used to exist, because we had already projected the point cloud
+        //L3::SE3 tmp( *current_estimate );
+        //Eigen::Matrix4f h = tmp.getHomogeneous();
+        //tmp.setHomogeneous( h.inverse() );
+        //L3::transform( point_cloud.get(), &tmp );
 
     }
 
@@ -606,19 +602,27 @@ namespace Visualisers
         glv::Point3 vertices[ estimates.costs.size() ];
         glv::Color colors[ estimates.costs.size() ];
 
+        glv::Color current_color;
+        
+
         int counter = 0;
 
         for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
             it != estimates.estimates.end();
             it++ )
         {
-            vertices[counter]( it->X(), it->Y(), estimates.costs[counter] );
+            vertices[counter]( it->X(), it->Y(), std::isinf( estimates.costs[counter] ) ? 0.0 : estimates.costs[counter] );
+            current_color = std::isinf( estimates.costs[counter] ) ? glv::Color(1,0,0) : glv::Color(0,1,0) ;
+            colors[counter] = current_color; 
+
             counter++;
         }
 
+        glv::draw::pointSize( 2 );
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        //Grid( -10, 10, 1 ).onDraw3D( g );
+        Grid().onDraw3D( g );
     }
-
 
     /*
      *  Cost renderer (View)
@@ -626,15 +630,32 @@ namespace Visualisers
 
     void CostRendererView::onDraw3D( glv::GLV& g )
     {
-        //std::cout << "Also getting lock...";
-        //L3::ReadLock lock( estimates.mutex );
-        //lock.unlock();
-        //std::cout << "Done" << std::endl;
 
-        //glv::draw::translateZ( -50 );
-        //glv::draw::translate( estimates.position->X(), estimates.position->Y(), 0 );
+        //float x_offset = (float)( rand()%100 );
+        //float y_offset = (float)( rand()%100 );
+
+        //glv::draw::translate( -1*x_offset, -1*y_offset, -75 );
         
-        //CostRenderer::onDraw3D( g );     
+        //glv::Point3 vertices[100];
+        //glv::Color  colors[100];
+
+        //for( int i=0; i<100; i++ )
+            //vertices[i]( ((rand()%50)-25)+x_offset, ((rand()%50)-25)+y_offset, 0 );
+
+        //glv::draw::paint( glv::draw::Points, vertices, colors, 100 );
+
+        //std::cout << *(estimates.position) << std::endl;
+        //glv::draw::rotate( 0, 0, 5 );
+       
+
+        //std::cout << *(estimates.position) << std::endl;
+
+        //glv::draw::rotate( 15, 0, 45 );
+        glv::draw::translate( -1*estimates.position->X(), -1*estimates.position->Y(), -30);
+        
+        L3::ReadLock lock( estimates.mutex );
+        CostRenderer::onDraw3D( g );     
+
     }
 
 }

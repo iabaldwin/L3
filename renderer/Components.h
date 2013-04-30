@@ -303,11 +303,13 @@ struct PointCloudBoundsRenderer : Leaf
  */
 struct Grid : Leaf
 {
-    Grid();
+    Grid( float lower=-500, float upper=500, float spacing=50);
 
     int counter;
     boost::shared_array< glv::Point3 >  vertices;
     boost::shared_array< glv::Color >   colors;
+
+    float lower, upper, spacing;
 
     void onDraw3D(glv::GLV& g);
     

@@ -58,8 +58,6 @@ namespace L3
         //L3::transform( projector->cloud, &predicted );  
         point_cloud_lock.unlock();
     
-        std::cout << time << std::endl;
-
         /*
          *  Estimate
          */
