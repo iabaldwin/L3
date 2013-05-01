@@ -125,17 +125,16 @@ namespace Estimator
      * Estimator types
      */
     template < typename T >
-        //struct Estimator : Dumpable
         struct Estimator 
         {
             Estimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<double> > experience ) 
                 : cost_function(f), 
                      experience_histogram(experience)
             {
+                // Allocations
                 swathe_histogram.reset( new L3::HistogramUniformDistance<double>() );
                 current_swathe.reset( new L3::PointCloud<double>() );
                 current_histogram.reset( new L3::Histogram<double>() );
-           
                 sampled_swathe.reset( new PointCloud<T>() );
             }
 
@@ -161,7 +160,7 @@ namespace Estimator
         struct DiscreteEstimator : Estimator<T>
     {
 
-        DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<double> > experience ) 
+        DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience ) 
             : Estimator<T>(f, experience)
         {
             this->pose_estimates.reset( new GridEstimates(2, 2, 1 ) );
@@ -188,6 +187,52 @@ namespace Estimator
         void dump();
 
         double operator()( PointCloud<T>* swathe, SE3 estimate );
+
+    };
+
+    template < typename T>
+        struct Algorithm
+        {
+            virtual SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
+        };
+
+    template < typename T>
+        struct PassThrough : Algorithm<T>
+        {
+            PassThrough(  Estimator<T>* estimator ) : estimator(estimator)
+            {
+            }
+
+            Estimator<T>* estimator;
+
+            SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) 
+            {
+                estimator->operator()( swathe, estimate );
+            }
+        };
+
+    template < typename T>
+        struct IterativeDescent : Algorithm<T>
+    {
+
+        IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
+        {
+            for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
+                    it != pyramid->end();
+                    it++ )
+            {
+
+                discrete_estimators.push_back( 
+                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it )
+                        );
+            }
+        }
+        
+        boost::shared_ptr< HistogramPyramid<T> > pyramid;
+   
+        std::deque< boost::shared_ptr< DiscreteEstimator<T> > > discrete_estimators;
+        
+        SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
     };
 

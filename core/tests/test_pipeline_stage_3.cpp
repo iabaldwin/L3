@@ -44,7 +44,7 @@ int main()
      */
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
     L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0] );
-
+    L3::Estimator::PassThrough<double> algo( &estimator );
 
     /*
      *  Run
@@ -56,7 +56,7 @@ int main()
     runner.setExperience( &*experience )
             .setPoseProvider( &pose_windower )
             .setProjector( &*projector )
-            .setEstimator( &estimator  )
+            .setAlgorithm( &algo )
             .setSwatheBuilder( &swathe_builder );
 
     double time = dataset.start_time;

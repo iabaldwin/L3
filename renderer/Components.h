@@ -466,24 +466,28 @@ struct HistogramPyramidRenderer
     
 };
 
-struct HistogramPyramidRendererView : glv::Group, HistogramPyramidRenderer, Updateable
+struct HistogramPyramidRendererView : glv::Box, HistogramPyramidRenderer, Updateable
 {
     HistogramPyramidRendererView( const glv::Rect& r, boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid) 
-        : glv::Group(r), 
-            HistogramPyramidRenderer(histogram_pyramid)
+        : HistogramPyramidRenderer(histogram_pyramid)
+//glv::Box(r), 
     {
+        int start = 600;
         for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
                 it != this->pyramid->end();
                 it++ )
         {
-            renderers.push_front( 
-                    boost::make_shared< HistogramDensityRenderer >(
-                        glv::Rect( 200,200 ), *it )
-                    );
 
+            boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( start+=200, 0, 200,200 ), *it ) );
+            renderers.push_front( renderer );
+            (*this) << renderer.get();
+       
+            break;
         }
 
+
         this->fit();
+        this->bringToFront();
     }
 
     void update()
@@ -620,7 +624,20 @@ struct CostRendererView : CostRenderer, glv::View3D
     
 };
 
+/*
+ *  Locale: Bounds Renderer
+ */
 
+struct LocaleBoundsRenderer : Leaf
+{
+    //LocaleBoundsRenderer( const L3::Configuration::Mission& mission )
+    LocaleBoundsRenderer()
+    {
+    }
+  
+    void onDraw3D(glv::GLV& g);
+
+};
 
 
 

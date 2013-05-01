@@ -657,5 +657,39 @@ namespace Visualisers
 
     }
 
+    /*
+     *  Locale specific
+     */
+    void LocaleBoundsRenderer::onDraw3D( glv::GLV& g )
+    {
+        glv::Point3 outer_vertices[4];
+        glv::Color  outer_colors[4];
+
+        outer_vertices[0]( -500.0, -500.0, 10 );
+        outer_colors[0].set( 0, 1, 0, .4); 
+
+        outer_vertices[1]( -500.0, 500.0, 10 );
+        outer_colors[1].set( 0, 1, 0, .4); 
+        
+        outer_vertices[2]( 500.0, 500.0, 10 );
+        outer_colors[2].set( 0, 1, 0, .4); 
+        
+        outer_vertices[3]( 500.0, -500.0, 10 );
+        outer_colors[3].set( 0, 1, 0, .4); 
+
+
+
+        glv::draw::enable( glv::draw::Blend );
+        glv::draw::enable( glv::draw::LineStipple );
+
+        glv::draw::lineStipple(4, 0xAAAA );
+        glv::draw::lineWidth( 1 );
+        glv::draw::paint( glv::draw::LineLoop, outer_vertices, outer_colors, 4 );
+        //glv::draw::paint( glv::draw::Lines, outer_vertices, outer_colors, 4 );
+        //glv::draw::paint( glv::draw::Quads, outer_vertices, outer_colors, 4 );
+        glv::draw::disable( glv::draw::Blend );
+
+    }
+
 }
 }

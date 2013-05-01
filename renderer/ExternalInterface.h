@@ -1,7 +1,12 @@
 #ifndef L3_EXTERNAL_INTERFAE_H
 #define L3_EXTERNAL_INTERFAE_H
 
+#include <GLV/glv.h>
+
 #include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include "Interface.h"
 
 namespace L3
 {
@@ -12,55 +17,21 @@ namespace Visualisers
     {
         ExternalInterface( glv::Rect rect ) : glv::TextView( rect )
         {
-            visible = false;
+            visibility = false;
             this->maximize(); 
             this->disable(glv::Visible);
+            this->enable( glv::AlwaysBubble );
+       
+            interface.reset( new L3::LuaInterface() );
         }
 
-        bool visible;
+        bool visibility;
 
         std::list < std::string > history;
 
-        bool onEvent( glv::Event::t e, glv::GLV& g)
-        {
-            if ( e==20 )
-            {
-                visible ? this->disable(glv::Visible) : this->enable(glv::Visible);
-                visible = !visible; 
-                if (visible )
-                {
-                    this->enable( glv::Focused );
-                }
+        bool onEvent( glv::Event::t e, glv::GLV& g);
 
-            }
-
-            // Process  
-            bool retval = true;
-            retval = retval && glv::TextView::onEvent(e,g);
-
-            if ( e == glv::Event::KeyDown) 
-            {
-                const glv::Keyboard& k = g.keyboard();
-                int key = k.key();
-
-                if ( key == glv::Key::Return )
-                {
-                    history.push_front(  this->getValue() + "\n" );
-
-                    deleteText(0, mText.size());
-                    setPos(0);
- 
-                    std::stringstream ss; 
-                    for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
-                        ss << *it;
-
-                    std::cout << ss.str() << std::endl;
-                    std::cout << "--------------" << std::endl;
-                }
-            }
-
-        }
-
+        boost::shared_ptr< L3::Interface > interface;
     };
 
 }

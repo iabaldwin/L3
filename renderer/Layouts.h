@@ -25,7 +25,9 @@ struct CustomGLV : glv::GLV
 {
     bool onEvent( glv::Event::t e, glv::GLV& g)
     {
-
+        glv::space_t a =0.0f;
+        glv::space_t b =0.0f;
+        
         if ( e == glv::Event::KeyDown )
         {
             const glv::Keyboard& k = g.keyboard();
@@ -33,6 +35,7 @@ struct CustomGLV : glv::GLV
             {
                 case 96:
                     this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
+                    this->setMouseDown(a, b, 1, 1);
 
                 default:
                     break; 
@@ -371,6 +374,8 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       debug_histogram_bounds_renderer;
         
         boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
+
+        boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
 };
 
 

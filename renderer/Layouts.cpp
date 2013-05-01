@@ -36,8 +36,12 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
 
             // Predicted estimates
-            predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( runner->estimator->pose_estimates ) ); 
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
+            //predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( runner->estimator->pose_estimates ) ); 
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
+
+            // Locale Bounds
+            locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
 
             /*
              *  Stand-alone plots
@@ -112,8 +116,8 @@ namespace L3
             /*
              *  Cost visualisation 
              */
-            cost_renderer_view.reset( new L3::Visualisers::CostRendererView( *(runner->estimator->pose_estimates),  glv::Rect( win.width()-510,  win.height()-250, 200, 200 ) ) );
-            this->renderables.push_front( cost_renderer_view.get() );
+            //cost_renderer_view.reset( new L3::Visualisers::CostRendererView( *(runner->estimator->pose_estimates),  glv::Rect( win.width()-510,  win.height()-250, 200, 200 ) ) );
+            //this->renderables.push_front( cost_renderer_view.get() );
 
            
             /*
@@ -126,31 +130,38 @@ namespace L3
             //swathe_density_renderer->enable( glv::Visible );
 
             //boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), experience->experience_histogram ) );
-            boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( 
-                    new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), 
-                        (*experience->experience_pyramid)[0] ) );
-            density_renderers.push_back( experience_density_renderer ); 
-            this->renderables.push_front( dynamic_cast<glv::Plot*>(experience_density_renderer.get() ) );
-            updater->operator<<( experience_density_renderer.get() );
+            //boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( 
+                    //new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), 
+                        //(*experience->experience_pyramid)[0] ) );
+            //density_renderers.push_back( experience_density_renderer ); 
+            //this->renderables.push_front( dynamic_cast<glv::Plot*>(experience_density_renderer.get() ) );
+            //updater->operator<<( experience_density_renderer.get() );
 
-            experience_density_renderer->bringToFront();
-            experience_density_renderer->enable( glv::Visible );
+            //experience_density_renderer->bringToFront();
+            //experience_density_renderer->enable( glv::Visible );
 
             //dumper.reset( new DataDumper( runner->dumps ) );
             //main_view->addGlobalInterface( glv::Event::KeyDown, dumper.get() );
        
             // Truly dbg
-            debug_renderer.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->estimator->current_swathe ));
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_renderer.get() ) ) );
-            debug_renderer->color = glv::Color( 160, 32, 240 ); 
+            //debug_renderer.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->estimator->current_swathe ));
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_renderer.get() ) ) );
+            //debug_renderer->color = glv::Color( 160, 32, 240 ); 
 
-            debug_histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( runner->estimator->current_histogram ) );
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_histogram_bounds_renderer.get() ) ) );
-
-            debug_histogram_bounds_renderer->depth = -12.0;
+            //debug_histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( runner->estimator->current_histogram ) );
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_histogram_bounds_renderer.get() ) ) );
+            //debug_histogram_bounds_renderer->depth = -12.0;
         
             pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 800, 0, 200, 200 ), experience->experience_pyramid) );
             this->renderables.push_front( pyramid_renderer.get() );
+
+    
+            for ( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
+                    it != pyramid_renderer->renderers.end();
+                    it++ )
+            updater->operator<<( it->get() );
+
+
         }
     }
 }

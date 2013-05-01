@@ -224,19 +224,12 @@ namespace L3
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
-                    //group.run( Hypothesis( swathe, &*it, this->experience_pyramid.get() , this->cost_function, result_iterator++ ) );
-                    //group.run( Hypothesis( sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
+                    group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
                     it++;
                 }
 
                 // Synch
                 group.wait();
-
-                // TODO:
-                // How do we do this, appropriately
-                //L3::clone( &swathe_histogram, this->current_histogram.get() );
-                //L3::copy( swathe, this->current_swathe.get() );
-                //L3::copy( hypothesis.get(), this->current_swathe.get() );
 
             }
 
@@ -309,6 +302,18 @@ namespace L3
 
             }
 
+
+    template < typename T>
+        SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+        {
+            // Compute
+            discrete_estimators[0]->operator()( swathe, estimate );
+
+            //discrete_estimators[1]->operator()( swathe, estimate );
+            
+            //discrete_estimators[2]->operator()( swathe, estimate );
+        }
+
     }   // Estimator
 }       // L3
 
@@ -317,3 +322,4 @@ template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<
 template double L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template double L3::Estimator::GroundTruthEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template void L3::Estimator::GroundTruthEstimator<double>::dump();
+template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);

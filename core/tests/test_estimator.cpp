@@ -51,7 +51,8 @@ int main( int argc, char* argv[] )
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0] );
+    //L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0] );
+    L3::Estimator::IterativeDescent<double> estimator( kl_cost_function, experience->experience_pyramid );
 
     // Create runner
     L3::EstimatorRunner runner;
@@ -62,7 +63,7 @@ int main( int argc, char* argv[] )
           .setPoseWindower( &pose_windower )
           .setPoseProvider( &oracle )
           .setProjector( &*projector )
-          .setEstimator( &estimator  )
+          .setAlgorithm( &estimator  )
           .setSwatheBuilder( &swathe_builder )
           .start( dataset.start_time );
 

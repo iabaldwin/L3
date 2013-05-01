@@ -96,7 +96,8 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::ConstantTimeWindower<L3::LHLV>*     windower;
     L3::SwatheBuilder*                      swathe_builder;
     L3::Projector<double>*                  projector;
-    L3::Estimator::Estimator<double>*       estimator;
+    //L3::Estimator::Estimator<double>*       estimator;
+    L3::Estimator::Algorithm<double>*       estimator;
 
     std::list < Dumpable* >  dumps;
     std::list < TemporalObserver* >         observers;
@@ -156,11 +157,10 @@ struct EstimatorRunner : ThreadedTemporalRunner
         return *this;
     }
 
-    EstimatorRunner& setEstimator( L3::Estimator::Estimator<double>* estimator )
+    //EstimatorRunner& setEstimator( L3::Estimator::Estimator<double>* estimator )
+    EstimatorRunner& setAlgorithm( L3::Estimator::Algorithm<double>* estimator )
     {
-        // ?
         this->estimator = estimator;
-        (*this) << dynamic_cast<L3::Dumpable*>(estimator);
         return *this;
     }
 

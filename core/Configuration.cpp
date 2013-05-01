@@ -90,6 +90,7 @@ bool Mission::loadDescription()
 bool Mission::loadLocale()
 {
     std::string locale;
+ 
     return config.lookupValue( "mission.locale", locale);
 }
 

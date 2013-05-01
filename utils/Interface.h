@@ -15,8 +15,6 @@ namespace L3
 struct Interface
 {
 
-    virtual bool init() = 0;
-    
     virtual bool execute( const std::string& ) = 0;
 
     virtual ~Interface()
@@ -32,7 +30,7 @@ struct Interface
 struct LuaInterface : Interface
 {
 
-    bool init()
+    LuaInterface()
     {
         /* initialize lua */
         state = lua_open();
