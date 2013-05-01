@@ -85,9 +85,9 @@ namespace L3
             //this->renderables.push_front( predicted_pose_label.get() );
 
             // Stand-alone scan renderer :: Horizontal
-            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2D( runner->horizontal_LIDAR, glv::Rect( 150,150 ) ) );
-            horizontal_scan_renderer->pos( win.width()-(150*3+60), 335 );
-            this->renderables.push_front( horizontal_scan_renderer.get() );
+            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR, glv::Rect( 150,150 ) ) );
+            dynamic_cast<glv::View*>(horizontal_scan_renderer.get())->pos( win.width()-(150*3+60), 335 );
+            this->renderables.push_front( dynamic_cast<glv::View*>(horizontal_scan_renderer.get() ) );
             updater->operator<<( horizontal_scan_renderer.get() );
 
             boost::shared_ptr< glv::View > horizontal_scan_renderer_label( new glv::Label("LMS151::Horizontal") );
@@ -96,15 +96,15 @@ namespace L3
             this->renderables.push_front( horizontal_scan_renderer_label.get() );
 
             // Stand-alone scan renderer : Vertical
-            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2D( runner->vertical_LIDAR, glv::Rect( 150,150 ) ) );
-            vertical_scan_renderer->pos( win.width()-(150*2+30), 335 );
-            this->renderables.push_front( vertical_scan_renderer.get() );
+            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 150,150 ) ) );
+            dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( win.width()-(150*2+30), 335 );
+            this->renderables.push_front( dynamic_cast<glv::View*>(vertical_scan_renderer.get() ) );
             updater->operator<<( vertical_scan_renderer.get() );
 
-            boost::shared_ptr< glv::View > vertical_scan_renderer_label( new glv::Label("LMS151::Vertical") );
-            vertical_scan_renderer_label->pos( win.width()-(150*2+30), 335+160 );
-            this->labels.push_front( vertical_scan_renderer_label );
-            this->renderables.push_front( vertical_scan_renderer_label.get() );
+            //boost::shared_ptr< glv::View > vertical_scan_renderer_label( new glv::Label("LMS151::Vertical") );
+            //vertical_scan_renderer_label->pos( win.width()-(150*2+30), 335+160 );
+            //this->labels.push_front( vertical_scan_renderer_label );
+            //this->renderables.push_front( vertical_scan_renderer_label.get() );
             
             /*
              *  Swathe Cloud
@@ -160,6 +160,16 @@ namespace L3
                     it != pyramid_renderer->renderers.end();
                     it++ )
             updater->operator<<( it->get() );
+
+            combined_scan_renderer.reset( new L3::Visualisers::CombinedScanRenderer2D(  runner->horizontal_LIDAR, runner->vertical_LIDAR, glv::Rect(150,150) ) );
+            combined_scan_renderer->pos( win.width()-(150+10), 585 );
+            this->renderables.push_front( combined_scan_renderer.get() );
+            
+            for( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = combined_scan_renderer->scan_renderers.begin();
+                    it != combined_scan_renderer->scan_renderers.end();
+                    it++ )
+            updater->operator<<( it->get() );
+
 
 
         }

@@ -376,6 +376,8 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
 
         boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
+
+        boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D > combined_scan_renderer;
 };
 
 

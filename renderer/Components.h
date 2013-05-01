@@ -10,6 +10,7 @@
 
 #include "RenderingUtils.h"
 
+#include <boost/ref.hpp>
 #include <boost/shared_array.hpp>
 
 namespace L3
@@ -525,13 +526,12 @@ struct DedicatedPoseRenderer : glv::View3D, Updateable
 /*
  *  Raw scan renderer
  */
-struct ScanRenderer2D : glv::View3D, Updateable
+struct ScanRenderer2D : Updateable
 {
 
-    ScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& r, glv::Color color ) 
-        : glv::View3D( r ),
-            color(color),
-            windower(windower)
+    ScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, glv::Color color ) 
+        : windower(windower),
+            color(color)
     {
         scan.reset( new L3::LMS151() );
     }
@@ -540,42 +540,85 @@ struct ScanRenderer2D : glv::View3D, Updateable
     {
     }
 
-    std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
-    
+    float                                   rotate_z;
+    glv::Color                              color;
+    boost::shared_ptr<L3::LMS151>           scan;
     L3::ConstantTimeIterator< L3::LMS151 >* windower;
-
-    boost::shared_ptr<L3::LMS151> scan;
-  
-    glv::Color color;
-
-    float rotate_z;
+    std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
 
     void onDraw3D( glv::GLV& g );
-
-        
 
     void update();
 };
 
-
-struct HorizontalScanRenderer2D : ScanRenderer2D
+struct HorizontalScanRenderer2DView : glv::View3D, ScanRenderer2D
 {
 
-    HorizontalScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
-        : ScanRenderer2D( windower, rect, glv::Color(1,0,0) )
+    HorizontalScanRenderer2DView( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
+        : glv::View3D( rect ),
+            ScanRenderer2D( windower, glv::Color(1,0,0) )
+
     {
         rotate_z = 0;
     }
+
+    void onDraw3D( glv::GLV& g )
+    {
+        ScanRenderer2D::onDraw3D(g);
+    }
 };
 
-struct VerticalScanRenderer2D : ScanRenderer2D
+struct VerticalScanRenderer2DView : glv::View3D, ScanRenderer2D
 {
 
-    VerticalScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
-        : ScanRenderer2D( windower, rect, glv::Color(0,0,1) )
+    VerticalScanRenderer2DView( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
+        : glv::View3D( rect ),
+            ScanRenderer2D( windower, glv::Color(0,0,1) )
     {
         rotate_z = 180;
     }
+
+    void onDraw3D( glv::GLV& g )
+    {
+        ScanRenderer2D::onDraw3D(g);
+    }
+
+};
+
+struct CombinedScanRenderer2D  : glv::View3D
+{
+    
+    CombinedScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower_vertical,
+                            L3::ConstantTimeIterator< L3::LMS151 >* windower_horizontal, 
+                            const glv::Rect& rect )
+                            : glv::View3D(rect)
+
+    {
+        scan_renderers.push_back(
+                boost::make_shared<ScanRenderer2D>( windower_vertical, glv::Color(1,0,0) )
+                );
+
+        scan_renderers.push_back(
+                boost::make_shared<ScanRenderer2D>( windower_vertical, glv::Color(0,0,1) )
+                );
+    }
+
+    void onDraw3D( glv::GLV& g )
+    {
+        //REFERENCE TO REFERENCE
+        //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), g ) );
+        //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), boost::reference_wrapper<glv::GLV>(g) ) );
+
+        glv::draw::translateZ( -20 );
+
+        for ( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = scan_renderers.begin();
+                it != scan_renderers.end();
+                it++ )
+            (*it)->onDraw3D(g);
+
+    }
+
+    std::list< boost::shared_ptr< ScanRenderer2D > > scan_renderers;
 };
 
 /*
