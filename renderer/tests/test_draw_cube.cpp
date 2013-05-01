@@ -100,11 +100,9 @@ struct Cube : L3::Visualisers::Leaf
         points[counter++]( x-x_delta, y_val, 20 );
         
 
-
-
         glv::draw::enable( glv::draw::Blend );
         //glv::draw::paint( glv::draw::Quads, points, colors, counter );
-        glv::draw::paint( glv::draw::TriangleStrip, points, colors, counter );
+        glv::draw::paint( glv::draw::TriangleFan, points, colors, counter );
         glv::draw::disable( glv::draw::Blend );
 
     }

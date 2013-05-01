@@ -16,12 +16,16 @@ namespace Visualisers
             if (!visibility )
             {
                 this->disable( glv::Focused );
+                this->disable( glv::DrawBack );
+                //this->disable( glv::AlwaysBubble );
+                this->restore(); 
                 return false;
             }
             else
             {
                 this->enable( glv::Focused );
                 this->enable( glv::DrawBack );
+                //this->enable( glv::AlwaysBubble );
                 //setPos(xToPos(0));
                 cursorPos(0);
             }

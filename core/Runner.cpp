@@ -55,13 +55,12 @@ namespace L3
          */
         L3::WriteLock point_cloud_lock( projector->cloud->mutex );
         projector->project( swathe_builder->swathe );
-        //L3::transform( projector->cloud, &predicted );  
         point_cloud_lock.unlock();
     
         /*
          *  Estimate
          */
-        //(*estimator)( projector->cloud, predicted );
+        (*estimator)( projector->cloud, predicted );
     }
 }
 

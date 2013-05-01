@@ -222,7 +222,7 @@ namespace Estimator
                     it++ )
             {
                 discrete_estimators.push_back( 
-                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, 10, 10, 1 )
+                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it)
                         );
                 break;
             }
