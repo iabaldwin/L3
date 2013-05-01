@@ -23,6 +23,7 @@ namespace Visualisers
                 this->enable( glv::Focused );
                 this->enable( glv::DrawBack );
                 //setPos(xToPos(0));
+                cursorPos(0);
             }
         }
 
@@ -42,6 +43,7 @@ namespace Visualisers
 
                 deleteText(0, mText.size());
                 //setPos(0);
+                cursorPos(0);
 
                 std::stringstream ss; 
                 for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
