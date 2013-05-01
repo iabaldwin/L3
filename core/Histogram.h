@@ -37,6 +37,21 @@ namespace L3
                 return ((this->x_bins == 0) || (this->y_bins == 0 ) );
             }
 
+            void print() const
+            {
+                std::cout << 
+                        this->x_centre << " " << 
+                        this->x_lower << " "  << 
+                        this->x_upper<< " "  << 
+
+                        this->y_centre<< " "  << 
+                        this->y_lower<< " "  << 
+                        this->y_upper<< " "  << 
+
+                        this->x_bins<< " "  << 
+                        this->y_bins<< std::endl;
+            }
+
             virtual void create( float x_centre,
                     float x_lower,
                     float x_upper,
@@ -46,6 +61,13 @@ namespace L3
                     unsigned int x_bins,
                     unsigned int y_bins )
             {
+                if ( ( x_bins == 0 ) || (y_bins == 0 ) )
+                {
+                    std::cerr << "Erroneuos parameters! " << std::endl;
+                    print();
+                    return;
+                }
+
                 if ( hist ) // Re-create
                     gsl_histogram2d_free( hist );
 

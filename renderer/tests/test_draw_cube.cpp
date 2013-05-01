@@ -103,7 +103,8 @@ struct Cube : L3::Visualisers::Leaf
 
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::Quads, points, colors, counter );
+        //glv::draw::paint( glv::draw::Quads, points, colors, counter );
+        glv::draw::paint( glv::draw::TriangleStrip, points, colors, counter );
         glv::draw::disable( glv::draw::Blend );
 
     }

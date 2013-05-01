@@ -94,7 +94,7 @@ namespace Visualisers
     /*
      *  Experience
      */
-    ExperienceRenderer::ExperienceRenderer( boost::shared_ptr<L3::Experience> EXPERIENCE ) : experience(EXPERIENCE), pose_provider(NULL)
+    ExperienceRenderer::ExperienceRenderer( boost::shared_ptr<L3::Experience> experience ) : experience(experience), pose_provider(NULL)
     {
         pt_limit = 10*10000;
 
@@ -126,18 +126,6 @@ namespace Visualisers
         // Update experience
         L3::SE3 update = (*pose_provider)();
         experience->update( update.X(), update.Y() );
-
-        // Plot experience cloud
-        //boost::shared_ptr< L3::PointCloud<double> > cloud;
-        //experience->getExperienceCloud( cloud );
-
-        //for( pt_counter = 0, sample_counter = 0; (pt_counter < cloud->num_points) && ( sample_counter++< pt_limit ); pt_counter+=50 )
-        //{
-            //point_vertices[sample_counter]( cloud->points[pt_counter].x, cloud->points[pt_counter].y, cloud->points[pt_counter].z );
-        //}
-
-        //glv::draw::paint( glv::draw::Points, point_vertices, point_colors, sample_counter );
-
     }
 
     /*

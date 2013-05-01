@@ -160,10 +160,10 @@ namespace Estimator
         struct DiscreteEstimator : Estimator<T>
     {
 
-        DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience ) 
+        DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience, float lower=10.0, float upper=10.0, float granularity=1.0 ) 
             : Estimator<T>(f, experience)
         {
-            this->pose_estimates.reset( new GridEstimates(2, 2, 1 ) );
+            this->pose_estimates.reset( new GridEstimates( lower, upper, granularity ) );
         }
         
         tbb::task_group group;
@@ -221,10 +221,10 @@ namespace Estimator
                     it != pyramid->end();
                     it++ )
             {
-
                 discrete_estimators.push_back( 
-                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it )
+                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, 10, 10, 1 )
                         );
+                break;
             }
         }
         

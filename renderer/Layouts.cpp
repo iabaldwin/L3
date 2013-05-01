@@ -155,7 +155,6 @@ namespace L3
             pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 800, 0, 200, 200 ), experience->experience_pyramid) );
             this->renderables.push_front( pyramid_renderer.get() );
 
-    
             for ( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
                     it != pyramid_renderer->renderers.end();
                     it++ )

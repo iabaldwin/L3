@@ -45,8 +45,10 @@ struct Visualiser : L3::Visualisers::Updateable, L3::Visualisers::Leaf
         // Move the experience cloud
         L3::ReadLock read_lock( experience_cloud->mutex );
         L3::ReadLock write_lock( experience_cloud_copy->mutex );
+        
         L3::copy( experience_cloud.get(), experience_cloud_copy.get() );
         L3::transform(  experience_cloud_copy.get(), &pose );
+        
         read_lock.unlock();
         write_lock.unlock();
 
@@ -81,13 +83,14 @@ int main (int argc, char ** argv)
     cloud->num_points = pts;
 
     // Create a gaussian cloud
-    L3::gaussianCloud( cloud.get() );
+    //L3::gaussianCloud( cloud.get() );
+    L3::gaussianCloud( cloud.get(), 5, 15 );
     
     // Make a copy
     boost::shared_ptr< L3::PointCloud<double> > cloud_copy( new L3::PointCloud<double>() );
     L3::copy( cloud.get(), cloud_copy.get() );
 
-    boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram( new L3::HistogramUniformDistance<double>() );
+    boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram( new L3::HistogramUniformDistance<double>(2.0) );
     
     histogram->create( 0, -50, 50, 
                         0, -50, 50 );

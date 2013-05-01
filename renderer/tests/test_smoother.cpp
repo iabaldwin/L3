@@ -14,7 +14,11 @@ int main (int argc, char ** argv)
     cloud.points = new L3::Point<double>[10000];
     cloud.num_points = 10000;
 
-    L3::gaussianCloud( &cloud );
+    L3::gaussianCloud( &cloud, 5, 15 );
+
+    L3::SE3 rotation( 0, 0, 0, 0, 0, M_PI/4 );
+
+    L3::transform( &cloud ,&rotation);
 
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_1( new L3::HistogramUniformDistance<double>() );
     histogram_1->create(0, -50, 50, 0, -50, 50 );
@@ -24,12 +28,17 @@ int main (int argc, char ** argv)
     histogram_2->create(0, -50, 50, 0, -50, 50 );
     (*histogram_2)( &cloud );
 
-    //L3::BoxSmoother< double, 15> smoother;
-    //L3::BoxSmoother< double, 5> smoother;
-    L3::BoxSmoother< double, 3> smoother;
-    smoother.smooth( histogram_2.get() );
+    boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_3( new L3::HistogramUniformDistance<double>() );
+    histogram_3->create(0, -50, 50, 0, -50, 50 );
+    (*histogram_3)( &cloud );
 
-    //std::cout << *histogram_2 << std::endl;
+
+    //L3::BoxSmoother< double, 15> smoother;
+    L3::BoxSmoother< double, 3> smoother_1;
+    smoother_1.smooth( histogram_2.get() );
+
+    L3::BoxSmoother< double, 5> smoother_2;
+    smoother_2.smooth( histogram_3.get() );
 
     /*
      *Visualisation
@@ -49,10 +58,31 @@ int main (int argc, char ** argv)
     L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram_1);
     L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer_1( glv::Rect(400,300), histogram_1 );
     L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer_2( glv::Rect(410,0,400,300), histogram_2 );
+    L3::Visualisers::HistogramDensityRenderer   histogram_pixel_renderer_3( glv::Rect(820,0,400,300), histogram_3 );
+
+    L3::Visualisers::PointCloudRendererLeaf     cloud_renderer( boost::shared_ptr<L3::PointCloud<double> >( cloud ) );
+
+    histogram_pixel_renderer_1.update();
+    histogram_pixel_renderer_2.update();
+    histogram_pixel_renderer_3.update();
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
-    top << (composite << grid << histogram_renderer << histogram_bounds_renderer ) << histogram_pixel_renderer_1 << histogram_pixel_renderer_2 ;
+    top << (composite << grid << histogram_renderer << histogram_bounds_renderer ) << histogram_pixel_renderer_1 << histogram_pixel_renderer_2  << histogram_pixel_renderer_3;
+
+    std::ofstream histogram_output( "histogram_1.dat" );
+    histogram_output << *histogram_1;
+    histogram_output.close();
+
+    histogram_output.open( "histogram_2.dat" );
+    histogram_output << *histogram_2;
+    histogram_output.close();
+
+    histogram_output.open( "histogram_3.dat" );
+    histogram_output << *histogram_3;
+    histogram_output.close();
+
+
 
     // Go
     win.setGLV(top);

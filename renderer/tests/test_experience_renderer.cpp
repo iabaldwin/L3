@@ -7,6 +7,7 @@
 
 #include "L3.h"
 #include "Visualisers.h"
+#include "VisualiserRunner.h"
 
 int main (int argc, char ** argv)
 {
@@ -19,7 +20,6 @@ int main (int argc, char ** argv)
     {
         L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
         L3::ExperienceLoader experience_loader( dataset );
-
         experience = experience_loader.experience;
     }
     catch( std::exception e )
@@ -43,6 +43,15 @@ int main (int argc, char ** argv)
     boost::shared_ptr< L3::PoseProvider >               pose_provider( new L3::CircularPoseProvider( 25.0 ) );
     L3::Visualisers::PoseProviderRenderer               pose_provider_renderer( pose_provider.get() );
     L3::Visualisers::ExperienceRenderer                 experience_renderer( experience );
+    L3::Visualisers::HistogramPyramidRendererView       pyramid_renderer( glv::Rect(400,400),experience->experience_pyramid );
+
+    L3::Visualisers::HistogramDensityRenderer           dbg_density_renderer( glv::Rect(600,400,400,400), (*experience->experience_pyramid)[0]);
+
+    dbg_density_renderer.update();
+
+    L3::Visualisers::Updater updater;
+    //updater << &pyramid_renderer << &dbg_density_renderer;
+    updater << &pyramid_renderer;
 
     // Associate pose provider
     experience_renderer.addPoseProvider( pose_provider.get() );
@@ -51,11 +60,10 @@ int main (int argc, char ** argv)
     composite.addController( controller.get() ).stretch(1,1);
 
     // Combine
-    top << (composite << grid << experience_renderer << pose_provider_renderer ) ;
+    top << (composite << grid << experience_renderer << pose_provider_renderer ) << pyramid_renderer << updater << dbg_density_renderer;
 
     // Run
     win.setGLV(top);
-    win.fit(); 
     glv::Application::run();
 
 }

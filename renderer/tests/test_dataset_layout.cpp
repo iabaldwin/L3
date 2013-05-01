@@ -5,6 +5,13 @@
 
 int main( int argc, char* argv[] )
 {
+
+    if ( argc != 2 ) 
+    {
+        std::cerr << "Usage: " << argv[0] << " <dataset>" << std::endl;
+        exit(-1);
+    }
+
     char* dataset_directory = argv[1];
 
     try
@@ -18,9 +25,9 @@ int main( int argc, char* argv[] )
 
         L3::Visualisers::DatasetLayout layout(win, &dataset);
 
-        glv::GLV top;
-
+        //glv::GLV top;
         //layout.run( top );
+        layout.run();
 
     }
     catch( L3::no_such_folder )

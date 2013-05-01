@@ -13,6 +13,7 @@
 #include "Poco/Runnable.h"
 #include "Poco/Thread.h"
 
+#include "Timing.h"
 
 template <typename T>
 struct DataWriter : Poco::Runnable
@@ -101,6 +102,10 @@ namespace L3
                 double p_i = p/p_norm;
                 double q_i = q/q_norm;
 
+                if ( (p  < 0 ) ||( q < 0 ) )
+                    std::cout << p << ":" << q << std::endl;
+
+                // Policy should be here
                 p_i = (p_i == 0) ? std::numeric_limits<T>::epsilon() : p_i;
                 q_i = (q_i == 0) ? std::numeric_limits<T>::epsilon() : q_i;
 
@@ -182,6 +187,12 @@ namespace L3
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
 
+                /*
+                 *  Smoothing
+                 */
+                L3::BoxSmoother< double, 5 > smoother;
+                smoother.smooth( &swathe_histogram );
+
                 // Compute cost
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
@@ -212,12 +223,7 @@ namespace L3
                  */
                 L3::sample( swathe, this->sampled_swathe.get(), 2000 );
 
-                /*
-                 *  Smoothing
-                 */
-                //L3::Smoother< double, 5 > smoother;
-                //smoother.smooth( &swathe_histogram );
-
+                
                 this->pose_estimates->costs.resize( this->pose_estimates->estimates.size() );
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
 

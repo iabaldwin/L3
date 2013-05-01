@@ -251,20 +251,21 @@ namespace L3
         }
 
     template <typename T>
-        void gaussianCloud( PointCloud<T>* cloud, double variance )
+        void gaussianCloud( PointCloud<T>* cloud, double x_variance, double y_variance )
         {
             // Generator
             boost::mt19937 rng;
-            boost::normal_distribution<> normal(0.0, variance );
-            boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor(rng, normal );
+            
+            boost::normal_distribution<> normal_x(0.0, x_variance );
+            boost::normal_distribution<> normal_y(0.0, y_variance );
+            
+            boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > x_generator(rng, normal_x );
+            boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > y_generator(rng, normal_y );
 
             L3::PointCloud<double>::ITERATOR it = cloud->begin();
       
             while ( it != cloud->end() )
-            {
-                //*it++ = L3::Point<double>( var_nor(), var_nor(), var_nor() );
-                *it++ = L3::Point<double>( var_nor(), var_nor(), 0 );
-            }
+                *it++ = L3::Point<double>( x_generator(), y_generator(), 0 );
 
         }
 
@@ -300,7 +301,7 @@ template bool                           L3::sample( L3::PointCloud<double>*,  L3
 template std::pair<double,double>       L3::max( PointCloud<double>* );
 template std::pair<double,double>       L3::min( PointCloud<double>* );
 
-template void                           L3::gaussianCloud( PointCloud<double>* cloud, double variance );
+template void                           L3::gaussianCloud( PointCloud<double>*, double, double );
 
 template std::ostream& L3::operator<<( std::ostream& o, const L3::Point<double>& pt );
 template std::ostream& L3::operator<<( std::ostream& o, const L3::PointCloud<double>& cloud );

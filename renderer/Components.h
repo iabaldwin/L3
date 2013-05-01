@@ -23,7 +23,7 @@ struct Updateable
     virtual void update() = 0;
 };
 
-struct Updater : glv::Plot
+struct Updater : glv::View
 {
     std::list < Updateable* > updateables;
     
@@ -375,17 +375,22 @@ struct HistogramVertexRenderer : HistogramRenderer, Leaf
 /*
  *  Histogram :: Density renderer
  */
-struct HistogramDensityRenderer : glv::Plot, HistogramRenderer, Updateable
+//struct HistogramDensityRenderer : glv::Plot, HistogramRenderer, Updateable
+struct HistogramDensityRenderer : glv::View, HistogramRenderer, Updateable
 {
-	HistogramDensityRenderer(const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram )
-        : glv::Plot(r), 
-            HistogramRenderer(histogram)
+	HistogramDensityRenderer(const glv::Rect& rect, boost::shared_ptr<L3::Histogram<double> > histogram )
+        //: glv::Plot(rect), 
+        : glv::View(rect), 
+            HistogramRenderer(histogram),
+                mTex(0,0,GL_RGBA,GL_UNSIGNED_BYTE)
     {
         // Assign density plot
-        this->add(*new glv::PlotDensity( glv::Color(1)) );
+        //this->add(*new glv::PlotDensity( glv::Color(1)) );
     }
 
+    glv::Texture2 mTex;
     void update();
+    void onDraw( glv::GLV& g );
 };
 
 /*
@@ -467,34 +472,30 @@ struct HistogramPyramidRenderer
     
 };
 
-struct HistogramPyramidRendererView : glv::Box, HistogramPyramidRenderer, Updateable
+struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updateable
 {
     HistogramPyramidRendererView( const glv::Rect& r, boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid) 
-        : HistogramPyramidRenderer(histogram_pyramid)
-//glv::Box(r), 
+        : HistogramPyramidRenderer(histogram_pyramid),
+            glv::View(r)
     {
-        int start = 600;
+        int start = 0;
         for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
                 it != this->pyramid->end();
                 it++ )
         {
 
-            boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( start+=200, 0, 200,200 ), *it ) );
+            boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( start, 0, 200,200 ), *it ) );
+            start+=200;
             renderers.push_front( renderer );
             (*this) << renderer.get();
-       
-            break;
         }
-
 
         this->fit();
         this->bringToFront();
     }
 
-    void update()
-    {
-    }
-
+    void update();
+    
     std::list< boost::shared_ptr< HistogramDensityRenderer > > renderers;
 };
 

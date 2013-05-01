@@ -97,13 +97,13 @@ namespace Visualisers
     void DefaultAxes::onDraw3D(glv::GLV& g)
     {
 
-        glv::draw::enable( glv::draw::LineStipple );
+        //glv::draw::enable( glv::draw::LineStipple );
 
         glv::draw::lineStipple(4, 0xAAAA );
         glv::draw::lineWidth( .01 );
         glv::draw::paint( glv::draw::Lines, vertices.get(), colors.get(), counter );
 
-        glv::draw::disable( glv::draw::LineStipple );
+        //glv::draw::disable( glv::draw::LineStipple );
     }
 
     /*
@@ -128,15 +128,16 @@ namespace Visualisers
         bound_vertices[3]( upper_right.first, lower_left.second, depth );
         bound_colors[3].set( 1, 1, 0, .25 );
 
-        glv::draw::enable( glv::draw::LineStipple );
+        //glv::draw::enable( glv::draw::LineStipple );
         glv::draw::lineStipple(4, 0xAAAA );
         glv::draw::lineWidth(.1);
         glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
-        glv::draw::disable( glv::draw::LineStipple );
+        //glv::draw::disable( glv::draw::LineStipple );
 
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
+        //glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
+        glv::draw::paint( glv::draw::TriangleFan, bound_vertices, bound_colors, 4 );
         glv::draw::disable( glv::draw::Blend );
     }
 
@@ -187,7 +188,6 @@ namespace Visualisers
     /*
      *  Components :: HistogramDensityRenderer
      */
-
     void HistogramDensityRenderer::update()
     {
         L3::Histogram<double> tmp;
@@ -198,22 +198,64 @@ namespace Visualisers
         L3::ReadLock lock( hist->mutex );
         L3::clone( hist.get(), &tmp );
         lock.unlock();   
+        
+        //data().resize( glv::Data::FLOAT, 1, tmp.x_bins, tmp.y_bins );
+        //for( unsigned int i=0; i< tmp.x_bins; i++ )
+        //{
+            //for( unsigned int j=0; j< tmp.y_bins; j++ )
+            //{
+                //data().assign( tmp.bin(i,j)/10.0 , 0, i, j );
+            //}
+        //}
+    
+        mTex.magFilter(GL_NEAREST);
+        mTex.dealloc();
+        mTex.alloc( tmp.x_bins, tmp.y_bins );
 
-        // Aspect ratio?
-        //float aspect_ratio = (float)hist->y_bins/(float)hist->x_bins;
-        //int w = this->width();
-        //this->height( w * aspect_ratio );
+        double normalizer = tmp.normalizer();
 
-        data().resize( glv::Data::FLOAT, 1, tmp.x_bins, tmp.y_bins );
+        unsigned char * pixs = mTex.buffer<unsigned char>();
 
-        for( unsigned int i=0; i< tmp.x_bins; i++ )
+        //for(int j=tmp.y_bins-1; j> 0; j--)
+        for(int j=0; j<tmp.y_bins; j++ )
         {
-            for( unsigned int j=0; j< tmp.y_bins; j++ )
+            for(int i=0; i< tmp.x_bins;  i++)
             {
-                data().assign( tmp.bin(i,j)/10.0 , 0, i, j );
+                double data = tmp.bin(i,j)/normalizer;
+                unsigned char* c = ((unsigned char*)&data );
+
+                *pixs++ = *c;
+                *pixs++ = *c;
+                *pixs++ = *c;
+                *pixs++ = (unsigned char)255;
+
+                //unsigned char* b = &((unsigned char*)(img->imageData + img->widthStep*j))[i*3];
+                //*pixs++ = *b;
+                //unsigned char* g = &((unsigned char*)(img->imageData + img->widthStep*j))[i*3+1];
+                //*pixs++ = *g;
+                //unsigned char* r = &((unsigned char*)(img->imageData + img->widthStep*j))[i*3+2];
+                //*pixs++ = *r;
+
+                //*pixs++ = (unsigned char)255;
             }
         }
     }
+
+    void HistogramDensityRenderer::onDraw( glv::GLV& g)
+    {
+        mTex.recreate();				            // Recreate texture on GPU
+        mTex.send();					            // Send over texel data
+
+        glv::draw::enable( glv::draw::Texture2D );	// Enable texture mapping
+
+        mTex.begin();						        // Bind texture
+        glv::draw::color(1,1,1,1);				    // Set current color
+        mTex.draw(0,0, width(),height() );	        // Draw a textured quad filling the view's area
+        mTex.end();							        // Unbind texture
+
+        glv::draw::disable( glv::draw::Texture2D);	// Disable texture mapping
+    }
+
 
     /*
      *  Components :: HistogramVoxelRenderer
@@ -320,7 +362,8 @@ namespace Visualisers
         }
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::Quads, points.get(), colors.get(), counter );
+        //glv::draw::paint( glv::draw::Quads, points.get(), colors.get(), counter );
+        glv::draw::paint( glv::draw::TriangleFan, points.get(), colors.get(), counter );
         glv::draw::disable( glv::draw::Blend );
 
     }
@@ -462,14 +505,15 @@ namespace Visualisers
         bound_vertices[3]( upper_right.first, lower_left.second, -3.0 );
         bound_colors[3].set( 0, 1, 1, .25 );
 
-        glv::draw::enable( glv::draw::LineStipple );
+        //glv::draw::enable( glv::draw::LineStipple );
         glv::draw::lineStipple(4, 0xAAAA );
         glv::draw::lineWidth(.1);
         glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
-        glv::draw::disable( glv::draw::LineStipple );
+        //glv::draw::disable( glv::draw::LineStipple );
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
+        //glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
+        glv::draw::paint( glv::draw::TriangleFan, bound_vertices, bound_colors, 4 );
         glv::draw::disable( glv::draw::Blend );
 
     }
@@ -515,7 +559,8 @@ namespace Visualisers
 
         //far(1000);
 
-        glv::draw::push3D( -1.0, 1.0, 20.0,  150.0, 35 );
+        //glv::draw::push3D( -1.0, 1.0, 20.0,  150.0, 35 );
+        //glv::draw::push( -1.0, 1.0, 20.0,  150.0, 35 );
 
         glv::draw::translateZ( -25 );
         glv::draw::translateY( 1 );
@@ -534,9 +579,8 @@ namespace Visualisers
         //glutStrokeString( GLUT_BITMAP_HELVETICA_18, reinterpret_cast< const unsigned char*>( test ) );
         glutBitmapString( GLUT_BITMAP_HELVETICA_18, reinterpret_cast< const unsigned char*>( test ) );
 
-        //glv::draw::pop();
-
-        glv::draw::pop3D();
+        //glv::draw::pop3D();
+        glv::draw::pop();
     }
 
     /*
@@ -573,16 +617,15 @@ namespace Visualisers
 
         }
 
-        glv::draw::translateZ( -45 );
+        glv::draw::translateZ( -55 );
         glv::draw::rotateZ( rotate_z );
 
         glv::draw::blendTrans();
-
         glv::draw::lineWidth(1);
         glv::draw::paint( glv::draw::LineLoop, points, perimeter, draw_counter );
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::TriangleFan, points, fan, draw_counter );
+        glv::draw::paint( glv::draw::TriangleStrip, points, fan, draw_counter );
         glv::draw::disable( glv::draw::Blend );
 
     }
@@ -680,7 +723,7 @@ namespace Visualisers
 
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::enable( glv::draw::LineStipple );
+        //glv::draw::enable( glv::draw::LineStipple );
 
         glv::draw::lineStipple(4, 0xAAAA );
         glv::draw::lineWidth( 1 );
@@ -690,6 +733,17 @@ namespace Visualisers
         glv::draw::disable( glv::draw::Blend );
 
     }
+
+    void HistogramPyramidRendererView::update()
+    {
+        for( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it=renderers.begin();
+                it != renderers.end();
+                it++ )
+        {
+            (*it)->update();
+        }
+    }
+
 
 }
 }
