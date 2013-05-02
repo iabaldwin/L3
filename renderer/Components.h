@@ -215,7 +215,6 @@ struct PointCloudRenderer
     boost::shared_array< glv::Point3 >  vertices;
    
     boost::shared_ptr< L3::PointCloud<double> > cloud;
-    boost::shared_ptr< L3::PointCloud<double> > point_cloud;
     boost::shared_ptr< L3::PointCloud<double> > plot_cloud;
 
     void onDraw3D( glv::GLV& g );
@@ -478,14 +477,15 @@ struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updat
         : HistogramPyramidRenderer(histogram_pyramid),
             glv::View(r)
     {
+        int width = 175;
         int start = 0;
         for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
                 it != this->pyramid->end();
                 it++ )
         {
 
-            boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( start, 0, 200,200 ), *it ) );
-            start+=200;
+            boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( start, 0, width, width), *it ) );
+            start+= width;
             renderers.push_front( renderer );
             (*this) << renderer.get();
         }

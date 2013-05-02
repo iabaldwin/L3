@@ -15,11 +15,9 @@ namespace L3
             // Histogram Bounds
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( (*experience->experience_pyramid)[0]) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
-
             histogram_bounds_renderer->depth = -2.0 ;
 
             // Histogram voxel
-            //histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( experience->experience_histogram ) ) ;
             histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( (*experience->experience_pyramid)[0] ) ) ;
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
 
@@ -62,17 +60,6 @@ namespace L3
             //this->renderables.push_front( histogram_label.get() );
 
             // Stand-alone pose renderer
-            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
-            oracle_renderer->pos( win.width()-(150+10), 335 );
-            this->renderables.push_front( oracle_renderer.get() );
-            updater->operator<<( oracle_renderer.get() );
-
-            boost::shared_ptr< glv::View > oracle_label( new glv::Label("Estimate::INS") );
-            oracle_label->pos( win.width()-(150+10), 335+160 );
-            this->labels.push_front( oracle_label );
-            this->renderables.push_front( oracle_label.get() );
-
-            // Stand-alone pose renderer
             //predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
             //predicted_pose_renderer->pos( win.width()-(150*2+30), 335 );
             //this->renderables.push_front( predicted_pose_renderer.get() );
@@ -84,35 +71,92 @@ namespace L3
             //this->labels.push_front( predicted_pose_label );
             //this->renderables.push_front( predicted_pose_label.get() );
 
-            // Stand-alone scan renderer :: Horizontal
-            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR, glv::Rect( 150,150 ) ) );
-            dynamic_cast<glv::View*>(horizontal_scan_renderer.get())->pos( win.width()-(150*3+60), 335 );
-            this->renderables.push_front( dynamic_cast<glv::View*>(horizontal_scan_renderer.get() ) );
-            updater->operator<<( horizontal_scan_renderer.get() );
+            /*
+             *  Pyramid Renderer
+             */
+            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 150*3, 150 ), experience->experience_pyramid) );
+            this->renderables.push_front( pyramid_renderer.get() );
 
-            boost::shared_ptr< glv::View > horizontal_scan_renderer_label( new glv::Label("LMS151::Horizontal") );
-            horizontal_scan_renderer_label->pos( win.width()-(150*3+60), 335+160 );
-            this->labels.push_front( horizontal_scan_renderer_label );
-            this->renderables.push_front( horizontal_scan_renderer_label.get() );
+            for ( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
+                    it != pyramid_renderer->renderers.end();
+                    it++ )
+            updater->operator<<( it->get() );
+            pyramid_renderer->pos( win.width() - ((175*3)+10), 5 );
 
-            // Stand-alone scan renderer : Vertical
-            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 150,150 ) ) );
-            dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( win.width()-(150*2+30), 335 );
-            this->renderables.push_front( dynamic_cast<glv::View*>(vertical_scan_renderer.get() ) );
-            updater->operator<<( vertical_scan_renderer.get() );
-
-            //boost::shared_ptr< glv::View > vertical_scan_renderer_label( new glv::Label("LMS151::Vertical") );
-            //vertical_scan_renderer_label->pos( win.width()-(150*2+30), 335+160 );
-            //this->labels.push_front( vertical_scan_renderer_label );
-            //this->renderables.push_front( vertical_scan_renderer_label.get() );
-            
             /*
              *  Swathe Cloud
              */
-            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(500+10),10, 500, 300 ), run_time_swathe, runner->current ));
+            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(525+10), 190, 525, 250 ), run_time_swathe, runner->current ));
             this->renderables.push_front( runtime_cloud_renderer_view.get() );
             updater->operator<<( runtime_cloud_renderer_view.get() );
-        
+
+            /*
+             *  Group: Ancillary
+             */
+            ancillary_1.reset( new glv::Box() );
+
+            // Stand-alone scan renderer :: Horizontal
+            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR, glv::Rect( 150,150 ) ) );
+            updater->operator<<( horizontal_scan_renderer.get() );
+
+            boost::shared_ptr< glv::View > horizontal_scan_renderer_label( new glv::Label("LMS151::Horizontal", true) );
+            horizontal_scan_renderer_label->pos( 150+5 , 135 );
+            this->labels.push_front( horizontal_scan_renderer_label );
+            
+            (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
+            (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer_label.get());
+
+            // Stand-alone scan renderer : Vertical
+            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 150,150 ) ) );
+            dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 150+2*10, 0);
+            updater->operator<<( vertical_scan_renderer.get() );
+
+            boost::shared_ptr< glv::View > vertical_scan_renderer_label( new glv::Label("LMS151::Vertical", true) );
+            vertical_scan_renderer_label->pos( 150*2+30, 135);
+            this->labels.push_front( vertical_scan_renderer_label );
+         
+            (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
+            (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer_label.get());
+
+            combined_scan_renderer.reset( new L3::Visualisers::CombinedScanRenderer2D(  runner->horizontal_LIDAR, runner->vertical_LIDAR, glv::Rect(150,150) ) );
+            combined_scan_renderer->pos( 150*2+2*30, 0 );
+            
+            for( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = combined_scan_renderer->scan_renderers.begin();
+                    it != combined_scan_renderer->scan_renderers.end();
+                    it++ )
+            updater->operator<<( it->get() );
+
+            (*ancillary_1) << combined_scan_renderer.get();
+
+            // Add it to the view
+            ancillary_1->pos( win.width()-(535), 450 );
+            ancillary_1->fit();
+            this->renderables.push_front( ancillary_1.get() );
+
+            /*
+             *  Ancillary 2
+             */
+            ancillary_2.reset( new glv::Box() );
+
+            // Stand-alone pose renderer
+            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
+            updater->operator<<( oracle_renderer.get() );
+
+            boost::shared_ptr< glv::View > oracle_label( new glv::Label("Estimate::INS") );
+            oracle_label->pos( 0, 160 );
+            this->labels.push_front( oracle_label );
+
+            ancillary_2->pos( win.width()-(150*3+60), 625 );
+            ancillary_2->fit();
+
+            // Add it to the view
+            this->renderables.push_front( ancillary_2.get() );
+
+            (*ancillary_2) << dynamic_cast<glv::View*>(oracle_renderer.get());
+            (*ancillary_2) << dynamic_cast<glv::View*>(oracle_label.get());
+
+
+                    
             /*
              *  Cost visualisation 
              */
@@ -152,25 +196,7 @@ namespace L3
             //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_histogram_bounds_renderer.get() ) ) );
             //debug_histogram_bounds_renderer->depth = -12.0;
         
-            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 800, 0, 200, 200 ), experience->experience_pyramid) );
-            this->renderables.push_front( pyramid_renderer.get() );
-
-            for ( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
-                    it != pyramid_renderer->renderers.end();
-                    it++ )
-            updater->operator<<( it->get() );
-
-            combined_scan_renderer.reset( new L3::Visualisers::CombinedScanRenderer2D(  runner->horizontal_LIDAR, runner->vertical_LIDAR, glv::Rect(150,150) ) );
-            combined_scan_renderer->pos( win.width()-(150+10), 585 );
-            this->renderables.push_front( combined_scan_renderer.get() );
             
-            for( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = combined_scan_renderer->scan_renderers.begin();
-                    it != combined_scan_renderer->scan_renderers.end();
-                    it++ )
-            updater->operator<<( it->get() );
-
-
-
         }
     }
 }

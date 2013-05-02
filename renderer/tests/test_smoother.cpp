@@ -20,16 +20,19 @@ int main (int argc, char ** argv)
 
     L3::transform( &cloud ,&rotation);
 
+    float lower = -75;
+    float upper = 25;
+
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_1( new L3::HistogramUniformDistance<double>() );
-    histogram_1->create(0, -50, 50, 0, -50, 50 );
+    histogram_1->create(0, lower, upper, 0, lower, upper );
     (*histogram_1)( &cloud );
 
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_2( new L3::HistogramUniformDistance<double>() );
-    histogram_2->create(0, -50, 50, 0, -50, 50 );
+    histogram_2->create(0, lower, upper, 0, lower, upper );
     (*histogram_2)( &cloud );
 
     boost::shared_ptr< L3::HistogramUniformDistance<double> > histogram_3( new L3::HistogramUniformDistance<double>() );
-    histogram_3->create(0, -50, 50, 0, -50, 50 );
+    histogram_3->create(0, lower, upper, 0, lower, upper );
     (*histogram_3)( &cloud );
 
 

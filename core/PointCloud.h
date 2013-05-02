@@ -82,7 +82,9 @@ struct PointCloud  : Lockable
     ~PointCloud()
     {
         if (num_points > 0 && points )
+        {
             delete [] points;
+        }
     }
 
     typedef L3::Point<T>* ITERATOR;
@@ -116,7 +118,7 @@ template <typename T>
 bool join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds, boost::shared_ptr<L3::PointCloud<T> >& result  );
 
 template <typename T>
-bool sample( PointCloud<T>* input,  PointCloud<T>* output, int size );
+bool sample( PointCloud<T>* input,  PointCloud<T>* output, int size, bool allocate=true );
 
 template <typename T>
 void centerPointCloud( PointCloud<T>* cloud );

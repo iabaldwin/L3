@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <readline/readline.h>
+
 #include "L3.h"
 
 int main( int argc, char* argv[] )
@@ -69,7 +71,12 @@ int main( int argc, char* argv[] )
 
     while( true )
     {
-        usleep( 1*1e6 ); 
+        //usleep( 1*1e6 ); 
+   
+        char* res = readline( ">> " );
+   
+        if ( !res )
+            break;
     }
 }
 

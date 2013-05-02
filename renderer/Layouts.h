@@ -54,9 +54,6 @@ struct EventController : glv::View
 
 	virtual bool onEvent( glv::Event::t e, glv::GLV& g)
     {
-        if (e == 20)
-        {
-        }
     }
 };
 
@@ -367,17 +364,16 @@ class EstimatorLayout : public Layout
 
 
         std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >  density_renderers;
-
         boost::shared_ptr< DataDumper > dumper;
-        
         boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        debug_renderer; 
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       debug_histogram_bounds_renderer;
-        
         boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
-
         boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
-
         boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D > combined_scan_renderer;
+
+
+        boost::shared_ptr< glv::View >  ancillary_1;
+        boost::shared_ptr< glv::View >  ancillary_2;
 };
 
 

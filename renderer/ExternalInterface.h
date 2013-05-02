@@ -18,10 +18,11 @@ namespace Visualisers
         ExternalInterface( glv::Rect rect ) : glv::TextView( rect )
         {
             visibility = false;
+            
             this->maximize(); 
             this->disable(glv::Visible);
             this->enable( glv::AlwaysBubble );
-       
+      
             interface.reset( new L3::LuaInterface() );
         }
 

@@ -104,9 +104,9 @@ namespace L3
                 gsl_histogram2d_reset( hist );
             }
 
-            inline unsigned int bin( size_t x, size_t y  ) const
+            inline double bin( size_t x, size_t y  ) const
             {
-                return gsl_histogram2d_get(hist,x,y); 
+                return (double)gsl_histogram2d_get(hist,x,y); 
             }
 
             std::pair<float, float> coords( size_t x, size_t y  ) const
@@ -121,6 +121,13 @@ namespace L3
             {
                 return gsl_histogram2d_sum( hist );
             }
+
+            double max() const
+            {
+                return gsl_histogram2d_max_val( hist );
+            }
+
+
 
             // Histogram an entire cloud
             void operator()( L3::PointCloud<T>* cloud )

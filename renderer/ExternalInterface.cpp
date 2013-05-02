@@ -15,17 +15,20 @@ namespace Visualisers
        
             if (!visibility )
             {
+                std::cout << "Disabling" << std::endl;
                 this->disable( glv::Focused );
-                this->disable( glv::DrawBack );
-                //this->disable( glv::AlwaysBubble );
+                this->disable( glv::FocusToTop );
+                //this->disable( glv::DrawBack );
+                this->disable( glv::HitTest );
+                this->disable( glv::Controllable );
                 this->restore(); 
                 return false;
             }
             else
             {
-                this->enable( glv::Focused );
-                this->enable( glv::DrawBack );
-                //this->enable( glv::AlwaysBubble );
+                //this->bringToFront();
+                //this->enable( glv::Focused );
+                //this->enable( glv::DrawBack );
                 //setPos(xToPos(0));
                 cursorPos(0);
             }

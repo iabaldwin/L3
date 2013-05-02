@@ -14,9 +14,6 @@ namespace Visualisers
         glv::draw::translate( position.x, position.y, position.z );
         glv::draw::rotate( position.r, position.p, position.q );
         
-        //Can't form reference to reference
-        //std::for_each( components.begin(), components.end(), std::bind2nd( std::mem_fun ( &Leaf::onDraw3D ), g ) );
-
         std::list<Leaf*>::iterator leaf_iterator = components.begin();
         while( leaf_iterator != components.end() )
         {
@@ -210,24 +207,44 @@ namespace Visualisers
     
         mTex.magFilter(GL_NEAREST);
         mTex.dealloc();
-        mTex.alloc( tmp.x_bins, tmp.y_bins );
+        //mTex.alloc( tmp.x_bins, tmp.y_bins );
+        mTex.alloc( tmp.y_bins, tmp.x_bins );
 
-        double normalizer = tmp.normalizer();
+        double normalizer = tmp.max();
 
         unsigned char * pixs = mTex.buffer<unsigned char>();
 
-        //for(int j=tmp.y_bins-1; j> 0; j--)
-        for(int j=0; j<tmp.y_bins; j++ )
+            
+        for(int i=0; i< tmp.x_bins; i++)
         {
-            for(int i=0; i< tmp.x_bins;  i++)
+        //for(int j=0; j<tmp.y_bins; j++ )
+        for(int j=tmp.y_bins-1; j>=0; j-- )
             {
-                double data = tmp.bin(i,j)/normalizer;
-                unsigned char* c = ((unsigned char*)&data );
+                //double data = (tmp.bin(i,j)/normalizer)*255;
+                //double dta = tmp.bin(i,j)/normalizer;
+                //double data = ((tmp.bin(j,i)/normalizer)*255);
+                //double data = (tmp.bin(j,i)/normalizer);
+                //double data = (tmp.bin(j,i)/normalizer)*255;
+                //double data = (tmp.bin(i,j)/normalizer)*255;
+             
+                double data = 0.0;
 
-                *pixs++ = *c;
-                *pixs++ = *c;
-                *pixs++ = *c;
-                *pixs++ = (unsigned char)255;
+                //std::cout << (int)(unsigned char)data << " ";
+                
+                //unsigned char* c = ((unsigned char*)&data );
+
+                //std::cout << (int)(*c) << " ";
+
+                *pixs++ = (unsigned char)(data);
+                *pixs++ = (unsigned char)(data);
+                *pixs++ = (unsigned char)(data);
+                //*pixs++ = (unsigned char)255;
+                *pixs++ = (unsigned char)data;
+
+                //*pixs++ = *c;
+                //*pixs++ = *c;
+                //*pixs++ = *c;
+                //*pixs++ = (unsigned char)255;
 
                 //unsigned char* b = &((unsigned char*)(img->imageData + img->widthStep*j))[i*3];
                 //*pixs++ = *b;
@@ -238,7 +255,12 @@ namespace Visualisers
 
                 //*pixs++ = (unsigned char)255;
             }
+        
+            //std::cout << std::endl;
         }
+
+        //std::cout << "------------" << std::endl;
+
     }
 
     void HistogramDensityRenderer::onDraw( glv::GLV& g)
@@ -262,12 +284,12 @@ namespace Visualisers
      */
     void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
     {
-        boost::shared_array< glv::Point3> points( new glv::Point3[plot_histogram->x_bins*plot_histogram->y_bins*4*6] );
-        boost::shared_array< glv::Color > colors( new glv::Color[plot_histogram->x_bins*plot_histogram->y_bins*4*6] );
-
         int counter = 0;
 
-        unsigned int max = gsl_histogram2d_max_val( plot_histogram->hist );
+        double max = gsl_histogram2d_max_val( plot_histogram->hist );
+
+        float x_delta = plot_histogram->x_delta;
+        float y_delta = plot_histogram->y_delta;
 
         for( unsigned int i=0; i< plot_histogram->x_bins; i++ )
         {
@@ -279,93 +301,110 @@ namespace Visualisers
                 {
                     float x = plot_histogram->hist->xrange[i];
                     float y = plot_histogram->hist->yrange[j];
-
-                    float x_delta = plot_histogram->x_delta;
-                    float y_delta = plot_histogram->y_delta;
-
+                    
                     // Bottom
                     float scale = float(val)/float(max);
 
                     float z_val = scale*50.0;
 
-                    colors[counter].set( 0, 0, 1, 1 );
-                    points[counter++]( x+x_delta, y+y_delta, z_val );
-                    colors[counter].set( 0, 0, 1, 1 );
-                    points[counter++]( x+x_delta, y-y_delta, z_val );
-                    colors[counter].set( 0, 0, 1, 1 );
-                    points[counter++]( x-x_delta, y-y_delta, z_val );
-                    colors[counter].set( 0, 0, 1, 1 );
-                    points[counter++]( x-x_delta, y+y_delta, z_val );
+                    glv::Point3 points[4];
+                    glv::Color  colors[4];
+
+                    colors[0].set( 0, 0, 1, 1 );
+                    points[0](x+x_delta, y+y_delta, z_val );
+                    colors[1].set( 0, 0, 1, 1 );
+                    points[1](x+x_delta, y-y_delta, z_val );
+                    colors[2].set( 0, 0, 1, 1 );
+                    points[2](x-x_delta, y-y_delta, z_val );
+                    colors[3].set( 0, 0, 1, 1 );
+                    points[3]( x-x_delta, y+y_delta, z_val );
+
+                    glv::draw::enable( glv::draw::Blend );
+                    glv::draw::paint( glv::draw::TriangleFan, points, colors, 4 );
+                    glv::draw::disable( glv::draw::Blend );
 
                     // Top
-                    colors[counter].set( 0, 0, 1, 1 );
-                    points[counter++]( x+x_delta, y+y_delta, z_val );
-                    colors[counter].set( 0, 0, 1, 1 );
-                    points[counter++]( x+x_delta, y-y_delta, z_val );
-                    colors[counter].set( 0, 0, 1, 1 );
-                    points[counter++]( x-x_delta, y-y_delta, z_val );
-                    colors[counter].set( 0, 0, 1, 1 );
-                    points[counter++]( x-x_delta, y+y_delta, z_val );
+                    colors[0].set( 0, 0, 1, 1 );
+                    points[0]( x+x_delta, y+y_delta, z_val );
+                    colors[1].set( 0, 0, 1, 1 );
+                    points[1]( x+x_delta, y-y_delta, z_val );
+                    colors[2].set( 0, 0, 1, 1 );
+                    points[2]( x-x_delta, y-y_delta, z_val );
+                    colors[3].set( 0, 0, 1, 1 );
+                    points[3]( x-x_delta, y+y_delta, z_val );
 
+                    glv::draw::enable( glv::draw::Blend );
+                    glv::draw::paint( glv::draw::TriangleFan, points, colors, 4 );
+                    glv::draw::disable( glv::draw::Blend );
 
                     // Side 1
                     float x_val = x+x_delta;
 
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x_val, y-y_delta, 0 );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x_val, y+y_delta, 0 );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x_val, y+y_delta, z_val );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x_val, y-y_delta, z_val );
+                    colors[0].set( 0, 0, 1, scale );
+                    points[0]( x_val, y-y_delta, 0 );
+                    colors[1].set( 0, 0, 1, scale );
+                    points[1]( x_val, y+y_delta, 0 );
+                    colors[2].set( 0, 0, 1, scale );
+                    points[2]( x_val, y+y_delta, z_val );
+                    colors[3].set( 0, 0, 1, scale );
+                    points[3]( x_val, y-y_delta, z_val );
+
+                    glv::draw::enable( glv::draw::Blend );
+                    glv::draw::paint( glv::draw::TriangleFan, points, colors, 4 );
+                    glv::draw::disable( glv::draw::Blend );
 
                     // Side 2
                     x_val = x-x_delta;
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x_val, y-y_delta, 0 );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x_val, y+y_delta, 0 );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x_val, y+y_delta, z_val );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x_val, y-y_delta, z_val );
+                    colors[0].set( 0, 0, 1, scale );
+                    points[0]( x_val, y-y_delta, 0 );
+                    colors[1].set( 0, 0, 1, scale );
+                    points[1]( x_val, y+y_delta, 0 );
+                    colors[2].set( 0, 0, 1, scale );
+                    points[2]( x_val, y+y_delta, z_val );
+                    colors[3].set( 0, 0, 1, scale );
+                    points[3]( x_val, y-y_delta, z_val );
+
+                    glv::draw::enable( glv::draw::Blend );
+                    glv::draw::paint( glv::draw::TriangleFan, points, colors, 4 );
+                    glv::draw::disable( glv::draw::Blend );
 
                     // Front 
                     float y_val = y-x_delta;
 
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x-x_delta, y_val, 0 );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x+x_delta, y_val, 0 );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x+x_delta, y_val, z_val );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x-x_delta, y_val, z_val );
+                    colors[0].set( 0, 0, 1, scale );
+                    points[0]( x-x_delta, y_val, 0 );
+                    colors[1].set( 0, 0, 1, scale );
+                    points[1]( x+x_delta, y_val, 0 );
+                    colors[2].set( 0, 0, 1, scale );
+                    points[2]( x+x_delta, y_val, z_val );
+                    colors[3].set( 0, 0, 1, scale );
+                    points[3]( x-x_delta, y_val, z_val );
+
+                    glv::draw::enable( glv::draw::Blend );
+                    glv::draw::paint( glv::draw::TriangleFan, points, colors, 4 );
+                    glv::draw::disable( glv::draw::Blend );
 
                     // Back
                     y_val = y+x_delta;
 
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x-x_delta, y_val, 1 );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x+x_delta, y_val, 1 );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x+x_delta, y_val, z_val );
-                    colors[counter].set( 0, 0, 1, scale );
-                    points[counter++]( x-x_delta, y_val, z_val );
+                    colors[0].set( 0, 0, 1, scale );
+                    points[0]( x-x_delta, y_val, 1 );
+                    colors[1].set( 0, 0, 1, scale );
+                    points[1]( x+x_delta, y_val, 1 );
+                    colors[2].set( 0, 0, 1, scale );
+                    points[2]( x+x_delta, y_val, z_val );
+                    colors[3].set( 0, 0, 1, scale );
+                    points[3]( x-x_delta, y_val, z_val );
+
+                    glv::draw::enable( glv::draw::Blend );
+                    glv::draw::paint( glv::draw::TriangleFan, points, colors, 4 );
+                    glv::draw::disable( glv::draw::Blend );
 
                 }
 
             }
 
         }
-
-        glv::draw::enable( glv::draw::Blend );
-        //glv::draw::paint( glv::draw::Quads, points.get(), colors.get(), counter );
-        glv::draw::paint( glv::draw::TriangleFan, points.get(), colors.get(), counter );
-        glv::draw::disable( glv::draw::Blend );
-
     }
 
     /*
@@ -409,22 +448,18 @@ namespace Visualisers
     {
         // Construct the plot cloud
         plot_cloud.reset( new L3::PointCloud<double>() );
+        
         // Allocate
         L3::allocate( plot_cloud.get(), 5*1000 );
 
         vertices.reset( new glv::Point3[plot_cloud->num_points] );
         colors.reset( new glv::Color[plot_cloud->num_points] );
-
-        // Allocate blank cloud
-        point_cloud.reset( new L3::PointCloud<double>() );
     };
 
     void PointCloudRenderer::onDraw3D( glv::GLV& g )
     {
-        if ( point_cloud->num_points > 0 )
+        if ( plot_cloud->num_points > 0 )
         {
-            L3::sample( point_cloud.get(), plot_cloud.get(), plot_cloud->num_points );
-            
             for( int i=0; i<plot_cloud->num_points; i++) 
             {
                 vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
@@ -444,7 +479,7 @@ namespace Visualisers
     void PointCloudRendererLeaf::onDraw3D( glv::GLV& g )
     {
         L3::ReadLock lock( cloud->mutex );
-        L3::copy( cloud.get(), point_cloud.get() );
+        L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
        
         PointCloudRenderer::onDraw3D(g);    
@@ -458,7 +493,6 @@ namespace Visualisers
     {
         far(500);
         glv::draw::translateZ(-250 );
-        
 
         PointCloudRenderer::onDraw3D(g);    
     }
@@ -466,7 +500,7 @@ namespace Visualisers
     void PointCloudRendererView::update()
     {
         L3::ReadLock lock( cloud->mutex );
-        L3::copy( cloud.get(), point_cloud.get() );
+        L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
 
         //This used to exist, because we had already projected the point cloud
@@ -600,9 +634,6 @@ namespace Visualisers
         {
             double range = scan->ranges[scan_counter];  
 
-            if (range < 1 )
-                continue;
-
             draw_counter++;
 
             // Compute angle 
@@ -620,13 +651,14 @@ namespace Visualisers
         glv::draw::translateZ( -55 );
         glv::draw::rotateZ( rotate_z );
 
-        glv::draw::blendTrans();
-        glv::draw::lineWidth(1);
-        glv::draw::paint( glv::draw::LineLoop, points, perimeter, draw_counter );
+        //glv::draw::blendTrans();
+        //glv::draw::lineWidth(1);
+        //glv::draw::paint( glv::draw::LineLoop, points, perimeter, draw_counter );
+        glv::draw::paint( glv::draw::Points, points, perimeter, draw_counter );
 
-        glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::TriangleStrip, points, fan, draw_counter );
-        glv::draw::disable( glv::draw::Blend );
+        //glv::draw::enable( glv::draw::Blend );
+        //glv::draw::paint( glv::draw::TriangleStrip, points, fan, draw_counter );
+        //glv::draw::disable( glv::draw::Blend );
 
     }
 

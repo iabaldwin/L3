@@ -36,7 +36,6 @@ namespace L3
                         }
                     }
 
-                    //result [(x * hist->x_bins) + y] = (sum)/9.0;
                     result [(x * hist->x_bins) + y] = (sum)/pow(N,2);
                 }
 

@@ -157,8 +157,7 @@ void Experience::run()
             std::pair<double,double> max_bound = L3::max<double>( &*resident_point_cloud );
             std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
 
-
-            L3::Smoother< double, 5 > smoother; 
+            L3::BoxSmoother< double, 5 > smoother; 
 
             for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->experience_pyramid->begin();
                     it != this->experience_pyramid->end();
@@ -179,7 +178,7 @@ void Experience::run()
 
                 current_histogram->operator()( resident_point_cloud.get() );
             
-                smoother.smooth( current_histogram.get() );
+                //smoother.smooth( current_histogram.get() );
             
                 lock.unlock();
             }

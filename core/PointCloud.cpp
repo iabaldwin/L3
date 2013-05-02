@@ -127,7 +127,7 @@ namespace L3
         }
 
     template <typename T>
-        bool sample( PointCloud<T>* input,  PointCloud<T>* output, int size )
+        bool sample( PointCloud<T>* input,  PointCloud<T>* output, int size, bool allocate )
         {
             // Generate random indices
             std::vector<int> random_indices( size );
@@ -135,16 +135,15 @@ namespace L3
             std::generate( random_indices.begin(),  random_indices.end(), r );
 
             output->num_points = size;
-            output->points = new L3::Point<T>[ output->num_points ];
+            if (allocate)
+                output->points = new L3::Point<T>[ output->num_points ];
 
             typename std::vector< int >::iterator index_iterator = random_indices.begin();
 
             Point<T>* point_iterator = output->points;
 
             while( index_iterator != random_indices.end() )
-            {
                 *point_iterator++ = input->points[ *index_iterator++ ];
-            }
 
 
             return ( std::distance( output->begin(), output->end() ) == output->num_points );
@@ -297,7 +296,7 @@ template std::pair<float, float>        L3::mean<float>(L3::PointCloud<float>*);
 template bool L3::join( std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds, boost::shared_ptr<L3::PointCloud<double> >& result );
 template void                           L3::centerPointCloud<double>( PointCloud<double>* cloud );
 
-template bool                           L3::sample( L3::PointCloud<double>*,  L3::PointCloud<double>*, int );
+template bool                           L3::sample( L3::PointCloud<double>*,  L3::PointCloud<double>*, int, bool );
 template std::pair<double,double>       L3::max( PointCloud<double>* );
 template std::pair<double,double>       L3::min( PointCloud<double>* );
 
