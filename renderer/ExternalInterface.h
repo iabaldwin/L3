@@ -13,16 +13,20 @@ namespace L3
 namespace Visualisers
 {
 
-    struct ExternalInterface : glv::TextView 
+    //struct ExternalInterface : glv::TextView 
+    struct ExternalInterface : glv::View
     {
-        ExternalInterface( glv::Rect rect ) : glv::TextView( rect )
+        //ExternalInterface( glv::Rect rect ) : glv::TextView( rect )
+        ExternalInterface( glv::Rect rect ) : glv::View( rect )
         {
             visibility = false;
             
             this->maximize(); 
             this->disable(glv::Visible);
-            this->enable( glv::AlwaysBubble );
-      
+            
+            //this->enable( glv::AlwaysBubble );
+            //this->operator<<( new glv::TextView() );
+
             interface.reset( new L3::LuaInterface() );
         }
 

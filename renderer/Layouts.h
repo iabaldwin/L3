@@ -35,8 +35,7 @@ struct CustomGLV : glv::GLV
             {
                 case 96:
                     this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
-                    this->setMouseDown(a, b, 1, 1);
-
+                    //this->setMouseDown(a, b, 1, 1);
                 default:
                     break; 
             }
@@ -270,11 +269,10 @@ class Layout
 
     protected:
 
-        //CustomView*                     main_view;
         glv::View*                      main_view;
         glv::Window&                    window; 
-        //boost::shared_ptr< glv::View >  lua_interface;
-        boost::shared_ptr< glv::TextView >  lua_interface;
+        boost::shared_ptr< glv::View >  lua_interface;
+        //boost::shared_ptr< glv::TextView >  lua_interface;
         //boost::shared_ptr< L3::Visualisers::TestInterface >  lua_interface;
 
         

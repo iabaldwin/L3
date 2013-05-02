@@ -217,7 +217,7 @@ namespace Visualisers
                 //data().assign( tmp.bin(i,j)/10.0 , 0, i, j );
             //}
         //}
-    
+  
         mTex.magFilter(GL_NEAREST);
         mTex.dealloc();
         //mTex.alloc( tmp.x_bins, tmp.y_bins );
@@ -229,8 +229,8 @@ namespace Visualisers
             
         for(int i=0; i< tmp.x_bins; i++)
         {
-        //for(int j=0; j<tmp.y_bins; j++ )
-        for(int j=tmp.y_bins-1; j>=0; j-- )
+        for(int j=0; j< tmp.y_bins; j++ )
+        //for(int j=tmp.y_bins-1; j>=0; j-- )
             {
                 //double data = (tmp.bin(i,j)/normalizer)*255;
                 //double dta = tmp.bin(i,j)/normalizer;
@@ -238,21 +238,22 @@ namespace Visualisers
                 //double data = (tmp.bin(j,i)/normalizer);
                 //double data = (tmp.bin(j,i)/normalizer)*255;
                 //double data = (tmp.bin(i,j)/normalizer)*255;
-             
+                //double data = ((tmp.bin(i,j))/normalizer)*255.0;
+                //int data = (int)(((tmp.bin(i,j))/normalizer)*255.0);
+                int data = (int)(((tmp.bin(i,j))));
+          
+
                 //double data = 0.0;
-                double data = rand()%255;
-
+                //double data = rand()%255;
                 //std::cout << (int)(unsigned char)data << " ";
-                
                 //unsigned char* c = ((unsigned char*)&data );
-
                 //std::cout << (int)(*c) << " ";
 
                 *pixs++ = (unsigned char)(data);
                 *pixs++ = (unsigned char)(data);
                 *pixs++ = (unsigned char)(data);
-                //*pixs++ = (unsigned char)255;
-                *pixs++ = (unsigned char)data;
+                *pixs++ = (unsigned char)255;
+                //*pixs++ = (unsigned char)data;
 
                 //*pixs++ = *c;
                 //*pixs++ = *c;
