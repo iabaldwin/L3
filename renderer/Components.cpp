@@ -4,6 +4,25 @@
 #include <GL/freeglut.h>
 #include <GL/freeglut_ext.h>
 
+//const GLubyte mask[] =   {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+          //0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+              //0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                  //0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                      //0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                          //0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                              //0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                                  //0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
+
+
+const GLubyte mask[] =   {0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55, 0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55,
+          0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55, 0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55,
+              0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55, 0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55,
+                  0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55, 0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55,
+                      0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55, 0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55,
+                          0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55, 0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55,
+                              0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55, 0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55,
+                                  0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55, 0xff, 0xff, 0xff, 0xff, 0x55, 0x55, 0x55, 0x55};
+
 namespace L3
 {
 namespace Visualisers
@@ -93,14 +112,11 @@ namespace Visualisers
 
     void DefaultAxes::onDraw3D(glv::GLV& g)
     {
-
-        //glv::draw::enable( glv::draw::LineStipple );
-
+        glv::draw::lineStippling(true);
         glv::draw::lineStipple(4, 0xAAAA );
         glv::draw::lineWidth( .01 );
         glv::draw::paint( glv::draw::Lines, vertices.get(), colors.get(), counter );
-
-        //glv::draw::disable( glv::draw::LineStipple );
+        glv::draw::lineStippling(false);
     }
 
     /*
@@ -125,15 +141,13 @@ namespace Visualisers
         bound_vertices[3]( upper_right.first, lower_left.second, depth );
         bound_colors[3].set( 1, 1, 0, .25 );
 
-        //glv::draw::enable( glv::draw::LineStipple );
+        glv::draw::lineStippling(true);
         glv::draw::lineStipple(4, 0xAAAA );
         glv::draw::lineWidth(.1);
         glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
-        //glv::draw::disable( glv::draw::LineStipple );
-
+        glv::draw::lineStippling(false);
 
         glv::draw::enable( glv::draw::Blend );
-        //glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
         glv::draw::paint( glv::draw::TriangleFan, bound_vertices, bound_colors, 4 );
         glv::draw::disable( glv::draw::Blend );
     }
@@ -187,11 +201,10 @@ namespace Visualisers
      */
     void HistogramDensityRenderer::update()
     {
-        L3::Histogram<double> tmp;
-
         if( hist->empty() )
             return;
 
+        L3::Histogram<double> tmp;
         L3::ReadLock lock( hist->mutex );
         L3::clone( hist.get(), &tmp );
         lock.unlock();   
@@ -213,7 +226,6 @@ namespace Visualisers
         double normalizer = tmp.max();
 
         unsigned char * pixs = mTex.buffer<unsigned char>();
-
             
         for(int i=0; i< tmp.x_bins; i++)
         {
@@ -227,7 +239,8 @@ namespace Visualisers
                 //double data = (tmp.bin(j,i)/normalizer)*255;
                 //double data = (tmp.bin(i,j)/normalizer)*255;
              
-                double data = 0.0;
+                //double data = 0.0;
+                double data = rand()%255;
 
                 //std::cout << (int)(unsigned char)data << " ";
                 
@@ -463,9 +476,9 @@ namespace Visualisers
             for( int i=0; i<plot_cloud->num_points; i++) 
             {
                 vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
-                colors[i] = color; 
-                //colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
+                //colors[i] = color; 
                 // TODO: Have a color policy
+                colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
             }
 
             glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
@@ -539,11 +552,11 @@ namespace Visualisers
         bound_vertices[3]( upper_right.first, lower_left.second, -3.0 );
         bound_colors[3].set( 0, 1, 1, .25 );
 
-        //glv::draw::enable( glv::draw::LineStipple );
+        glv::draw::lineStippling(true);
         glv::draw::lineStipple(4, 0xAAAA );
         glv::draw::lineWidth(.1);
         glv::draw::paint( glv::draw::LineLoop, bound_vertices, bound_colors, 4 );
-        //glv::draw::disable( glv::draw::LineStipple );
+        glv::draw::lineStippling(false);
 
         glv::draw::enable( glv::draw::Blend );
         //glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
@@ -625,14 +638,23 @@ namespace Visualisers
     {
         int draw_counter = 0;
 
-        glv::Point3 points[541];
-        glv::Color  fan[541];
-        glv::Color  perimeter[541];
+        glv::Point3 points[541+2];
+        glv::Color  fan[541+2];
+        glv::Color  perimeter[541+2];
+
+        //points[draw_counter]( 0, 0, 0);
+        //perimeter[draw_counter].set( color, .75 );
+        //fan[draw_counter].set( color, .5 );
+
+        //draw_counter++;
 
         // Draw the front
         for (int scan_counter=0; scan_counter<541; scan_counter++) 
         {
             double range = scan->ranges[scan_counter];  
+
+            if ( range < 5 )
+                continue;
 
             draw_counter++;
 
@@ -644,21 +666,28 @@ namespace Visualisers
 
             points[draw_counter]( x, y, 0 );
             perimeter[draw_counter].set( color, .75 );
-            fan[draw_counter].set( color, .5 );
+            fan[draw_counter].set( color, 1 );
 
         }
+
+        //points[draw_counter]( 0, 0, 0);
+        //perimeter[draw_counter].set( color, .75 );
+        //fan[draw_counter].set( color, .5 );
 
         glv::draw::translateZ( -55 );
         glv::draw::rotateZ( rotate_z );
 
-        //glv::draw::blendTrans();
+        glv::draw::blendTrans();
         //glv::draw::lineWidth(1);
         //glv::draw::paint( glv::draw::LineLoop, points, perimeter, draw_counter );
-        glv::draw::paint( glv::draw::Points, points, perimeter, draw_counter );
 
-        //glv::draw::enable( glv::draw::Blend );
-        //glv::draw::paint( glv::draw::TriangleStrip, points, fan, draw_counter );
-        //glv::draw::disable( glv::draw::Blend );
+           
+        glEnable(GL_POLYGON_STIPPLE);
+        glPolygonStipple(mask);
+        glv::draw::enable( glv::draw::Blend );
+        glv::draw::paint( glv::draw::TriangleStrip, points, fan, draw_counter );
+        glv::draw::disable( glv::draw::Blend );
+        glDisable(GL_POLYGON_STIPPLE);
 
     }
 
@@ -755,13 +784,14 @@ namespace Visualisers
 
 
         glv::draw::enable( glv::draw::Blend );
-        //glv::draw::enable( glv::draw::LineStipple );
 
+        glv::draw::lineStippling(true);
         glv::draw::lineStipple(4, 0xAAAA );
         glv::draw::lineWidth( 1 );
+        glv::draw::lineStippling(false);
+
         glv::draw::paint( glv::draw::LineLoop, outer_vertices, outer_colors, 4 );
-        //glv::draw::paint( glv::draw::Lines, outer_vertices, outer_colors, 4 );
-        //glv::draw::paint( glv::draw::Quads, outer_vertices, outer_colors, 4 );
+        
         glv::draw::disable( glv::draw::Blend );
 
     }

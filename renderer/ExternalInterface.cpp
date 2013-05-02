@@ -16,20 +16,21 @@ namespace Visualisers
             if (!visibility )
             {
                 std::cout << "Disabling" << std::endl;
-                this->disable( glv::Focused );
-                this->disable( glv::FocusToTop );
+                //this->disable( glv::Focused );
+                //this->disable( glv::FocusToTop );
                 //this->disable( glv::DrawBack );
-                this->disable( glv::HitTest );
-                this->disable( glv::Controllable );
+                //this->disable( glv::HitTest );
+                //this->disable( glv::Controllable );
                 this->restore(); 
                 return false;
             }
             else
             {
-                //this->bringToFront();
+                this->bringToFront();
                 //this->enable( glv::Focused );
                 //this->enable( glv::DrawBack );
                 //setPos(xToPos(0));
+                this->maximize();
                 cursorPos(0);
             }
         }

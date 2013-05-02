@@ -374,20 +374,17 @@ struct HistogramVertexRenderer : HistogramRenderer, Leaf
 /*
  *  Histogram :: Density renderer
  */
-//struct HistogramDensityRenderer : glv::Plot, HistogramRenderer, Updateable
 struct HistogramDensityRenderer : glv::View, HistogramRenderer, Updateable
 {
 	HistogramDensityRenderer(const glv::Rect& rect, boost::shared_ptr<L3::Histogram<double> > histogram )
-        //: glv::Plot(rect), 
         : glv::View(rect), 
             HistogramRenderer(histogram),
                 mTex(0,0,GL_RGBA,GL_UNSIGNED_BYTE)
     {
-        // Assign density plot
-        //this->add(*new glv::PlotDensity( glv::Color(1)) );
     }
 
     glv::Texture2 mTex;
+    
     void update();
     void onDraw( glv::GLV& g );
 };
