@@ -136,6 +136,8 @@ namespace Visualisers
         }
 
         glv::draw::enable( glv::draw::Blend );
+        glv::draw::lineStippling(true);
+        glv::draw::lineStipple(8, 0xAAAA );
         glv::draw::lineWidth( 2 );
         glv::draw::paint( glv::draw::LineLoop, vertices, colors, num_points );
         glv::draw::disable( glv::draw::Blend );
