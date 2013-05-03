@@ -27,6 +27,8 @@ namespace Visualisers
 
             interface.reset( new L3::LuaInterface() );
         }
+    
+        bool eventify( glv::Event::t e, glv::GLV& g);
 
         bool visibility;
 
