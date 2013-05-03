@@ -13,11 +13,9 @@ namespace L3
 namespace Visualisers
 {
 
-    //struct ExternalInterface : glv::TextView 
-    struct ExternalInterface : glv::View
+    struct ExternalInterface : glv::TextView
     {
-        //ExternalInterface( glv::Rect rect ) : glv::TextView( rect )
-        ExternalInterface( glv::Rect rect ) : glv::View( rect )
+        ExternalInterface( glv::Rect rect ) : glv::TextView( rect )
         {
             visibility = false;
             

@@ -1,7 +1,11 @@
 #ifndef L3_RENDERING_UTILS_H
 #define L3_RENDERING_UTILS_H
 
+#include <deque>
+
 #include <GLV/glv.h>
+
+#include "glut.h"
 
 namespace L3
 {
@@ -27,6 +31,8 @@ struct ColorCycler
     }
 
 };
+
+    void drawBitmapText(char *string,float x,float y,float z) ;
 
 }
 }

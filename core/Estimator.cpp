@@ -313,7 +313,7 @@ namespace L3
         SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
         {
             // Compute
-            //discrete_estimators[0]->operator()( swathe, estimate );
+            discrete_estimators[0]->operator()( swathe, estimate );
 
             //discrete_estimators[1]->operator()( swathe, estimate );
             

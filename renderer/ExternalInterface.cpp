@@ -15,10 +15,10 @@ namespace Visualisers
   
             if (!visibility )
             {
-                //this->disable( glv::DrawBack );
                 this->restore(); 
-                //this->focused(false);
-                //this->disable( glv::Focused );
+                this->focused(false);
+                //this->disable( glv::DrawBack );
+                this->disable( glv::Focused );
                 //this->disable( glv::HitTest );
                 //this->disable( glv::FocusToTop );
                 //this->disable( glv::DrawBack );
@@ -29,56 +29,58 @@ namespace Visualisers
             }
             else
             {
-                this->enable( glv::DrawGrid );
-                this->bringToFront();
+                this->enable( glv::Focused );
+                this->maximize();
+                //this->bringToFront();
                 this->focused(true);
                 //this->enable( glv::Focused );
                 //this->enable( glv::DrawBack );
                 //setPos(xToPos(0));
-                this->maximize();
                 //cursorPos(0);
             }
         }
 
         // Process  
-        //bool retval = true;
-        //retval = retval && glv::TextView::onEvent(e,g);
+        bool retval = true;
+        retval = retval && glv::TextView::onEvent(e,g);
 
-        //if ( e == glv::Event::KeyDown) 
-        //{
-            //const glv::Keyboard& k = g.keyboard();
-            //int key = k.key();
+        if ( e == glv::Event::KeyDown) 
+        {
+            const glv::Keyboard& k = g.keyboard();
+            int key = k.key();
 
-            //if ( key == glv::Key::Return )
-            //{
-                //std::string current = this->getValue() ;
-                //history.push_front(  current + "\n" );
+            if ( key == glv::Key::Return )
+            {
+                std::string current = this->getValue() ;
+                history.push_front(  current + "\n" );
 
-                //deleteText(0, mText.size());
-                ////setPos(0);
-                //cursorPos(0);
+                deleteText(0, mText.size());
+                //setPos(0);
+                cursorPos(0);
 
-                //std::stringstream ss; 
-                //for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
-                    //ss << *it;
+                std::stringstream ss; 
+                for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
+                    ss << *it;
 
-                //std::cout << ss.str();
-                //std::cout << "--------------" << std::endl;
+                std::cout << ss.str();
+                std::cout << "--------------" << std::endl;
     
-                //unsigned found = current.find( "p\"" );
+                unsigned found = current.find( "p\"" );
                    
-                ////if ( found !=std::string::npos )
-                ////{
-                    ////current.erase( found,1 );
-                ////}
+                //if ( found !=std::string::npos )
+                //{
+                    //current.erase( found,1 );
+                //}
 
-                //std::cout << current << std::endl;
+                std::cout << current << std::endl;
 
-                ////std::cout <<interface->execute( current ) << std::endl;
-            //}
-        //}
+                //std::cout <<interface->execute( current ) << std::endl;
+            }
+        }
 
-        return glv::View::onEvent( e,g );
+        return retval;
+
+        //return glv::View::onEvent( e,g );
     }
 }
 }

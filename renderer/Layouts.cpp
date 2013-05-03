@@ -196,7 +196,9 @@ namespace L3
             //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_histogram_bounds_renderer.get() ) ) );
             //debug_histogram_bounds_renderer->depth = -12.0;
         
-            
+
+            dbg_text_view.reset( new glv::TextView( glv::Rect( win.width() - 200, win.height() -100, 100, 10 ), 8 ) );
+            this->renderables.push_front( dbg_text_view.get() );
         }
     }
 }

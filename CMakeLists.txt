@@ -14,10 +14,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 find_package( HDF5 )                                             # Matlab interoperability  
 
-#find_package( GLUT REQUIRED )                                    # Rendering
-#include_directories( ${GLUT_INCLUDE_DIR} )
-include_directories( "/opt/X11/include/" )
-link_directories( "/opt/X11/lib/" )
+find_package( GLUT REQUIRED )                                    # Rendering
+include_directories( ${GLUT_INCLUDE_DIR} )
 
 find_package( GLEW REQUIRED )                                    # Rendering
 

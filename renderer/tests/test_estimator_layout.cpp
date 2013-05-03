@@ -37,16 +37,16 @@ int main( int argc, char* argv[] )
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
     // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::SE3 >     oracle_source( dataset.pose_reader );
-    L3::ConstantTimeIterator< L3::LHLV >    integrated_pose_iterator( dataset.LHLV_reader );
+    L3::ConstantTimeIterator< L3::SE3 >  oracle_source( dataset.pose_reader );
+    L3::ConstantTimeIterator< L3::LHLV > integrated_pose_iterator( dataset.LHLV_reader );
 
     // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151 >  vertical_LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
-    L3::ConstantTimeIterator< L3::LMS151 >  horizontal_LIDAR_iterator( dataset.LIDAR_readers[ mission.horizontal ] );
+    L3::ConstantTimeIterator< L3::LMS151 > vertical_LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
+    L3::ConstantTimeIterator< L3::LMS151 > horizontal_LIDAR_iterator( dataset.LIDAR_readers[ mission.horizontal ] );
   
     // Pose Windower
-    L3::ConstantTimeWindower<L3::SE3>   oracle( &oracle_source);
-    L3::ConstantTimeWindower<L3::LHLV>  pose_windower( &integrated_pose_iterator );
+    L3::ConstantTimeWindower<L3::SE3 >  oracle( &oracle_source);
+    L3::ConstantTimeWindower<L3::LHLV > pose_windower( &integrated_pose_iterator );
     
     // Swathe builder
     L3::SwatheBuilder swathe_builder( &pose_windower, &vertical_LIDAR_iterator );
@@ -83,7 +83,7 @@ int main( int argc, char* argv[] )
 
     glv::Window win(1400, 800, "Visualisation::Estimator");
 
-    L3::Visualisers::EstimatorLayout layout(win, &runner, experience, point_cloud );
+    L3::Visualisers::EstimatorLayout layout( win, &runner, experience, point_cloud );
 
     layout.run();
 }

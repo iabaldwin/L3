@@ -4,8 +4,9 @@ add_library( L3Vis
                 Components.cpp 
                 Layouts.cpp 
                 ExternalInterface.cpp
+                RenderingUtils.cpp
                 )
-target_link_libraries( L3Vis L3 GLV glut lua )
+target_link_libraries( L3Vis L3 GLV lua )
 
 add_subdirectory( apps )
 add_subdirectory( tests )

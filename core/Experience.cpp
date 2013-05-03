@@ -39,9 +39,9 @@ Experience::Experience( std::deque<experience_section>  SECTIONS,
 
     // Allocate
     std::vector<double> densities;
+    densities.push_back( .5 );
     densities.push_back( 1 );
-    densities.push_back( 5 );
-    densities.push_back( 10 );
+    densities.push_back( 2.5 );
 
     experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
     resident_point_cloud.reset( new L3::PointCloud<double>() );
@@ -177,7 +177,6 @@ void Experience::run()
 
 
                 current_histogram->operator()( resident_point_cloud.get() );
-            
                 //smoother.smooth( current_histogram.get() );
             
                 lock.unlock();

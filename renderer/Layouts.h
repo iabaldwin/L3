@@ -14,9 +14,6 @@ namespace L3
 namespace Visualisers
 {
 
-    //enum {
-    //};
-
 
 /*
  *  Custom GLV view
@@ -148,9 +145,6 @@ class Layout
             //main_view = new CustomView( glv::Rect(0,0, .6*win.width(),500));
             main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
             this->renderables.push_front( main_view );
-
-            // Add it is a global interface
-            //main_view->addGlobalInterface( glv::Event::KeyDown, lua_interface.get() );
 
             // Composite view holder
             composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*win.width(), 500 )) );
@@ -369,9 +363,11 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
         boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D > combined_scan_renderer;
 
+        boost::shared_ptr< glv::View > ancillary_1;
+        boost::shared_ptr< glv::View > ancillary_2;
 
-        boost::shared_ptr< glv::View >  ancillary_1;
-        boost::shared_ptr< glv::View >  ancillary_2;
+        boost::shared_ptr< glv::View > dbg_text_view;
+
 };
 
 
