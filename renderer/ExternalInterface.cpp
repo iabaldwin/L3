@@ -63,13 +63,14 @@ namespace Visualisers
                 deleteText(0, mText.size());
                 cursorPos(0);
 
-                std::stringstream ss; 
-                for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
-                    ss << *it;
+                //std::stringstream ss; 
+                //for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
+                    //ss << *it;
 
-                std::cout << ss.str();
-                std::cout << "--------------" << std::endl;
-    
+                //std::cout << ss.str();
+                //std::cout << "--------------" << std::endl;
+  
+                this->interface->execute( current );
             }
         }
 

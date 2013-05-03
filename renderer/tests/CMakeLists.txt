@@ -4,6 +4,9 @@ target_link_libraries( test_input GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${G
 add_executable( test_component test_component.cpp )
 target_link_libraries( test_component GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
+add_executable( test_interface test_interface.cpp )
+target_link_libraries( test_interface GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
 add_executable( test_composite test_composite.cpp )
 target_link_libraries( test_composite GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 

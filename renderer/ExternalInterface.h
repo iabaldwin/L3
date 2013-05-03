@@ -22,7 +22,7 @@ namespace Visualisers
             this->maximize(); 
             this->disable(glv::Visible);
            
-            // Always bubble events to top-level
+            // Always bubble events to top-level, so we can catch toggle
             this->enable( glv::AlwaysBubble );
 
             interface.reset( new L3::LuaInterface() );

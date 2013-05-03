@@ -139,8 +139,6 @@ class Layout
              *  Lua interface
              */
             lua_interface.reset( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
-            //lua_interface.reset( new L3::Visualisers::TestInterface( glv::Rect(1200,800,200,150) ) ) ;
-            //lua_interface->pos( win.width()-(200+10),win.height()-(150+10));
             this->renderables.push_front( lua_interface.get() );
 
             // Create the main view
