@@ -19,6 +19,7 @@ add_library( L3
     Simulator.cpp 
     Predictor.cpp
     PoseProvider.cpp
+    ScanMatching.cpp
     Misc.cpp
     )
 

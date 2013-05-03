@@ -44,7 +44,7 @@ struct TemporalRunner : Runner, TemporalObserver
                 it++ )
             
             // Dangerous, fast
-            static_cast<L3::TemporalObserver*>( *it )->update( t);
+            static_cast<L3::TemporalObserver*>( *it )->update( t ) ;
             // Safe, slow 
             //L3::TemporalObserver* observer = dynamic_cast<L3::TemporalObserver*>( *it );
     }
@@ -107,7 +107,8 @@ struct EstimatorRunner : ThreadedTemporalRunner
     L3::ConstantTimeIterator< L3::LMS151 >*     vertical_LIDAR;
     L3::ConstantTimeIterator< L3::LMS151 >*     horizontal_LIDAR;
   
-    boost::shared_ptr< L3::ScanMatching::ScanMatcher >  scan_matcher;
+    boost::shared_ptr< L3::ScanMatching::Engine > engine;
+    boost::shared_ptr< L3::ScanMatching::ScanMatcher > scan_matcher;
 
     boost::shared_ptr< L3::SE3 > current;
 
@@ -116,7 +117,6 @@ struct EstimatorRunner : ThreadedTemporalRunner
     EstimatorRunner( float speedup=5.0) : speedup(speedup)
     {
         current.reset( new L3::SE3( L3::SE3::ZERO() ) );
-        scan_matcher.reset( new L3::ScanMatching::ICP() );
     }
 
     void run();
@@ -127,6 +127,8 @@ struct EstimatorRunner : ThreadedTemporalRunner
         this->windower = windower;
         (*this) << dynamic_cast<L3::TemporalObserver*>(windower);
         (*this) << dynamic_cast<L3::Dumpable*>(windower);
+        
+        
         return *this;
     }
 
@@ -173,6 +175,13 @@ struct EstimatorRunner : ThreadedTemporalRunner
     {
         this->horizontal_LIDAR = windower;
         (*this) << dynamic_cast<L3::Dumpable*>(windower);
+        
+        //scan_matcher.reset( new L3::ScanMatching::ICP() );
+        //(*this) << dynamic_cast<L3::TemporalObserver*>(scan_matcher.get());
+       
+        engine.reset( new L3::ScanMatching::Engine( windower ) );
+        (*this) << dynamic_cast<L3::TemporalObserver*>(engine.get());
+        
         return *this;
     }
 
