@@ -32,7 +32,9 @@ struct CustomGLV : glv::GLV
             {
                 case 96:
                     this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
-                    //this->setMouseDown(a, b, 1, 1);
+                    // This is quite grim
+                    this->setMouseDown(a, b, 1, 1);
+                    this->setMouseUp(a, b, 1, 1);
                 default:
                     break; 
             }
@@ -365,8 +367,6 @@ class EstimatorLayout : public Layout
 
         boost::shared_ptr< glv::View > ancillary_1;
         boost::shared_ptr< glv::View > ancillary_2;
-
-        boost::shared_ptr< glv::View > dbg_text_view;
 
 };
 

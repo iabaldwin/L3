@@ -146,7 +146,7 @@ namespace L3
             oracle_label->pos( 0, 160 );
             this->labels.push_front( oracle_label );
 
-            ancillary_2->pos( win.width()-(150*3+60), 625 );
+            ancillary_2->pos( win.width()-(535), 625 );
             ancillary_2->fit();
 
             // Add it to the view
@@ -195,10 +195,6 @@ namespace L3
             //debug_histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( runner->estimator->current_histogram ) );
             //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_histogram_bounds_renderer.get() ) ) );
             //debug_histogram_bounds_renderer->depth = -12.0;
-        
-
-            dbg_text_view.reset( new glv::TextView( glv::Rect( win.width() - 200, win.height() -100, 100, 10 ), 8 ) );
-            this->renderables.push_front( dbg_text_view.get() );
         }
     }
 }

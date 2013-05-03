@@ -21,9 +21,9 @@ namespace Visualisers
             
             this->maximize(); 
             this->disable(glv::Visible);
-            
-            //this->enable( glv::AlwaysBubble );
-            //this->operator<<( new glv::TextView() );
+           
+            // Always bubble events to top-level
+            this->enable( glv::AlwaysBubble );
 
             interface.reset( new L3::LuaInterface() );
         }

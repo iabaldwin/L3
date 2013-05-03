@@ -500,9 +500,9 @@ namespace Visualisers
         far(500);
         glv::draw::translateZ(-250 );
 
-        //PointCloudRenderer::onDraw3D(g);    
+        PointCloudRenderer::onDraw3D(g);    
         
-        L3::Visualisers::drawBitmapText( "Test string",0,0,0) ;
+        //L3::Visualisers::drawBitmapText( "Test string",0,0,0) ;
     }
 
     void PointCloudRendererView::update()

@@ -17,27 +17,33 @@ namespace Visualisers
             {
                 this->restore(); 
                 this->focused(false);
-                //this->disable( glv::DrawBack );
                 this->disable( glv::Focused );
-                //this->disable( glv::HitTest );
-                //this->disable( glv::FocusToTop );
-                //this->disable( glv::DrawBack );
-                //this->disable( glv::Controllable );
-                //this->disable( glv::Animate );
-                //this->disable( glv::FocusHighlight );
+                this->disable( glv::DrawBack );
+                this->disable( glv::HitTest );
                 return false;
             }
             else
             {
-                this->enable( glv::Focused );
                 this->maximize();
-                //this->bringToFront();
                 this->focused(true);
-                //this->enable( glv::Focused );
-                //this->enable( glv::DrawBack );
-                //setPos(xToPos(0));
-                //cursorPos(0);
+                this->bringToFront();
+                this->enable( glv::Focused );
+                this->enable( glv::DrawBack );
+                this->enable( glv::HitTest );
             }
+        }
+
+        const glv::Keyboard& k = g.keyboard();
+        int key = k.key();
+        float mx = g.mouse().xRel();
+
+        // Intercept switch
+        switch(e){
+            case glv::Event::KeyDown:
+            if( key == 96 ){
+                return false;
+			}
+	
         }
 
         // Process  
@@ -55,7 +61,6 @@ namespace Visualisers
                 history.push_front(  current + "\n" );
 
                 deleteText(0, mText.size());
-                //setPos(0);
                 cursorPos(0);
 
                 std::stringstream ss; 
@@ -65,22 +70,10 @@ namespace Visualisers
                 std::cout << ss.str();
                 std::cout << "--------------" << std::endl;
     
-                unsigned found = current.find( "p\"" );
-                   
-                //if ( found !=std::string::npos )
-                //{
-                    //current.erase( found,1 );
-                //}
-
-                std::cout << current << std::endl;
-
-                //std::cout <<interface->execute( current ) << std::endl;
             }
         }
 
         return retval;
-
-        //return glv::View::onEvent( e,g );
     }
 }
 }
