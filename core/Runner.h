@@ -13,6 +13,7 @@
 #include "Estimator.h"
 #include "SwatheBuilder.h"
 #include "Predictor.h"
+#include "ScanMatching.h"
 
 namespace L3
 {
@@ -42,8 +43,9 @@ struct TemporalRunner : Runner, TemporalObserver
                 it != observables.end();
                 it++ )
             
-            // Dangerous
+            // Dangerous, fast
             static_cast<L3::TemporalObserver*>( *it )->update( t);
+            // Safe, slow 
             //L3::TemporalObserver* observer = dynamic_cast<L3::TemporalObserver*>( *it );
     }
 
@@ -104,14 +106,17 @@ struct EstimatorRunner : ThreadedTemporalRunner
     
     L3::ConstantTimeIterator< L3::LMS151 >*     vertical_LIDAR;
     L3::ConstantTimeIterator< L3::LMS151 >*     horizontal_LIDAR;
-    
-    L3::SE3* current;
+  
+    boost::shared_ptr< L3::ScanMatching::ScanMatcher >  scan_matcher;
+
+    boost::shared_ptr< L3::SE3 > current;
 
     float speedup;
 
     EstimatorRunner( float speedup=5.0) : speedup(speedup)
     {
-        current = new L3::SE3( L3::SE3::ZERO() );
+        current.reset( new L3::SE3( L3::SE3::ZERO() ) );
+        scan_matcher.reset( new L3::ScanMatching::ICP() );
     }
 
     void run();

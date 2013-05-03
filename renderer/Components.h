@@ -178,11 +178,24 @@ struct PoseRenderer : Leaf
 
     L3::SE3& pose;
 
-    void onDraw3D( glv::GLV& g )
+    virtual void onDraw3D( glv::GLV& g )
     {
         CoordinateSystem( pose ).onDraw3D( g ); 
     }
 
+};
+
+struct AnimatedPoseRenderer : PoseRenderer
+{
+
+    AnimatedPoseRenderer( L3::SE3& pose ) 
+        : PoseRenderer( pose ), range(1.0)
+    {
+    }
+
+    float range;
+    
+    void onDraw3D( glv::GLV& g );
 };
 
 /*
@@ -238,7 +251,7 @@ struct PointCloudRendererLeaf : PointCloudRenderer, Leaf
  */
 struct PointCloudRendererView: PointCloudRenderer, glv::View3D, Updateable
 {
-    PointCloudRendererView( const glv::Rect& r, boost::shared_ptr< L3::PointCloud<double> > cloud, L3::SE3* estimate ) 
+    PointCloudRendererView( const glv::Rect& r, boost::shared_ptr< L3::PointCloud<double> > cloud, boost::shared_ptr< L3::SE3 > estimate ) 
         : PointCloudRenderer(cloud),
             glv::View3D(r),
             current_estimate(estimate)
@@ -247,7 +260,7 @@ struct PointCloudRendererView: PointCloudRenderer, glv::View3D, Updateable
     }
 
        
-    L3::SE3* current_estimate;
+    boost::shared_ptr< L3::SE3 > current_estimate;
 
     void update();
 
@@ -308,8 +321,8 @@ struct Grid : Leaf
     Grid( float lower=-500, float upper=500, float spacing=50);
 
     int counter;
-    boost::shared_array< glv::Point3 >  vertices;
-    boost::shared_array< glv::Color >   colors;
+    boost::shared_array< glv::Point3 > vertices;
+    boost::shared_array< glv::Color >  colors;
 
     float lower, upper, spacing;
 
@@ -503,11 +516,17 @@ struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updat
 struct DedicatedPoseRenderer : glv::View3D, Updateable
 {
 
-    DedicatedPoseRenderer( L3::PoseProvider* provider, const glv::Rect rect = glv::Rect(50,50) ) 
+    DedicatedPoseRenderer( L3::PoseProvider* provider, const glv::Rect rect = glv::Rect(50,50), const std::string& text="" ) 
         : glv::View3D( rect ),
             provider(provider)
     {
         pose.reset( new L3::SE3( L3::SE3::ZERO() ) );
+        //boost::shared_ptr< glv::View > oracle_label( new glv::Label("Estimate::INS") );
+        label.reset( new glv::Label(text) );
+    
+            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            *this << *label;
+
     }
 
     L3::PoseProvider* provider;
@@ -515,6 +534,8 @@ struct DedicatedPoseRenderer : glv::View3D, Updateable
     boost::shared_ptr<L3::SE3> pose;
     
     L3::Visualisers::DefaultAxes axes;
+            
+    boost::shared_ptr< glv::View > label;
 
     void update();
 
@@ -541,9 +562,10 @@ struct ScanRenderer2D : Updateable
     float                                   rotate_z;
     glv::Color                              color;
     boost::shared_ptr<L3::LMS151>           scan;
+    boost::shared_ptr< glv::View >          label;
     L3::ConstantTimeIterator< L3::LMS151 >* windower;
     std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
-
+    
     void onDraw3D( glv::GLV& g );
 
     void update();
@@ -558,6 +580,11 @@ struct HorizontalScanRenderer2DView : glv::View3D, ScanRenderer2D
 
     {
         rotate_z = 0;
+    
+        label.reset( new glv::Label("LMS151::Horizontal", true) );
+        label->pos( glv::Place::TL, 0, -10 ).anchor( glv::Place::BR ); 
+
+        (*this) << *label;
     }
 
     void onDraw3D( glv::GLV& g )
@@ -574,6 +601,12 @@ struct VerticalScanRenderer2DView : glv::View3D, ScanRenderer2D
             ScanRenderer2D( windower, glv::Color(0,0,1) )
     {
         rotate_z = 180;
+    
+        label.reset( new glv::Label("LMS151::Vertical", true) );
+        label->pos( glv::Place::TL, 0, 0 ).anchor( glv::Place::BR ); 
+
+        (*this) << *label;
+
     }
 
     void onDraw3D( glv::GLV& g )
@@ -608,6 +641,9 @@ struct CombinedScanRenderer2D  : glv::View3D
         //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), boost::reference_wrapper<glv::GLV>(g) ) );
 
         glv::draw::translateZ( -20 );
+        //glv::draw::rotate( 45, 10, 45);
+
+        Grid().onDraw3D(g);
 
         for ( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = scan_renderers.begin();
                 it != scan_renderers.end();

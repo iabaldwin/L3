@@ -111,6 +111,45 @@ namespace Visualisers
     }
 
     /*
+     *  Pose Renderer types
+     */
+    void AnimatedPoseRenderer::onDraw3D(glv::GLV& g )
+    {
+        int num_points = 100;
+
+        static int counter = 0;
+
+        glv::Point3 vertices[num_points];
+        glv::Color colors[num_points];
+
+        float angle_spacing = 2*M_PI/num_points;
+        float angle = 0;
+
+        float x = pose.X();
+        float y = pose.Y();
+        
+        for( int i=0; i<num_points; i++ )
+        {
+            vertices[i]( (range*cos(angle))+x, (range*sin(angle))+y, 0 );
+            colors[i].set( 0, 0, 1, 1.0-double(counter)/20.0 ); 
+            angle += angle_spacing;
+        }
+
+        glv::draw::enable( glv::draw::Blend );
+        glv::draw::lineWidth( 2 );
+        glv::draw::paint( glv::draw::LineLoop, vertices, colors, num_points );
+        glv::draw::disable( glv::draw::Blend );
+
+        if ( counter++ == 20 )
+        {
+            range = 1.0f;
+            counter = 0; 
+        }
+        else
+            range += 0.5;
+    }
+
+    /*
      *  Components :: HistogramBoundsRenderer
      */
     void HistogramBoundsRenderer::onDraw3D(glv::GLV& g)

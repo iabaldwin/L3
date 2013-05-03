@@ -30,7 +30,8 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
 
             // Current pose estimate
-            pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
+            //pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
+            pose_renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
 
             // Predicted estimates
@@ -99,24 +100,14 @@ namespace L3
             horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR, glv::Rect( 150,150 ) ) );
             updater->operator<<( horizontal_scan_renderer.get() );
 
-            boost::shared_ptr< glv::View > horizontal_scan_renderer_label( new glv::Label("LMS151::Horizontal", true) );
-            horizontal_scan_renderer_label->pos( 150+5 , 135 );
-            this->labels.push_front( horizontal_scan_renderer_label );
-            
             (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
-            (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer_label.get());
 
             // Stand-alone scan renderer : Vertical
             vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 150,150 ) ) );
             dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 150+2*10, 0);
             updater->operator<<( vertical_scan_renderer.get() );
 
-            boost::shared_ptr< glv::View > vertical_scan_renderer_label( new glv::Label("LMS151::Vertical", true) );
-            vertical_scan_renderer_label->pos( 150*2+30, 135);
-            this->labels.push_front( vertical_scan_renderer_label );
-         
             (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
-            (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer_label.get());
 
             combined_scan_renderer.reset( new L3::Visualisers::CombinedScanRenderer2D(  runner->horizontal_LIDAR, runner->vertical_LIDAR, glv::Rect(150,150) ) );
             combined_scan_renderer->pos( 150*2+2*30, 0 );
@@ -139,13 +130,10 @@ namespace L3
             ancillary_2.reset( new glv::Box() );
 
             // Stand-alone pose renderer
-            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
+            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ), std::string("Estimate::INS" ) ) );
             updater->operator<<( oracle_renderer.get() );
 
-            boost::shared_ptr< glv::View > oracle_label( new glv::Label("Estimate::INS") );
-            oracle_label->pos( 0, 160 );
-            this->labels.push_front( oracle_label );
-
+            
             ancillary_2->pos( win.width()-(535), 625 );
             ancillary_2->fit();
 
@@ -153,8 +141,6 @@ namespace L3
             this->renderables.push_front( ancillary_2.get() );
 
             (*ancillary_2) << dynamic_cast<glv::View*>(oracle_renderer.get());
-            (*ancillary_2) << dynamic_cast<glv::View*>(oracle_label.get());
-
 
                     
             /*
@@ -162,27 +148,6 @@ namespace L3
              */
             //cost_renderer_view.reset( new L3::Visualisers::CostRendererView( *(runner->estimator->pose_estimates),  glv::Rect( win.width()-510,  win.height()-250, 200, 200 ) ) );
             //this->renderables.push_front( cost_renderer_view.get() );
-
-           
-            /*
-             *  Run-time swathe density renderer
-             */
-            //boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > swathe_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 800, 0, 200, 200 ), runner->estimator->current_histogram ) );
-            //density_renderers.push_back( swathe_density_renderer ); 
-            //this->renderables.push_front( dynamic_cast<glv::Plot*>(swathe_density_renderer.get() ) );
-            //updater->operator<<( swathe_density_renderer.get() );
-            //swathe_density_renderer->enable( glv::Visible );
-
-            //boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), experience->experience_histogram ) );
-            //boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > experience_density_renderer( 
-                    //new L3::Visualisers::HistogramDensityRenderer( glv::Rect( 1000, 0, 200, 200 ), 
-                        //(*experience->experience_pyramid)[0] ) );
-            //density_renderers.push_back( experience_density_renderer ); 
-            //this->renderables.push_front( dynamic_cast<glv::Plot*>(experience_density_renderer.get() ) );
-            //updater->operator<<( experience_density_renderer.get() );
-
-            //experience_density_renderer->bringToFront();
-            //experience_density_renderer->enable( glv::Visible );
 
             //dumper.reset( new DataDumper( runner->dumps ) );
             //main_view->addGlobalInterface( glv::Event::KeyDown, dumper.get() );
