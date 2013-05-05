@@ -73,8 +73,6 @@ namespace L3
             //this->labels.push_front( predicted_pose_label );
             //this->renderables.push_front( predicted_pose_label.get() );
 
-            std::cout << &window << std::endl;
-
             /*
              *  Pyramid Renderer
              */

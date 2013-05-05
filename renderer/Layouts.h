@@ -107,11 +107,7 @@ struct EventController : glv::EventHandler
     virtual bool onEvent( glv::View& v, glv::GLV& g)
     {
         if (( t.elapsed() - last_down ) < .5 )
-        {
-            //action( &v );
             action( view ); 
-            std::cout << "Dbl" << std::endl;
-        }
 
         last_down  = t.elapsed();
 
