@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 
+
 namespace L3
 {
 namespace Visualisers
@@ -46,11 +47,9 @@ namespace Visualisers
 	
         }
 
-        // Process  
+        // Process  text
         bool retval = true;
-        //retval = retval && glv::TextView::onEvent(e,g);
-
-        this->eventify( e, g );
+        retval = retval && this->handleText( e, g );
 
         if ( e == glv::Event::KeyDown) 
         {
@@ -59,37 +58,44 @@ namespace Visualisers
 
             if ( key == glv::Key::Return )
             {
-                std::string current = mText.substr( 0, mPos );
-                history.push_front(  "\n" + current );
+                // Get the current string
+                std::string current = mText.substr( 3, mPos-3 );
 
+                // Run it through L3
+                this->L3_interface->execute( current );
+
+                // Execute it
+                if ( this->interface->execute( current ) )
+                    std::cout << this->interface->get_state() << std::endl;
+
+                history.push_front( current );
+             
+                // Reset things
                 deleteText(0, mText.size());
-                cursorPos(0);
+
+                int counter = 0;
 
                 // Join it
                 std::stringstream ss; 
                 for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
-                    ss << *it;
+                    ss <<  "[" << counter++ << "] " << *it << std::endl;
 
-                mText = ss.str();
-                
-                std::cout << "<hist>" << std::endl;
-                std::cout << ss.str() << std::endl;;
-                std::cout << "</hist>" << std::endl;
-  
-                this->interface->execute( current );
-            
+                mText = std::string(">> ") + std::string("\n") + ss.str();
+                cursorPos(3);
+
             }
         }
         
         return retval;
     }
 
-    bool ExternalInterface::eventify( glv::Event::t e, glv::GLV& g){
+    bool ExternalInterface::handleText( glv::Event::t e, glv::GLV& g){
 
         const glv::Keyboard& k = g.keyboard();
         int key = k.key();
         float mx = g.mouse().xRel();
 
+        
         switch(e){
             case glv::Event::KeyDown:
                 if(k.ctrl()){
@@ -153,9 +159,17 @@ namespace Visualisers
                             else cursorPos(mPos+1);
                             return false;
 
-                        case glv::Key::Down: cursorPos(mText.size()); return false;
-                        case glv::Key::Up:   cursorPos(0); return false;
+                        //case glv::Key::Down: cursorPos(mText.size()); return false;
+                        //case glv::Key::Up:   cursorPos(0); return false;
 
+                        case glv::Key::Up:
+                            if ( history.size() > 0 )
+                            {
+                                mText = ">> " + history.front();
+                                cursorPos( mText.size() );
+                                return false;
+                            }
+                        
                         case glv::Key::Enter:
                         case glv::Key::Return:
                                         notify(this, glv::Update::Action);
@@ -164,20 +178,7 @@ namespace Visualisers
                 }
                 break;
 
-            case glv::Event::MouseDown:
-                cursorPos(xToPos(mx));
-            case glv::Event::MouseUp:
-                return false;
-
-            case glv::Event::MouseDrag:
-                {
-                    int p = xToPos(mx);
-                    if(p >= mPos) select(p-mPos+1);
-                    else select(p-mPos);
-                    //printf("%d\n", mSel);
-                }
-                return false;
-
+        
             default:;
         }
 

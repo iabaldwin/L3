@@ -83,7 +83,9 @@ int main( int argc, char* argv[] )
 
     glv::Window win(1400, 800, "Visualisation::Estimator");
 
-    L3::Visualisers::EstimatorLayout layout( win, &runner, experience, point_cloud );
+    L3::Visualisers::EstimatorLayout layout( win );
+    
+    layout.load( &runner, experience, point_cloud );
 
     layout.run();
 }

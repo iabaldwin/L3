@@ -14,11 +14,10 @@ namespace L3
 namespace Visualisers
 {
 
-
 /*
  *  Custom GLV view
  */
-struct CustomGLV : glv::GLV
+struct L3GLV : glv::GLV
 {
     bool onEvent( glv::Event::t e, glv::GLV& g)
     {
@@ -32,6 +31,7 @@ struct CustomGLV : glv::GLV
             {
                 case 96:
                     this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
+                    
                     // This is quite grim
                     this->setMouseDown(a, b, 1, 1);
                     this->setMouseUp(a, b, 1, 1);
@@ -43,90 +43,107 @@ struct CustomGLV : glv::GLV
     }
 };
 
-struct EventController : glv::View
+struct Action
 {
-    EventController()
-    {
-        this->disable( glv::Visible );
-    }
 
-	virtual bool onEvent( glv::Event::t e, glv::GLV& g)
-    {
-    }
+    virtual void operator()( glv::View* v )= 0;
+
 };
 
-struct DataDumper : EventController
+struct Maximise : Action
 {
 
-    DataDumper( std::list < L3::Dumpable* > dump_targets ) : targets(dump_targets)
+    virtual void operator()( glv::View* v )
     {
-
-    }
-
-    std::list < L3::Dumpable* > targets;
-
-	bool onEvent( glv::Event::t e, glv::GLV& g)
-    {
-
-        const glv::Keyboard& k = g.keyboard();
-        int key = k.key();
-
-        // Special switch key
-        if (key == 'd')
-            std::for_each( targets.begin(), targets.end(), std::mem_fun( &Dumpable::dump ) );
-
-        return true;
+        v->maximize();
+        v->bringToFront();
     }
 
 };
 
-struct CustomView : glv::View
+struct Toggle: Action
 {
 
-    CustomView( const glv::Rect rect ) : glv::View(rect)
+    Toggle() : maximised(false)
     {
-
     }
 
-    std::map< glv::Event::t, std::list< glv::View*> > interfaces;
-
-    void addGlobalInterface( glv::Event::t t, glv::View* iface )
+    bool maximised;
+    
+    virtual void operator()( glv::View* v )
     {
-        if ( !iface )
-        {
-            std::cerr << "Erroneous callback" << std::cout;
-            return;
-        }
-
-        std::map< glv::Event::t, std::list< glv::View*> >::iterator it = interfaces.find( t ); 
-
-        if ( it != interfaces.end() )
-            it->second.push_front(iface);
+        if ( maximised )
+            v->restore();
         else
-        {
-            std::list< glv::View*> list;
-            list.push_front( iface );
-            interfaces.insert( std::make_pair( t, list ) );
-        }
-    }
-
-
-
-    bool onEvent( glv::Event::t e, glv::GLV& g)
-    {
-        std::map< glv::Event::t, std::list< glv::View*> >::iterator it = interfaces.find( e ); 
-
-        if ( it != interfaces.end() )
-            for (std::list< glv::View*>::iterator list_it = it->second.begin();
-                    list_it != it->second.end();
-                    list_it++ )
-                (*list_it)->onEvent( e, g );
+            v->maximize();
+        //v->maximize();
+        //v->bringToFront();
+   
+        maximised = !maximised;
     }
 
 };
 
 
 
+
+struct EventController : glv::EventHandler
+{
+ 
+    EventController( glv::View* view ) : last_down(0.0), view(view)
+    {
+
+    }
+
+    //Maximise action;
+    Toggle action;
+
+    L3::Timing::ChronoTimer t;
+
+    glv::View* view;
+
+    double last_down;
+ 
+    virtual bool onEvent( glv::View& v, glv::GLV& g)
+    {
+        if (( t.elapsed() - last_down ) < .5 )
+        {
+            //action( &v );
+            action( view ); 
+            std::cout << "Dbl" << std::endl;
+        }
+
+        last_down  = t.elapsed();
+
+    }
+};
+
+
+
+//struct DataDumper : EventController
+//{
+
+    //DataDumper( std::list < L3::Dumpable* > dump_targets ) : targets(dump_targets)
+    //{
+
+    //}
+
+    //std::list < L3::Dumpable* > targets;
+
+	//bool onEvent( glv::Event::t e, glv::GLV& g)
+    //{
+
+        //const glv::Keyboard& k = g.keyboard();
+        //int key = k.key();
+
+        //// Special switch key
+        //if (key == 'd')
+            //std::for_each( targets.begin(), targets.end(), std::mem_fun( &Dumpable::dump ) );
+
+        //return true;
+    //}
+
+//};
 
 class Layout
 {
@@ -134,7 +151,6 @@ class Layout
         
         Layout( glv::Window& win ) : window(win)
         {
-
             /*
              *  Lua interface
              */
@@ -142,13 +158,14 @@ class Layout
             this->renderables.push_front( lua_interface.get() );
 
             // Create the main view
-            //main_view = new CustomView( glv::Rect(0,0, .6*win.width(),500));
-            main_view = new glv::View( glv::Rect(0,0, .6*win.width(),500));
+            main_view = new glv::View( glv::Rect(0,0, .6*window.width(),500));
             this->renderables.push_front( main_view );
 
             // Composite view holder
-            composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*win.width(), 500 )) );
-            
+            composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
+          
+            composite->maximize();
+
             // 3D grid 
             grid.reset( new L3::Visualisers::Grid() );
            
@@ -158,31 +175,28 @@ class Layout
 
             // Accumulate views
             (*main_view) << ( *composite << *grid );
-       
+     
             // Add synched updater
             updater.reset( new Updater() );
             this->renderables.push_front( updater.get() );
         }
-        
+      
         virtual ~Layout()
         {
         }
 
-        //void run( glv::GLV& top )
         void run()
         {
-  
-            test_event_controller.reset( new EventController() );
-
-            //glv::GLV top;
-          
-            CustomGLV top;
+            L3GLV top;
 
             top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
            
             // Add renderables provided by children
             for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                 top << *it;
+
+            test_event_controller.reset( new EventController( main_view ) );
+            main_view->addHandler( glv::Event::MouseDown, *test_event_controller );
 
             window.setGLV(top);
 
@@ -267,12 +281,8 @@ class Layout
         glv::View*                      main_view;
         glv::Window&                    window; 
         boost::shared_ptr< glv::View >  lua_interface;
-        //boost::shared_ptr< glv::TextView >  lua_interface;
-        //boost::shared_ptr< L3::Visualisers::TestInterface >  lua_interface;
 
-        
         std::list< glv::View* >     renderables;
-        //std::list< glv::Plot* >     plottables;
 
         std::list< boost::shared_ptr< glv::View > >     labels;
         
@@ -333,7 +343,12 @@ class EstimatorLayout : public Layout
 {
     public:
 
-        EstimatorLayout( glv::Window& win, L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe ) ;
+        EstimatorLayout( glv::Window& win) : Layout(win)
+        {
+
+        }
+       
+        bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe );
 
         L3::EstimatorRunner* runner;
             
@@ -357,13 +372,13 @@ class EstimatorLayout : public Layout
 
 
         std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >  density_renderers;
-        boost::shared_ptr< DataDumper > dumper;
         boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        debug_renderer; 
         boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       debug_histogram_bounds_renderer;
         boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
         boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
         boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D > combined_scan_renderer;
 
+        //boost::shared_ptr< DataDumper > dumper;
         boost::shared_ptr< glv::View > ancillary_1;
         boost::shared_ptr< glv::View > ancillary_2;
 

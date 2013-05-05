@@ -17,13 +17,15 @@ struct Interface
 
     virtual bool execute( const std::string& ) = 0;
 
+    virtual const char* get_state()
+    {
+
+    }
+ 
     virtual ~Interface()
     {
 
     }
-
-
-
 
 };
 
@@ -47,6 +49,12 @@ struct LuaInterface : Interface
         return luaL_dostring( state, str.c_str() );
     }
 
+    const char* get_state()
+    {
+          //const char *msg = lua_tostring(L, 1);
+   
+        return lua_tostring( state, 1 );
+    }
 
     ~LuaInterface()
     {

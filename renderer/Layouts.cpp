@@ -5,10 +5,11 @@ namespace L3
     namespace Visualisers
     {
 
-        EstimatorLayout::EstimatorLayout( glv::Window& win, L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe ) 
-            : Layout(win), runner(runner), experience(experience)
+        bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe ) 
         {
-
+            this->runner = runner;
+            this->experience = experience;
+          
             /*
              *  Composite Leafs
              */
@@ -72,6 +73,8 @@ namespace L3
             //this->labels.push_front( predicted_pose_label );
             //this->renderables.push_front( predicted_pose_label.get() );
 
+            std::cout << &window << std::endl;
+
             /*
              *  Pyramid Renderer
              */
@@ -82,12 +85,12 @@ namespace L3
                     it != pyramid_renderer->renderers.end();
                     it++ )
             updater->operator<<( it->get() );
-            pyramid_renderer->pos( win.width() - ((175*3)+10), 5 );
+            pyramid_renderer->pos( window.width() - ((175*3)+10), 5 );
 
             /*
              *  Swathe Cloud
              */
-            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( win.width()-(525+10), 190, 525, 250 ), run_time_swathe, runner->current ));
+            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(525+10), 190, 525, 250 ), run_time_swathe, runner->current ));
             this->renderables.push_front( runtime_cloud_renderer_view.get() );
             updater->operator<<( runtime_cloud_renderer_view.get() );
 
@@ -120,7 +123,7 @@ namespace L3
             (*ancillary_1) << combined_scan_renderer.get();
 
             // Add it to the view
-            ancillary_1->pos( win.width()-(535), 450 );
+            ancillary_1->pos( window.width()-(535), 450 );
             ancillary_1->fit();
             this->renderables.push_front( ancillary_1.get() );
 
@@ -134,7 +137,7 @@ namespace L3
             updater->operator<<( oracle_renderer.get() );
 
             
-            ancillary_2->pos( win.width()-(535), 625 );
+            ancillary_2->pos( window.width()-(535), 625 );
             ancillary_2->fit();
 
             // Add it to the view
