@@ -24,26 +24,12 @@ namespace Visualisers
                 std::cerr << "Could not load " << locale << std::endl;
             }
 
-            glClearColor (0.0, 0.0, 0.0, 0.0);
-            glShadeModel(GL_FLAT);
-            glEnable(GL_DEPTH_TEST);
-
-            //GLubyte image_texture[checkImageHeight][checkImageWidth][4];
-            //GLubyte image_texture[img->width][img->height][4];
             GLubyte image_texture[img->height][img->width][4];
 
-            //makeCheckImage();
-            //for(int j=img->height-1; j> 0; j--)
-            for(int j=0; j<img->height; j++)
+            for(int j=img->height-1; j> 0; j--)
             {
                 for(int i=0; i< img->width;  i++)
                 {    
-                    //c = ((((i&0x8)==0)^((j&0x8))==0))*255;
-                    //image_texture[i][j][0] = (GLubyte) c;
-                    //image_texture[i][j][1] = (GLubyte) c;
-                    //image_texture[i][j][2] = (GLubyte) c;
-                    //image_texture[i][j][3] = (GLubyte) 255;
-               
                     GLubyte* b = &((GLubyte*)(img->imageData + img->widthStep*j))[i*3];
                     GLubyte* g = &((GLubyte*)(img->imageData + img->widthStep*j))[i*3+1];
                     GLubyte* r = &((GLubyte*)(img->imageData + img->widthStep*j))[i*3+2];
@@ -83,10 +69,10 @@ namespace Visualisers
             glBindTexture(GL_TEXTURE_2D, texName);
             glBegin(GL_QUADS);
 
-            glTexCoord2f(0.0, 0.0); glVertex3f(-100.0, -100.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(-100.0, 100.0, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(100.0, 100.0, 0.0);
-            glTexCoord2f(1.0, 0.0); glVertex3f(100.0, -100.0, 0.0);
+            glTexCoord2f(0.0, 0.0); glVertex3f(-100.0, 100.0, 0.0);
+            glTexCoord2f(1.0, 0.0); glVertex3f(100.0, 100.0, 0.0);
+            glTexCoord2f(1.0, 1.0); glVertex3f(100.0, -100.0, 0.0);
+            glTexCoord2f(0.0, 1.0); glVertex3f(-100.0, -100.0, 0.0);
 
             glEnd();
             glFlush();
