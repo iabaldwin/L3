@@ -22,13 +22,15 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid               grid;
     L3::Visualisers::BasicPanController controller(composite.position);
 
-    //test_leaf leaf;
+    L3::Configuration::Begbroke begbroke;
+    begbroke.loadDatum();
 
-    L3::Visualisers::LocaleImage locale( "/Users/ian/Documents/begbroke.png" );
+    L3::Visualisers::LocaleRenderer  locale_renderer;
+    locale_renderer.load( begbroke );
 
     composite.addController( &controller  );
 
-    top << ( composite << locale << grid );
+    top << ( composite << locale_renderer << grid );
 
     composite.stretch(1,1);
 

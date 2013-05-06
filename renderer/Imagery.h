@@ -3,25 +3,41 @@
 
 #include "Common/Imagery.h"
 #include "Visualisers.h"
+#include "L3.h"
 
 namespace L3
 {
 namespace Visualisers
 {
     
-    struct LocaleImage : L3::Visualisers::Leaf
+    struct ImageRenderer : L3::Visualisers::Leaf
     {
 
-        LocaleImage( const std::string& locale )
+        ImageRenderer( ) 
+            : lower_bound_x( -100.0f), upper_bound_x( 100.0f ),
+            lower_bound_y( -100.0f), upper_bound_y( 100.0f ),
+            z_bound(-2.0)
         {
+        }
+
+        GLuint texName;
+
+        double lower_bound_x, upper_bound_x,
+                lower_bound_y, upper_bound_y,
+                z_bound;
+
+        bool load(const std::string& image )
+        {
+            // Load the image
             IAB::Imagery::IMAGE img;
+            
             try
             {
-                img = IAB::Imagery::loadImage( locale );
+                img = IAB::Imagery::loadImage( image );
             }
             catch (...)
             {
-                std::cerr << "Could not load " << locale << std::endl;
+                std::cerr << "Could not load " << image << std::endl;
             }
 
             GLubyte image_texture[img->height][img->width][4];
@@ -41,7 +57,6 @@ namespace Visualisers
 
                 }
             }
-
             
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
@@ -57,11 +72,14 @@ namespace Visualisers
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, 
                     img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
                     image_texture);  
+        
         }
 
-        GLuint texName;
+        virtual ~ImageRenderer()
+        {
+        }
 
-        void onDraw3D( glv::GLV& g )
+        virtual void onDraw3D( glv::GLV& g )
         {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glEnable(GL_TEXTURE_2D);
@@ -69,10 +87,10 @@ namespace Visualisers
             glBindTexture(GL_TEXTURE_2D, texName);
             glBegin(GL_QUADS);
 
-            glTexCoord2f(0.0, 0.0); glVertex3f(-100.0, 100.0, 0.0);
-            glTexCoord2f(1.0, 0.0); glVertex3f(100.0, 100.0, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(100.0, -100.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(-100.0, -100.0, 0.0);
+            glTexCoord2f(0.0, 0.0); glVertex3f(lower_bound_x, upper_bound_y, z_bound);
+            glTexCoord2f(1.0, 0.0); glVertex3f(upper_bound_x, upper_bound_y, z_bound);
+            glTexCoord2f(1.0, 1.0); glVertex3f(upper_bound_x, lower_bound_y, z_bound);
+            glTexCoord2f(0.0, 1.0); glVertex3f(lower_bound_x, lower_bound_y, z_bound);
 
             glEnd();
             glFlush();
@@ -81,6 +99,33 @@ namespace Visualisers
         }
     };
 
+    struct LocaleRenderer : ImageRenderer
+    {
+        bool load( L3::Configuration::Locale& locale )        
+        {
+            std::string image = "/Users/ian/Documents/begbroke.png" ;
+
+            lower_bound_x = locale.x_lower;
+            upper_bound_x = locale.x_upper;
+
+            lower_bound_y = locale.y_lower;
+            upper_bound_y = locale.y_upper;
+
+            double mean_x= ((lower_bound_x + upper_bound_x)/2.0);
+            double mean_y= ((lower_bound_y + upper_bound_y)/2.0);
+
+            lower_bound_x -= mean_x;
+            lower_bound_y -= mean_y;
+
+            upper_bound_x -= mean_x;
+            upper_bound_y -= mean_y;
+
+            std::cout << lower_bound_x <<":"<< lower_bound_y << " " << upper_bound_x << ":" <<upper_bound_y;
+
+            return ImageRenderer::load( image );
+        }
+
+    };
 }
 }
 

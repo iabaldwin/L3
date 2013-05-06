@@ -139,23 +139,41 @@ struct Locale : Configuration
 
     bool loadDatum()
     {
-
         std::stringstream ss;
+       
+        // X : Lower
         ss <<  "datum.X.lower";
 
-        if (!config.lookupValue( ss.str(), x))
+        if (!config.lookupValue( ss.str(), x_lower))
             return false; 
 
-        ss.clear();
         ss.str(std::string());
 
+        // X : Upper
+        ss <<  "datum.X.upper";
+
+        if (!config.lookupValue( ss.str(), x_upper))
+            return false; 
+
+        ss.str(std::string());
+
+        // Y : Lower
         ss <<  "datum.Y.lower";
-        if (!config.lookupValue( ss.str(), y))
+        
+        if (!config.lookupValue( ss.str(), y_lower))
+            return false; 
+
+        ss.str(std::string());
+ 
+        // Y : Upper
+        ss <<  "datum.Y.upper";
+        
+        if (!config.lookupValue( ss.str(), y_upper))
             return false; 
 
     }
 
-    double x, y, z;
+    double x_lower, x_upper, y_lower, y_upper, z;
 
 };
 
