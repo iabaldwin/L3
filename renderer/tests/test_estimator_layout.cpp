@@ -31,7 +31,6 @@ int main( int argc, char* argv[] )
     L3::Configuration::Mission mission( dataset );
 
     // Experience
-    //L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
     L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     L3::ExperienceLoader experience_loader( experience_dataset );
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
@@ -61,9 +60,10 @@ int main( int argc, char* argv[] )
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
+    L3::Estimator::IterativeDescent<double> algo( kl_cost_function, experience->experience_pyramid );
+    
     //L3::Estimator::GroundTruthEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
     //L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0]  );
-    L3::Estimator::IterativeDescent<double> algo( kl_cost_function, experience->experience_pyramid );
 
     // Create runner
     L3::EstimatorRunner runner;

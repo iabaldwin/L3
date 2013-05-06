@@ -526,7 +526,8 @@ namespace Visualisers
     void PointCloudRendererLeaf::onDraw3D( glv::GLV& g )
     {
         L3::ReadLock lock( cloud->mutex );
-        L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        if( cloud->num_points > 0 ) 
+            L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
        
         PointCloudRenderer::onDraw3D(g);    
@@ -549,7 +550,8 @@ namespace Visualisers
     void PointCloudRendererView::update()
     {
         L3::ReadLock lock( cloud->mutex );
-        L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        if( cloud->num_points > 0 ) 
+            L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
 
         //This used to exist, because we had already projected the point cloud
@@ -689,11 +691,8 @@ namespace Visualisers
         {
             double range = scan->ranges[scan_counter];  
 
-            //if ( range < 5 )
-            if ( range < 2 )
+            if ( range < range_threshold)
                 continue;
-
-            draw_counter++;
 
             // Compute angle 
             double angle = scan_counter*scan->angle_spacing +  scan->angle_start; 
@@ -704,6 +703,8 @@ namespace Visualisers
             points[draw_counter]( x, y, 0 );
             perimeter[draw_counter].set( color, .75 );
             fan[draw_counter].set( color, 1 );
+            
+            draw_counter++;
 
         }
 
@@ -838,6 +839,43 @@ namespace Visualisers
             (*it)->update();
     }
 
+
+    /*
+     *  Algorithm rendering
+     */
+    void AlgorithmCostRendererLeaf::onDraw3D( glv::GLV& g )
+    {
+
+        double height = 20;
+
+        for( std::deque< boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > >::iterator it = algorithm->discrete_estimators.begin();
+                it != algorithm->discrete_estimators.end(); 
+                it++ )
+        {
+
+            std::vector< L3::SE3 > current_estimates;
+
+            L3::ReadLock lock( (*it)->pose_estimates->mutex );
+            current_estimates.assign( (*it)->pose_estimates->estimates.begin(), (*it)->pose_estimates->estimates.end() );
+            lock.unlock();
+
+            glv::Point3 vertices[ current_estimates.size() ];
+            glv::Color  colors[ current_estimates.size() ];
+
+            int counter= 0;
+            for( std::vector< L3::SE3 >::iterator it=current_estimates.begin(); 
+                    it != current_estimates.end();
+                    it++ ) 
+            {
+                vertices[counter++]( it->X(), it->Y(), height );
+            }
+
+            height += 20;
+
+            glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        }
+
+    }
 
 }
 }

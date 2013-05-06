@@ -13,6 +13,15 @@ namespace L3
             /*
              *  Composite Leafs
              */
+            L3::Configuration::Begbroke begbroke;
+            begbroke.loadDatum();
+
+
+            // Static map-view
+            map_view.reset( new L3::Visualisers::LocaleRenderer() );
+            map_view->load( begbroke );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
+            
             // Histogram Bounds
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( (*experience->experience_pyramid)[0]) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
@@ -39,6 +48,9 @@ namespace L3
             //predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( runner->estimator->pose_estimates ) ); 
             //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
 
+            algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->estimator) ));
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+
             // Locale Bounds
             locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
@@ -49,29 +61,6 @@ namespace L3
             // Velocity plots
             addLinearVelocityPlot( runner->windower->constant_time_iterator );
             addRotationalVelocityPlot( runner->windower->constant_time_iterator );
-
-            // Histogram voxel
-            //  This, is hard to get right it seems
-            //histogram_pixel_renderer_experience_view.reset( new L3::Visualisers::HistogramVoxelRendererView( glv::Rect( win.width()-(500+10),10, 500, 300 ), experience->experience_histogram ) ) ;
-            //this->renderables.push_front( histogram_pixel_renderer_experience_view.get() );
-            //updater->operator<<( dynamic_cast<Updateable*>(histogram_pixel_renderer_experience_view.get()) );
-
-            //boost::shared_ptr< glv::View > histogram_label( new glv::Label("Experience histogram") );
-            //histogram_label->pos( 1050,315 );
-            //this->labels.push_front( histogram_label );
-            //this->renderables.push_front( histogram_label.get() );
-
-            // Stand-alone pose renderer
-            //predicted_pose_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ) ) );
-            //predicted_pose_renderer->pos( win.width()-(150*2+30), 335 );
-            //this->renderables.push_front( predicted_pose_renderer.get() );
-            //updater->operator<<( predicted_pose_renderer.get() );
-
-            //// ::Label
-            //boost::shared_ptr< glv::View > predicted_pose_label( new glv::Label("Estimate::L3") );
-            //predicted_pose_label->pos( win.width()-(150*2+30), 335+250 );
-            //this->labels.push_front( predicted_pose_label );
-            //this->renderables.push_front( predicted_pose_label.get() );
 
             /*
              *  Pyramid Renderer

@@ -548,9 +548,10 @@ struct DedicatedPoseRenderer : glv::View3D, Updateable
 struct ScanRenderer2D : Updateable
 {
 
-    ScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, glv::Color color ) 
+    ScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, glv::Color color, float range_threshold=2.0  ) 
         : windower(windower),
-            color(color)
+            color(color),
+            range_threshold(range_threshold)
     {
         scan.reset( new L3::LMS151() );
     }
@@ -558,8 +559,8 @@ struct ScanRenderer2D : Updateable
     virtual ~ScanRenderer2D()
     {
     }
-
-    float                                   rotate_z;
+    
+    float                                   rotate_z, range_threshold;
     glv::Color                              color;
     boost::shared_ptr<L3::LMS151>           scan;
     boost::shared_ptr< glv::View >          label;
@@ -576,13 +577,13 @@ struct HorizontalScanRenderer2DView : glv::View3D, ScanRenderer2D
 
     HorizontalScanRenderer2DView( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
         : glv::View3D( rect ),
-            ScanRenderer2D( windower, glv::Color(1,0,0) )
+            ScanRenderer2D( windower, glv::Color(1,0,0), 5.0  )
 
     {
         rotate_z = 0;
     
         label.reset( new glv::Label("LMS151::Horizontal", true) );
-        label->pos( glv::Place::TL, 0, -10 ).anchor( glv::Place::BR ); 
+        label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
 
         (*this) << *label;
     }
@@ -598,12 +599,12 @@ struct VerticalScanRenderer2DView : glv::View3D, ScanRenderer2D
 
     VerticalScanRenderer2DView( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
         : glv::View3D( rect ),
-            ScanRenderer2D( windower, glv::Color(0,0,1) )
+            ScanRenderer2D( windower, glv::Color(0,0,1),0 )
     {
         rotate_z = 180;
     
         label.reset( new glv::Label("LMS151::Vertical", true) );
-        label->pos( glv::Place::TL, 0, 0 ).anchor( glv::Place::BR ); 
+        label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
 
         (*this) << *label;
 
@@ -700,6 +701,42 @@ struct CostRendererView : CostRenderer, glv::View3D
     void onDraw3D( glv::GLV& g );
     
 };
+
+/*
+ *  Pyramid cost rendering
+ */
+struct AlgorithmCostRenderer  
+{
+    //AlgorithmCostRenderer( boost::shared_ptr< L3::IterativeDescent<double> > algorithm ) 
+    AlgorithmCostRenderer( L3::Estimator::IterativeDescent<double>* algorithm ) 
+        : algorithm(algorithm)
+    {
+
+    }
+
+    virtual ~AlgorithmCostRenderer()
+    {
+    }
+
+    //boost::shared_ptr< L3::IterativeDescent<double> > algorithm ;
+    L3::Estimator::IterativeDescent<double>* algorithm ;
+
+
+};
+
+struct AlgorithmCostRendererLeaf : AlgorithmCostRenderer, Leaf
+{
+    AlgorithmCostRendererLeaf( L3::Estimator::IterativeDescent<double>* algorithm ) 
+        : AlgorithmCostRenderer(algorithm)
+
+    {
+
+    }
+
+    void onDraw3D( glv::GLV& g );
+
+};
+
 
 /*
  *  Locale: Bounds Renderer

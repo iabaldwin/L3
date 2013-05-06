@@ -20,6 +20,7 @@ namespace ScanMatching
             }
 
         protected:
+            
             L3::LMS151 scan;
             bool initialised;
     };

@@ -102,12 +102,17 @@ namespace L3
                 double p_i = p/p_norm;
                 double q_i = q/q_norm;
 
-                if ( (p  < 0 ) ||( q < 0 ) )
-                    std::cout << p << ":" << q << std::endl;
+                
 
                 // Policy should be here
                 p_i = (p_i == 0) ? std::numeric_limits<T>::epsilon() : p_i;
                 q_i = (q_i == 0) ? std::numeric_limits<T>::epsilon() : q_i;
+
+                if ( q_i==0 || p_i ==0 || q_norm==0 || p_norm == 0 )
+                    {
+                    std::cout << p << "," << p_norm << " " << q << q_norm << std::endl;
+                    exit(1);
+                    }
 
                 double val = boost::math::log1p( (p_i/q_i))*p_i;
 
@@ -122,11 +127,13 @@ namespace L3
         template < typename T >
             double KLCostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
             {
+                return std::numeric_limits<T>::infinity();
+
                 // Convert to probability
                 double experience_normalizer = experience.normalizer();
                 double swathe_normalizer     = swathe.normalizer();
 
-                if( swathe_normalizer == 0 )
+                if( swathe_normalizer == 0 || experience_normalizer  == 0 )
                     return std::numeric_limits<T>::infinity();
 
                 NoneSmoothing<T> no_smoothing;
@@ -203,33 +210,38 @@ namespace L3
          *  Discrete Estimator
          */
         template < typename T >
-            double DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
+            bool DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
                 L3::WriteLock estimates_lock( this->pose_estimates->mutex );
+                this->pose_estimates->costs.resize( this->pose_estimates->estimates.size(), std::numeric_limits<T>::infinity() );
 
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
+                
+                return false;
 
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
                 L3::ReadLock swathe_lock( swathe->mutex );
 
-                //if (this->experience_pyramid->empty()  || (swathe->num_points == 0 ))
-                if ((swathe->num_points == 0 ))
-                    return std::numeric_limits<T>::infinity();
+                this->experience_histogram->print();
+
+                if ((swathe->num_points == 0 ) ||  this->experience_histogram->empty() )
+                    return false;
 
                 /*
                  *  Speed considerations
                  */
                 L3::sample( swathe, this->sampled_swathe.get(), 2000 );
-
                 
-                this->pose_estimates->costs.resize( this->pose_estimates->estimates.size() );
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
 
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
+                    //std::cout << std::distance( this->pose_estimates->begin(), it ) << std::endl;
+                    //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ )();
+                    //break; 
                     group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
                     it++;
                 }
@@ -243,7 +255,7 @@ namespace L3
          *  Ground truth Estimator
          */
         template < typename T >
-            double GroundTruthEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
+            bool GroundTruthEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
                 // Lock the experience histogram
                 //L3::ReadLock histogram_lock( this->experience_histogram->mutex );
@@ -312,12 +324,9 @@ namespace L3
     template < typename T>
         SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
         {
-            // Compute
             discrete_estimators[0]->operator()( swathe, estimate );
-
-            //discrete_estimators[1]->operator()( swathe, estimate );
-            
-            //discrete_estimators[2]->operator()( swathe, estimate );
+            discrete_estimators[1]->operator()( swathe, estimate );
+            discrete_estimators[2]->operator()( swathe, estimate );
         }
 
     }   // Estimator
@@ -325,7 +334,7 @@ namespace L3
 
 // Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
-template double L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
-template double L3::Estimator::GroundTruthEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template bool L3::Estimator::GroundTruthEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template void L3::Estimator::GroundTruthEstimator<double>::dump();
 template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);

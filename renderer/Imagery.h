@@ -81,7 +81,6 @@ namespace Visualisers
 
         virtual void onDraw3D( glv::GLV& g )
         {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glEnable(GL_TEXTURE_2D);
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
             glBindTexture(GL_TEXTURE_2D, texName);

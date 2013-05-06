@@ -8,6 +8,7 @@
 #include "Visualisers.h"
 #include "Plotters.h"
 #include "ExternalInterface.h"
+#include "Imagery.h"
 
 namespace L3
 {
@@ -27,19 +28,26 @@ struct L3GLV : glv::GLV
         if ( e == glv::Event::KeyDown )
         {
             const glv::Keyboard& k = g.keyboard();
+
             switch (k.key())
             {
                 case 96:
                     this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
-                    
+
                     // This is quite grim
                     this->setMouseDown(a, b, 1, 1);
                     this->setMouseUp(a, b, 1, 1);
+                
+                case 126:
+                    this->broadcastEvent( static_cast< glv::Event::t>( 21 ) );
+
                 default:
                     break; 
             }
-
         }
+
+        if ( e == glv::Event::MouseWheel )
+            std::cout << "Wheel" << std::endl;
     }
 };
 
@@ -76,8 +84,6 @@ struct Toggle: Action
             v->restore();
         else
             v->maximize();
-        //v->maximize();
-        //v->bringToFront();
    
         maximised = !maximised;
     }
@@ -171,12 +177,16 @@ class Layout
 
             // Accumulate views
             (*main_view) << ( *composite << *grid );
-     
+
+            toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
+
             // Add synched updater
             updater.reset( new Updater() );
             this->renderables.push_front( updater.get() );
         }
-      
+    
+        boost::shared_ptr< glv::Widget > toggle_button;
+
         virtual ~Layout()
         {
         }
@@ -348,6 +358,7 @@ class EstimatorLayout : public Layout
 
         L3::EstimatorRunner* runner;
             
+        
         boost::shared_ptr< L3::Experience>                  experience ;
         boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
         boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  horizontal_scan_renderer;
@@ -374,10 +385,13 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
         boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D > combined_scan_renderer;
 
+        boost::shared_ptr< L3::Visualisers::LocaleRenderer>  map_view;
+
         //boost::shared_ptr< DataDumper > dumper;
         boost::shared_ptr< glv::View > ancillary_1;
         boost::shared_ptr< glv::View > ancillary_2;
 
+        boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
 };
 
 

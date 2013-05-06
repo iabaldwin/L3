@@ -30,7 +30,7 @@ int main (int argc, char ** argv)
 
     composite.addController( &controller  );
 
-    top << ( composite << locale_renderer << grid );
+    top << ( composite << grid << locale_renderer );
 
     composite.stretch(1,1);
 

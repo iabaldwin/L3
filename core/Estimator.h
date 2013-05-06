@@ -151,7 +151,7 @@ namespace Estimator
             {
             }
 
-            virtual double operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
+            virtual bool operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
 
         };
 
@@ -170,7 +170,7 @@ namespace Estimator
         
         void dump(){};
 
-        double operator()( PointCloud<T>* swathe, SE3 estimate );
+        bool operator()( PointCloud<T>* swathe, SE3 estimate );
 
     };
 
@@ -186,7 +186,7 @@ namespace Estimator
 
         void dump();
 
-        double operator()( PointCloud<T>* swathe, SE3 estimate );
+        bool operator()( PointCloud<T>* swathe, SE3 estimate );
 
     };
 
@@ -217,15 +217,18 @@ namespace Estimator
 
         IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
         {
+
             for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
                     it != pyramid->end();
                     it++ )
             {
+                L3::ReadLock( (*it)->mutex );
+
                 discrete_estimators.push_back( 
                         boost::make_shared< DiscreteEstimator<T> >( cost_function, *it)
                         );
-                break;
             }
+
         }
         
         boost::shared_ptr< HistogramPyramid<T> > pyramid;

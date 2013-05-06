@@ -223,6 +223,17 @@ namespace L3
                 return histograms[index];
             }
 
+            void print()
+            {
+                for( PYRAMID_ITERATOR it = this->begin();
+                        it != this->end();
+                        it++ )
+                {
+                    L3::ReadLock( (*it)->mutex );
+                    (*it)->print();
+                }
+            }
+
         };
 
 
