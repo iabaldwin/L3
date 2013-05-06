@@ -6,30 +6,41 @@
 #include "Datatypes.h"
 #include "Iterator.h"
 
+#include <boost/shared_array.hpp>
+
 namespace L3
 {
 namespace ScanMatching
 {
+
+
     class ScanMatcher 
     {
         public:
-            
-            virtual bool match(  const L3::LMS151& scan )
+          
+            ScanMatcher() : initialised(false)
+        {
+        }
+
+            virtual bool match(  const L3::LMS151& current_scan )
             {
 
             }
 
         protected:
             
-            L3::LMS151 scan;
             bool initialised;
+            boost::shared_array< double > scan;
+            int scan_points;
+            boost::shared_array< double > putative;
+            int putative_points;
     };
 
     class ICP : public ScanMatcher
     {
         public:
 
-            bool match( const L3::LMS151& scan );
+            bool match(  const L3::LMS151& current_scan );
 
     };
 

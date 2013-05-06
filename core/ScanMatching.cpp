@@ -1,57 +1,67 @@
 #include "ScanMatching.h"
 
-#include <boost/scoped_array.hpp>
-
 #include <ICP/icp.h>
 #include <ICP/icpPointToPlane.h>
 
+int do_projection( const L3::LMS151& current_scan, double* matrix, double threshold = 5.0 )
+{
+
+    double* matrix_ptr = matrix;
+
+    float range,angle,x,y,z=0;
+  
+    int counter = 0;
+
+    for (int scan_counter=0; scan_counter<541; scan_counter++) 
+    {
+        // Compute angle 
+        angle = scan_counter*current_scan.angle_spacing +  current_scan.angle_start; 
+        range = current_scan.ranges[scan_counter];  
+
+        if ( range < threshold )
+            continue;
+
+        x = range*cos( angle );
+        *matrix_ptr++ = x; 
+        y = range*sin( angle );
+        *matrix_ptr++ = y; 
+        *matrix_ptr++ = z; 
+   
+        counter++;
+    }
+
+    return counter;
+}
 
 namespace L3
 {
 namespace ScanMatching
 {
-    bool ICP::match(  const L3::LMS151& scan )
+    bool ICP::match(  const L3::LMS151& current_scan )
     {
         if ( !initialised )
         {
-            this->scan = scan;
-           
+            scan.reset( new double[541*3] );
+            scan_points = do_projection( current_scan, scan.get() );
+
+            bool retval = initialised; 
             initialised = true;
-
-            return false;
+            return retval;
         }
 
-        boost::scoped_array<double> M( new double[541*3] );
-
-        for( int i=0; i<541; i++ )
-        {
-            M[i*3+0] = rand()%100;
-            M[i*3+1] = rand()%100;
-            M[i*3+2] = rand()%100;
-        }
- 
-        boost::scoped_array<double> T( new double[541*3] );
-
-        for( int i=0; i<541; i++ )
-        {
-            T[i*3+0] = rand()%100;
-            T[i*3+1] = rand()%100;
-            T[i*3+2] = rand()%100;
-        }
-    
+        putative.reset( new double[541*3] );
+            
+        putative_points  = do_projection( current_scan, putative.get() );
+        
         Matrix R = Matrix::eye(3);
         Matrix t(3,1);
+        
+        IcpPointToPlane icp( scan.get(), scan_points, 3);
+        icp.fit(putative.get(),putative_points,R,t,-1);
 
-        //std::cout << std::endl << "Running ICP (point-to-plane, no outliers)" << std::endl;
-        //IcpPointToPlane icp(M,541,3);
-        IcpPointToPlane icp(M.get(),541,3);
-        icp.fit(T.get(),541,R,t,-1);
-
-        // results
-        //std::cout << std::endl << "Transformation results:" << std::endl;
-        //std::cout << "R:" << std::endl << R << std::endl << std::endl;
-        //std::cout << "t:" << std::endl << t << std::endl << std::endl;
-    
+        // Do swap
+        scan.swap( putative );
+        scan_points = putative_points;
     }
     
     bool Engine::update( double time )
@@ -59,19 +69,10 @@ namespace ScanMatching
         std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
         this->windower->getWindow( window );
 
-        //TODO:
-        //Do we get the closest scan at time, or the next in the sequence?
-
-        //1. Get scan
-        //2. Add it to the matcher
-
         L3::Timing::ChronoTimer t;
         if ( window.size() > 0 )
-        {
-            //t.begin();
-            //matcher->match( *(window.front().second ) ); 
-            //std::cout << t.elapsed() << std::endl;
-        }
+            matcher->match( *(window.front().second ) ); 
+    
     }
 
 

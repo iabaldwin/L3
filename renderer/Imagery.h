@@ -16,7 +16,7 @@ namespace Visualisers
         ImageRenderer( ) 
             : lower_bound_x( -100.0f), upper_bound_x( 100.0f ),
             lower_bound_y( -100.0f), upper_bound_y( 100.0f ),
-            z_bound(-2.0)
+            z_bound(-6.0)
         {
         }
 

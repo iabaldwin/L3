@@ -12,6 +12,7 @@
 namespace L3
 {
 
+
 template <typename T>
 class Projector
 {
