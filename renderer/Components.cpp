@@ -845,8 +845,7 @@ namespace Visualisers
      */
     void AlgorithmCostRendererLeaf::onDraw3D( glv::GLV& g )
     {
-
-        double height = 20;
+        double layer_height = 20;
 
         for( std::deque< boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > >::iterator it = algorithm->discrete_estimators.begin();
                 it != algorithm->discrete_estimators.end(); 
@@ -854,9 +853,11 @@ namespace Visualisers
         {
 
             std::vector< L3::SE3 > current_estimates;
+            std::vector< double >  current_costs;
 
             L3::ReadLock lock( (*it)->pose_estimates->mutex );
             current_estimates.assign( (*it)->pose_estimates->estimates.begin(), (*it)->pose_estimates->estimates.end() );
+            current_costs.assign(  (*it)->pose_estimates->costs.begin(), (*it)->pose_estimates->costs.end() );
             lock.unlock();
 
             glv::Point3 vertices[ current_estimates.size() ];
@@ -867,10 +868,20 @@ namespace Visualisers
                     it != current_estimates.end();
                     it++ ) 
             {
-                vertices[counter++]( it->X(), it->Y(), height );
+                float plot_height = 0;
+                glv::Color plot_color( 1, 0, 0 ); 
+                if( !std::isinf( current_costs[counter] ) )
+                {
+                    plot_height = current_costs[counter];
+                    plot_color = glv::Color( 0, 1, 0 ); 
+                }
+
+                vertices[counter]( it->X(), it->Y(), layer_height+plot_height );
+                colors[counter] =  plot_color;           
+                counter++;
             }
 
-            height += 20;
+            layer_height += 20;
 
             glv::draw::paint( glv::draw::Points, vertices, colors, counter );
         }

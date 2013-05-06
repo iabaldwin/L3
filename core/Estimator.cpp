@@ -102,7 +102,6 @@ namespace L3
                 double p_i = p/p_norm;
                 double q_i = q/q_norm;
 
-                
 
                 // Policy should be here
                 p_i = (p_i == 0) ? std::numeric_limits<T>::epsilon() : p_i;
@@ -116,8 +115,8 @@ namespace L3
 
                 double val = boost::math::log1p( (p_i/q_i))*p_i;
 
-                if ( std::isnan( val ) )
-                    throw std::exception();
+                //if ( std::isnan( val ) )
+                    //throw std::exception();
 
                 return val;
             }
@@ -127,8 +126,6 @@ namespace L3
         template < typename T >
             double KLCostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
             {
-                return std::numeric_limits<T>::infinity();
-
                 // Convert to probability
                 double experience_normalizer = experience.normalizer();
                 double swathe_normalizer     = swathe.normalizer();
@@ -175,6 +172,8 @@ namespace L3
 
             void operator()()
             {
+                *result_iterator = std::numeric_limits<double>::infinity();
+
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
 
                 /*
@@ -190,15 +189,16 @@ namespace L3
                 L3::Histogram<double> swathe_histogram;
 
                 L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram );
-
+                
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
+                
 
                 /*
                  *  Smoothing
                  */
-                L3::BoxSmoother< double, 5 > smoother;
-                smoother.smooth( &swathe_histogram );
+                //L3::BoxSmoother< double, 5 > smoother;
+                //smoother.smooth( &swathe_histogram );
 
                 // Compute cost
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
@@ -218,15 +218,11 @@ namespace L3
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
                 
-                return false;
-
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
                 L3::ReadLock swathe_lock( swathe->mutex );
 
-                this->experience_histogram->print();
-
-                if ((swathe->num_points == 0 ) ||  this->experience_histogram->empty() )
+                if (swathe->num_points == 0 ) 
                     return false;
 
                 /*
@@ -248,6 +244,8 @@ namespace L3
 
                 // Synch
                 group.wait();
+
+                return true;
 
             }
 
@@ -326,7 +324,7 @@ namespace L3
         {
             discrete_estimators[0]->operator()( swathe, estimate );
             discrete_estimators[1]->operator()( swathe, estimate );
-            discrete_estimators[2]->operator()( swathe, estimate );
+            //discrete_estimators[2]->operator()( swathe, estimate );
         }
 
     }   // Estimator
