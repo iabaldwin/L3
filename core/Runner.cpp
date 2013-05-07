@@ -37,14 +37,14 @@ namespace L3
     bool EstimatorRunner::update( double time )
     {
         /*
-         *Get the pose from the pose provider
+         *  Get the pose from the pose provider
          */
         L3::SE3 predicted = provider->operator()();
         
         *current = predicted;
 
         /*
-         *Update the experience
+         *  Update the experience
          */
         experience->update( predicted.X(), predicted.Y() );
         
@@ -60,7 +60,8 @@ namespace L3
         /*
          *  Estimate
          */
-        (*estimator)( projector->cloud, predicted );
+        *estimated = estimator->operator()( projector->cloud, predicted );
+
     }
 }
 

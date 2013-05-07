@@ -74,10 +74,7 @@ struct Component : glv::View3D
  */
 struct Leaf 
 {
-
     virtual void onDraw3D( glv::GLV& g ) = 0;
-
-    double time;
 };
 
 /*

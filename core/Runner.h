@@ -111,12 +111,14 @@ struct EstimatorRunner : ThreadedTemporalRunner
     boost::shared_ptr< L3::ScanMatching::ScanMatcher > scan_matcher;
 
     boost::shared_ptr< L3::SE3 > current;
+    boost::shared_ptr< L3::SE3 > estimated;
 
     float speedup;
 
     EstimatorRunner( float speedup=5.0) : speedup(speedup)
     {
         current.reset( new L3::SE3( L3::SE3::ZERO() ) );
+        estimated.reset( new L3::SE3( L3::SE3::ZERO() ) ); 
     }
 
     void run();

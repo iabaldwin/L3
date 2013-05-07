@@ -44,14 +44,15 @@ namespace L3
             pose_renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
 
-            // Predicted estimates
-            //predictor_renderer.reset( new L3::Visualisers::PredictorRenderer( runner->estimator->pose_estimates ) ); 
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(predictor_renderer.get() ))); 
+            // Estimated pose
+            estimated_pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->estimated ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(estimated_pose_renderer.get() ))); 
 
+            // Predicted estimates
             algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->estimator) ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
 
-            // Locale Bounds
+            //Locale Bounds
             locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
 

@@ -110,16 +110,11 @@ namespace Visualisers
             lower_bound_y = locale.y_lower;
             upper_bound_y = locale.y_upper;
 
-            double mean_x= ((lower_bound_x + upper_bound_x)/2.0);
-            double mean_y= ((lower_bound_y + upper_bound_y)/2.0);
+            upper_bound_x = upper_bound_x - lower_bound_x;
+            lower_bound_x = 0.0;
 
-            lower_bound_x -= mean_x;
-            lower_bound_y -= mean_y;
-
-            upper_bound_x -= mean_x;
-            upper_bound_y -= mean_y;
-
-            std::cout << lower_bound_x <<":"<< lower_bound_y << " " << upper_bound_x << ":" <<upper_bound_y;
+            upper_bound_y = upper_bound_y - lower_bound_y;
+            lower_bound_y = 0.0;
 
             return ImageRenderer::load( image );
         }

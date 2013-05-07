@@ -361,6 +361,7 @@ class EstimatorLayout : public Layout
         
         boost::shared_ptr< L3::Experience>                  experience ;
         boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
+        boost::shared_ptr< L3::Visualisers::PoseRenderer >  estimated_pose_renderer;
         boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  horizontal_scan_renderer;
         boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  vertical_scan_renderer;
 

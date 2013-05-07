@@ -21,8 +21,7 @@ struct L3Interface  : Interface
     
     bool execute( const std::string& command )
     {
-
-        // This could be cleaner
+        // This could be much cleaner
         if ( command == "quit" )
             glv::Application::quit();
     }
