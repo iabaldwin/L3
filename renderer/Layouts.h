@@ -180,6 +180,7 @@ class Layout
 
             toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
 
+
             // Add synched updater
             updater.reset( new Updater() );
             this->renderables.push_front( updater.get() );
@@ -201,8 +202,11 @@ class Layout
             for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                 top << *it;
 
-            test_event_controller.reset( new EventController( main_view ) );
-            main_view->addHandler( glv::Event::MouseDown, *test_event_controller );
+            composite_maximise_controller.reset( new EventController( main_view ) );
+            main_view->addHandler( glv::Event::MouseDown, *composite_maximise_controller );
+            
+            //composite_maximise_controller.reset( new EventController( composite.get() ) );
+            //composite->addHandler( glv::Event::MouseDown, *composite_maximise_controller );
 
             window.setGLV(top);
 
@@ -300,7 +304,8 @@ class Layout
         std::list< boost::shared_ptr< glv::Plot > >         plots;
         std::list< boost::shared_ptr< VelocityPlotter > >   plotters;
 
-        boost::shared_ptr< EventController > test_event_controller;
+        boost::shared_ptr< EventController > composite_maximise_controller;
+        boost::shared_ptr< EventController > point_cloud_maximise_controller;
 };
 
 

@@ -82,6 +82,9 @@ namespace L3
             this->renderables.push_front( runtime_cloud_renderer_view.get() );
             updater->operator<<( runtime_cloud_renderer_view.get() );
 
+            point_cloud_maximise_controller.reset( new EventController( runtime_cloud_renderer_view.get() ) );
+            runtime_cloud_renderer_view->addHandler( glv::Event::MouseDown, *point_cloud_maximise_controller);
+
             /*
              *  Group: Ancillary
              */
