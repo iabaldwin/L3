@@ -61,7 +61,10 @@ namespace Visualisers
                 // Get the current string
                 std::string current = mText.substr( 3, mPos-3 );
 
-                // Execute it
+                // Interface: L3
+                this->L3_interface->execute( current );
+
+                // Interface: Lua
                 if ( this->interface->execute( current ) )
                     std::cout << this->interface->get_state() << std::endl;
 

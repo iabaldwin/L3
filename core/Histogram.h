@@ -65,7 +65,7 @@ namespace L3
                 {
                     std::cerr << "Erroneuos parameters! " << std::endl;
                     print();
-                    return;
+                    throw std::exception(); 
                 }
 
                 if ( hist ) // Re-create

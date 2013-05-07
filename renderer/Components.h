@@ -522,11 +522,11 @@ struct DedicatedPoseRenderer : glv::View3D, Updateable
             provider(provider)
     {
         pose.reset( new L3::SE3( L3::SE3::ZERO() ) );
-        //boost::shared_ptr< glv::View > oracle_label( new glv::Label("Estimate::INS") );
+
         label.reset( new glv::Label(text) );
-    
-            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-            *this << *label;
+
+        label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+        *this << *label;
 
     }
 
@@ -657,6 +657,21 @@ struct CombinedScanRenderer2D  : glv::View3D
     std::list< boost::shared_ptr< ScanRenderer2D > > scan_renderers;
 };
 
+struct ScanMatchingScanRenderer : glv::View3D
+{
+    ScanMatchingScanRenderer( const glv::Rect rect, boost::shared_ptr< L3::ScanMatching::Engine > engine )
+        : glv::View3D( rect ),
+            engine(engine)
+    {
+
+    }
+
+    boost::shared_ptr< L3::ScanMatching::Engine > engine;
+
+    void onDraw3D( glv::GLV& g );
+
+};
+
 /*
  *  Costs rendering structure
  */
@@ -745,7 +760,6 @@ struct AlgorithmCostRendererLeaf : AlgorithmCostRenderer, Leaf
 
 struct LocaleBoundsRenderer : Leaf
 {
-    //LocaleBoundsRenderer( const L3::Configuration::Mission& mission )
     LocaleBoundsRenderer()
     {
     }
@@ -753,7 +767,6 @@ struct LocaleBoundsRenderer : Leaf
     void onDraw3D(glv::GLV& g);
 
 };
-
 
 
 }   // Visualisers

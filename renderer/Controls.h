@@ -51,9 +51,9 @@ struct Toggle: Action
 struct EventController : glv::EventHandler
 {
  
-    EventController( glv::View* view ) : last_down(0.0), view(view)
+    EventController( glv::View* view, glv::Event::t type ): last_down(0.0), view(view)
     {
-
+        view->addHandler( type, *this );
     }
 
     //Maximise action;

@@ -1,6 +1,7 @@
 #include "Components.h"
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/scoped_array.hpp>
 
 #include "RenderingUtils.h"
 
@@ -809,8 +810,6 @@ namespace Visualisers
         outer_vertices[3]( 500.0, -500.0, 10 );
         outer_colors[3].set( 0, 1, 0, .4); 
 
-
-
         glv::draw::enable( glv::draw::Blend );
 
         glv::draw::lineStippling(true);
@@ -879,6 +878,47 @@ namespace Visualisers
             glv::draw::paint( glv::draw::Points, vertices, colors, counter );
         }
 
+    }
+
+    void ScanMatchingScanRenderer::onDraw3D( glv::GLV& g )
+    {
+        boost::scoped_array<double> scan;
+        boost::scoped_array<double> putative;
+
+        L3::ReadLock lock( engine->mutex );
+        
+        int scan_points = engine->matcher->scan_points;
+        int putative_points = engine->matcher->putative_points;
+
+        scan.reset( new double[scan_points] );
+        std::copy( engine->matcher->scan.get(), 
+                    engine->matcher->scan.get()+ scan_points, 
+                    scan.get() );
+
+        putative.reset( new double[putative_points] );
+        std::copy( engine->matcher->putative.get(), 
+                    engine->matcher->putative.get()+putative_points,
+                    putative.get() );
+
+        lock.unlock();
+
+        glv::Point3 scan_vertices[scan_points];
+        glv::Color  scan_colors[scan_points];
+
+        double* iterator = &putative[0];
+
+        for( int i=0; i<scan_points; i++ )
+        {
+            float x = *iterator++;
+            float y = *iterator++;
+            float z = *iterator++;
+            
+            scan_vertices[i]( x, y, 0 );
+        }
+
+        glv::draw::translateZ( -80 );
+
+        glv::draw::paint( glv::draw::Points, scan_vertices, scan_colors, scan_points );
     }
 
 }

@@ -178,9 +178,6 @@ struct EstimatorRunner : ThreadedTemporalRunner
         this->horizontal_LIDAR = windower;
         (*this) << dynamic_cast<L3::Dumpable*>(windower);
         
-        //scan_matcher.reset( new L3::ScanMatching::ICP() );
-        //(*this) << dynamic_cast<L3::TemporalObserver*>(scan_matcher.get());
-       
         engine.reset( new L3::ScanMatching::Engine( windower ) );
         (*this) << dynamic_cast<L3::TemporalObserver*>(engine.get());
         

@@ -46,14 +46,6 @@ struct L3GLV : glv::GLV
                     break; 
             }
         }
-
-        if ( e == glv::Event::MouseDown )
-        {
-            const glv::Keyboard& k = g.keyboard();
-            
-            if (k.shift())
-                std::cout << "Selector" << std::endl;
-        }
     }
 };
 
@@ -75,7 +67,6 @@ class Layout
 
             // Composite view holder
             composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
-          
             composite->maximize();
 
             // 3D grid 
@@ -90,14 +81,11 @@ class Layout
 
             toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
 
-
             // Add synched updater
             updater.reset( new Updater() );
             this->renderables.push_front( updater.get() );
         }
     
-        boost::shared_ptr< glv::Widget > toggle_button;
-
         virtual ~Layout()
         {
         }
@@ -112,12 +100,8 @@ class Layout
             for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                 top << *it;
 
-            composite_maximise_controller.reset( new EventController( main_view ) );
-            main_view->addHandler( glv::Event::MouseDown, *composite_maximise_controller );
+            composite_maximise_controller.reset( new EventController(  main_view, glv::Event::MouseDown) );
             
-            //composite_maximise_controller.reset( new EventController( composite.get() ) );
-            //composite->addHandler( glv::Event::MouseDown, *composite_maximise_controller );
-
             window.setGLV(top);
 
             glv::Application::run();
@@ -202,7 +186,9 @@ class Layout
         glv::Window&                    window; 
         boost::shared_ptr< glv::View >  lua_interface;
 
-        std::list< glv::View* >     renderables;
+        std::list< glv::View* > renderables;
+        
+        boost::shared_ptr< glv::Widget > toggle_button;
 
         std::list< boost::shared_ptr< glv::View > >     labels;
         
@@ -216,6 +202,8 @@ class Layout
 
         boost::shared_ptr< EventController > composite_maximise_controller;
         boost::shared_ptr< EventController > point_cloud_maximise_controller;
+
+        std::list< boost::shared_ptr< EventController > > window_controllers;
 };
 
 
@@ -308,6 +296,7 @@ class EstimatorLayout : public Layout
         boost::shared_ptr< glv::View > ancillary_2;
 
         boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
+        boost::shared_ptr< L3::Visualisers::ScanMatchingScanRenderer >  scan_matching_renderer;
 };
 
 

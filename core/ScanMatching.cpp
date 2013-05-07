@@ -66,12 +66,13 @@ namespace ScanMatching
     
     bool Engine::update( double time )
     {
-        std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
         this->windower->getWindow( window );
 
-        L3::Timing::ChronoTimer t;
         if ( window.size() > 0 )
-            matcher->match( *(window.front().second ) ); 
+        {
+            L3::WriteLock( this->mutex );
+            matcher->match( *(window.back().second ) ); 
+        }
     
     }
 

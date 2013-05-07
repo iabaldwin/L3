@@ -12,28 +12,29 @@ namespace L3
 {
 namespace ScanMatching
 {
-
-
-    class ScanMatcher 
+    class ScanMatcher  
     {
         public:
           
             ScanMatcher() : initialised(false)
-        {
-        }
+            {
+            }
 
             virtual bool match(  const L3::LMS151& current_scan )
             {
-
             }
+
+            boost::shared_array< double > scan;
+            int scan_points;
+            
+            boost::shared_array< double > putative;
+            int putative_points;
 
         protected:
             
             bool initialised;
-            boost::shared_array< double > scan;
-            int scan_points;
-            boost::shared_array< double > putative;
-            int putative_points;
+            
+                
     };
 
     class ICP : public ScanMatcher
@@ -44,7 +45,7 @@ namespace ScanMatching
 
     };
 
-    struct Engine : public L3::TemporalObserver
+    struct Engine : L3::TemporalObserver, Lockable
     {
 
         Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
@@ -52,6 +53,8 @@ namespace ScanMatching
         {
             matcher.reset( new ICP() );
         }
+            
+        std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
 
         L3::ConstantTimeIterator<L3::LMS151>* windower;
         
