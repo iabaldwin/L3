@@ -535,6 +535,9 @@ namespace Visualisers
 
         PointCloudRenderer::onDraw3D(g);    
         
+        if( this->enabled( glv::Property::Maximized ) )
+            bounds_renderer->onDraw3D(g);
+        
         //L3::Visualisers::drawBitmapText( "Test string",0,0,0) ;
     }
 
@@ -588,7 +591,6 @@ namespace Visualisers
         glv::draw::lineStippling(false);
 
         glv::draw::enable( glv::draw::Blend );
-        //glv::draw::paint( glv::draw::Quads, bound_vertices, bound_colors, 4 );
         glv::draw::paint( glv::draw::TriangleFan, bound_vertices, bound_colors, 4 );
         glv::draw::disable( glv::draw::Blend );
 

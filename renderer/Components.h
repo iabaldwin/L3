@@ -213,6 +213,24 @@ struct PoseEstimatesRenderer : Leaf
 };
 
 /*
+ *Point cloud bounds renderer
+ */
+struct PointCloudBoundsRenderer : Leaf
+{
+    boost::shared_ptr< L3::PointCloud<double> > cloud;
+
+    PointCloudBoundsRenderer( boost::shared_ptr< L3::PointCloud<double> > point_cloud, L3::SE3* estimate = NULL ) : cloud(point_cloud)
+    {
+    }
+  
+    L3::SE3* estimate;
+
+    void onDraw3D(glv::GLV& g);
+
+};
+
+
+/*
  *  Point cloud renderer core
  */
 struct PointCloudRenderer 
@@ -254,8 +272,10 @@ struct PointCloudRendererView: PointCloudRenderer, glv::View3D, Updateable
             current_estimate(estimate)
 
     {
+        bounds_renderer.reset( new PointCloudBoundsRenderer( this->cloud ) );
     }
 
+    boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer > bounds_renderer;
        
     boost::shared_ptr< L3::SE3 > current_estimate;
 
@@ -293,22 +313,6 @@ struct CompositeCloudRendererLeaf : Leaf
     }
 };
 
-/*
- *Point cloud bounds renderer
- */
-struct PointCloudBoundsRenderer : Leaf
-{
-    boost::shared_ptr< L3::PointCloud<double> > cloud;
-
-    PointCloudBoundsRenderer( boost::shared_ptr< L3::PointCloud<double> > point_cloud, L3::SE3* estimate = NULL ) : cloud(point_cloud)
-    {
-    }
-  
-    L3::SE3* estimate;
-
-    void onDraw3D(glv::GLV& g);
-
-};
 
 /*
  *  Grid

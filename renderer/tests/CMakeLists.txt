@@ -1,3 +1,6 @@
+add_executable( test_freetype test_freetype.cpp )
+target_link_libraries( test_freetype GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} )
+
 add_executable( test_input test_input.cpp )
 target_link_libraries( test_input GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES})
 

@@ -1,3 +1,9 @@
+find_package( Freetype REQUIRED )
+
+include_directories( ${FREETYPE_INCLUDE_DIRS} )
+
+message( ${FREETYPE_INCLUDE_DIRS} )
+
 add_library( L3Vis 
                 Visualisers.cpp 
                 Controller.cpp 
