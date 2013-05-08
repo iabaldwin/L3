@@ -68,16 +68,15 @@ int main (int argc, char ** argv)
 
     boost::shared_ptr< L3::Visualisers::Updater > updater( new L3::Visualisers::Updater() );
   
-    L3::Visualisers::Grid                       grid;
-    L3::Visualisers::Composite                  composite;
-    L3::Visualisers::BasicPanController         controller( composite.position );
+    L3::Visualisers::Grid                           grid;
+    L3::Visualisers::Composite                      composite;
+    L3::Visualisers::BasicPanController             controller( composite.position );
+    L3::Visualisers::HistogramPyramidRendererView   pyramid_renderer( glv::Rect( 150,150 ), pyramid );
 
-    //AlgorithmVisualiser                     algo_visualiser( estimator );
-
-    //L3::Visualisers::HistogramBoundsRenderer    histogram_bounds_renderer(histogram);
-    
-    //L3::Visualisers::HistogramDensityRenderer   histogram_density_renderer_view( glv::Rect(600,0,400,400), histogram );
-    //(*updater) << &histogram_density_renderer_view;
+    for ( std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >::iterator it = pyramid_renderer.renderers.begin();
+                    it != pyramid_renderer.renderers.end();
+                    it++ )
+            updater->operator<<( it->get() );
 
     // Point clouds
     L3::Visualisers::PointCloudRendererLeaf cloud_view( cloud );
@@ -87,19 +86,10 @@ int main (int argc, char ** argv)
     point_cloud_composite << &cloud_view;
 
     // Costs
-    //L3::Visualisers::CostRendererLeaf cost_renderer(*( estimator->pose_estimates ) );
-
-    //Visualiser visualiser( cloud_copy, estimator, histogram  );
-    //(*updater) << &visualiser;
-
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
     // Add drawables and updateables
-    //top << (composite << grid << histogram_bounds_renderer << point_cloud_composite << cost_renderer << visualiser ) << updater.get() << histogram_density_renderer_view;
-    //top << (composite << grid << point_cloud_composite << cost_renderer << visualiser ) << updater.get();
-    //top << (composite << grid << point_cloud_composite << visualiser ) << updater.get();
-    //top << (composite << grid << point_cloud_composite << algo_visualiser ) << updater.get();
-    top << (composite << grid << point_cloud_composite ) << updater.get();
+    top << (composite << grid << point_cloud_composite ) << updater.get() << pyramid_renderer;
 
     // Go
     win.setGLV(top);

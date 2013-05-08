@@ -302,73 +302,29 @@ namespace Visualisers
         L3::clone( hist.get(), &tmp );
         lock.unlock();   
         
-        //data().resize( glv::Data::FLOAT, 1, tmp.x_bins, tmp.y_bins );
-        //for( unsigned int i=0; i< tmp.x_bins; i++ )
-        //{
-            //for( unsigned int j=0; j< tmp.y_bins; j++ )
-            //{
-                //data().assign( tmp.bin(i,j)/10.0 , 0, i, j );
-            //}
-        //}
-  
         mTex.magFilter(GL_NEAREST);
         mTex.dealloc();
-        //mTex.alloc( tmp.x_bins, tmp.y_bins );
-        mTex.alloc( tmp.y_bins, tmp.x_bins );
+        mTex.alloc( tmp.x_bins, tmp.y_bins );
 
         double normalizer = tmp.max();
 
         unsigned char * pixs = mTex.buffer<unsigned char>();
             
-        for(int i=0; i< tmp.x_bins; i++)
-        //for(int i=tmp.x_bins-1; i>= 0; i-- )
+        for(int j=0; j< tmp.y_bins; j++ )
         {
-            //for(int j=0; j< tmp.y_bins; j++ )
-            for(int j=tmp.y_bins-1; j>=0; j-- )
+            for(int i=0; i<tmp.x_bins; i++ )
             {
-                //double data = (tmp.bin(i,j)/normalizer)*255;
-                //double dta = tmp.bin(i,j)/normalizer;
-                //double data = ((tmp.bin(j,i)/normalizer)*255);
-                //double data = (tmp.bin(j,i)/normalizer);
-                //double data = (tmp.bin(j,i)/normalizer)*255;
-                //double data = (tmp.bin(i,j)/normalizer)*255;
-                //double data = ((tmp.bin(i,j))/normalizer)*255.0;
-                //int data = (int)(((tmp.bin(i,j))/normalizer)*255.0);
                 int data = (int)(((tmp.bin(i,j))));
-
-
-                //double data = 0.0;
-                //double data = rand()%255;
-                //std::cout << (int)(unsigned char)data << " ";
-                //unsigned char* c = ((unsigned char*)&data );
-                //std::cout << (int)(*c) << " ";
+                data  = data*20;
 
                 *pixs++ = (unsigned char)(data);
                 *pixs++ = (unsigned char)(data);
                 *pixs++ = (unsigned char)(data);
                 *pixs++ = (unsigned char)255;
-                //*pixs++ = (unsigned char)data;
 
-                //*pixs++ = *c;
-                //*pixs++ = *c;
-                //*pixs++ = *c;
-                //*pixs++ = (unsigned char)255;
-
-                //unsigned char* b = &((unsigned char*)(img->imageData + img->widthStep*j))[i*3];
-                //*pixs++ = *b;
-                //unsigned char* g = &((unsigned char*)(img->imageData + img->widthStep*j))[i*3+1];
-                //*pixs++ = *g;
-                //unsigned char* r = &((unsigned char*)(img->imageData + img->widthStep*j))[i*3+2];
-                //*pixs++ = *r;
-
-                //*pixs++ = (unsigned char)255;
             }
 
-            //std::cout << std::endl;
         }
-
-        //std::cout << "------------" << std::endl;
-
     }
 
     void HistogramDensityRenderer::onDraw( glv::GLV& g)

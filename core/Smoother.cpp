@@ -12,8 +12,10 @@ namespace L3
                     
             int query_x, query_y;
 
+//#pragma omp parallel private(pair_counter,x,y,scan_counter ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
+#pragma omp parallel private(sum) shared( hist  )
             for( int x = 0; x < hist->x_bins; x++ )
-
+#pragma omp for  nowait
                 for( int y = 0; y < hist->y_bins; y++ )
                 {
                     hist_value = gsl_histogram2d_get( hist->hist,x,y );
@@ -36,7 +38,7 @@ namespace L3
                         }
                     }
 
-                    result [(x * hist->x_bins) + y] = (sum)/pow(N,2);
+                    result [(x * hist->y_bins) + y] = (sum)/pow(N,2);
                 }
 
             std::copy( result, 

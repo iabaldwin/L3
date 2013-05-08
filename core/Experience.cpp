@@ -187,7 +187,8 @@ void Experience::run()
 
         // Play nice
         //usleep( .05*1e6 );
-        usleep( .1*1e6 );
+        //usleep( .1*1e6 );
+        usleep( .2*1e6 );
     }
 }
             

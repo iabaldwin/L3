@@ -24,18 +24,23 @@ int main()
     /*
      *Smooth
      */
+    L3::Smoother<double,5>* smoother = new L3::BoxSmoother<double,5>();
+
+    L3::Timing::SysTimer t;
+   
+    for( int i=0; i<100; i++ )
+    {
+        t.begin();
+        smoother->smooth( histogram.get() );
+        std::cout << t.elapsed() << std::endl;
+    }
+
 
     std::ofstream stream( "hist.original" );
     //std::cout << *histogram << std::endl;
     stream << *histogram;
     stream.close();
 
-    L3::Smoother<double,5>* smoother = new L3::BoxSmoother<double,5>();
-
-    L3::Timing::SysTimer t;
-    t.begin();
-    smoother->smooth( histogram.get() );
-    std::cout << t.elapsed() << std::endl;
 
     stream.open( "hist.new" );
     stream << *histogram;

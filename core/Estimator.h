@@ -174,22 +174,6 @@ namespace Estimator
 
     };
 
-    template < typename T >
-        struct GroundTruthEstimator : Estimator<T>
-    {
-
-        GroundTruthEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<double> > experience ) 
-            : Estimator<T>(f, experience)
-        {
-            this->pose_estimates.reset( new PoseEstimates() );
-        }
-
-        void dump();
-
-        bool operator()( PointCloud<T>* swathe, SE3 estimate );
-
-    };
-
     template < typename T>
         struct Algorithm
         {

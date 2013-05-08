@@ -11,23 +11,19 @@ namespace L3
 
         t.begin();
 
-        double start_time = current_time;
-
-        double current;
-        
         while( running )
         {
-            current = start_time + speedup*t.elapsed();
+            current_time = start_time + speedup*t.elapsed();
 
             /*
              *  Update all watchers
              */
-            std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), current ) );
+            std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), current_time ) );
             
             /*
              *  Do estimation
              */
-            this->update( current );
+            this->update( current_time );
         }
 
     }

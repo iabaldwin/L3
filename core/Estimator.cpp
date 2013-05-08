@@ -116,10 +116,6 @@ namespace L3
                     exit(1);
                     }
 
-                //double val = boost::math::log1p( (p_i/q_i))*p_i;
-
-                //return val;
-            
                 return boost::math::log1p( (p_i/q_i))*p_i;
             }
 
@@ -192,7 +188,6 @@ namespace L3
                 
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
-                
 
                 /*
                  *  Smoothing
@@ -233,6 +228,7 @@ namespace L3
                 while( it != this->pose_estimates->estimates.end() )
                 {
                     group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
+                    //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ )();
                     it++;
                 }
 
@@ -242,76 +238,6 @@ namespace L3
                 return true;
 
             }
-
-        /*
-         *  Ground truth Estimator
-         */
-        template < typename T >
-            bool GroundTruthEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
-            {
-                // Lock the experience histogram
-                //L3::ReadLock histogram_lock( this->experience_histogram->mutex );
-                //// Lock the swathe
-                //L3::ReadLock swathe_lock( swathe->mutex );
-                //// Estimates
-                //L3::WriteLock estimates_lock( this->pose_estimates->mutex );
-
-                //this->pose_estimates->costs.resize( 1 );
-                //this->pose_estimates->estimates.clear();
-                //this->pose_estimates->estimates.push_back( estimate );
-
-                ////Hypothesis( swathe, &estimate, this->experience_histogram.get() , this->cost_function, this->pose_estimates->costs.begin() )();
-
-                /*
-                 *  Copy point cloud
-                 */
-                //boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
-                //L3::copy( const_cast<L3::PointCloud<double>* >(swathe), hypothesis.get() );
-
-                //L3::transform( hypothesis.get(), &estimate ); 
-
-                /*
-                 *  Histogram
-                 */
-                //L3::Histogram<double> swathe_histogram;
-
-                //L3::copy( const_cast<L3::Histogram<double>*>(this->experience_histogram.get()), &swathe_histogram );
-
-                //// Produce swathe histogram
-                //swathe_histogram( hypothesis.get() );
-
-
-                // DBG
-                //L3::clone( &swathe_histogram, this->current_histogram.get() );
-                //L3::copy( swathe, this->current_swathe.get() );
-                //L3::copy( hypothesis.get(), this->current_swathe.get() );
-
-            }
-
-        std::list< boost::shared_ptr< DataWriter<L3::PointCloud<double> > > > cloud_writers;
-        std::list< boost::shared_ptr< DataWriter<L3::Histogram<double> > > > histogram_writers;
-
-        template < typename T >
-            void GroundTruthEstimator<T>::dump()
-            {
-                //boost::shared_ptr< DataWriter< L3::PointCloud<double> > > cloud_writer( new DataWriter< L3::PointCloud<double> >( this->current_swathe.get() ) );
-                //cloud_writer->write(  "point_cloud.dat" );
-                //cloud_writers.push_back( cloud_writer );
-
-                //boost::shared_ptr< DataWriter< L3::Histogram<double> > > histogram_writer( new DataWriter< L3::Histogram<double> >( this->current_histogram.get() ) );
-                //histogram_writer->write(  "histogram.dat" );
-                //histogram_writers.push_back( histogram_writer );
-
-                //std::ofstream point_cloud_file( "point_cloud.dat" );
-                //point_cloud_file << *this->current_swathe;
-                //point_cloud_file.close();
-
-                //std::ofstream histogram_file( "histogram.dat" );
-                //histogram_file << *this->current_histogram;
-                //histogram_file.close();
-
-            }
-
 
     template < typename T>
         SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
@@ -330,6 +256,4 @@ namespace L3
 // Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
-template bool L3::Estimator::GroundTruthEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
-template void L3::Estimator::GroundTruthEstimator<double>::dump();
 template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);

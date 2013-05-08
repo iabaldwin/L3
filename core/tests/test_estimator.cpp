@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include <readline/readline.h>
 
@@ -69,14 +70,19 @@ int main( int argc, char* argv[] )
           .setSwatheBuilder( &swathe_builder )
           .start( dataset.start_time );
 
+        
+    std::stringstream ss;
+    
     while( true )
     {
-        //usleep( 1*1e6 ); 
-   
-        char* res = readline( ">> " );
-   
+        ss << runner.current_time;
+        
+        char* res = readline( (ss.str() + " >> ").c_str() ); 
+
         if ( !res )
             break;
+   
+        ss.str( std::string("") );
     }
 }
 

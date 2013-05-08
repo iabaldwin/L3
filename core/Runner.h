@@ -57,13 +57,15 @@ struct TemporalRunner : Runner, TemporalObserver
 struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 {
 
-    ThreadedTemporalRunner() : running( true )
+    ThreadedTemporalRunner() 
+        : running( true ),
+            current_time(0.0)
     {
     }
 
     Poco::Thread    thread;
     bool            running;
-    double          current_time;
+    double          start_time, current_time;
 
     ~ThreadedTemporalRunner()
     {
@@ -74,7 +76,7 @@ struct ThreadedTemporalRunner : TemporalRunner, Poco::Runnable
 
     void start( double start_time )
     {
-        current_time = start_time;
+        this->start_time = start_time;
         thread.start( *this );
     }
 
@@ -114,7 +116,7 @@ struct EstimatorRunner : ThreadedTemporalRunner
     boost::shared_ptr< L3::SE3 > estimated;
 
     float speedup;
-
+        
     EstimatorRunner( float speedup=5.0) : speedup(speedup)
     {
         current.reset( new L3::SE3( L3::SE3::ZERO() ) );
@@ -129,7 +131,6 @@ struct EstimatorRunner : ThreadedTemporalRunner
         this->windower = windower;
         (*this) << dynamic_cast<L3::TemporalObserver*>(windower);
         (*this) << dynamic_cast<L3::Dumpable*>(windower);
-        
         
         return *this;
     }
@@ -166,7 +167,6 @@ struct EstimatorRunner : ThreadedTemporalRunner
         return *this;
     }
 
-    //EstimatorRunner& setEstimator( L3::Estimator::Estimator<double>* estimator )
     EstimatorRunner& setAlgorithm( L3::Estimator::Algorithm<double>* estimator )
     {
         this->estimator = estimator;

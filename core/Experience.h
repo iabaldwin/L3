@@ -74,15 +74,18 @@ struct ExperienceLoader
 {
     std::deque<experience_section> sections;
 
-    ExperienceLoader( const L3::Dataset& dataset )
+    ExperienceLoader( const L3::Dataset& dataset, int window_sections = 10 ) : window_sections(window_sections)
     {
         load( dataset.path() );
     }
 
-    ExperienceLoader( const std::string& target )
+    ExperienceLoader( const std::string& target, int window_sections = 10 ) : window_sections(window_sections)
     {
         load( target );
     }
+
+    int window_sections;
+    boost::shared_ptr<Experience> experience;
 
     void load( const std::string& target )
     {
@@ -113,11 +116,9 @@ struct ExperienceLoader
 
         experience_index.close();
 
-        experience.reset( new Experience( sections, experience_name ) );
+        experience.reset( new Experience( sections, experience_name, window_sections ) );
     }
         
-    boost::shared_ptr<Experience> experience;
-
 };
 
 /*

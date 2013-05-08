@@ -71,6 +71,7 @@ namespace Visualisers
 
                 // Interface: Lua
                 bool interface_status = this->interface->execute( current );
+                
                 if ( interface_status )
                     history.push_front( this->interface->get_state() );
 
