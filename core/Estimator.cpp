@@ -243,7 +243,7 @@ namespace L3
         SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
         {
             discrete_estimators[0]->operator()( swathe, estimate );
-            std::vector<double>::iterator it = std::min( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
+            std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
             return discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
             //discrete_estimators[1]->operator()( swathe, estimate );
