@@ -56,6 +56,7 @@ namespace L3
     {
         void GridEstimates::operator()( const L3::SE3& pose ) 
         {
+            L3::WriteLock( this->mutex );
             position.reset( new L3::SE3( pose ) );
             estimates.clear();
 
@@ -68,6 +69,8 @@ namespace L3
 
                     estimates.push_back( L3::SE3( res(0,3), res(1,3), res(2,3), pose.R(), pose.P(), pose.Q() ) );
                 }
+       
+            costs.resize( estimates.size(), std::numeric_limits<double>::infinity() );
         }
 
         /*
@@ -113,12 +116,11 @@ namespace L3
                     exit(1);
                     }
 
-                double val = boost::math::log1p( (p_i/q_i))*p_i;
+                //double val = boost::math::log1p( (p_i/q_i))*p_i;
 
-                //if ( std::isnan( val ) )
-                    //throw std::exception();
-
-                return val;
+                //return val;
+            
+                return boost::math::log1p( (p_i/q_i))*p_i;
             }
 
         };
@@ -172,8 +174,6 @@ namespace L3
 
             void operator()()
             {
-                *result_iterator = std::numeric_limits<double>::infinity();
-
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
 
                 /*
@@ -212,12 +212,9 @@ namespace L3
         template < typename T >
             bool DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
-                L3::WriteLock estimates_lock( this->pose_estimates->mutex );
-                this->pose_estimates->costs.resize( this->pose_estimates->estimates.size(), std::numeric_limits<T>::infinity() );
-
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
-                
+
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
                 L3::ReadLock swathe_lock( swathe->mutex );
@@ -235,9 +232,6 @@ namespace L3
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
                 while( it != this->pose_estimates->estimates.end() )
                 {
-                    //std::cout << std::distance( this->pose_estimates->begin(), it ) << std::endl;
-                    //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ )();
-                    //break; 
                     group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
                     it++;
                 }
