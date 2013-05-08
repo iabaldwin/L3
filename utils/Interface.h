@@ -44,16 +44,14 @@ struct LuaInterface : Interface
     
     bool execute( const std::string& str ) 
     {
-        //std::string doString = luaL_dostring( l, "print(\"Hello World\")" );
-        //std::string doString = luaL_dostring( state, str.c_str() );
         return luaL_dostring( state, str.c_str() );
     }
 
     const char* get_state()
     {
-          //const char *msg = lua_tostring(L, 1);
-   
-        return lua_tostring( state, 1 );
+        const char* msg = lua_tostring( state, 1 );
+        lua_pop(state, 1);
+        return msg;
     }
 
     ~LuaInterface()

@@ -5,10 +5,9 @@
 
 int do_projection( const L3::LMS151& current_scan, double* matrix, double threshold = 5.0 )
 {
-
     double* matrix_ptr = matrix;
 
-    float range,angle,x,y,z=0;
+    double range,angle,x,y,z=0;
   
     int counter = 0;
 
@@ -22,11 +21,12 @@ int do_projection( const L3::LMS151& current_scan, double* matrix, double thresh
             continue;
 
         x = range*cos( angle );
-        *matrix_ptr++ = x; 
         y = range*sin( angle );
+        
+        *matrix_ptr++ = x; 
         *matrix_ptr++ = y; 
         *matrix_ptr++ = z; 
-   
+ 
         counter++;
     }
 
@@ -50,12 +50,11 @@ namespace ScanMatching
         }
 
         putative.reset( new double[541*3] );
-            
         putative_points  = do_projection( current_scan, putative.get() );
         
         Matrix R = Matrix::eye(3);
         Matrix t(3,1);
-        
+      
         IcpPointToPlane icp( scan.get(), scan_points, 3);
         icp.fit(putative.get(),putative_points,R,t,-1);
 

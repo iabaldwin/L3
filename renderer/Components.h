@@ -299,6 +299,8 @@ struct PointCloudRendererView: PointCloudRenderer, glv::View3D, Updateable
        
     boost::shared_ptr< L3::SE3 > current_estimate;
 
+    std::pair<double,double> centroid;
+    
     void update();
 
     void onDraw3D( glv::GLV& g );
@@ -452,7 +454,10 @@ struct HistogramVoxelRendererView : HistogramVoxelRenderer, glv::View3D
     void onDraw3D( glv::GLV& g )
     {
         glv::draw::translateZ( -50 );
-        
+      
+        if( hist->empty() )
+            return;
+
         L3::ReadLock lock( hist->mutex );
         L3::clone( hist.get(), plot_histogram.get() );
      
@@ -480,7 +485,8 @@ struct HistogramVoxelRendererLeaf : HistogramVoxelRenderer, Leaf
     void onDraw3D( glv::GLV& g )
     {
         L3::ReadLock lock( hist->mutex );
-        L3::clone( hist.get(), plot_histogram.get() );
+        if ( !hist->empty() ) 
+            L3::clone( hist.get(), plot_histogram.get() );
         lock.unlock();
 
         HistogramVoxelRenderer::onDraw3D(g);    
@@ -514,9 +520,9 @@ struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updat
                 it != this->pyramid->end();
                 it++ )
         {
-
-            boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( start, 0, width, width), *it ) );
-            start+= width;
+            //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( start, 0, width, width), *it ) );
+            boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), *it ) );
+            start+= (width+10/3);
             renderers.push_front( renderer );
             (*this) << renderer.get();
         }
@@ -603,8 +609,10 @@ struct HorizontalScanRenderer2DView : glv::View3D, ScanRenderer2D
     {
         rotate_z = 0;
     
-        label.reset( new glv::Label("LMS151::Horizontal", true) );
-        label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
+        //label.reset( new glv::Label("LMS151::Horizontal", true) );
+        //label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
+        label.reset( new glv::Label("LMS151::Horizontal" ) );
+        label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
 
         (*this) << *label;
     }
@@ -624,8 +632,12 @@ struct VerticalScanRenderer2DView : glv::View3D, ScanRenderer2D
     {
         rotate_z = 180;
     
-        label.reset( new glv::Label("LMS151::Vertical", true) );
-        label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
+        //label.reset( new glv::Label("LMS151::Vertical", true) );
+        //label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
+
+        label.reset( new glv::Label("LMS151::Vertical" ) );
+        label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+
 
         (*this) << *label;
 

@@ -61,15 +61,19 @@ namespace Visualisers
                 // Get the current string
                 std::string current = mText.substr( 3, mPos-3 );
 
+                if ( current.size() == 0 )
+                    return false;
+                    
+                history.push_front( current );
+             
                 // Interface: L3
                 this->L3_interface->execute( current );
 
                 // Interface: Lua
-                if ( this->interface->execute( current ) )
-                    std::cout << this->interface->get_state() << std::endl;
+                bool interface_status = this->interface->execute( current );
+                if ( interface_status )
+                    history.push_front( this->interface->get_state() );
 
-                history.push_front( current );
-             
                 // Reset things
                 deleteText(0, mText.size());
 
@@ -78,7 +82,7 @@ namespace Visualisers
                 // Join it
                 std::stringstream ss; 
                 for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
-                    ss <<  "[" << counter++ << "] " << *it << std::endl;
+                        ss <<  "[" << counter++ << "] " << *it << std::endl;
 
                 mText = std::string(">> ") + std::string("\n") + ss.str();
                 cursorPos(3);
@@ -136,16 +140,23 @@ namespace Visualisers
                         case glv::Key::Backspace:
                             if(textSelected()) deleteSelected();
                             else if(validPos()){
+                                if ( mPos >3 )
+                                {
                                 deleteText(mPos-1, 1);
                                 cursorPos(mPos-1);
+                            
+                                }
                             }
                             return false;
 
                         case glv::Key::Delete:
                             if(textSelected()) deleteSelected();
                             else if(mText.size()){
+                                if ( mPos > 3 )
+                                {
                                 deleteText(mPos, 1);
                                 cursorPos(mPos);
+                                }
                             }
                             return false;
 

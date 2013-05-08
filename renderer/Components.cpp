@@ -601,14 +601,13 @@ namespace Visualisers
     void PointCloudRendererView::onDraw3D( glv::GLV& g )
     {
         far(500);
-        glv::draw::translateZ(-250 );
+        //glv::draw::translateZ(-250 );
+        glv::draw::translate( 0, 60, -200 );
 
         PointCloudRenderer::onDraw3D(g);    
         
         if( this->enabled( glv::Property::Maximized ) )
             bounds_renderer->onDraw3D(g);
-        
-        //L3::Visualisers::drawBitmapText( "Test string",0,0,0) ;
     }
 
     void PointCloudRendererView::update()
@@ -617,6 +616,9 @@ namespace Visualisers
         if( cloud->num_points > 0 ) 
             L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
+
+        //L3::SE3 tform( 0, 30, 0, 0, 0, 0 );
+        //L3::transform( plot_cloud.get(), &tform );
 
         //This used to exist, because we had already projected the point cloud
         //L3::SE3 tmp( *current_estimate );
@@ -982,14 +984,14 @@ namespace Visualisers
         int scan_points = engine->matcher->scan_points;
         int putative_points = engine->matcher->putative_points;
 
-        scan.reset( new double[scan_points] );
+        scan.reset( new double[scan_points*3] );
         std::copy( engine->matcher->scan.get(), 
-                    engine->matcher->scan.get()+ scan_points, 
+                    engine->matcher->scan.get()+ scan_points*3, 
                     scan.get() );
 
-        putative.reset( new double[putative_points] );
+        putative.reset( new double[putative_points*3] );
         std::copy( engine->matcher->putative.get(), 
-                    engine->matcher->putative.get()+putative_points,
+                    engine->matcher->putative.get()+putative_points*3,
                     putative.get() );
 
         lock.unlock();
@@ -997,20 +999,42 @@ namespace Visualisers
         glv::Point3 scan_vertices[scan_points];
         glv::Color  scan_colors[scan_points];
 
-        double* iterator = &putative[0];
+        double* iterator = &scan[0];
 
+        float x,y,z;
         for( int i=0; i<scan_points; i++ )
         {
-            float x = *iterator++;
-            float y = *iterator++;
-            float z = *iterator++;
+            x = *iterator++;
+            y = *iterator++;
+            z = *iterator++;
             
             scan_vertices[i]( x, y, 0 );
+            scan_colors[i].set( .5, .5, .5, .5 ); 
         }
-
+  
         glv::draw::translateZ( -80 );
 
+        glv::Point3 putative_vertices[scan_points];
+        glv::Color  putative_colors[scan_points];
+
+        iterator = &putative[0];
+    
+        for( int i=0; i<putative_points; i++ )
+        {
+            x = *iterator++;
+            y = *iterator++;
+            z = *iterator++;
+           
+            putative_vertices[i]( x, y, 0 );
+            putative_colors[i].set( 1, 0, 0, .5 ); 
+        }
+        
+        glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Points, scan_vertices, scan_colors, scan_points );
+        glv::draw::paint( glv::draw::Points, putative_vertices, putative_colors, putative_points );
+        glv::draw::disable( glv::draw::Blend );
+  
+
     }
 
 }

@@ -74,12 +74,13 @@ namespace L3
                     it != pyramid_renderer->renderers.end();
                     it++ )
             updater->operator<<( it->get() );
-            pyramid_renderer->pos( window.width() - ((175*3)+10), 5 );
+            pyramid_renderer->pos( window.width() - (175+5), 0 );
 
             /*
              *  Swathe Cloud
              */
-            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(525+10), 190, 525, 250 ), run_time_swathe, runner->current ));
+            //runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(525+10), 190, 525, 250 ), run_time_swathe, runner->current ));
+            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(550+5), 0, 375-5, 350 ), run_time_swathe, runner->current ));
             this->renderables.push_front( runtime_cloud_renderer_view.get() );
             updater->operator<<( runtime_cloud_renderer_view.get() );
 
@@ -91,30 +92,29 @@ namespace L3
             ancillary_1.reset( new glv::Box() );
 
             // Stand-alone scan renderer :: Horizontal
-            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR, glv::Rect( 150,150 ) ) );
+            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR, glv::Rect( 175,175 ) ) );
             updater->operator<<( horizontal_scan_renderer.get() );
 
             (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
 
             // Stand-alone scan renderer : Vertical
-            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 150,150 ) ) );
-            dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 150+2*10, 0);
+            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 175,175 ) ) );
+            dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 175+5, 0);
             updater->operator<<( vertical_scan_renderer.get() );
 
             (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
 
-            combined_scan_renderer.reset( new L3::Visualisers::CombinedScanRenderer2D(  runner->horizontal_LIDAR, runner->vertical_LIDAR, glv::Rect(150,150) ) );
-            combined_scan_renderer->pos( 150*2+2*30, 0 );
-            
-            for( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = combined_scan_renderer->scan_renderers.begin();
-                    it != combined_scan_renderer->scan_renderers.end();
-                    it++ )
-            updater->operator<<( it->get() );
+            //combined_scan_renderer.reset( new L3::Visualisers::CombinedScanRenderer2D(  runner->horizontal_LIDAR, runner->vertical_LIDAR, glv::Rect(150,150) ) );
+            //combined_scan_renderer->pos( 150*2+2*30, 0 );
+            //for( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = combined_scan_renderer->scan_renderers.begin();
+                    //it != combined_scan_renderer->scan_renderers.end();
+                    //it++ )
+            //updater->operator<<( it->get() );
 
-            (*ancillary_1) << combined_scan_renderer.get();
+            //(*ancillary_1) << combined_scan_renderer.get();
 
             // Add it to the view
-            ancillary_1->pos( window.width()-(535), 450 );
+            ancillary_1->pos( window.width()-(550+5), 350+5);
             ancillary_1->fit();
             this->renderables.push_front( ancillary_1.get() );
 
