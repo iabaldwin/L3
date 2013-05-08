@@ -193,6 +193,7 @@ namespace Visualisers
         glv::draw::lineWidth( 2 );
         glv::draw::paint( glv::draw::LineLoop, vertices, colors, num_points );
         glv::draw::disable( glv::draw::Blend );
+        glv::draw::lineStippling(false);
 
         if ( counter++ == 20 )
         {
