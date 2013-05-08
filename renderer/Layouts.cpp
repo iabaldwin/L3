@@ -25,6 +25,7 @@ namespace L3
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( (*experience->experience_pyramid)[0]) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
             histogram_bounds_renderer->depth = -2.0 ;
+            histogram_bounds_renderer->draw_bounds = true;
 
             // Histogram voxel
             histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( (*experience->experience_pyramid)[0] ) ) ;
@@ -50,6 +51,7 @@ namespace L3
             // Predicted estimates
             algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->estimator) ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+            algorithm_costs_renderer->draw_bounds = true;
 
             //Locale Bounds
             locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );

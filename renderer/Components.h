@@ -70,11 +70,31 @@ struct Component : glv::View3D
 };
 
 /*
- *Leaf component for 3D rendering
+ *  Leaf component for 3D rendering
  */
 struct Leaf 
 {
+    Leaf() : draw_bounds(false)
+    {
+        bound_vertices.reset( new glv::Point3[24] ); 
+        bound_colors.reset( new glv::Color[24] ); 
+    }
+
+    struct bounds {
+        float x,y,z;
+    };
+
+    bounds lower,upper;
+
+    bool draw_bounds;
+
+    boost::shared_array< glv::Point3 > bound_vertices;
+    boost::shared_array< glv::Color>   bound_colors;
+
     virtual void onDraw3D( glv::GLV& g ) = 0;
+
+    void drawBounds();
+
 };
 
 /*

@@ -9,7 +9,6 @@ namespace L3
 {
 namespace Visualisers
 {
-
     void Composite::onDraw3D( glv::GLV& g )
     {
         glv::draw::translate( position.x, position.y, position.z );
@@ -20,9 +19,70 @@ namespace Visualisers
         while( leaf_iterator != components.end() )
         {
             (*leaf_iterator)->onDraw3D( g );
+           
+            if( ( *leaf_iterator )->draw_bounds )
+                ( *leaf_iterator )->drawBounds();
+            
             leaf_iterator++;
         }
 
+    }
+
+    void Leaf::drawBounds()
+    {
+        int counter = 0;
+
+        // Bottom
+        bound_vertices[counter++]( lower.x, lower.y, lower.z );
+        bound_vertices[counter++]( lower.x, upper.y, lower.z );
+        bound_vertices[counter++]( upper.x, upper.y, lower.z );
+        bound_vertices[counter++]( upper.x, lower.y, lower.z );
+
+        glv::draw::paint( glv::draw::LineLoop, bound_vertices.get(), bound_colors.get(), 4 );
+     
+        // Left Lower
+        counter = 0;
+        bound_vertices[counter++]( lower.x, lower.y, lower.z );
+        bound_vertices[counter++]( lower.x, lower.y, upper.z );
+        
+        glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
+
+        // Left upper
+        counter = 0;
+        bound_vertices[counter++]( lower.x, upper.y, lower.z );
+        bound_vertices[counter++]( lower.x, upper.y, upper.z );
+        
+        glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
+
+
+        // Right upper
+        counter = 0;
+        bound_vertices[counter++]( upper.x, upper.y, lower.z );
+        bound_vertices[counter++]( upper.x, upper.y, upper.z );
+        
+        glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
+
+        // Right Lower
+        counter = 0;
+        bound_vertices[counter++]( upper.x, lower.y, lower.z );
+        bound_vertices[counter++]( upper.x, lower.y, upper.z );
+        
+        glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
+
+
+
+
+
+
+        // Top
+        counter = 0;
+        bound_vertices[counter++]( lower.x, lower.y, upper.z );
+        bound_vertices[counter++]( lower.x, upper.y, upper.z );
+        bound_vertices[counter++]( upper.x, upper.y, upper.z );
+        bound_vertices[counter++]( upper.x, lower.y, upper.z );
+
+        glv::draw::paint( glv::draw::LineLoop, bound_vertices.get(), bound_colors.get(), 4 );
+      
     }
 
     /*
@@ -155,6 +215,14 @@ namespace Visualisers
 
         std::pair<float, float> lower_left = hist->coords(0,0);
         std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
+
+        this->lower.x = lower_left.first;
+        this->lower.y = lower_left.second;
+        this->lower.z = depth;
+        this->upper.x = upper_right.first;
+        this->upper.y = upper_right.second;
+        this->upper.z = 50.0;
+
 
         bound_vertices[0]( lower_left.first, lower_left.second, depth );
         bound_colors[0].set( 1, 1, 0, .25 );
@@ -738,7 +806,6 @@ namespace Visualisers
         glv::Color colors[ estimates.costs.size() ];
 
         glv::Color current_color;
-        
 
         double cost;
         int counter = 0;
@@ -756,10 +823,9 @@ namespace Visualisers
             counter++;
         }
 
+
         glv::draw::pointSize( 2 );
         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-        //Grid( -10, 10, 1 ).onDraw3D( g );
-        Grid().onDraw3D( g );
     }
 
     /*
@@ -839,6 +905,13 @@ namespace Visualisers
     {
         double layer_height = 20;
 
+        double LOWER = std::numeric_limits<double>::infinity();
+        double UPPER = -1*LOWER;
+
+        double min_x=LOWER, min_y=LOWER, min_z=LOWER;
+        double max_x=UPPER, max_y=UPPER, max_z=UPPER;
+
+
         for( std::deque< boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > >::iterator it = algorithm->discrete_estimators.begin();
                 it != algorithm->discrete_estimators.end(); 
                 it++ )
@@ -861,6 +934,7 @@ namespace Visualisers
                     it++ ) 
             {
                 float plot_height = 0;
+
                 glv::Color plot_color( 1, 0, 0 ); 
                 if( !std::isinf( current_costs[counter] ) )
                 {
@@ -871,12 +945,29 @@ namespace Visualisers
                 vertices[counter]( it->X(), it->Y(), layer_height+plot_height );
                 colors[counter] =  plot_color;           
                 counter++;
+
+                min_x = std::min( min_x, it->X() );
+                min_y = std::min( min_y, it->Y() );
+                min_z = std::min( min_z, layer_height+plot_height );
+
+                max_x = std::max( max_x, it->X() );
+                max_y = std::max( max_y, it->Y() );
+                max_z = std::max( max_z, layer_height+plot_height );
+
             }
 
             layer_height += 20;
 
             glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        
         }
+
+        this->lower.x = min_x;
+        this->lower.y = min_y;
+        this->lower.z = min_z;
+        this->upper.x = max_x;
+        this->upper.y = max_y;
+        this->upper.z = max_z;
 
     }
 

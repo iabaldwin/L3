@@ -22,8 +22,6 @@ find_package( GLEW REQUIRED )                                    # Rendering
 find_package( OpenGL REQUIRED )                                  # Rendering
 include_directories( ${OPENGL_INCLUDE_DIR} )
 
-message( ${OPENGL_INCLUDE_DIR} )
-
 #Search for OpenMP, as it doesn't come by default
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package( OpenMP REQUIRED )

@@ -42,7 +42,7 @@ struct ColorCycler
 
 };
 
-    void drawBitmapText(char *string,float x,float y,float z) ;
+void drawBitmapText(char *string,float x,float y,float z) ;
 
 }
 }
