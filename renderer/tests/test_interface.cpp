@@ -58,9 +58,10 @@ int main (int argc, char ** argv)
 {
     boost::shared_ptr< glv::View >  lua_interface( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
 
-    L3::Interface* iface = new L3::LuaInterface();
+    L3::Interface* lua = new L3::LuaInterface();
+    L3::Interface* l3 = new L3::L3Interface();
 
-    (*dynamic_cast< L3::Visualisers::GLVInterface* >( lua_interface.get() ) ) << iface;
+    (*dynamic_cast< L3::Visualisers::GLVInterface* >( lua_interface.get() ) ) << lua << l3;
 
     //glv::GLV top;
     CustomGLV top;

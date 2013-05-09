@@ -13,8 +13,20 @@ namespace L3
     
     struct L3Interface  : Interface
     {
+        L3Interface() : marker( '_' )
+        {
+
+        }
+
+        char marker;
+        
         // TODO: better hierarch here
         std::pair< bool, std::string>  execute( const std::string& command );
+   
+        std::string getState() 
+        {
+
+        }
     };
 
 }

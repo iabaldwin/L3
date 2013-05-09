@@ -12,10 +12,19 @@ namespace L3
             return std::make_pair( true, "" ); 
         }
 
-        size_t pos = command.find( "load::" );
-
+        size_t pos = command.find( marker );
         if ( pos != std::string::npos )
         {
+            std::cout << "Marker" << std::endl;
+            
+            size_t pos = command.find( "load::" );
+            
+            if ( pos != std::string::npos )
+                std::cout << "LOAD" << std::endl; 
+        
+            return std::make_pair( true, "" );
         }
+            
+        return std::make_pair( false, "" );
     }
 }
