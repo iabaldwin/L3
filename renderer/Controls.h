@@ -8,25 +8,20 @@ namespace Visualisers
 
 struct Action
 {
-
     virtual void operator()( glv::View* v )= 0;
-
 };
 
 struct Maximise : Action
 {
-
     virtual void operator()( glv::View* v )
     {
         v->maximize();
         v->bringToFront();
     }
-
 };
 
 struct Toggle: Action
 {
-
     virtual void operator()( glv::View* v )
     {
         if ( v->enabled( glv::Property::Maximized ) )
@@ -34,34 +29,28 @@ struct Toggle: Action
         else
             v->maximize();
     }
-
 };
-
-
-
 
 struct EventController : glv::EventHandler
 {
- 
-    EventController( glv::View* view, glv::Event::t type ): last_down(0.0), view(view)
+    EventController( glv::View* view, glv::Event::t type, Action* action  ) 
+        :  view(view), 
+            action(action),
+            last_down(0.0)
     {
         view->addHandler( type, *this );
     }
 
-    //Maximise action;
-    Toggle action;
-
-    L3::Timing::ChronoTimer t;
-
+    Action* action;
     glv::View* view;
-
+    L3::Timing::ChronoTimer t;
     double last_down;
  
     virtual bool onEvent( glv::View& v, glv::GLV& g)
     {
         if (( t.elapsed() - last_down ) < .5 )
         {
-            action( view ); 
+            (*action)( view ); 
             // Debouncer 
             last_down =0.0; 
         }
@@ -71,6 +60,24 @@ struct EventController : glv::EventHandler
     }
 };
 
+struct DoubleClickController : EventController
+{
+
+    DoubleClickController( glv::View* view, Action* action ) 
+        : EventController( view, glv::Event::MouseDown, action )
+    {
+
+    }
+
+};
+
+struct DoubleClickMaximiseToggle : DoubleClickController
+{
+    DoubleClickMaximiseToggle( glv::View* view ) : DoubleClickController( view, new Toggle() )
+    {
+
+    }
+};
 
 
 //struct DataDumper : EventController

@@ -83,7 +83,8 @@ namespace L3
             this->renderables.push_front( runtime_cloud_renderer_view.get() );
             updater->operator<<( runtime_cloud_renderer_view.get() );
 
-            point_cloud_maximise_controller.reset( new EventController( runtime_cloud_renderer_view.get(), glv::Event::MouseDown) );
+            //point_cloud_maximise_controller.reset( new EventController( runtime_cloud_renderer_view.get(), glv::Event::MouseDown) );
+            point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
 
             /*
              *  Group: Ancillary
@@ -130,8 +131,8 @@ namespace L3
             scan_matching_renderer.reset( new L3::Visualisers::ScanMatchingScanRenderer( glv::Rect( 150,150 ),runner->engine ) );
             scan_matching_renderer->pos( 150+30, 0 ); 
 
-            boost::shared_ptr< L3::Visualisers::EventController > controller = boost::make_shared< L3::Visualisers::EventController>( scan_matching_renderer.get(), glv::Event::MouseDown  );
-            window_controllers.push_front( controller ); 
+            //boost::shared_ptr< L3::Visualisers::EventController > controller = boost::make_shared< L3::Visualisers::EventController>( scan_matching_renderer.get(), glv::Event::MouseDown  );
+            //window_controllers.push_front( controller ); 
 
             ancillary_2->pos( window.width()-(535), 625 );
             ancillary_2->fit();
@@ -141,8 +142,8 @@ namespace L3
             (*ancillary_2) << dynamic_cast<glv::View*>(oracle_renderer.get());
             (*ancillary_2) << dynamic_cast<glv::View*>(scan_matching_renderer.get());
 
-            boost::shared_ptr< L3::Visualisers::EventController > tmp_controller = boost::make_shared< L3::Visualisers::EventController>( ancillary_2.get(), glv::Event::MouseDown  );
-            window_controllers.push_front( tmp_controller ); 
+            //boost::shared_ptr< L3::Visualisers::EventController > tmp_controller = boost::make_shared< L3::Visualisers::EventController>( ancillary_2.get(), glv::Event::MouseDown  );
+            //window_controllers.push_front( tmp_controller ); 
 
             /*
              *  Cost visualisation 

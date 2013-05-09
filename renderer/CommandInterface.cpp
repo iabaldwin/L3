@@ -2,7 +2,7 @@
 
 namespace L3
 {
-
+    
     CommandInterface::CommandInterface( L3::Container* container ) : container(container)
     {
         expression.reset( new boost::regex("^_" ) );
@@ -16,48 +16,44 @@ namespace L3
 
     std::pair< bool, std::string > CommandInterface::execute(const std::string& command )
     {
-        size_t pos = command.find( "load::" );
-
         bool retval = false;
-
-        if ( pos != std::string::npos )
         {
-            std::string dataset_target = command.substr( pos+6, command.size() );
-            std::cout << "LOAD: " << dataset_target << std::endl;
 
-            try
-            {
-                container->dataset.reset( new L3::Dataset( dataset_target ) );
-                container->dataset->validate();
-                container->dataset->load();
-            }
-            catch( ... )
-            {
-                return std::make_pair( false, "No such directory: " + dataset_target ); 
-            }
+            size_t pos = command.find( "load" );
 
-            return std::make_pair( true, "" );
+            if ( pos != std::string::npos )
+            {
+                if (!container)
+                    return std::make_pair( retval, "L3::No associated container" );
+                
+                std::string dataset_target = command.substr( pos+4, command.size() );
+
+                try
+                {
+                    container->dataset.reset( new L3::Dataset( dataset_target ) );
+                    container->dataset->validate();
+                    container->dataset->load();
+                }
+                catch( ... )
+                {
+                    return std::make_pair( false, "L3::No such directory: " + dataset_target ); 
+                }
+
+                return std::make_pair( true, "L3::Loaded<" + dataset_target + ">" );
+            }
         }
 
-        return std::make_pair( false, "" );
+        {
+            size_t pos = command.find( "quit" );
 
-        // This could be much cleaner
-        //if ( command == "quit" )
-        //{
-            //glv::Application::quit();
-            //return std::make_pair( true, "" ); 
-        //}
+            if ( pos != std::string::npos )
+            {
+                glv::Application::quit();
+            }
+        }
 
-            //size_t pos = command.find( "load::" );
-            
-            //if ( pos != std::string::npos )
-            //{
-                //std::cout << "LOAD" << std::endl; 
-        
-            //return std::make_pair( true, "" );
-            //}
-            
-        //return std::make_pair( false, "" );
+
+        return std::make_pair( retval, "L3::No such command: " + command );
 
     }
 

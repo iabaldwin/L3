@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 
+int last_key = 0;
 
 namespace L3
 {
@@ -9,6 +10,11 @@ namespace Visualisers
 {
     bool GLVInterface::onEvent( glv::Event::t e, glv::GLV& g)
     {
+        // Dump history
+        if ( e == glv::Event::Quit )
+            dumpHistory(); 
+
+        // Master disable
         if ( e==20 )
         {
             visibility ? this->disable(glv::Visible) : this->enable(glv::Visible);
@@ -64,7 +70,7 @@ namespace Visualisers
                 if ( current.size() == 0 )
                     return false;
                     
-                history.push_front( current );
+                full_history.push_front( current );
        
                 for( std::list< L3::Interface* >::iterator it = interfaces.begin();
                         it != interfaces.end();
@@ -73,13 +79,12 @@ namespace Visualisers
                     if( (*it)->match( current ) )
                     { 
                         std::pair< bool, std::string > result = (*it)->execute( current );
-
-                        if( !result.first )
-                        {
-                            if( result.second.size() > 0 )
-                                history.push_front( result.second );
-                        }
-
+                        
+                        if( result.first )  // Successful command
+                            command_history.push_front( current );
+                    
+                        if( result.second.size() > 0 ) // String to be displayed
+                            full_history.push_front( result.second );
                     }
                 }
 
@@ -91,7 +96,7 @@ namespace Visualisers
 
                 // Join it
                 std::stringstream ss; 
-                for ( std::list<std::string>::iterator it=history.begin(); it != history.end(); it++ )
+                for ( std::list<std::string>::iterator it=full_history.begin(); it != full_history.end(); it++ )
                         ss <<  "[" << counter++ << "] " << *it << std::endl;
 
                 mText = std::string(">> ") + std::string("\n") + ss.str();
@@ -117,6 +122,7 @@ namespace Visualisers
                         case 'a': selectAll(); return false;
                     }
                 }
+                
                 else if(k.alt() || k.meta()){} // bubble if control key down
 
                 else if(k.isPrint()){
@@ -184,17 +190,34 @@ namespace Visualisers
                         //case glv::Key::Up:   cursorPos(0); return false;
 
                         case glv::Key::Up:
-                            if ( history.size() > 0 )
+                           
+                            if ( last_key == glv::Key::Up )
+                                std::cout << "last_key" << std::endl;
+
+                            if ( command_history.size() > 0 )
                             {
-                                mText = ">> " + history.front();
-                                cursorPos( mText.size() );
+                                std::string previous = command_history.front();
+
+                                int counter= 0;
+                                std::stringstream ss; 
+                                for ( std::list<std::string>::iterator it=full_history.begin(); it != full_history.end(); it++ )
+                                    ss <<  "[" << counter++ << "] " << *it << std::endl;
+
+                                mText = std::string(">> ")  + previous + std::string("\n") + ss.str();
+                                cursorPos(3 + previous.size());
+
                                 return false;
+
+
                             }
-                        
+
+                        case glv::Key::Tab:
+                            return false;
+
                         case glv::Key::Enter:
                         case glv::Key::Return:
-                                        notify(this, glv::Update::Action);
-                                        return false;
+                            notify(this, glv::Update::Action);
+                            return false;
                     }
                 }
                 break;
@@ -206,6 +229,16 @@ namespace Visualisers
         return true;
     }
 
+    void GLVInterface::dumpHistory()
+    {
+        std::ofstream history( ".history" );
 
+        std::copy( command_history.begin(), 
+                    command_history.end(),
+                    std::ostream_iterator< std::string >( history, "\n") );
+
+        history.close();
+    }
+    
 }
 }

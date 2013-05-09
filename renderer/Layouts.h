@@ -103,7 +103,9 @@ namespace Visualisers
                 for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                     top << *it;
 
-                composite_maximise_controller.reset( new EventController( main_view, glv::Event::MouseDown) );
+                //composite_maximise_controller.reset( new EventController( main_view, glv::Event::MouseDown) );
+                composite_maximise_controller.reset( new DoubleClickMaximiseToggle( main_view) );
+
 
                 window.setGLV(top);
 

@@ -33,8 +33,9 @@ namespace L3
             }
 
             bool visibility;
-            std::list < std::string > history;
             std::list< L3::Interface* > interfaces;
+            std::list < std::string > full_history;
+            std::list < std::string > command_history;
 
             bool onEvent( glv::Event::t e, glv::GLV& g);
 
@@ -45,6 +46,8 @@ namespace L3
                 interfaces.push_front( iface );
                 return *this;
             }
+       
+            void dumpHistory();
         };
 
     }
