@@ -8,6 +8,8 @@
 #include "Visualisers.h"
 #include "Components.h"
 #include "GLVInterface.h"
+#include "CommandInterface.h"
+
 
 struct test_leaf : L3::Visualisers::Leaf
 {
@@ -53,13 +55,12 @@ struct CustomGLV : glv::GLV
     }
 };
 
-
 int main (int argc, char ** argv)
 {
     boost::shared_ptr< glv::View >  lua_interface( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
 
     L3::Interface* lua = new L3::LuaInterface();
-    L3::Interface* l3 = new L3::L3Interface();
+    L3::Interface* l3 = new L3::CommandInterface( NULL );
 
     (*dynamic_cast< L3::Visualisers::GLVInterface* >( lua_interface.get() ) ) << lua << l3;
 

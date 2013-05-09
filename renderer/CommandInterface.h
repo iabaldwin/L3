@@ -8,14 +8,13 @@ namespace L3
 {
     struct CommandInterface : Interface
     {
-        CommandInterface( L3::Container* container ) : container(container)
-        {
-
-        }
+        CommandInterface( L3::Container* container );
 
         L3::Container* container; 
         
         std::pair< bool, std::string> execute( const std::string& );
+    
+        bool match( const std::string& current );
         
         std::string getState();
     };

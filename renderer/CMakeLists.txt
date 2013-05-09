@@ -12,7 +12,6 @@ add_library( L3Vis
                 Components.cpp 
                 Layouts.cpp 
                 TextRenderer.cpp
-                L3Interface.cpp
                 GLVInterface.cpp
                 RenderingUtils.cpp
                 CommandInterface.cpp

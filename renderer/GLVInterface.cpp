@@ -66,25 +66,21 @@ namespace Visualisers
                     
                 history.push_front( current );
        
-                // Interface: L3
-                //this->L3_interface->execute( current );
-                // Interface: Lua
-                //bool interface_status = this->interface->execute( current );
-                //if ( interface_status )
-                    //history.push_front( this->interface->get_state() );
-
                 for( std::list< L3::Interface* >::iterator it = interfaces.begin();
                         it != interfaces.end();
                         it++ )
                 {
-                    std::pair< bool, std::string > result = (*it)->execute( current );
-                    
-                    if( !result.first )
-                    {
-                        if( result.second.size() > 0 )
-                            history.push_front( result.second );
-                    }
+                    if( (*it)->match( current ) )
+                    { 
+                        std::pair< bool, std::string > result = (*it)->execute( current );
 
+                        if( !result.first )
+                        {
+                            if( result.second.size() > 0 )
+                                history.push_front( result.second );
+                        }
+
+                    }
                 }
 
 

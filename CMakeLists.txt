@@ -9,7 +9,7 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
-find_package( Boost COMPONENTS system filesystem unit_test_framework thread chrono REQUIRED )     # Filesystem, smart pointers, ...
+find_package( Boost COMPONENTS system filesystem unit_test_framework thread chrono regex REQUIRED )     # Filesystem, smart pointers, ...
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_package( HDF5 )                                             # Matlab interoperability  

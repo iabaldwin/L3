@@ -4,7 +4,6 @@
 #include "Controls.h"
 #include "DataProvider.h"
 #include "Imagery.h"
-#include "L3Interface.h"
 #include "Layouts.h"
 #include "Node.h"
 #include "Plotters.h"
