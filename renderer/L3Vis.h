@@ -11,3 +11,4 @@
 #include "RenderingUtils.h"
 #include "VisualiserRunner.h"
 #include "Visualisers.h"
+#include "CommandInterface.h"

@@ -106,5 +106,10 @@ target_link_libraries( test_pipeline_stage_4_visual GLV ${GLUT_LIBRARIES} ${OPEN
 add_executable( test_pipeline_stage_5_visual test_pipeline_stage_5.cpp )
 target_link_libraries( test_pipeline_stage_5_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
+#==========
+# App
+#==========
 
+add_executable( test_container test_container.cpp )
+target_link_libraries( test_container GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 

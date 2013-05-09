@@ -312,15 +312,13 @@ struct Container
 
         }
 
-        //boost::shared_ptr< L3::Dataset > dataset;
-        //boost::shared_ptr< L3::Configuration::Mission > mission;
+        boost::shared_ptr< L3::Dataset > dataset;
+        boost::shared_ptr< L3::Configuration::Mission > mission;
 
         //bool loadDataset( const std::string& dataset_directory )
         //{
             //L3::Dataset dataset( dataset_directory );
 
-            ////if( !( dataset.validate() && dataset.load() ) )
-            ////exit(-1);
 
             //mission.reset( new L3::Configuration::Mission( dataset ) );
 

@@ -65,7 +65,7 @@ namespace Visualisers
                     return false;
                     
                 history.push_front( current );
-             
+       
                 // Interface: L3
                 //this->L3_interface->execute( current );
                 // Interface: Lua
@@ -81,7 +81,8 @@ namespace Visualisers
                     
                     if( !result.first )
                     {
-                        history.push_front( result.second );
+                        if( result.second.size() > 0 )
+                            history.push_front( result.second );
                     }
 
                 }
