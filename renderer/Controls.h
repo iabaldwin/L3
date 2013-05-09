@@ -27,20 +27,12 @@ struct Maximise : Action
 struct Toggle: Action
 {
 
-    Toggle() : maximised(false)
-    {
-    }
-
-    bool maximised;
-    
     virtual void operator()( glv::View* v )
     {
-        if ( maximised )
+        if ( v->enabled( glv::Property::Maximized ) )
             v->restore();
         else
             v->maximize();
-   
-        maximised = !maximised;
     }
 
 };
@@ -68,9 +60,13 @@ struct EventController : glv::EventHandler
     virtual bool onEvent( glv::View& v, glv::GLV& g)
     {
         if (( t.elapsed() - last_down ) < .5 )
+        {
             action( view ); 
-
-        last_down  = t.elapsed();
+            // Debouncer 
+            last_down =0.0; 
+        }
+        else
+            last_down  = t.elapsed();
 
     }
 };

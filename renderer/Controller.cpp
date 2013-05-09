@@ -115,7 +115,6 @@ void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
                         current.r += r;
                     else
                         current.r = -70;
-              
                 }
                                 
                 break;

@@ -9,57 +9,57 @@
 #include "Controls.h"
 #include "Plotters.h"
 #include "Imagery.h"
-#include "ExternalInterface.h"
+#include "GLVInterface.h"
 
 namespace L3
 {
 namespace Visualisers
 {
 
-/*
- *  Custom GLV view
- */
-struct L3GLV : glv::GLV
-{
-    bool onEvent( glv::Event::t e, glv::GLV& g)
+    /*
+     *  Custom GLV view
+     */
+    struct L3GLV : glv::GLV
     {
-        glv::space_t a =0.0f;
-        glv::space_t b =0.0f;
-        
-        if ( e == glv::Event::KeyDown )
+        bool onEvent( glv::Event::t e, glv::GLV& g)
         {
-            const glv::Keyboard& k = g.keyboard();
+            glv::space_t a =0.0f;
+            glv::space_t b =0.0f;
 
-            switch (k.key())
+            if ( e == glv::Event::KeyDown )
             {
-                case 96:
-                    this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
+                const glv::Keyboard& k = g.keyboard();
 
-                    // This is quite grim
-                    this->setMouseDown(a, b, 1, 1);
-                    this->setMouseUp(a, b, 1, 1);
-                
-                case 126:
-                    this->broadcastEvent( static_cast< glv::Event::t>( 21 ) );
+                switch (k.key())
+                {
+                    case 96:
+                        this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
 
-                default:
-                    break; 
+                        // This is quite grim
+                        this->setMouseDown(a, b, 1, 1);
+                        this->setMouseUp(a, b, 1, 1);
+
+                    case 126:
+                        this->broadcastEvent( static_cast< glv::Event::t>( 21 ) );
+
+                    default:
+                        break; 
+                }
             }
         }
-    }
-};
+    };
 
-class Layout
-{
-    public:
-        
-        Layout( glv::Window& win ) : window(win)
+    class Layout
+    {
+        public:
+
+            Layout( glv::Window& win ) : window(win)
         {
             /*
              *  Lua interface
              */
-            lua_interface.reset( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
-            this->renderables.push_front( lua_interface.get() );
+            scripting_interface.reset( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
+            this->renderables.push_front( scripting_interface.get() );
 
             // Create the main view
             main_view = new glv::View( glv::Rect(0,0, .6*window.width(),500));
@@ -68,10 +68,11 @@ class Layout
             // Composite view holder
             composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
             composite->maximize();
+            main_view->maximize();
 
             // 3D grid 
             grid.reset( new L3::Visualisers::Grid() );
-           
+
             // Basic controller
             controller.reset( new L3::Visualisers::BasicPanController( composite->position ) );
             composite->addController( &*controller );
@@ -85,136 +86,137 @@ class Layout
             updater.reset( new Updater() );
             this->renderables.push_front( updater.get() );
         }
-    
-        virtual ~Layout()
-        {
-        }
 
-        void run()
-        {
-            L3GLV top;
+            boost::shared_ptr< glv::View >  scripting_interface;
 
-            top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
-           
-            // Add renderables provided by children
-            for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
-                top << *it;
+            virtual ~Layout()
+            {
+            }
 
-            composite_maximise_controller.reset( new EventController(  main_view, glv::Event::MouseDown) );
-            
-            window.setGLV(top);
+            void run()
+            {
+                L3GLV top;
 
-            glv::Application::run();
-        }
+                top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
-        void addRotationalVelocityPlot( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
-        {
-            /*
-             *  Linear Velocity
-             */
-            
-            // Add plotter
-            boost::shared_ptr< VelocityPlotter > plotter( new L3::Visualisers::RotationalVelocityPlotter( LHLV_iterator ) );
-            plotter->stroke( 2.0 );
+                // Add renderables provided by children
+                for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
+                    top << *it;
 
-            plotters.push_front( plotter );
+                composite_maximise_controller.reset( new EventController( main_view, glv::Event::MouseDown) );
 
-            boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plotter ) );
+                window.setGLV(top);
 
-            // Scaling
-            plot_region->range( 0, 1000, 0 );
-            plot_region->range( -1, 1, 1 );
+                glv::Application::run();
+            }
 
-            plot_region->numbering(true);
-            plot_region->showNumbering(true);
-        
-            plots.push_front( plot_region );
-            
-            // Add rendererable
-            this->renderables.push_front( plot_region.get() );
-            // Mark as updateable
-            updater->operator<<( dynamic_cast<Updateable*>(plotter.get()) );
-        
-            boost::shared_ptr< glv::View > velocity_label( new glv::Label("Rotational velocity. (rad/s)" ) );
-            velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
-            this->labels.push_front( velocity_label );
+            void addRotationalVelocityPlot( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
+            {
+                /*
+                 *  Linear Velocity
+                 */
 
-            *plot_region << *velocity_label;
-        }
+                // Add plotter
+                boost::shared_ptr< VelocityPlotter > plotter( new L3::Visualisers::RotationalVelocityPlotter( LHLV_iterator ) );
+                plotter->stroke( 2.0 );
 
+                plotters.push_front( plotter );
 
-        void addLinearVelocityPlot( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
-        {
-            /*
-             *  Linear Velocity
-             */
-            
-            // Add plotter
-            boost::shared_ptr< VelocityPlotter > plotter( new L3::Visualisers::LinearVelocityPlotter( LHLV_iterator ) );
-            plotter->stroke( 2.0 );
-            //plotter->drawUnderGrid(true);
+                boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plotter ) );
 
-            plotters.push_front( plotter );
+                // Scaling
+                plot_region->range( 0, 1000, 0 );
+                plot_region->range( -1, 1, 1 );
 
-            // Add plot region
-            boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plotter ) );
+                plot_region->numbering(true);
+                plot_region->showNumbering(true);
 
-            plot_region->range( 0, 1000, 0 );
-            plot_region->range( -1, 10 , 1 );
+                plots.push_front( plot_region );
 
-            plot_region->numbering(true);
-            plot_region->showNumbering(true);
-        
-            plots.push_front( plot_region );
-            
-            // Add rendererable
-            this->renderables.push_front( plot_region.get() );
-            // Mark as updateable
-            updater->operator<<( dynamic_cast<Updateable*>(plotter.get()) );
-        
-            boost::shared_ptr< glv::View > velocity_label( new glv::Label("Linear velocity (m/s)" ) );
-            velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
-            //velocity_label->pos(675, 130 );
-            this->labels.push_front( velocity_label );
-             
-            *plot_region << *velocity_label;
-        }
+                // Add rendererable
+                this->renderables.push_front( plot_region.get() );
+                // Mark as updateable
+                updater->operator<<( dynamic_cast<Updateable*>(plotter.get()) );
 
-    protected:
+                boost::shared_ptr< glv::View > velocity_label( new glv::Label("Rotational velocity. (rad/s)" ) );
+                velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
+                this->labels.push_front( velocity_label );
 
-        glv::View*                      main_view;
-        glv::Window&                    window; 
-        boost::shared_ptr< glv::View >  lua_interface;
-
-        std::list< glv::View* > renderables;
-        
-        boost::shared_ptr< glv::Widget > toggle_button;
-
-        std::list< boost::shared_ptr< glv::View > >     labels;
-        
-        boost::shared_ptr< Updater >                    updater;
-        boost::shared_ptr<L3::Visualisers::Grid>        grid;
-        boost::shared_ptr<L3::Visualisers::Composite>   composite;
-        boost::shared_ptr<L3::Visualisers::Controller>  controller;
-        
-        std::list< boost::shared_ptr< glv::Plot > >         plots;
-        std::list< boost::shared_ptr< VelocityPlotter > >   plotters;
-
-        boost::shared_ptr< EventController > composite_maximise_controller;
-        boost::shared_ptr< EventController > point_cloud_maximise_controller;
-
-        std::list< boost::shared_ptr< EventController > > window_controllers;
-};
+                *plot_region << *velocity_label;
+            }
 
 
-/*
- *  Dataset 
- */
-class DatasetLayout : public Layout
-{
-    public:
+            void addLinearVelocityPlot( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
+            {
+                /*
+                 *  Linear Velocity
+                 */
 
-        DatasetLayout( glv::Window& win, L3::Dataset* dataset ) : Layout(win), dataset(dataset)
+                // Add plotter
+                boost::shared_ptr< VelocityPlotter > plotter( new L3::Visualisers::LinearVelocityPlotter( LHLV_iterator ) );
+                plotter->stroke( 2.0 );
+                //plotter->drawUnderGrid(true);
+
+                plotters.push_front( plotter );
+
+                // Add plot region
+                boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plotter ) );
+
+                plot_region->range( 0, 1000, 0 );
+                plot_region->range( -1, 10 , 1 );
+
+                plot_region->numbering(true);
+                plot_region->showNumbering(true);
+
+                plots.push_front( plot_region );
+
+                // Add rendererable
+                this->renderables.push_front( plot_region.get() );
+                // Mark as updateable
+                updater->operator<<( dynamic_cast<Updateable*>(plotter.get()) );
+
+                boost::shared_ptr< glv::View > velocity_label( new glv::Label("Linear velocity (m/s)" ) );
+                velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
+                //velocity_label->pos(675, 130 );
+                this->labels.push_front( velocity_label );
+
+                *plot_region << *velocity_label;
+            }
+
+        protected:
+
+            glv::View*                      main_view;
+            glv::Window&                    window; 
+
+            std::list< glv::View* > renderables;
+
+            boost::shared_ptr< glv::Widget > toggle_button;
+
+            std::list< boost::shared_ptr< glv::View > >     labels;
+
+            boost::shared_ptr< Updater >                    updater;
+            boost::shared_ptr<L3::Visualisers::Grid>        grid;
+            boost::shared_ptr<L3::Visualisers::Composite>   composite;
+            boost::shared_ptr<L3::Visualisers::Controller>  controller;
+
+            std::list< boost::shared_ptr< glv::Plot > >         plots;
+            std::list< boost::shared_ptr< VelocityPlotter > >   plotters;
+
+            boost::shared_ptr< EventController > composite_maximise_controller;
+            boost::shared_ptr< EventController > point_cloud_maximise_controller;
+
+            std::list< boost::shared_ptr< EventController > > window_controllers;
+    };
+
+
+    /*
+     *  Dataset 
+     */
+    class DatasetLayout : public Layout
+    {
+        public:
+
+            DatasetLayout( glv::Window& win, L3::Dataset* dataset ) : Layout(win), dataset(dataset)
         {
             // Start the dataset runner
             runner.reset( new L3::DatasetRunner( dataset ) );
@@ -222,13 +224,13 @@ class DatasetLayout : public Layout
 
             addLinearVelocityPlot( runner->LHLV_iterator.get() );
             addRotationalVelocityPlot( runner->LHLV_iterator.get() );
-            
+
             /*
              *  Timer
              */
             time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
             time_renderer->pos(1200 , 10);
-            
+
             this->renderables.push_front( time_renderer.get() );
 
             /*
@@ -238,69 +240,122 @@ class DatasetLayout : public Layout
             *composite << (*iterator_renderer);
         }
 
-        const L3::Dataset*                          dataset;
-        boost::shared_ptr< L3::DatasetRunner >      runner;
-        boost::shared_ptr< TextRenderer<double> >   time_renderer;
-        boost::shared_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
+            const L3::Dataset*                          dataset;
+            boost::shared_ptr< L3::DatasetRunner >      runner;
+            boost::shared_ptr< TextRenderer<double> >   time_renderer;
+            boost::shared_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
 
-};
+    };
 
-/*
- *  Estimator specific
- */
-class EstimatorLayout : public Layout
-{
-    public:
+    /*
+     *  Estimator specific
+     */
+    class EstimatorLayout : public Layout
+    {
+        public:
 
-        EstimatorLayout( glv::Window& win) : Layout(win)
+            EstimatorLayout( glv::Window& win) : Layout(win)
         {
 
         }
-       
-        bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe );
 
-        L3::EstimatorRunner* runner;
-            
-        
-        boost::shared_ptr< L3::Experience>                  experience ;
-        boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
-        boost::shared_ptr< L3::Visualisers::PoseRenderer >  estimated_pose_renderer;
-        boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  horizontal_scan_renderer;
-        boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  vertical_scan_renderer;
+            bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe );
 
-        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> oracle_renderer;
-        boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> predicted_pose_renderer;
-        
-        boost::shared_ptr< L3::Visualisers::PredictorRenderer >             predictor_renderer;
-        boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        runtime_cloud_renderer_leaf; 
-        boost::shared_ptr< L3::Visualisers::PointCloudRendererView >        runtime_cloud_renderer_view; 
-        boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
-        boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >      point_cloud_bounds_renderer;
-        boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
-        boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
-        
-        boost::shared_ptr< L3::Visualisers::CostRendererView >    cost_renderer_view;
+            L3::EstimatorRunner* runner;
 
 
-        std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >  density_renderers;
-        boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        debug_renderer; 
-        boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       debug_histogram_bounds_renderer;
-        boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
-        boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
-        boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D > combined_scan_renderer;
+            boost::shared_ptr< L3::Experience>                  experience ;
+            boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
+            boost::shared_ptr< L3::Visualisers::PoseRenderer >  estimated_pose_renderer;
+            boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  horizontal_scan_renderer;
+            boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  vertical_scan_renderer;
 
-        boost::shared_ptr< L3::Visualisers::LocaleRenderer>  map_view;
+            boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> oracle_renderer;
+            boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> predicted_pose_renderer;
 
-        //boost::shared_ptr< DataDumper > dumper;
-        boost::shared_ptr< glv::View > ancillary_1;
-        boost::shared_ptr< glv::View > ancillary_2;
+            boost::shared_ptr< L3::Visualisers::PredictorRenderer >             predictor_renderer;
+            boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        runtime_cloud_renderer_leaf; 
+            boost::shared_ptr< L3::Visualisers::PointCloudRendererView >        runtime_cloud_renderer_view; 
+            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
+            boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >      point_cloud_bounds_renderer;
+            boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
+            boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
 
-        boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
-        boost::shared_ptr< L3::Visualisers::ScanMatchingScanRenderer >  scan_matching_renderer;
-};
+            boost::shared_ptr< L3::Visualisers::CostRendererView >    cost_renderer_view;
 
+
+            std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >  density_renderers;
+            boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        debug_renderer; 
+            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       debug_histogram_bounds_renderer;
+            boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
+            boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
+            boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D > combined_scan_renderer;
+
+            boost::shared_ptr< L3::Visualisers::LocaleRenderer>  map_view;
+
+            //boost::shared_ptr< DataDumper > dumper;
+            boost::shared_ptr< glv::View > ancillary_1;
+            boost::shared_ptr< glv::View > ancillary_2;
+
+            boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
+            boost::shared_ptr< L3::Visualisers::ScanMatchingScanRenderer >  scan_matching_renderer;
+    };
+
+    
 
 } // Visualisers
+struct Container
+{
+        
+    Container( L3::Visualisers::EstimatorLayout* layout )
+        {
+
+        }
+
+        //boost::shared_ptr< L3::Dataset > dataset;
+        //boost::shared_ptr< L3::Configuration::Mission > mission;
+
+        //bool loadDataset( const std::string& dataset_directory )
+        //{
+            //L3::Dataset dataset( dataset_directory );
+
+            ////if( !( dataset.validate() && dataset.load() ) )
+            ////exit(-1);
+
+            //mission.reset( new L3::Configuration::Mission( dataset ) );
+
+        //}
+
+        //char* dataset_directory = argv[1];
+        //char* dataset_directory[] = {"testme"};
+
+        //std::string dataset_directory("");
+
+
+        // Configuration
+
+        //// Experience
+        //L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+        //L3::ExperienceLoader experience_loader( experience_dataset );
+        //boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
+
+        //// Constant time iterator over poses
+        //L3::ConstantTimeIterator< L3::SE3 >  oracle_source( dataset.pose_reader );
+        //L3::ConstantTimeIterator< L3::LHLV > integrated_pose_iterator( dataset.LHLV_reader );
+
+        //// Constant time iterator over LIDAR
+        //L3::ConstantTimeIterator< L3::LMS151 > vertical_LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
+        //L3::ConstantTimeIterator< L3::LMS151 > horizontal_LIDAR_iterator( dataset.LIDAR_readers[ mission.horizontal ] );
+
+        //// Pose Windower
+        //L3::ConstantTimeWindower<L3::SE3 >  oracle( &oracle_source);
+        //L3::ConstantTimeWindower<L3::LHLV > pose_windower( &integrated_pose_iterator );
+
+        //// Swathe builder
+        //L3::SwatheBuilder swathe_builder( &pose_windower, &vertical_LIDAR_iterator );
+
+};
+
 } // L3
 
 

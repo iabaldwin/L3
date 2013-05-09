@@ -1,4 +1,4 @@
-#include "ExternalInterface.h"
+#include "GLVInterface.h"
 #include <iostream>
 #include <sstream>
 
@@ -7,7 +7,7 @@ namespace L3
 {
 namespace Visualisers
 {
-    bool ExternalInterface::onEvent( glv::Event::t e, glv::GLV& g)
+    bool GLVInterface::onEvent( glv::Event::t e, glv::GLV& g)
     {
         if ( e==20 )
         {
@@ -67,13 +67,25 @@ namespace Visualisers
                 history.push_front( current );
              
                 // Interface: L3
-                this->L3_interface->execute( current );
-
+                //this->L3_interface->execute( current );
                 // Interface: Lua
-                bool interface_status = this->interface->execute( current );
-                
-                if ( interface_status )
-                    history.push_front( this->interface->get_state() );
+                //bool interface_status = this->interface->execute( current );
+                //if ( interface_status )
+                    //history.push_front( this->interface->get_state() );
+
+                for( std::list< L3::Interface* >::iterator it = interfaces.begin();
+                        it != interfaces.end();
+                        it++ )
+                {
+                    std::pair< bool, std::string > result = (*it)->execute( current );
+                    
+                    if( !result.first )
+                    {
+                        history.push_front( result.second );
+                    }
+
+                }
+
 
                 // Reset things
                 deleteText(0, mText.size());
@@ -94,7 +106,7 @@ namespace Visualisers
         return retval;
     }
 
-    bool ExternalInterface::handleText( glv::Event::t e, glv::GLV& g){
+    bool GLVInterface::handleText( glv::Event::t e, glv::GLV& g){
 
         const glv::Keyboard& k = g.keyboard();
         int key = k.key();

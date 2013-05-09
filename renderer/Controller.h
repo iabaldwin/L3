@@ -44,7 +44,6 @@ struct Controller
 
     Controller( control_t& control ) : current(control)
     {
-        //glutIgnoreKeyRepeat(0);
     }
 
     virtual void onEvent( glv::Event::t type, glv::GLV& g ) = 0;

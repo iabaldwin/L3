@@ -15,13 +15,10 @@ namespace L3
 struct Interface
 {
 
-    virtual bool execute( const std::string& ) = 0;
+    virtual std::pair< bool, std::string>  execute( const std::string& ) = 0;
 
-    virtual const char* get_state()
-    {
-
-    }
- 
+    virtual std::string get_state() = 0;
+    
     virtual ~Interface()
     {
 
@@ -42,16 +39,31 @@ struct LuaInterface : Interface
     }
 
     
-    bool execute( const std::string& str ) 
+    std::pair< bool, std::string> execute( const std::string& str ) 
     {
-        return luaL_dostring( state, str.c_str() );
+        bool result = luaL_dostring( state, str.c_str() ) == 0 ? true : false;
+     
+        std::pair< bool, std::string> retval;
+
+        if( result )
+        {
+            retval.first = true;
+            retval.second = "";
+        }
+        else
+        {
+            retval.first = false;
+            retval.second = get_state();
+        }
+       
+        return retval;
     }
 
-    const char* get_state()
+    std::string get_state()
     {
         const char* msg = lua_tostring( state, 1 );
         lua_pop(state, 1);
-        return msg;
+        return std::string( msg );
     }
 
     ~LuaInterface()

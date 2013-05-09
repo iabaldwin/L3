@@ -7,7 +7,7 @@
 #include "L3.h"
 #include "Visualisers.h"
 #include "Components.h"
-#include "ExternalInterface.h"
+#include "GLVInterface.h"
 
 struct test_leaf : L3::Visualisers::Leaf
 {
@@ -56,8 +56,11 @@ struct CustomGLV : glv::GLV
 
 int main (int argc, char ** argv)
 {
-    boost::shared_ptr< glv::View >  lua_interface( new L3::Visualisers::ExternalInterface( glv::Rect(1200,800,200,150) ) ) ;
+    boost::shared_ptr< glv::View >  lua_interface( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
 
+    L3::Interface* iface = new L3::LuaInterface();
+
+    (*dynamic_cast< L3::Visualisers::GLVInterface* >( lua_interface.get() ) ) << iface;
 
     //glv::GLV top;
     CustomGLV top;
@@ -74,7 +77,7 @@ int main (int argc, char ** argv)
 
     test_leaf leaf;
 
-    top << ( composite << grid << leaf  ) << *lua_interface;
+    top << ( composite << grid << leaf  ) << (*lua_interface);
 
     win.setGLV(top);
     glv::Application::run();

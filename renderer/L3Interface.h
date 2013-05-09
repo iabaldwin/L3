@@ -5,28 +5,17 @@
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
+#include "Interface.h"
 
 namespace L3
 {
-
-struct L3Interface  : Interface
-{
-
-    L3Interface()
-    {
-
-
-
-    }
+    struct Container;
     
-    bool execute( const std::string& command )
+    struct L3Interface  : Interface
     {
-        // This could be much cleaner
-        if ( command == "quit" )
-            glv::Application::quit();
-    }
-
-};
+        // TODO: better hierarch here
+        std::pair< bool, std::string>  execute( const std::string& command );
+    };
 
 }
 #endif

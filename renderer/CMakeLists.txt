@@ -11,12 +11,14 @@ add_library( L3Vis
                 Controller.cpp 
                 Components.cpp 
                 Layouts.cpp 
-                ExternalInterface.cpp
-                RenderingUtils.cpp
                 TextRenderer.cpp
+                L3Interface.cpp
+                GLVInterface.cpp
+                RenderingUtils.cpp
+                CommandInterface.cpp
                 )
             
-            target_link_libraries( L3Vis L3 GLV lua opencv_highgui opencv_core Common OGLFT )
+target_link_libraries( L3Vis L3 GLV lua opencv_highgui opencv_core Common OGLFT )
 
 add_subdirectory( apps )
 add_subdirectory( tests )
