@@ -17,7 +17,7 @@ namespace L3
         
         std::pair< bool, std::string> execute( const std::string& );
         
-        std::string get_state();
+        std::string getState();
     };
 
 }

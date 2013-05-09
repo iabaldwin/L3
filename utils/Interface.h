@@ -17,7 +17,7 @@ struct Interface
 
     virtual std::pair< bool, std::string>  execute( const std::string& ) = 0;
 
-    virtual std::string get_state() = 0;
+    virtual std::string getState() = 0;
     
     virtual ~Interface()
     {
@@ -36,8 +36,11 @@ struct LuaInterface : Interface
 
         /* load lua libraries */
         luaL_openlibs(state);
+   
+        setPath();
     }
 
+    lua_State* state;
     
     std::pair< bool, std::string> execute( const std::string& str ) 
     {
@@ -53,26 +56,27 @@ struct LuaInterface : Interface
         else
         {
             retval.first = false;
-            retval.second = get_state();
+            retval.second = getState();
         }
        
+
         return retval;
     }
 
-    std::string get_state()
+    std::string getState()
     {
         const char* msg = lua_tostring( state, 1 );
         lua_pop(state, 1);
         return std::string( msg );
     }
 
+    void setPath();
+
     ~LuaInterface()
     {
         if( state )
             lua_close(state);
     }
-
-    lua_State* state;
 
 };
 

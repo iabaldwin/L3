@@ -79,10 +79,10 @@ namespace Visualisers
                 {
                     std::pair< bool, std::string > result = (*it)->execute( current );
                     
-                    if( !result.first )
-                    {
+                    //if( !result.first )
+                    //{
                         history.push_front( result.second );
-                    }
+                    //}
 
                 }
 

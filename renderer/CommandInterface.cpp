@@ -8,7 +8,7 @@ namespace L3
 
     }
 
-    std::string CommandInterface::get_state()
+    std::string CommandInterface::getState()
     {
         
     }
