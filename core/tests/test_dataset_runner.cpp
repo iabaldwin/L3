@@ -38,7 +38,7 @@ int main( int argc, char* argv[] )
     ss.precision( 16 );
   
     //int target = random()%1000 
-    int target = 10000000000;
+    int target = 100000000;
 
     while( true )
     {
@@ -62,7 +62,5 @@ int main( int argc, char* argv[] )
             break;
         }
     }
-
-    std::cout << "Done, finishing" << std::endl;
 }
 

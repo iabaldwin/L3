@@ -152,6 +152,15 @@ struct EstimatorRunner : DatasetRunner
         estimated.reset( new L3::SE3( L3::SE3::ZERO() ) ); 
     }
 
+
+    ~EstimatorRunner()
+    {
+        running = false;
+
+        if ( thread.isRunning() )
+            thread.join();
+    }
+    
     boost::shared_ptr< L3::SE3 > current;
     boost::shared_ptr< L3::SE3 > estimated;
 

@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include <readline/readline.h>
+#include <boost/scoped_ptr.hpp>
 
 #include "L3.h"
 
@@ -15,41 +16,58 @@ int main( int argc, char* argv[] )
     }
 
     char* dataset_directory = argv[1];
- 
+
     /*
      *  L3
      */
-    L3::Dataset dataset( dataset_directory );
 
-    if( !( dataset.validate() && dataset.load() ) )
-        exit(-1);
+
+    for( int i=0; i<1000; i++ )
+    { 
+        L3::Dataset dataset( dataset_directory );
+
+        if( !( dataset.validate() && dataset.load() ) )
+            exit(-1);
+
+        /*
+         *Configuration
+         */
+        L3::Configuration::Mission mission( dataset );
+
+        // Create runner
     
-    /*
-     *Configuration
-     */
-    L3::Configuration::Mission mission( dataset );
+        boost::scoped_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( &dataset, &mission) );
+        //L3::EstimatorRunner runner( &dataset, &mission);
 
-    // Create runner
-    L3::EstimatorRunner runner( &dataset, &mission);
+        runner->start();
 
-    runner.start();
+        std::stringstream ss;
+        ss.precision( 16 );
 
-    std::stringstream ss;
-    ss.precision( 16 );
-    
-    while( true )
-    {
-        ss << runner.current_time;
+        int target = 100000000;
 
-        char* res = readline( (ss.str() + " >> ").c_str() ); 
+            
+        int counter = 0;
+        while( true )
+        {
+            //ss << runner.current_time;
 
-        if( std::string(res) == "stop" )
-            break;
+            //char* res = readline( (ss.str() + " >> ").c_str() ); 
 
-        if ( !res )
-            break;
-   
-        ss.str( std::string("") );
+            //if( std::string(res) == "stop" )
+            //break;
+
+            //if ( !res )
+            //break;
+
+            //ss.str( std::string("") );
+
+            if ( counter++ > target )
+            {
+                std::cout << counter-1 << " of " << target<< std::endl;
+                break;
+            }
+        }
+
     }
 }
-
