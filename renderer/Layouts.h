@@ -317,32 +317,11 @@ struct Container
 
     }
 
-    boost::shared_ptr< L3::Projector<double> >  projector;
-
-    boost::shared_ptr< L3::SwatheBuilder >      swathe_builder; 
-    boost::shared_ptr< L3::PointCloud<double> > point_cloud;
-
-    boost::shared_ptr< L3::Dataset >                dataset;
-    boost::shared_ptr<L3::Experience>               experience;
+    L3::EstimatorRunner                 runner;
+    boost::shared_ptr< L3::Dataset >    dataset;
+    
+    boost::shared_ptr<L3::Experience>   experience;
     boost::shared_ptr< L3::Configuration::Mission > mission;
-
-    boost::shared_ptr< L3::Estimator::CostFunction<double> >        cost_function;
-    boost::shared_ptr< L3::Estimator::IterativeDescent<double> >    algorithm;
-
-    boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > >        oracle_source;
-    boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > >       integrated_pose_iterator;
-
-    boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >     vertical_LIDAR_iterator;
-    boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >     horizontal_LIDAR_iterator;
-
-    boost::shared_ptr< L3::ConstantTimeWindower<L3::SE3 > >         oracle;
-    boost::shared_ptr< L3::ConstantTimeWindower<L3::LHLV > >        pose_windower;
-
-
-
-    // Create runner
-    L3::EstimatorRunner runner;
-
 
 };
 
