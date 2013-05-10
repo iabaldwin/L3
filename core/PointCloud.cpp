@@ -124,6 +124,8 @@ namespace L3
             resultant_cloud->points     = points;
 
             result.reset( resultant_cloud );
+       
+            return true;
         }
 
     template <typename T>
@@ -190,10 +192,8 @@ namespace L3
     template <typename T>
         void transform( PointCloud<T>* cloud, L3::SE3 * pose )
         {
-            typename PointCloud<T>::ITERATOR it = cloud->begin();
-
             int point_counter, num_points = cloud->num_points;
-            T x,y,z;
+            
             Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
 
             Point<T>* tmp = cloud->begin();

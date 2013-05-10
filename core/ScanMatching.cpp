@@ -44,9 +44,9 @@ namespace ScanMatching
             scan.reset( new double[541*3] );
             scan_points = do_projection( current_scan, scan.get() );
 
-            bool retval = initialised; 
             initialised = true;
-            return retval;
+            
+            return false;
         }
 
         putative.reset( new double[541*3] );
@@ -61,18 +61,23 @@ namespace ScanMatching
         // Do swap
         scan.swap( putative );
         scan_points = putative_points;
+   
+        return true;
     }
     
     bool Engine::update( double time )
     {
         this->windower->getWindow( window );
 
+        bool retval = false;
+
         if ( window.size() > 0 )
         {
             L3::WriteLock( this->mutex );
-            matcher->match( *(window.back().second ) ); 
+            retval = matcher->match( *(window.back().second ) ); 
         }
-    
+  
+        return retval;
     }
 
 

@@ -171,6 +171,7 @@ struct Locale : Configuration
         if (!config.lookupValue( ss.str(), y_upper))
             return false; 
 
+        return true;
     }
 
     double x_lower, x_upper, y_lower, y_upper, z;

@@ -26,11 +26,11 @@ int main()
     
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
-    L3::ThreadedTemporalRunner runner;
+    //L3::ThreadedTemporalRunner runner;
 
-    runner << &swathe_builder;
+    //runner << &swathe_builder;
 
-    runner.start( dataset.start_time );
+    //runner.start( dataset.start_time );
 
     //Run
     //double increment = .02;

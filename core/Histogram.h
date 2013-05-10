@@ -21,10 +21,10 @@ namespace L3
             {
             }
 
-            float               x_lower,x_upper,x_centre;
-            float               y_lower,y_upper,y_centre;
             float               x_delta, y_delta;
             unsigned int        x_bins, y_bins;
+            float               x_lower,x_upper,x_centre;
+            float               y_lower,y_upper,y_centre;
             gsl_histogram2d*    hist;
 
             virtual ~Histogram()

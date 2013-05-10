@@ -49,7 +49,7 @@ int main()
     /*
      *  Run
      */
-    double increment = 1.0;
+    //double increment = 1.0;
  
     //L3::EstimatorRunner runner;
     

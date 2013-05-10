@@ -17,6 +17,7 @@ namespace L3
 
             std::deque< std::pair< double, boost::shared_ptr<L3::LHLV > > >::iterator it = window.begin();
 
+            return true;
         }
     }
 }

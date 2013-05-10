@@ -28,11 +28,11 @@ bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned
 
 Experience::Experience( std::deque<experience_section>  SECTIONS, 
             std::string& fname, 
-            unsigned int WINDOW
-            ) : sections(SECTIONS), 
-                window(WINDOW),
-                running(true),
-                _x(0.0), _y(0.0)
+            unsigned int WINDOW ) 
+                : sections(SECTIONS), 
+                    window(WINDOW),
+                    running(true),
+                    _x(0.0), _y(0.0)
 {
     // Open 
     data.open( fname.c_str(), std::ios::binary );

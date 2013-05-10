@@ -192,6 +192,8 @@ namespace Estimator
             SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
                 estimator->operator()( swathe, estimate );
+           
+                return estimate;
             }
         };
 

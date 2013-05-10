@@ -186,6 +186,8 @@ std::ostream& operator<<( std::ostream& o, const L3::LHLV& lhlv )
                 std::ostream_iterator<double>( o, " " ) );
 
     o << std::endl;
+
+    return o;
 }
 
 std::ostream& operator<<( std::ostream& o, const L3::SE3& pose )

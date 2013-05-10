@@ -28,8 +28,8 @@ struct CircularPoseProvider : PoseProvider, Poco::Runnable
     CircularPoseProvider( double frequency=10.0) : counter(0), 
                                                     x(0), y(0), 
                                                     angle(0.0), 
+                                                    frequency(frequency),
                                                     running(true), 
-                                                    frequency(frequency), 
                                                     update(false)
     {
         // Go
@@ -45,8 +45,8 @@ struct CircularPoseProvider : PoseProvider, Poco::Runnable
     Poco::Thread    thread;
     Poco::Mutex     mutex;
     int             counter;
+    double          x, y, angle, range, frequency;
     bool            running, update;
-    double          x, y, range, angle, frequency;
      
 
     void run()
@@ -111,7 +111,7 @@ class ConstantTimeWindower : public PoseWindower, Lockable
         bool update( double t)
         {
             L3::WriteLock( this->mutex );
-            constant_time_iterator->update(t);
+            return constant_time_iterator->update(t);
         }
 
         L3::SE3 operator()( void )
@@ -166,7 +166,7 @@ class ConstantTimeWindower<L3::LHLV> : public PoseWindower
             chain_builder->update(t);
       
             // Reorient poses
-            inverter.invert( chain_builder->window.begin(), chain_builder->window.end() );
+            return inverter.invert( chain_builder->window.begin(), chain_builder->window.end() );
         }
 
 };

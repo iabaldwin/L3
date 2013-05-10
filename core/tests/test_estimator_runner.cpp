@@ -31,17 +31,20 @@ int main( int argc, char* argv[] )
 
     // Create runner
     L3::EstimatorRunner runner( &dataset, &mission);
-    //L3::DatasetRunner runner( &dataset, &mission);
 
     runner.start();
 
     std::stringstream ss;
-  
+    ss.precision( 16 );
+    
     while( true )
     {
-        ss << runner.current_time - dataset.start_time;
-        
+        ss << runner.current_time;
+
         char* res = readline( (ss.str() + " >> ").c_str() ); 
+
+        if( std::string(res) == "stop" )
+            break;
 
         if ( !res )
             break;

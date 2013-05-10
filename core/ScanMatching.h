@@ -20,9 +20,7 @@ namespace ScanMatching
             {
             }
 
-            virtual bool match(  const L3::LMS151& current_scan )
-            {
-            }
+            virtual bool match(  const L3::LMS151& current_scan ) = 0;
 
             boost::shared_array< double > scan;
             int scan_points;

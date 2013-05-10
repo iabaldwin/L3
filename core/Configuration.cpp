@@ -143,10 +143,12 @@ bool convert( const LIDARParameters& params, L3::SE3& calibration )
 {
     std::vector<double> transform = params.transform;
  
-    for( int i=3; i<transform.size(); i++ )
+    for( unsigned int i=3; i<transform.size(); i++ )
         transform[i] = L3::Utils::Math::degreesToRadians( transform[i] );
     
     calibration = L3::SE3( transform );
+
+    return true;
 }
 
 }

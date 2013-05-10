@@ -1,32 +1,68 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+#include <readline/readline.h>
+
 #include "L3.h"
 
-int main()
+int main( int argc, char* argv[] )
 {
-    try
+    if ( argc != 2 ) 
     {
+        std::cerr << "Usage: " << argv[0] << " <dataset>" << std::endl;
+        exit(-1);
+    }
 
-        L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    char* dataset_directory = argv[1];
+ 
+    /*
+     *  L3
+     */
+    L3::Dataset dataset( dataset_directory );
 
-        if( dataset.validate() )
-            dataset.load();
+    if( !( dataset.validate() && dataset.load() ) )
+        exit(-1);
+    
+    /*
+     *Configuration
+     */
+    L3::Configuration::Mission mission( dataset );
 
-        std::cout << dataset << std::endl;
-        
-        L3::Configuration::Mission mission( dataset );
+    // Create runner
+    L3::DatasetRunner runner( &dataset, &mission);
+
+    runner.start();
+
+    std::stringstream ss;
+    ss.precision( 16 );
+  
+    //int target = random()%1000 
+    int target = 10000000000;
+
+    while( true )
+    {
+        //ss << runner.current_time;
+
+        //char* res = readline( (ss.str() + " >> ").c_str() ); 
+
+        //if( std::string(res) == "stop" )
+            //break;
+
+        //if ( !res )
+            //break;
    
-        L3::DatasetRunner runner( &dataset, &mission );
+        //ss.str( std::string("") );
 
-        runner.start();
-        
-        while( true )
+
+        static int counter = 0;
+        if ( counter++ > target )
         {
-
-            usleep( 1*1e6 );
-            continue; 
+            std::cout << counter-1 << " of " << target<< std::endl;
+            break;
         }
     }
-    catch( L3::no_such_folder& e  )
-    {
-        std::cout << "Dataset does not exist" << std::endl; 
-    }
+
+    std::cout << "Done, finishing" << std::endl;
 }
+

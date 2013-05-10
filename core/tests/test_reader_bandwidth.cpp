@@ -11,8 +11,6 @@ int main()
 
     for ( int i=10; i < 10000; i+= 50 )
     {
-        double time = 1328534146.40;
-
         L3::SlidingWindowBinary< L3::LMS151 > w( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/LMS1xx_10420001_192.168.0.51.lidar", 100 );
         w.STACK_SIZE = i;
 
