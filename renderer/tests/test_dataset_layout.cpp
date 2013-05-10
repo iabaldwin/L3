@@ -21,12 +21,12 @@ int main( int argc, char* argv[] )
         if( !(dataset.validate() && dataset.load() ) )
             exit(-1);
         
+        L3::Configuration::Mission mission( dataset );
+
         glv::Window win(1400, 800, "Visualisation::DatasetLayout");
+        
+        L3::Visualisers::DatasetLayout layout(win, &dataset, &mission );
 
-        L3::Visualisers::DatasetLayout layout(win, &dataset);
-
-        //glv::GLV top;
-        //layout.run( top );
         layout.run();
 
     }

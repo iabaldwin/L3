@@ -21,10 +21,21 @@
 namespace L3
 {
 
+struct TemporalRunner 
+{
+    std::list < TemporalObserver* > observers;
+
+    virtual bool update( double time )
+    {
+        std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), time ) );
+    }
+};
+
+
 /*
  *  Threaded runner
  */
-struct ThreadedRunner : Poco::Runnable
+struct ThreadedRunner : TemporalRunner, Poco::Runnable
 {
     ThreadedRunner() 
         : running( true ),
@@ -41,7 +52,7 @@ struct ThreadedRunner : Poco::Runnable
         thread.start( *this );
     }
     
-};
+    };
 
 struct DatasetRunner : ThreadedRunner
 {
@@ -72,15 +83,12 @@ struct DatasetRunner : ThreadedRunner
         // Pose Windower
         pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV>( LHLV_iterator.get() ) );
         
-        (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << engine.get();
+        //(*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << engine.get();
+        (*this)<< pose_iterator.get();
 
         swathe_builder.reset( new L3::SwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
    
     }
-
-    Dataset*        dataset;
-    float           speedup;
-    double          current_time, start_time;  
 
     ~DatasetRunner()
     {
@@ -90,10 +98,12 @@ struct DatasetRunner : ThreadedRunner
             thread.join();
 
     }
+
+    Dataset*        dataset;
+    float           speedup;
+    double          current_time, start_time;  
     
-   
-    std::list < Dumpable* >         dumps;
-    std::list < TemporalObserver* > observers;
+    std::list < Dumpable* > dumps;
 
     boost::shared_ptr< L3::SE3 >                projection;
     boost::shared_ptr< L3::Projector<double> >  projector;
@@ -112,13 +122,12 @@ struct DatasetRunner : ThreadedRunner
      
     boost::shared_ptr< L3::ScanMatching::Engine > engine;
     boost::shared_ptr< L3::ScanMatching::ScanMatcher > scan_matcher;
-    
         
     void run();
     
     virtual bool update( double time )
     {
-        return true; 
+        return true;
     }
 
     DatasetRunner& operator<<( L3::TemporalObserver* observer)
@@ -127,7 +136,6 @@ struct DatasetRunner : ThreadedRunner
             observers.push_front( observer ); 
         return *this;
     }
-
 
     DatasetRunner& operator<<( L3::Dumpable* dumpable)
     {

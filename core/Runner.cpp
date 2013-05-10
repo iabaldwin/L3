@@ -17,25 +17,27 @@ namespace L3
         {
             current_time = start_time + speedup*t.elapsed();
 
+            TemporalRunner::update( current_time );
+
             /*
              *  Update all watchers
              */
-            std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), current_time ) );
-
+            //std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), current_time ) );
     
-            //swathe_builder->update( current_time );
+            swathe_builder->update( current_time );
 
             /*
              *  Point cloud generation, projection
              */
-            //L3::WriteLock point_cloud_lock( projector->cloud->mutex );
-            //projector->project( swathe_builder->swathe );
-            //point_cloud_lock.unlock();
+            L3::WriteLock point_cloud_lock( projector->cloud->mutex );
+            projector->project( swathe_builder->swathe );
+            point_cloud_lock.unlock();
 
             /*
              *  Update everything else
              */
-            //update( current_time );
+            update( current_time );
+        
         }
 
     }
@@ -47,17 +49,17 @@ namespace L3
          *  Get the pose from the pose provider
          */
         L3::SE3 predicted = provider->operator()();
-        
+
         *current = predicted;
 
         /*
-         *  Update the experience
+         *Update the experience
          */
         experience->update( predicted.X(), predicted.Y() );
-        
-        
+
+
         /*
-         *  Estimate
+         *Estimate
          */
         *estimated = estimator->operator()( projector->cloud, predicted );
 

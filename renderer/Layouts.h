@@ -213,34 +213,39 @@ namespace Visualisers
     {
         public:
 
-            DatasetLayout( glv::Window& win, L3::Dataset* dataset ) : Layout(win), dataset(dataset)
-        {
-            // Start the dataset runner
-            runner.reset( new L3::DatasetRunner( dataset ) );
-            runner->start( dataset->start_time );
+            DatasetLayout( glv::Window& win, L3::Dataset* dataset, L3::Configuration::Mission* mission ) 
+                : Layout(win), 
+                    dataset(dataset),
+                    mission(mission)
 
-            //addLinearVelocityPlot( runner->LHLV_iterator.get() );
-            //addRotationalVelocityPlot( runner->LHLV_iterator.get() );
+            {
+                // Start the dataset runner
+                runner.reset( new L3::DatasetRunner( dataset, mission ) );
+                runner->start();
 
-            addLinearVelocityPlot();
-            addRotationalVelocityPlot();
+                //addLinearVelocityPlot( runner->LHLV_iterator.get() );
+                //addRotationalVelocityPlot( runner->LHLV_iterator.get() );
 
-            /*
-             *  Timer
-             */
-            time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
-            time_renderer->pos(1200 , 10);
+                addLinearVelocityPlot();
+                addRotationalVelocityPlot();
 
-            this->renderables.push_front( time_renderer.get() );
+                /*
+                 *  Timer
+                 */
+                time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
+                time_renderer->pos(1200 , 10);
 
-            /*
-             *  Pose Iterator
-             */
-            iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
-            *composite << (*iterator_renderer);
-        }
+                this->renderables.push_front( time_renderer.get() );
+
+                /*
+                 *  Pose Iterator
+                 */
+                iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
+                *composite << (*iterator_renderer);
+            }
 
             const L3::Dataset*                          dataset;
+            const L3::Configuration::Mission*           mission;
             boost::shared_ptr< L3::DatasetRunner >      runner;
             boost::shared_ptr< TextRenderer<double> >   time_renderer;
             boost::shared_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
@@ -264,12 +269,11 @@ namespace Visualisers
 
             L3::EstimatorRunner* runner;
 
-
-            boost::shared_ptr< L3::Experience>                  experience ;
-            boost::shared_ptr< L3::Visualisers::PoseRenderer >  pose_renderer;
-            boost::shared_ptr< L3::Visualisers::PoseRenderer >  estimated_pose_renderer;
-            boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  horizontal_scan_renderer;
-            boost::shared_ptr< L3::Visualisers::ScanRenderer2D >  vertical_scan_renderer;
+            boost::shared_ptr< L3::Experience>                      experience ;
+            boost::shared_ptr< L3::Visualisers::PoseRenderer >      pose_renderer;
+            boost::shared_ptr< L3::Visualisers::PoseRenderer >      estimated_pose_renderer;
+            boost::shared_ptr< L3::Visualisers::ScanRenderer2D >    horizontal_scan_renderer;
+            boost::shared_ptr< L3::Visualisers::ScanRenderer2D >    vertical_scan_renderer;
 
             boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> oracle_renderer;
             boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> predicted_pose_renderer;
@@ -282,24 +286,24 @@ namespace Visualisers
             boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
             boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
 
-            boost::shared_ptr< L3::Visualisers::CostRendererView >    cost_renderer_view;
 
 
-            std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >  density_renderers;
-            boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        debug_renderer; 
-            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       debug_histogram_bounds_renderer;
-            boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
-            boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer > locale_bounds;
-            boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D > combined_scan_renderer;
+            boost::shared_ptr< L3::Visualisers::LocaleRenderer>                         map_view;
+            boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >                debug_renderer; 
+            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >               debug_histogram_bounds_renderer;
+            boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  >         pyramid_renderer;
+            boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer >                  locale_bounds;
+            boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D >                combined_scan_renderer;
+            std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > > density_renderers;
 
-            boost::shared_ptr< L3::Visualisers::LocaleRenderer>  map_view;
 
             //boost::shared_ptr< DataDumper > dumper;
             boost::shared_ptr< glv::View > ancillary_1;
             boost::shared_ptr< glv::View > ancillary_2;
 
-            boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
+            boost::shared_ptr< L3::Visualisers::CostRendererView >          cost_renderer_view;
             boost::shared_ptr< L3::Visualisers::ScanMatchingScanRenderer >  scan_matching_renderer;
+            boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
     };
 
     
@@ -317,10 +321,9 @@ struct Container
 
     }
 
-    L3::EstimatorRunner                 runner;
-    boost::shared_ptr< L3::Dataset >    dataset;
-    
-    boost::shared_ptr<L3::Experience>   experience;
+    boost::shared_ptr< L3::Dataset >                dataset;
+    boost::shared_ptr< L3::Experience >             experience;
+    boost::shared_ptr< L3::EstimatorRunner >        runner;
     boost::shared_ptr< L3::Configuration::Mission > mission;
 
 };

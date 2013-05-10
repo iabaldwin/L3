@@ -35,9 +35,7 @@ int main( int argc, char* argv[] )
         L3::Configuration::Mission mission( dataset );
 
         // Create runner
-    
         boost::scoped_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( &dataset, &mission) );
-        //L3::EstimatorRunner runner( &dataset, &mission);
 
         runner->start();
 
