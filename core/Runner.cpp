@@ -17,13 +17,14 @@ namespace L3
         {
             current_time = start_time + speedup*t.elapsed();
 
-            TemporalRunner::update( current_time );
-
             /*
              *  Update all watchers
              */
-            //std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), current_time ) );
-    
+            TemporalRunner::update( current_time );
+
+            /*
+             *  Recompute swathe
+             */
             swathe_builder->update( current_time );
 
             /*
@@ -37,7 +38,8 @@ namespace L3
              *  Update everything else
              */
             update( current_time );
-        
+       
+            *current = oracle->operator()();
         }
 
     }
@@ -57,11 +59,10 @@ namespace L3
          */
         experience->update( predicted.X(), predicted.Y() );
 
-
         /*
          *Estimate
          */
-        *estimated = estimator->operator()( projector->cloud, predicted );
+        *estimated = algorithm->operator()( projector->cloud, predicted );
 
         return true;
     }

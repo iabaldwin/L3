@@ -20,11 +20,18 @@ namespace Visualisers
         void onDraw3D( glv::GLV& g )
         {
             // Update 
-            this->update( time += .5 );
+            //this->update( time += .5 );
+       
+            L3::TemporalRunner::update( time += .5 );
         }
 
+        VisualiserRunner& operator<<( L3::TemporalObserver* observer)
+        {
+            if ( observer )
+                observers.push_front( observer ); 
+            return *this;
+        }
     };
-
 }
 }
 

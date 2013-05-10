@@ -27,7 +27,7 @@ namespace L3
 
             void assignIterator( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
             {
-                this->iterator = iterator;
+                this->iterator = LHLV_iterator;
             }
 
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)

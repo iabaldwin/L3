@@ -15,12 +15,18 @@ int main( int argc, char* argv[] )
         exit(-1);
     }
 
-    char* dataset_directory = argv[1];
-
     /*
      *  L3
      */
+    char* dataset_directory = argv[1];
+        
+    boost::shared_ptr< L3::Dataset > experience_dataset;
+    experience_dataset.reset( new L3::Dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" ) );
 
+    // Load experience
+    L3::ExperienceLoader experience_loader( *experience_dataset );
+
+    boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
     for( int i=0; i<1000; i++ )
     { 
@@ -30,12 +36,12 @@ int main( int argc, char* argv[] )
             exit(-1);
 
         /*
-         *Configuration
+         *  Configuration
          */
         L3::Configuration::Mission mission( dataset );
 
         // Create runner
-        boost::scoped_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( &dataset, &mission) );
+        boost::scoped_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( &dataset, &mission, experience.get() ) );
 
         runner->start();
 

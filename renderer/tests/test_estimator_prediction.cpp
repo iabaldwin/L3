@@ -106,9 +106,9 @@ int main (int argc, char ** argv)
     // Add runner
     VisualiserRunner runner( dataset.start_time, &LHLV_iterator, &pose_windower, estimates.get() ) ;
 
-    runner << &swathe_builder << &pose_windower << &LHLV_iterator;
+    //runner << &swathe_builder << &pose_windower << &LHLV_iterator;
 
-    top << (composite << runner << (*predictor_renderer) );
+    //top << (composite << runner << (*predictor_renderer) );
 
     win.setGLV(top);
 

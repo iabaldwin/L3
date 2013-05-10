@@ -84,9 +84,8 @@ namespace Visualisers
                 // Add synched updater
                 updater.reset( new Updater() );
                 this->renderables.push_front( updater.get() );
+           
             }
-
-            boost::shared_ptr< glv::View >  scripting_interface;
 
             virtual ~Layout()
             {
@@ -94,8 +93,6 @@ namespace Visualisers
 
             void run()
             {
-                L3GLV top;
-
                 top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
                 // Add renderables provided by children
@@ -148,7 +145,6 @@ namespace Visualisers
                 /*
                  *  Linear Velocity
                  */
-
                 // Add plotter
                 linear_velocity_plotter.reset( new L3::Visualisers::LinearVelocityPlotter() );
                 linear_velocity_plotter->stroke( 2.0 );
@@ -177,11 +173,15 @@ namespace Visualisers
                 *plot_region << *velocity_label;
             }
 
+            boost::shared_ptr< glv::View >  scripting_interface;
+
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
             boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter;
 
         protected:
 
+            L3GLV top;
+            
             glv::View*      main_view;
             glv::Window&    window; 
 
@@ -196,11 +196,9 @@ namespace Visualisers
             boost::shared_ptr<L3::Visualisers::Composite>   composite;
             boost::shared_ptr<L3::Visualisers::Controller>  controller;
 
-            std::list< boost::shared_ptr< glv::Plot > >         plots;
+            std::list< boost::shared_ptr< glv::Plot > >     plots;
                 
-
             boost::shared_ptr< EventController > composite_maximise_controller;
-            boost::shared_ptr< EventController > point_cloud_maximise_controller;
 
             std::list< boost::shared_ptr< EventController > > window_controllers;
     };
@@ -212,36 +210,65 @@ namespace Visualisers
     class DatasetLayout : public Layout
     {
         public:
-
-            DatasetLayout( glv::Window& win, L3::Dataset* dataset, L3::Configuration::Mission* mission ) 
-                : Layout(win), 
-                    dataset(dataset),
-                    mission(mission)
-
+            DatasetLayout( glv::Window& win ) : Layout(win)
             {
-                // Start the dataset runner
-                runner.reset( new L3::DatasetRunner( dataset, mission ) );
-                runner->start();
-
-                //addLinearVelocityPlot( runner->LHLV_iterator.get() );
-                //addRotationalVelocityPlot( runner->LHLV_iterator.get() );
-
+                /*
+                 *  Stand-alone plots
+                 */
                 addLinearVelocityPlot();
                 addRotationalVelocityPlot();
+            }
 
+            void load( L3::DatasetRunner* runner )
+            {
                 /*
                  *  Timer
                  */
                 time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
                 time_renderer->pos(1200 , 10);
+                top << *time_renderer;
 
-                this->renderables.push_front( time_renderer.get() );
-
+                linear_velocity_plotter->assignIterator( runner->LHLV_iterator.get() );
+                rotational_velocity_plotter->assignIterator( runner->LHLV_iterator.get() );
                 /*
                  *  Pose Iterator
                  */
                 iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
                 *composite << (*iterator_renderer);
+                /*
+                 *  Composite Leafs
+                 */
+                L3::Configuration::Begbroke begbroke;
+                begbroke.loadDatum();
+
+                // Static map-view
+                map_view.reset( new L3::Visualisers::LocaleRenderer() );
+                map_view->load( begbroke );
+                this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
+
+                /*
+                 *  Current pose estimate
+                 */
+                //pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
+                pose_renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) );
+                this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
+
+                /*
+                 *  Locale Bounds
+                 */
+                locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
+                this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
+
+                /*
+                 *  Swathe Cloud
+                 */
+                runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(550+5), 0, 375-5, 350 ), runner->point_cloud, runner->current ));
+                top << *runtime_cloud_renderer_view; 
+                updater->operator<<( runtime_cloud_renderer_view.get() );
+                
+                point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
+
+
             }
 
             const L3::Dataset*                          dataset;
@@ -250,27 +277,33 @@ namespace Visualisers
             boost::shared_ptr< TextRenderer<double> >   time_renderer;
             boost::shared_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
 
+            boost::shared_ptr< L3::Visualisers::LocaleRenderer>                 map_view;
+            boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
+            
+            boost::shared_ptr< EventController > point_cloud_maximise_controller;
+            
+            boost::shared_ptr< L3::Visualisers::PoseRenderer >          pose_renderer;
+            boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer >  locale_bounds;
+            boost::shared_ptr< L3::Visualisers::PointCloudRendererView >        runtime_cloud_renderer_view; 
     };
 
     /*
      *  Estimator specific
      */
-    class EstimatorLayout : public Layout
+    class EstimatorLayout : public DatasetLayout
     {
         public:
 
-            EstimatorLayout( glv::Window& win) : Layout(win)
+            EstimatorLayout( glv::Window& win) : DatasetLayout(win)
             {
-                this->addLinearVelocityPlot();
-                this->addRotationalVelocityPlot();
             }
 
-            bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe );
+            //bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe );
+            bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience );
 
-            L3::EstimatorRunner* runner;
+            //L3::EstimatorRunner* runner;
 
             boost::shared_ptr< L3::Experience>                      experience ;
-            boost::shared_ptr< L3::Visualisers::PoseRenderer >      pose_renderer;
             boost::shared_ptr< L3::Visualisers::PoseRenderer >      estimated_pose_renderer;
             boost::shared_ptr< L3::Visualisers::ScanRenderer2D >    horizontal_scan_renderer;
             boost::shared_ptr< L3::Visualisers::ScanRenderer2D >    vertical_scan_renderer;
@@ -280,22 +313,17 @@ namespace Visualisers
 
             boost::shared_ptr< L3::Visualisers::PredictorRenderer >             predictor_renderer;
             boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        runtime_cloud_renderer_leaf; 
-            boost::shared_ptr< L3::Visualisers::PointCloudRendererView >        runtime_cloud_renderer_view; 
-            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
             boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >      point_cloud_bounds_renderer;
             boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
             boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
 
 
-
-            boost::shared_ptr< L3::Visualisers::LocaleRenderer>                         map_view;
             boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >                debug_renderer; 
             boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >               debug_histogram_bounds_renderer;
-            boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  >         pyramid_renderer;
-            boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer >                  locale_bounds;
             boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D >                combined_scan_renderer;
             std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > > density_renderers;
 
+            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
 
             //boost::shared_ptr< DataDumper > dumper;
             boost::shared_ptr< glv::View > ancillary_1;
@@ -309,24 +337,6 @@ namespace Visualisers
     
 
 } 
-
-/*
- *  Containers
- */
-struct Container
-{
-
-    Container( L3::Visualisers::EstimatorLayout* layout )
-    {
-
-    }
-
-    boost::shared_ptr< L3::Dataset >                dataset;
-    boost::shared_ptr< L3::Experience >             experience;
-    boost::shared_ptr< L3::EstimatorRunner >        runner;
-    boost::shared_ptr< L3::Configuration::Mission > mission;
-
-};
 
 } // L3
 

@@ -8,6 +8,7 @@
 #include "L3.h"
 #include "Visualisers.h"
 #include "Layouts.h"
+#include "Container.h"
 
 int main( int argc, char* argv[] )
 {
@@ -31,61 +32,27 @@ int main( int argc, char* argv[] )
     L3::Configuration::Mission mission( dataset );
 
     // Experience
-    L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+    L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
     L3::ExperienceLoader experience_loader( experience_dataset );
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
-
-    // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::SE3 >  oracle_source( dataset.pose_reader );
-    L3::ConstantTimeIterator< L3::LHLV > integrated_pose_iterator( dataset.LHLV_reader );
-
-    // Constant time iterator over LIDAR
-    L3::ConstantTimeIterator< L3::LMS151 > vertical_LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
-    L3::ConstantTimeIterator< L3::LMS151 > horizontal_LIDAR_iterator( dataset.LIDAR_readers[ mission.horizontal ] );
-  
-    // Pose Windower
-    L3::ConstantTimeWindower<L3::SE3 >  oracle( &oracle_source);
-    L3::ConstantTimeWindower<L3::LHLV > pose_windower( &integrated_pose_iterator );
-    
-    // Swathe builder
-    L3::SwatheBuilder swathe_builder( &pose_windower, &vertical_LIDAR_iterator );
-
-    // Projection
-    boost::shared_ptr< L3::PointCloud<double> > point_cloud = boost::make_shared<L3::PointCloud<double> >();
-    L3::SE3 projection = L3::SE3::ZERO();
-   
-    L3::Configuration::convert( mission.lidars[ mission.declined], projection );
-    
-    boost::shared_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &projection, point_cloud.get() ) );
 
     // Estimator
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
     L3::Estimator::IterativeDescent<double> algo( kl_cost_function, experience->experience_pyramid );
     
-    //L3::Estimator::GroundTruthEstimator<double> estimator( kl_cost_function, experience->experience_histogram );
-    //L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0]  );
-
     // Create runner
-    L3::EstimatorRunner runner;
+    L3::EstimatorRunner runner( &dataset, &mission, experience.get() );
 
-    // Updateables
-    runner << &vertical_LIDAR_iterator << &horizontal_LIDAR_iterator << &pose_windower;
+    runner.setAlgorithm( &algo ) 
+            .start();
 
-    runner.setExperience( &*experience )
-          .setPoseWindower( &pose_windower )
-          .setPoseProvider( &oracle )
-          .setProjector( &*projector )
-          .setAlgorithm( &algo )
-          .setSwatheBuilder( &swathe_builder )
-          .setHorizontalLIDAR( &horizontal_LIDAR_iterator )
-          .setVerticalLIDAR( &vertical_LIDAR_iterator )
-          .start( dataset.start_time );
+    //L3::Container container( ; 
 
     glv::Window win(1400, 800, "Visualisation::Estimator");
 
     L3::Visualisers::EstimatorLayout layout( win );
     
-    layout.load( &runner, experience, point_cloud );
+    layout.load( &runner, experience );
 
     layout.run();
 }

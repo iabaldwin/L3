@@ -24,8 +24,14 @@ int main( int argc, char* argv[] )
         L3::Configuration::Mission mission( dataset );
 
         glv::Window win(1400, 800, "Visualisation::DatasetLayout");
+
+        L3::Visualisers::DatasetLayout layout(win);
         
-        L3::Visualisers::DatasetLayout layout(win, &dataset, &mission );
+        L3::DatasetRunner* runner = new L3::DatasetRunner( &dataset, &mission );
+
+        runner->start();
+
+        layout.load( runner );
 
         layout.run();
 

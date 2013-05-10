@@ -34,9 +34,6 @@ target_link_libraries( test_swathe_builder_INS_visual GLV ${GLUT_LIBRARIES} ${OP
 add_executable( test_swathe_builder_LHLV_visual test_swathe_builder_LHLV.cpp )
 target_link_libraries( test_swathe_builder_LHLV_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
-add_executable( test_renderer_pipeline test_renderer_pipeline.cpp )
-target_link_libraries( test_renderer_pipeline GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
 add_executable( test_draw_cube test_draw_cube.cpp )
 target_link_libraries( test_draw_cube GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
@@ -87,24 +84,6 @@ target_link_libraries( test_back_integrator GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRA
 
 add_executable( test_estimator_prediction test_estimator_prediction.cpp )
 target_link_libraries( test_estimator_prediction GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
-#==========
-# Pipelines
-#==========
-add_executable( test_pipeline_stage_1_visual test_pipeline_stage_1.cpp )
-target_link_libraries( test_pipeline_stage_1_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
-add_executable( test_pipeline_stage_2_visual test_pipeline_stage_2.cpp )
-target_link_libraries( test_pipeline_stage_2_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
-add_executable( test_pipeline_stage_3_visual test_pipeline_stage_3.cpp )
-target_link_libraries( test_pipeline_stage_3_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
-add_executable( test_pipeline_stage_4_visual test_pipeline_stage_4.cpp )
-target_link_libraries( test_pipeline_stage_4_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
-
-add_executable( test_pipeline_stage_5_visual test_pipeline_stage_5.cpp )
-target_link_libraries( test_pipeline_stage_5_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 #==========
 # App

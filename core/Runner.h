@@ -80,14 +80,16 @@ struct DatasetRunner : ThreadedRunner
 
         engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
         
-        // Pose Windower
+        oracle.reset( new L3::ConstantTimeWindower< L3::SE3 >( pose_iterator.get() ) );
+
         pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV>( LHLV_iterator.get() ) );
         
-        //(*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << engine.get();
-        (*this)<< pose_iterator.get();
+        (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << engine.get();
 
         swathe_builder.reset( new L3::SwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
    
+        current.reset( new L3::SE3( L3::SE3::ZERO() ) );
+    
     }
 
     ~DatasetRunner()
@@ -103,7 +105,10 @@ struct DatasetRunner : ThreadedRunner
     float           speedup;
     double          current_time, start_time;  
     
+    
     std::list < Dumpable* > dumps;
+    
+    boost::shared_ptr< L3::SE3 > current;
 
     boost::shared_ptr< L3::SE3 >                projection;
     boost::shared_ptr< L3::Projector<double> >  projector;
@@ -153,11 +158,13 @@ struct DatasetRunner : ThreadedRunner
  */
 struct EstimatorRunner : DatasetRunner
 {
-    EstimatorRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup=5.0 ) :
-        DatasetRunner( dataset, mission, speedup )
+    EstimatorRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, L3::Experience* experience, float speedup=5.0 ) 
+        : DatasetRunner( dataset, mission, speedup ),
+            experience(experience)
     {
-        current.reset( new L3::SE3( L3::SE3::ZERO() ) );
         estimated.reset( new L3::SE3( L3::SE3::ZERO() ) ); 
+    
+        this->provider = oracle.get();
     }
 
 
@@ -169,13 +176,12 @@ struct EstimatorRunner : DatasetRunner
             thread.join();
     }
     
-    boost::shared_ptr< L3::SE3 > current;
     boost::shared_ptr< L3::SE3 > estimated;
 
     L3::Experience*                         experience;
     L3::PoseProvider*                       provider;
     L3::ConstantTimeWindower<L3::LHLV>*     windower;
-    L3::Estimator::Algorithm<double>*       estimator;
+    L3::Estimator::Algorithm<double>*       algorithm;
 
     bool update( double time );
 
@@ -188,44 +194,20 @@ struct EstimatorRunner : DatasetRunner
         return *this;
     }
 
-    EstimatorRunner& setPoseProvider( L3::PoseProvider* provider )
-    {
-        this->provider = provider;
-        (*this) << dynamic_cast<L3::TemporalObserver*>(provider);
-        (*this) << dynamic_cast<L3::Dumpable*>(provider);
-        return *this;
-    }
+    //EstimatorRunner& setPoseProvider( L3::PoseProvider* provider )
+    //{
+        //this->provider = provider;
+        //(*this) << dynamic_cast<L3::TemporalObserver*>(provider);
+        //(*this) << dynamic_cast<L3::Dumpable*>(provider);
+        //return *this;
+    //}
 
-    EstimatorRunner& setSwatheBuilder( L3::SwatheBuilder* swathe_builder )
-    {
-        // Not temporally updateable
-        //this->swathe_builder = swathe_builder;
-        //(*this) << dynamic_cast<L3::Dumpable*>(swathe_builder);
-        return *this;
-    }
-
-    EstimatorRunner& setExperience( L3::Experience* experience )
-    {
-        // Spatially updateable
-        this->experience = experience;
-        (*this) << dynamic_cast<L3::Dumpable*>(experience);
-        return *this;
-    }
-
-    EstimatorRunner& setProjector( L3::Projector<double>* projector )
-    {
-        // Not temporally updateable
-        //this->projector = projector;
-        return *this;
-    }
 
     EstimatorRunner& setAlgorithm( L3::Estimator::Algorithm<double>* algorithm )
     {
-        //this->algorithm = algorithm;
+        this->algorithm = algorithm;
         return *this;
     }
-
-
 };
 
 

@@ -167,7 +167,6 @@ namespace Visualisers
      */
     void AnimatedPoseRenderer::onDraw3D(glv::GLV& g )
     {
-
         int num_points = 100;
 
         static int counter = 0;
@@ -180,7 +179,7 @@ namespace Visualisers
 
         float x = pose.X();
         float y = pose.Y();
-      
+        
         for( int i=0; i<num_points; i++ )
         {
             vertices[i]( (range*cos(angle))+x, (range*sin(angle))+y, 0 );
@@ -217,6 +216,9 @@ namespace Visualisers
 
         std::pair<float, float> lower_left = hist->coords(0,0);
         std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
+
+        std::cout << lower_left.first << ":" << lower_left.second << std::endl;
+        std::cout << upper_right.first << ":" << upper_right.second << std::endl;
 
         this->lower.x = lower_left.first;
         this->lower.y = lower_left.second;

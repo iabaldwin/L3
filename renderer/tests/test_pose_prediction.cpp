@@ -93,11 +93,11 @@ int main (int argc, char ** argv)
     composite << swathe_renderer << pose_renderer <<  grid;
 
     // Add runner
-    VisualiserRunner runner( dataset.start_time, &LHLV_iterator, &pose_windower ) ;
+    //VisualiserRunner runner( dataset.start_time, &LHLV_iterator, &pose_windower ) ;
 
-    runner << &swathe_builder << &pose_windower << &LHLV_iterator;
+    //runner << &swathe_builder << &pose_windower << &LHLV_iterator;
 
-    top << (composite << runner);
+    //top << (composite << runner);
 
     win.setGLV(top);
 

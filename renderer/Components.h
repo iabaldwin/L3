@@ -512,13 +512,14 @@ struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updat
         : HistogramPyramidRenderer(histogram_pyramid),
             glv::View(r)
     {
+        this->pyramid = pyramid;    
+            
         int width = 175;
         int start = 0;
         for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
                 it != this->pyramid->end();
                 it++ )
         {
-            //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( start, 0, width, width), *it ) );
             boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), *it ) );
             start+= (width+10/3);
             renderers.push_front( renderer );
@@ -527,6 +528,7 @@ struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updat
 
         this->fit();
         this->bringToFront();
+
     }
 
     void update();
