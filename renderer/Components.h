@@ -39,8 +39,6 @@ struct Updater : glv::View
     }
 };
 
-
-
 /*
  *  Single entity for 3D rendering
  */

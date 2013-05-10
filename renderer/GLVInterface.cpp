@@ -3,11 +3,40 @@
 #include <sstream>
 
 int last_key = 0;
+int current_history_index = 0;
 
 namespace L3
 {
 namespace Visualisers
 {
+
+    GLVInterface::GLVInterface( glv::Rect rect ) : glv::TextView( rect )
+    {
+        visibility = false;
+
+        // Full screen, but not visible
+        this->maximize(); 
+        this->disable(glv::Visible);
+
+        // Always bubble events to top-level, so we can catch toggle
+        this->enable( glv::AlwaysBubble );
+
+        // Initialisze
+        mText = ">> ";
+        cursorPos(3);
+   
+        std::ifstream history( ".history" );
+        if ( history.good() )
+        {
+            std::string line;
+            while( getline( history, line ) )
+                command_history.push_front( line );
+        }
+
+        history.close();
+    }
+
+
     bool GLVInterface::onEvent( glv::Event::t e, glv::GLV& g)
     {
         // Dump history
@@ -67,10 +96,8 @@ namespace Visualisers
                 // Get the current string
                 std::string current = mText.substr( 3, mPos-3 );
 
-                if ( current.size() == 0 )
-                    return false;
-                    
-                full_history.push_front( current );
+                if ( current.size() > 0 )
+                    full_history.push_front( current );
        
                 for( std::list< L3::Interface* >::iterator it = interfaces.begin();
                         it != interfaces.end();
@@ -79,7 +106,7 @@ namespace Visualisers
                     if( (*it)->match( current ) )
                     { 
                         std::pair< bool, std::string > result = (*it)->execute( current );
-                        
+                      
                         if( result.first )  // Successful command
                             command_history.push_front( current );
                     
@@ -103,7 +130,11 @@ namespace Visualisers
                 cursorPos(3);
 
             }
+        
+            last_key = key;
+        
         }
+       
         
         return retval;
     }
@@ -119,7 +150,8 @@ namespace Visualisers
             case glv::Event::KeyDown:
                 if(k.ctrl()){
                     switch(key){
-                        case 'a': selectAll(); return false;
+                        //case 'a': selectAll(); return false;
+                        case 'a': this->selectAll(); return false;
                     }
                 }
                 
@@ -187,16 +219,21 @@ namespace Visualisers
                             return false;
 
                         //case glv::Key::Down: cursorPos(mText.size()); return false;
-                        //case glv::Key::Up:   cursorPos(0); return false;
-
                         case glv::Key::Up:
-                           
-                            if ( last_key == glv::Key::Up )
-                                std::cout << "last_key" << std::endl;
-
+                            
                             if ( command_history.size() > 0 )
                             {
-                                std::string previous = command_history.front();
+                                std::string previous;
+
+                                if ( last_key == glv::Key::Up )
+                                {
+                                    if( current_history_index != (command_history.size()-1) )
+                                        current_history_index++;
+                                }
+                                else
+                                    current_history_index=0;
+
+                                previous = command_history[current_history_index];
 
                                 int counter= 0;
                                 std::stringstream ss; 
@@ -207,8 +244,6 @@ namespace Visualisers
                                 cursorPos(3 + previous.size());
 
                                 return false;
-
-
                             }
 
                         case glv::Key::Tab:
@@ -227,6 +262,12 @@ namespace Visualisers
         }
 
         return true;
+    }
+
+    void GLVInterface::selectAll()
+    {
+        cursorEnd();
+        select(-mText.size()+3);
     }
 
     void GLVInterface::dumpHistory()

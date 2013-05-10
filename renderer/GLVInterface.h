@@ -16,27 +16,13 @@ namespace L3
     {
         struct GLVInterface : glv::TextView
         {
-            GLVInterface( glv::Rect rect ) : glv::TextView( rect )
-            {
-                visibility = false;
-
-                // Full screen, but not visible
-                this->maximize(); 
-                this->disable(glv::Visible);
-
-                // Always bubble events to top-level, so we can catch toggle
-                this->enable( glv::AlwaysBubble );
-
-                // Initialisze
-                mText = ">> ";
-                cursorPos(3);
-            }
+            GLVInterface( glv::Rect rect ) ;
 
             bool visibility;
             std::list< L3::Interface* > interfaces;
             std::list < std::string > full_history;
-            std::list < std::string > command_history;
-
+            std::deque< std::string > command_history;
+                                
             bool onEvent( glv::Event::t e, glv::GLV& g);
 
             bool handleText( glv::Event::t e, glv::GLV& g);
@@ -48,6 +34,8 @@ namespace L3
             }
        
             void dumpHistory();
+    
+            void selectAll();
         };
 
     }

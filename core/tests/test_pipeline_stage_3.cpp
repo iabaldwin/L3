@@ -51,23 +51,23 @@ int main()
      */
     double increment = 1.0;
  
-    L3::EstimatorRunner runner;
+    //L3::EstimatorRunner runner;
     
-    runner.setExperience( &*experience )
-            .setPoseProvider( &pose_windower )
-            .setProjector( &*projector )
-            .setAlgorithm( &algo )
-            .setSwatheBuilder( &swathe_builder );
+    //runner.setExperience( &*experience )
+            //.setPoseProvider( &pose_windower )
+            //.setProjector( &*projector )
+            //.setAlgorithm( &algo )
+            //.setSwatheBuilder( &swathe_builder );
 
-    double time = dataset.start_time;
+    //double time = dataset.start_time;
 
-    while( true )
-    {
-        time += increment;
+    //while( true )
+    //{
+        //time += increment;
         
-        usleep( .1*1e6 );
+        //usleep( .1*1e6 );
 
-        // Update
-        runner.update( time );
-    }
+        //// Update
+        //runner.update( time );
+    //}
 }

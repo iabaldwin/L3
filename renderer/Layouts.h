@@ -15,7 +15,6 @@ namespace L3
 {
 namespace Visualisers
 {
-
     /*
      *  Custom GLV view
      */
@@ -54,38 +53,38 @@ namespace Visualisers
         public:
 
             Layout( glv::Window& win ) : window(win)
-        {
-            /*
-             *  Lua interface
-             */
-            scripting_interface.reset( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
-            this->renderables.push_front( scripting_interface.get() );
+            {
+                /*
+                 *  Lua interface
+                 */
+                scripting_interface.reset( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
+                this->renderables.push_front( scripting_interface.get() );
 
-            // Create the main view
-            main_view = new glv::View( glv::Rect(0,0, .6*window.width(),500));
-            this->renderables.push_front( main_view );
+                // Create the main view
+                main_view = new glv::View( glv::Rect(0,0, .6*window.width(),500));
+                this->renderables.push_front( main_view );
 
-            // Composite view holder
-            composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
-            composite->maximize();
-            main_view->maximize();
+                // Composite view holder
+                composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
+                composite->maximize();
+                main_view->maximize();
 
-            // 3D grid 
-            grid.reset( new L3::Visualisers::Grid() );
+                // 3D grid 
+                grid.reset( new L3::Visualisers::Grid() );
 
-            // Basic controller
-            controller.reset( new L3::Visualisers::BasicPanController( composite->position ) );
-            composite->addController( &*controller );
+                // Basic controller
+                controller.reset( new L3::Visualisers::BasicPanController( composite->position ) );
+                composite->addController( &*controller );
 
-            // Accumulate views
-            (*main_view) << ( *composite << *grid );
+                // Accumulate views
+                (*main_view) << ( *composite << *grid );
 
-            toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
+                toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
 
-            // Add synched updater
-            updater.reset( new Updater() );
-            this->renderables.push_front( updater.get() );
-        }
+                // Add synched updater
+                updater.reset( new Updater() );
+                this->renderables.push_front( updater.get() );
+            }
 
             boost::shared_ptr< glv::View >  scripting_interface;
 
@@ -103,28 +102,24 @@ namespace Visualisers
                 for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                     top << *it;
 
-                //composite_maximise_controller.reset( new EventController( main_view, glv::Event::MouseDown) );
                 composite_maximise_controller.reset( new DoubleClickMaximiseToggle( main_view) );
-
 
                 window.setGLV(top);
 
                 glv::Application::run();
             }
 
-            void addRotationalVelocityPlot( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
+            void addRotationalVelocityPlot()
             {
                 /*
-                 *  Linear Velocity
+                 *  Rotational Velocity
                  */
 
                 // Add plotter
-                boost::shared_ptr< VelocityPlotter > plotter( new L3::Visualisers::RotationalVelocityPlotter( LHLV_iterator ) );
-                plotter->stroke( 2.0 );
+                rotational_velocity_plotter.reset( new L3::Visualisers::RotationalVelocityPlotter() );
+                rotational_velocity_plotter->stroke( 2.0 );
 
-                plotters.push_front( plotter );
-
-                boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *plotter ) );
+                boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *rotational_velocity_plotter ) );
 
                 // Scaling
                 plot_region->range( 0, 1000, 0 );
@@ -138,7 +133,7 @@ namespace Visualisers
                 // Add rendererable
                 this->renderables.push_front( plot_region.get() );
                 // Mark as updateable
-                updater->operator<<( dynamic_cast<Updateable*>(plotter.get()) );
+                updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter.get()) );
 
                 boost::shared_ptr< glv::View > velocity_label( new glv::Label("Rotational velocity. (rad/s)" ) );
                 velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
@@ -148,21 +143,18 @@ namespace Visualisers
             }
 
 
-            void addLinearVelocityPlot( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
+            void addLinearVelocityPlot()
             {
                 /*
                  *  Linear Velocity
                  */
 
                 // Add plotter
-                boost::shared_ptr< VelocityPlotter > plotter( new L3::Visualisers::LinearVelocityPlotter( LHLV_iterator ) );
-                plotter->stroke( 2.0 );
-                //plotter->drawUnderGrid(true);
-
-                plotters.push_front( plotter );
+                linear_velocity_plotter.reset( new L3::Visualisers::LinearVelocityPlotter() );
+                linear_velocity_plotter->stroke( 2.0 );
 
                 // Add plot region
-                boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *plotter ) );
+                boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *linear_velocity_plotter ) );
 
                 plot_region->range( 0, 1000, 0 );
                 plot_region->range( -1, 10 , 1 );
@@ -175,7 +167,7 @@ namespace Visualisers
                 // Add rendererable
                 this->renderables.push_front( plot_region.get() );
                 // Mark as updateable
-                updater->operator<<( dynamic_cast<Updateable*>(plotter.get()) );
+                updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter.get()) );
 
                 boost::shared_ptr< glv::View > velocity_label( new glv::Label("Linear velocity (m/s)" ) );
                 velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
@@ -185,10 +177,13 @@ namespace Visualisers
                 *plot_region << *velocity_label;
             }
 
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
+            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter;
+
         protected:
 
-            glv::View*                      main_view;
-            glv::Window&                    window; 
+            glv::View*      main_view;
+            glv::Window&    window; 
 
             std::list< glv::View* > renderables;
 
@@ -202,7 +197,7 @@ namespace Visualisers
             boost::shared_ptr<L3::Visualisers::Controller>  controller;
 
             std::list< boost::shared_ptr< glv::Plot > >         plots;
-            std::list< boost::shared_ptr< VelocityPlotter > >   plotters;
+                
 
             boost::shared_ptr< EventController > composite_maximise_controller;
             boost::shared_ptr< EventController > point_cloud_maximise_controller;
@@ -224,8 +219,11 @@ namespace Visualisers
             runner.reset( new L3::DatasetRunner( dataset ) );
             runner->start( dataset->start_time );
 
-            addLinearVelocityPlot( runner->LHLV_iterator.get() );
-            addRotationalVelocityPlot( runner->LHLV_iterator.get() );
+            //addLinearVelocityPlot( runner->LHLV_iterator.get() );
+            //addRotationalVelocityPlot( runner->LHLV_iterator.get() );
+
+            addLinearVelocityPlot();
+            addRotationalVelocityPlot();
 
             /*
              *  Timer
@@ -257,9 +255,10 @@ namespace Visualisers
         public:
 
             EstimatorLayout( glv::Window& win) : Layout(win)
-        {
-
-        }
+            {
+                this->addLinearVelocityPlot();
+                this->addRotationalVelocityPlot();
+            }
 
             bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe );
 
@@ -305,54 +304,45 @@ namespace Visualisers
 
     
 
-} // Visualisers
+} 
+
+/*
+ *  Containers
+ */
 struct Container
 {
-        
+
     Container( L3::Visualisers::EstimatorLayout* layout )
-        {
+    {
 
-        }
+    }
 
-        boost::shared_ptr< L3::Dataset > dataset;
-        boost::shared_ptr< L3::Configuration::Mission > mission;
+    boost::shared_ptr< L3::Projector<double> >  projector;
 
-        //bool loadDataset( const std::string& dataset_directory )
-        //{
-            //L3::Dataset dataset( dataset_directory );
+    boost::shared_ptr< L3::SwatheBuilder >      swathe_builder; 
+    boost::shared_ptr< L3::PointCloud<double> > point_cloud;
+
+    boost::shared_ptr< L3::Dataset >                dataset;
+    boost::shared_ptr<L3::Experience>               experience;
+    boost::shared_ptr< L3::Configuration::Mission > mission;
+
+    boost::shared_ptr< L3::Estimator::CostFunction<double> >        cost_function;
+    boost::shared_ptr< L3::Estimator::IterativeDescent<double> >    algorithm;
+
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > >        oracle_source;
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > >       integrated_pose_iterator;
+
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >     vertical_LIDAR_iterator;
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >     horizontal_LIDAR_iterator;
+
+    boost::shared_ptr< L3::ConstantTimeWindower<L3::SE3 > >         oracle;
+    boost::shared_ptr< L3::ConstantTimeWindower<L3::LHLV > >        pose_windower;
 
 
-            //mission.reset( new L3::Configuration::Mission( dataset ) );
 
-        //}
+    // Create runner
+    L3::EstimatorRunner runner;
 
-        //char* dataset_directory = argv[1];
-        //char* dataset_directory[] = {"testme"};
-
-        //std::string dataset_directory("");
-
-
-        // Configuration
-
-        //// Experience
-        //L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
-        //L3::ExperienceLoader experience_loader( experience_dataset );
-        //boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
-
-        //// Constant time iterator over poses
-        //L3::ConstantTimeIterator< L3::SE3 >  oracle_source( dataset.pose_reader );
-        //L3::ConstantTimeIterator< L3::LHLV > integrated_pose_iterator( dataset.LHLV_reader );
-
-        //// Constant time iterator over LIDAR
-        //L3::ConstantTimeIterator< L3::LMS151 > vertical_LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
-        //L3::ConstantTimeIterator< L3::LMS151 > horizontal_LIDAR_iterator( dataset.LIDAR_readers[ mission.horizontal ] );
-
-        //// Pose Windower
-        //L3::ConstantTimeWindower<L3::SE3 >  oracle( &oracle_source);
-        //L3::ConstantTimeWindower<L3::LHLV > pose_windower( &integrated_pose_iterator );
-
-        //// Swathe builder
-        //L3::SwatheBuilder swathe_builder( &pose_windower, &vertical_LIDAR_iterator );
 
 };
 

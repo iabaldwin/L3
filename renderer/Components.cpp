@@ -167,6 +167,7 @@ namespace Visualisers
      */
     void AnimatedPoseRenderer::onDraw3D(glv::GLV& g )
     {
+
         int num_points = 100;
 
         static int counter = 0;
@@ -179,7 +180,7 @@ namespace Visualisers
 
         float x = pose.X();
         float y = pose.Y();
-        
+      
         for( int i=0; i<num_points; i++ )
         {
             vertices[i]( (range*cos(angle))+x, (range*sin(angle))+y, 0 );

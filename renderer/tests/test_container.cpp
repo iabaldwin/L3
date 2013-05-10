@@ -14,12 +14,12 @@ int main()
 
     L3::Visualisers::EstimatorLayout layout( win );
     
-    L3::Container container( &layout );
+    L3::Interface* command_interface = new L3::CommandInterface( &layout );
+    L3::Interface* lua = new L3::LuaInterface();
 
-    L3::Interface* command_interface = new L3::CommandInterface( &container );
-
-    (*dynamic_cast< L3::Visualisers::GLVInterface* >( layout.scripting_interface.get() ) ) << command_interface;
+    (*dynamic_cast< L3::Visualisers::GLVInterface* >( layout.scripting_interface.get() ) ) << command_interface << lua;
     
     layout.run();
+
 }
 

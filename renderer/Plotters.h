@@ -11,9 +11,9 @@ namespace L3
     {
         struct VelocityPlotter : glv::Plottable, Lockable, Updateable
         {
-            VelocityPlotter( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
+            VelocityPlotter()
                 : glv::Plottable( glv::draw::LineStrip, 1 ),
-                    iterator(LHLV_iterator), 
+                    iterator(NULL), 
                     index(-1)
             {
             }
@@ -24,6 +24,11 @@ namespace L3
 
             int                                     index;
             L3::ConstantTimeIterator< L3::LHLV>*    iterator; 
+
+            void assignIterator( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
+            {
+                this->iterator = iterator;
+            }
 
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {
@@ -38,6 +43,9 @@ namespace L3
 
             void update()
             {
+                if( !iterator )
+                    return;
+
                 std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
 
                 iterator->getWindow( window );
@@ -65,8 +73,7 @@ namespace L3
 
         struct LinearVelocityPlotter : VelocityPlotter
         {
-            LinearVelocityPlotter(L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator ) :
-                VelocityPlotter( LHLV_iterator )
+            LinearVelocityPlotter() 
             {
                 index = 9;
                 this->color( glv::Color( 1,0,0 ) );
@@ -75,8 +82,7 @@ namespace L3
 
         struct RotationalVelocityPlotter : VelocityPlotter
         {
-            RotationalVelocityPlotter(L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator ) :
-                VelocityPlotter( LHLV_iterator )
+            RotationalVelocityPlotter() 
             {
                 index = 3;
                 this->color( glv::Color( 0,1,0 ) );

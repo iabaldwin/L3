@@ -50,12 +50,12 @@ link_directories(${Poco_LIBRARY_DIR})
 add_subdirectory( core )
 
 #Visuals
-add_subdirectory( renderer )
+#add_subdirectory( renderer )
 
 # Utilities
 add_subdirectory( utils )
 
 # L3
-add_subdirectory( app )
+#add_subdirectory( app )
 
 

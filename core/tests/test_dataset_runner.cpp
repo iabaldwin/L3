@@ -11,10 +11,12 @@ int main()
             dataset.load();
 
         std::cout << dataset << std::endl;
+        
+        L3::Configuration::Mission mission( dataset );
    
-        L3::DatasetRunner runner( &dataset );
+        L3::DatasetRunner runner( &dataset, &mission );
 
-        runner.start( dataset.start_time );
+        runner.start();
         
         while( true )
         {

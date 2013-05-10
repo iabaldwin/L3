@@ -2,11 +2,8 @@
 
 namespace L3
 {
-        
-    void EstimatorRunner::run()
+    void DatasetRunner::run()
     {
-        std::cout.precision( 16 );
-   
         L3::Timing::ChronoTimer t;
 
         t.begin();
@@ -19,19 +16,26 @@ namespace L3
              *  Update all watchers
              */
             std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), current_time ) );
-            
+
+            swathe_builder->update( current_time );
+
             /*
-             *  Do estimation
+             *  Point cloud generation, projection
              */
-            this->update( current_time );
+            L3::WriteLock point_cloud_lock( projector->cloud->mutex );
+            projector->project( swathe_builder->swathe );
+            point_cloud_lock.unlock();
+
+            /*
+             *  Update everything else
+             */
+            //update( current_time );
         }
-
     }
-
-    L3::Predictor predictor;
-        
+   
     bool EstimatorRunner::update( double time )
     {
+
         /*
          *  Get the pose from the pose provider
          */
@@ -44,15 +48,7 @@ namespace L3
          */
         experience->update( predicted.X(), predicted.Y() );
         
-        swathe_builder->update( time );
-
-        /*
-         *  Point cloud generation, projection
-         */
-        L3::WriteLock point_cloud_lock( projector->cloud->mutex );
-        projector->project( swathe_builder->swathe );
-        point_cloud_lock.unlock();
-    
+        
         /*
          *  Estimate
          */

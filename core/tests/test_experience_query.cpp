@@ -1,13 +1,20 @@
 #include "L3.h"
 
 
-int main()
+int main( int argc, char* argv[] )
 {
     // Load datset
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+  
+    boost::shared_ptr< L3::Dataset > dataset;
+
+    if ( argc == 1)
+        dataset.reset( new L3::Dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" ) );
+    else
+        dataset.reset( new L3::Dataset( argv[1] ));
+
 
     // Load experience
-    L3::ExperienceLoader experience_loader( dataset );
+    L3::ExperienceLoader experience_loader( *dataset );
 
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
