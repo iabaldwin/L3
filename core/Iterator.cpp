@@ -19,10 +19,15 @@ template <typename T>
 bool ConstantTimeIterator<T>::update( double time )
 {
     // Update the watcher with the new time
-    this->windower->update( time );
+    boost::shared_ptr< L3::SlidingWindow<T> > windower_ptr = this->windower.lock();
+
+    if ( !windower_ptr)
+        return false;
+    
+    windower_ptr->update( time );
 
     // Retrive the buffered window
-    this->buffered_window = this->windower->getWindow();
+    this->buffered_window = windower_ptr->getWindow();
 
     // Find the element with the closest time to *now*
     typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it = std::lower_bound( this->buffered_window.begin(), this->buffered_window.end(), time, _pair_comparator );

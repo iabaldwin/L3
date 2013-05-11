@@ -5,7 +5,6 @@ namespace L3
 
 Dataset::Dataset( const std::string& target )  : start_time(0)
 {
-
     std::string tmp(target);
 
     if ( *(tmp.end()-1) != '/' )
@@ -46,6 +45,8 @@ Dataset::~Dataset()
 
     for( std::list< boost::shared_ptr< Poco::Thread > >::iterator it= threads.begin(); it != threads.end(); it++ )
         (*it)->join();
+    
+    std::cout << name() << std::endl;
 }
 
 std::ostream& operator<<( std::ostream& o, const Dataset& dataset )

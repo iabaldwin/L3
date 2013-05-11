@@ -35,7 +35,7 @@ namespace L3
                 //try
                 //{
                     //std::cout << container->dataset.use_count() << std::endl;
-                    //container->dataset.reset();
+                    container->dataset.reset();
                     //std::cout << container->dataset.use_count() << std::endl;
            
                     //container->dataset.reset( new L3::Dataset( dataset_target ) );
