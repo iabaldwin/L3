@@ -69,11 +69,6 @@ namespace Visualisers
         
         glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
 
-
-
-
-
-
         // Top
         counter = 0;
         bound_vertices[counter++]( lower.x, lower.y, upper.z );
@@ -216,9 +211,6 @@ namespace Visualisers
 
         std::pair<float, float> lower_left = hist->coords(0,0);
         std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
-
-        std::cout << lower_left.first << ":" << lower_left.second << std::endl;
-        std::cout << upper_right.first << ":" << upper_right.second << std::endl;
 
         this->lower.x = lower_left.first;
         this->lower.y = lower_left.second;
@@ -633,6 +625,10 @@ namespace Visualisers
 
     void PoseEstimatesRenderer::onDraw3D( glv::GLV& g )
     {
+
+        if( boost::shared_ptr< L3::Estimator::PoseEstimates > pose_estimates = estimates.lock() )
+        {
+
         glv::Point3 points[ pose_estimates->estimates.size() ];
         glv::Color  colors[ pose_estimates->estimates.size() ];
 
@@ -646,6 +642,8 @@ namespace Visualisers
         }
 
         glv::draw::paint( glv::draw::Points, points, colors, counter );
+    
+        }
     }
 
     /*

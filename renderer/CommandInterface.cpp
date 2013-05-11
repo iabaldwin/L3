@@ -8,12 +8,11 @@ static inline std::string& ltrim(std::string &s) {
 
 namespace L3
 {
-        
-    CommandInterface::CommandInterface( L3::Visualisers::EstimatorLayout* layout )
-        : layout(layout)
+    //CommandInterface::CommandInterface( L3::Visualisers::EstimatorLayout* layout, boost::shared_ptr< L3::Container > container )
+    CommandInterface::CommandInterface( L3::Visualisers::DatasetLayout* layout, boost::shared_ptr< L3::Container > container )
+        : layout(layout), container(container)
     {
         expression.reset( new boost::regex("^_" ) );
-        container.reset( new L3::Container( layout ) );
     }
 
     bool CommandInterface::match( const std::string& current )
@@ -33,24 +32,28 @@ namespace L3
 
                 ltrim(dataset_target);
 
-                try
-                {
-                    container->dataset.reset( new L3::Dataset( dataset_target ) );
+                //try
+                //{
+                    //std::cout << container->dataset.use_count() << std::endl;
+                    //container->dataset.reset();
+                    //std::cout << container->dataset.use_count() << std::endl;
+           
+                    //container->dataset.reset( new L3::Dataset( dataset_target ) );
+                    //container->dataset.reset();
 
-                    if( !(container->dataset->validate() &&container->dataset->load() ) )
-                        return std::make_pair( false, "L3::Could not validate: " + dataset_target ); 
+                    //if( !(container->dataset->validate() &&container->dataset->load() ) )
+                        //return std::make_pair( false, "L3::Could not validate: " + dataset_target ); 
                                     
-                }
-                catch( ... )
-                {
-                    return std::make_pair( false, "L3::No such directory: " + dataset_target ); 
-                }
-
-                    
+                    return std::make_pair( true, "L3::Reset done: " + dataset_target ); 
+                //}
+                //catch( ... )
+                //{
+                    //return std::make_pair( false, "L3::No such directory: " + dataset_target ); 
+                //}
 
                 try
                 {
-                    container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
+                    //container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
                 }
                 catch( ... )
                 {
@@ -156,23 +159,6 @@ namespace L3
                 if( !container->experience )
                     return std::make_pair( retval, "L3::No current experience" );
          
-                //if( !container->algorithm )
-                    //return std::make_pair( retval, "L3::No algorithm" );
-
-                //container->runner.setExperience( container->experience.get() )
-                                    //.setPoseWindower( container->pose_windower.get() )
-                                    //.setPoseProvider( container->oracle.get() )
-                                    //.setProjector( container->projector.get() )
-                                    //.setAlgorithm( container->algorithm.get() )
-                                    //.setSwatheBuilder( container->swathe_builder.get() )
-                                    //.setHorizontalLIDAR( container->horizontal_LIDAR_iterator.get() )
-                                    //.setVerticalLIDAR( container->vertical_LIDAR_iterator.get()  )
-                                    //.start( container->dataset->start_time );
-
-                //layout->load( &container->runner, container->experience, container->point_cloud );
-       
-                //layout->linear_velocity_plotter->assignIterator( container->runner.windower->constant_time_iterator );
-
                 return std::make_pair( true, "L3::Running" );
 
             }
@@ -229,9 +215,10 @@ namespace L3
             {
                 //std::cout << "Stop called" << std::endl;
                 //container->runner.stop();
+            
+                return std::make_pair( true, "L3::Stopped" );
             }
         
-            return std::make_pair( true, "L3::Stopped" );
         }
 
         /*
@@ -242,10 +229,8 @@ namespace L3
 
             if ( pos != std::string::npos )
             {
-                container.reset( new L3::Container( layout ) );
+                return std::make_pair( true, "L3::Reset" );
             }
-        
-            return std::make_pair( true, "L3::Reset" );
         }
 
 

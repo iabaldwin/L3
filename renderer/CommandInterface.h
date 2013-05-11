@@ -9,10 +9,12 @@ namespace L3
 {
     struct CommandInterface : Interface
     {
-        CommandInterface( L3::Visualisers::EstimatorLayout* layout );
+        //CommandInterface( L3::Visualisers::EstimatorLayout* layout, boost::shared_ptr< L3::Container > container );
+        CommandInterface( L3::Visualisers::DatasetLayout* layout, boost::shared_ptr< L3::Container > container );
 
         boost::shared_ptr< L3::Container > container; 
-        L3::Visualisers::EstimatorLayout* layout;
+        //L3::Visualisers::EstimatorLayout* layout;
+        L3::Visualisers::DatasetLayout* layout;
         
         std::pair< bool, std::string> execute( const std::string& );
     

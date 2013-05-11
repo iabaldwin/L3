@@ -220,11 +220,11 @@ struct AnimatedPoseRenderer : PoseRenderer
 struct PoseEstimatesRenderer : Leaf
 {
 
-    PoseEstimatesRenderer( boost::shared_ptr<L3::Estimator::PoseEstimates> estimates )  : pose_estimates(estimates)
+    PoseEstimatesRenderer( boost::shared_ptr<L3::Estimator::PoseEstimates> estimates )  : estimates(estimates)
     {
     }
     
-    boost::shared_ptr<L3::Estimator::PoseEstimates> pose_estimates;
+    boost::weak_ptr<L3::Estimator::PoseEstimates> estimates;
 
     void onDraw3D(glv::GLV& g);
     

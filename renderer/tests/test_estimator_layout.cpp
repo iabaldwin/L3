@@ -6,9 +6,7 @@
 #include <GLV/glv_util.h>
 
 #include "L3.h"
-#include "Visualisers.h"
-#include "Layouts.h"
-#include "Container.h"
+#include "L3Vis.h"
 
 int main( int argc, char* argv[] )
 {
@@ -23,13 +21,13 @@ int main( int argc, char* argv[] )
     /*
      *  L3
      */
-    L3::Dataset dataset( dataset_directory );
+    L3::Dataset* dataset = new L3::Dataset( dataset_directory );
    
-    if( !( dataset.validate() && dataset.load() ) )
+    if( !( dataset->validate() && dataset->load() ) )
         exit(-1);
 
     // Configuration
-    L3::Configuration::Mission mission( dataset );
+    L3::Configuration::Mission* mission = new L3::Configuration::Mission( *dataset ) ;
 
     // Experience
     L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
@@ -41,18 +39,28 @@ int main( int argc, char* argv[] )
     L3::Estimator::IterativeDescent<double> algo( kl_cost_function, experience->experience_pyramid );
     
     // Create runner
-    L3::EstimatorRunner runner( &dataset, &mission, experience.get() );
+    boost::shared_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( dataset, mission, experience.get() ) );
 
-    runner.setAlgorithm( &algo ) 
-            .start();
+    runner->setAlgorithm( &algo );
+    runner->start();
 
-    //L3::Container container( ; 
+    boost::shared_ptr< L3::Container > container( new L3::Container() );
+
+    container->dataset    = boost::shared_ptr<L3::Dataset>( dataset );
+    container->experience = experience;
+    container->runner     = runner;
+    container->mission    = boost::shared_ptr< L3::Configuration::Mission >( mission );
 
     glv::Window win(1400, 800, "Visualisation::Estimator");
 
     L3::Visualisers::EstimatorLayout layout( win );
     
-    layout.load( &runner, experience );
+    L3::Interface* command_interface = new L3::CommandInterface( &layout, container );
+    L3::Interface* lua_interface = new L3::LuaInterface();
+
+    (*dynamic_cast< L3::Visualisers::GLVInterface* >( layout.scripting_interface.get() ) ) << command_interface << lua_interface;
+
+    layout.load( runner.get(), experience );
 
     layout.run();
 }

@@ -33,6 +33,8 @@ Dataset::Dataset( const std::string& target )  : start_time(0)
 
 Dataset::~Dataset()
 {
+    std::cout << name() << std::endl;
+
     if (pose_reader)
         pose_reader->stop();
    
