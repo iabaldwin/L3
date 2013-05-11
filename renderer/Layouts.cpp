@@ -21,26 +21,30 @@ namespace L3
              */
             // Remove it, if it is already in the composite list     
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
-            // Reset 
             iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
             *composite << (*iterator_renderer);
 
             /*
              *  Composite Leafs
              */
-            //L3::Configuration::Begbroke begbroke;
-            //begbroke.loadDatum();
 
-            //// Static map-view
-            //map_view.reset( new L3::Visualisers::LocaleRenderer() );
-            //map_view->load( begbroke );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
+            /*
+             *  Static map-view
+             */
+            L3::Configuration::Begbroke begbroke;
+            begbroke.loadDatum();
+            
+            // Remove it, if it is already in the composite list     
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
+            map_view.reset( new L3::Visualisers::LocaleRenderer() );
+            map_view->load( begbroke );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
 
             /*
              *  Current pose estimate
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( pose_renderer.get() ) );
-            ////pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
+            //pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
             pose_renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
 
@@ -59,11 +63,9 @@ namespace L3
 
             runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(550+5), 0, 375-5, 350 ), runner->point_cloud, runner->current ));
             top << *runtime_cloud_renderer_view; 
-
             updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
-
-            //point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
-            //top.printDescendents();
+            point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
+            
 
         }
 
@@ -98,7 +100,8 @@ namespace L3
             //estimated_pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->estimated ) );
             //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(estimated_pose_renderer.get() ))); 
 
-            //// Predicted estimates
+            // Predicted estimates
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
             algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->algorithm ) ));
             algorithm_costs_renderer->draw_bounds = true;
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 

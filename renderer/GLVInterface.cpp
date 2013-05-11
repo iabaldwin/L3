@@ -106,7 +106,10 @@ namespace Visualisers
                     if( (*it)->match( current ) )
                     { 
                         std::pair< bool, std::string > result = (*it)->execute( current );
-                      
+                   
+                        // This is nasty
+                        this->bringToFront();
+
                         if( result.first )  // Successful command
                             command_history.push_front( current );
                     

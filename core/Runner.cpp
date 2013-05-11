@@ -3,6 +3,46 @@
 namespace L3
 {
 
+    DatasetRunner::DatasetRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup ) 
+        : dataset(dataset), 
+            speedup(speedup),
+            current_time(0.0),
+            start_time(dataset->start_time)
+    {
+        // Constant time iterator over poses
+        pose_iterator.reset( new L3::ConstantTimeIterator<L3::SE3>( dataset->pose_reader ) );
+        LHLV_iterator.reset( new L3::ConstantTimeIterator<L3::LHLV> ( dataset->LHLV_reader ) );  
+       
+        // LIDAR iterators
+        horizontal_LIDAR.reset( new L3::ConstantTimeIterator<L3::LMS151>( dataset->LIDAR_readers[ mission->horizontal] ));
+        vertical_LIDAR.reset( new L3::ConstantTimeIterator<L3::LMS151>( dataset->LIDAR_readers[ mission->declined] ));
+
+        // Point-clouds
+        point_cloud.reset( new L3::PointCloud<double>() );
+        projection.reset( new L3::SE3( L3::SE3::ZERO() ) );
+        
+        L3::Configuration::convert( mission->lidars[mission->declined], *projection );
+
+        projector.reset( new L3::Projector<double>( projection.get(), point_cloud.get() ) );
+       
+        // Pose Provider
+        pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV>( LHLV_iterator.get() ) );
+       
+        // Swathe generator
+        swathe_builder.reset( new L3::SwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
+   
+        // INS pose
+        oracle.reset( new L3::ConstantTimeWindower< L3::SE3 >( pose_iterator.get() ) );
+
+        // Scan matching engine
+        engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
+        
+        (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << engine.get() << pose_windower.get() << swathe_builder.get();
+
+        current.reset( new L3::SE3( L3::SE3::ZERO() ) );
+    
+    }
+    
     /*
      *  Dataset runner
      */
