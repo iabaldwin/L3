@@ -23,15 +23,15 @@ int main (int argc, char ** argv)
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
     
-    L3::ConstantTimeIterator< L3::SE3 > iterator( dataset.pose_reader );
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > > iterator( new L3::ConstantTimeIterator< L3::SE3 >( dataset.pose_reader ) );
 
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::Composite                  composite;
-    L3::Visualisers::IteratorRenderer<L3::SE3>  iterator_renderer( &iterator  );
+    L3::Visualisers::IteratorRenderer<L3::SE3>  iterator_renderer( iterator  );
 
     L3::Visualisers::VisualiserRunner runner( dataset.start_time );
 
-    runner << &iterator;
+    runner << iterator.get();
 
     composite << iterator_renderer << grid << runner;
 

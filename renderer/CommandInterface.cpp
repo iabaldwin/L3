@@ -32,63 +32,30 @@ namespace L3
 
                 ltrim(dataset_target);
 
-                //try
-                //{
-                    //std::cout << container->dataset.use_count() << std::endl;
-                    container->dataset.reset();
-                    //std::cout << container->dataset.use_count() << std::endl;
-           
-                    //container->dataset.reset( new L3::Dataset( dataset_target ) );
-                    //container->dataset.reset();
+                try
+                {
+                    container->dataset.reset( new L3::Dataset( dataset_target ) );
 
-                    //if( !(container->dataset->validate() &&container->dataset->load() ) )
-                        //return std::make_pair( false, "L3::Could not validate: " + dataset_target ); 
+                    if( !(container->dataset->validate() &&container->dataset->load() ) )
+                        return std::make_pair( false, "L3::Could not validate: " + dataset_target ); 
                                     
-                    return std::make_pair( true, "L3::Reset done: " + dataset_target ); 
-                //}
-                //catch( ... )
-                //{
-                    //return std::make_pair( false, "L3::No such directory: " + dataset_target ); 
-                //}
+                    //return std::make_pair( true, "L3::Reset done: " + dataset_target ); 
+                }
+                catch( ... )
+                {
+                    return std::make_pair( false, "L3::No such directory: " + dataset_target ); 
+                }
 
                 try
                 {
-                    //container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
+                    container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
+                
+                    container->runner.reset( new L3::DatasetRunner( container->dataset.get(), container->mission.get() ) );
+               
                 }
                 catch( ... )
                 {
                     return std::make_pair( false, "L3::No such configuration: " + dataset_target ); 
-                }
-
-                try
-                {
-                    // Pose oracle
-                    //container->oracle_source.reset( new L3::ConstantTimeIterator< L3::SE3 >( container->dataset->pose_reader ) );
-                    //// Pose iterator
-                    //container->integrated_pose_iterator.reset( new L3::ConstantTimeIterator< L3::LHLV >( container->dataset->LHLV_reader ) );
-
-                    //// LIDARS
-                    //container->vertical_LIDAR_iterator.reset( new L3::ConstantTimeIterator<L3::LMS151>(  container->dataset->LIDAR_readers[ container->mission->declined ] ) );
-                    //container->horizontal_LIDAR_iterator.reset( new L3::ConstantTimeIterator<L3::LMS151>(  container->dataset->LIDAR_readers[ container->mission->horizontal ] ) );
-
-                    //// Windowers
-                    //container->oracle.reset( new L3::ConstantTimeWindower<L3::SE3>( container->oracle_source.get() ) );
-                    //container->pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV> ( container->integrated_pose_iterator.get() ) );
-                
-                    //// Swathe builder
-                    //container->swathe_builder.reset( new L3::SwatheBuilder( container->pose_windower.get(), container->vertical_LIDAR_iterator.get() ) );
-
-                    //// Cloud
-                    //container->point_cloud.reset( new L3::PointCloud<double>()) ;
-
-                    //L3::SE3 projection = L3::SE3::ZERO();
-                    //L3::Configuration::convert( container->mission->lidars[ container->mission->declined], projection );
- 
-                    //container->projector.reset( new L3::Projector<double>( &projection, container->point_cloud.get() ) );
-                }
-                catch( ... )
-                {
-                    return std::make_pair( false, "L3::Unable to build core: " + dataset_target ); 
                 }
 
                 return std::make_pair( true, "L3::Loaded dataset \t\t<" + dataset_target + ">" );

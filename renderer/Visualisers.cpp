@@ -26,7 +26,7 @@ namespace Visualisers
      *  Iterator
      */
     template <typename T>
-    IteratorRenderer<T>::IteratorRenderer( L3::Iterator<T>* ITERATOR )  : iterator(ITERATOR )
+    IteratorRenderer<T>::IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator )  : iterator(iterator )
     {
     }
  
@@ -35,7 +35,13 @@ namespace Visualisers
     {
         std::deque< std::pair< double, boost::shared_ptr<T> > > window;
 
-        iterator->getWindow( window );
+         
+        boost::shared_ptr< L3::Iterator<T> > iterator_ptr = iterator.lock();
+
+        if( !iterator_ptr )
+            return;
+
+        iterator_ptr->getWindow( window );
         typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
 
         while( it != window.end() )
@@ -207,4 +213,4 @@ namespace Visualisers
 }
 
 // Explicit Instantiations
-template L3::Visualisers::IteratorRenderer<L3::SE3>::IteratorRenderer(L3::Iterator<L3::SE3>*);
+template L3::Visualisers::IteratorRenderer<L3::SE3>::IteratorRenderer( boost::shared_ptr< L3::Iterator<L3::SE3> >);

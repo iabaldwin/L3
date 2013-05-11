@@ -47,9 +47,9 @@ int main( int argc, char* argv[] )
     boost::shared_ptr< L3::Container > container( new L3::Container() );
 
     container->dataset    = boost::shared_ptr<L3::Dataset>( dataset );
+    container->mission    = boost::shared_ptr< L3::Configuration::Mission >( mission );
     container->experience = experience;
     container->runner     = runner;
-    container->mission    = boost::shared_ptr< L3::Configuration::Mission >( mission );
 
     glv::Window win(1400, 800, "Visualisation::Estimator");
 

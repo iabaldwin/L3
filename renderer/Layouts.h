@@ -235,7 +235,7 @@ namespace Visualisers
                 /*
                  *  Pose Iterator
                  */
-                iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator.get() ) );
+                iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
                 *composite << (*iterator_renderer);
 
                 /*

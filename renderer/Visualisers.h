@@ -37,9 +37,9 @@ struct PoseChainRenderer : Leaf
 template <typename T>
 struct IteratorRenderer : Leaf
 {
-    IteratorRenderer( L3::Iterator<T>* ITERATOR ) ;
+    IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator );
     
-    L3::Iterator<T>* iterator;
+    boost::weak_ptr< L3::Iterator<T> > iterator;
    
     void onDraw3D( glv::GLV& g );
 };
