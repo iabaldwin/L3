@@ -189,8 +189,11 @@ namespace Visualisers
 
             std::list< glv::View* > renderables;
 
-            boost::shared_ptr<glv::Slider>      scale_factor;
-            boost::shared_ptr< glv::Widget >    toggle_button;
+            
+            boost::shared_ptr<glv::Slider>  scale_factor;
+            boost::shared_ptr< glv::Label > scale_factor_label;
+            
+            boost::shared_ptr< glv::Widget > toggle_button;
 
             std::list< boost::shared_ptr< glv::View > >     labels;
 

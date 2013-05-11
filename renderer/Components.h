@@ -163,6 +163,7 @@ struct TextRenderer : glv::View
 {
     explicit TextRenderer( T& v = 0 ) : t(v), glv::View( glv::Rect(150,25 ) )
     {
+        this->disable( glv::DrawBorder );
     }
 
     T& t;

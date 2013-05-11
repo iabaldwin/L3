@@ -10,14 +10,13 @@ namespace L3
             /*
              *Scale
              */
-
-            scale_factor.reset( new glv::Slider(glv::Rect(window.width()-250,window.height()-30,200,20)));
-           
+            scale_factor_label.reset( new glv::Label() );
+                    
+            scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             scale_factor->attachVariable( runner->speedup );
-
             scale_factor->interval( 5, 1 );
-
             scale_factor->setValue(5);
+       
 
             top << *scale_factor;
 
@@ -25,7 +24,7 @@ namespace L3
              *  Timer
              */
             time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
-            time_renderer->pos(1200 , 10);
+            time_renderer->pos(window.width()-155, window.height()-50 );
             top << *time_renderer;
 
             linear_velocity_plotter->assignIterator( runner->LHLV_iterator );
@@ -34,7 +33,6 @@ namespace L3
             /*
              *  Pose Iterator
              */
-            // Remove it, if it is already in the composite list     
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
             iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
             *composite << (*iterator_renderer);
