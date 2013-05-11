@@ -133,7 +133,6 @@ void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
 /*
  *  FPS controller
  */
-
 void FPSController::onEvent( glv::Event::t type, glv::GLV& g )
 {
         Eigen::Matrix4f homogeneous;

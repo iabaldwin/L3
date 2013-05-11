@@ -8,7 +8,6 @@ static inline std::string& ltrim(std::string &s) {
 
 namespace L3
 {
-    //CommandInterface::CommandInterface( L3::Visualisers::EstimatorLayout* layout, boost::shared_ptr< L3::Container > container )
     CommandInterface::CommandInterface( L3::Visualisers::DatasetLayout* layout, boost::shared_ptr< L3::Container > container )
         : layout(layout), container(container)
     {
