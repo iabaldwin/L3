@@ -228,7 +228,6 @@ namespace L3
                 while( it != this->pose_estimates->estimates.end() )
                 {
                     group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                    //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ )();
                     it++;
                 }
 
@@ -244,9 +243,12 @@ namespace L3
         {
             discrete_estimators[0]->operator()( swathe, estimate );
             std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
-            return discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
+            SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
-            //discrete_estimators[1]->operator()( swathe, estimate );
+            discrete_estimators[1]->operator()( swathe, refined );
+            it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
+            refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
+
             //discrete_estimators[2]->operator()( swathe, estimate );
         }
 
