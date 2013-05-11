@@ -53,9 +53,15 @@ namespace L3
 
         t.begin();
 
+        double real_time_elapsed = t.elapsed();
+
+        current_time = start_time;
+
         while( running )
         {
-            current_time = start_time + speedup*t.elapsed();
+            current_time += ( t.elapsed() - real_time_elapsed )*speedup;
+                
+            real_time_elapsed = t.elapsed(); 
 
             /*
              *  Update all watchers

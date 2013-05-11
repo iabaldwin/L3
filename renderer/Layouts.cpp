@@ -6,6 +6,21 @@ namespace L3
     {
         bool DatasetLayout::load( L3::DatasetRunner* runner )
         {
+
+            /*
+             *Scale
+             */
+
+            scale_factor.reset( new glv::Slider(glv::Rect(window.width()-250,window.height()-30,200,20)));
+           
+            scale_factor->attachVariable( runner->speedup );
+
+            scale_factor->interval( 5, 1 );
+
+            scale_factor->setValue(5);
+
+            top << *scale_factor;
+
             /*
              *  Timer
              */

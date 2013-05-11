@@ -85,6 +85,8 @@ namespace Visualisers
                 updater.reset( new Updater() );
                 this->renderables.push_front( updater.get() );
 
+
+                            
             }
 
             virtual ~Layout()
@@ -187,7 +189,8 @@ namespace Visualisers
 
             std::list< glv::View* > renderables;
 
-            boost::shared_ptr< glv::Widget > toggle_button;
+            boost::shared_ptr<glv::Slider>      scale_factor;
+            boost::shared_ptr< glv::Widget >    toggle_button;
 
             std::list< boost::shared_ptr< glv::View > >     labels;
 

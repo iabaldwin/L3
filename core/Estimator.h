@@ -60,8 +60,8 @@ namespace Estimator
     template <typename T>
         struct SmoothingPolicy
         {
-            virtual T  P( T  p ) = 0;
-            virtual T  Q( T  q ) = 0;
+            virtual void P( T& p ) = 0;
+            virtual void Q( T& q ) = 0;
         };
 
 
@@ -69,14 +69,12 @@ namespace Estimator
         struct NoneSmoothing : SmoothingPolicy<T>
     {
 
-        T P( T  p ) 
+        void P( T& p ) 
         {
-            return p;
         }
 
-        T Q( T  q ) 
+        void Q( T& q ) 
         {
-            return q;
         }
 
     };
@@ -89,14 +87,14 @@ namespace Estimator
 
         }
 
-        T P( T  p ) 
+        void P( T& p ) 
         {
-            return p + std::numeric_limits<T>::epsilon();
+            p = (p + std::numeric_limits<T>::epsilon());
         }
 
-        T Q( T  q ) 
+        void Q( T& q ) 
         {
-            return q + std::numeric_limits<T>::epsilon();
+            q = (q + std::numeric_limits<T>::epsilon());
         }
     };
 

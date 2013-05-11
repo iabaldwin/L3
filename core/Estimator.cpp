@@ -110,11 +110,14 @@ namespace L3
                 p_i = (p_i == 0) ? std::numeric_limits<T>::epsilon() : p_i;
                 q_i = (q_i == 0) ? std::numeric_limits<T>::epsilon() : q_i;
 
-                if ( q_i==0 || p_i ==0 || q_norm==0 || p_norm == 0 )
-                    {
-                    std::cout << p << "," << p_norm << " " << q << q_norm << std::endl;
-                    exit(1);
-                    }
+                //policy->P( p_i );
+                //policy->Q( q_i );
+
+                //if ( q_i==0 || p_i ==0 || q_norm==0 || p_norm == 0 )
+                    //{
+                    //std::cout << p << "," << p_norm << " " << q << q_norm << std::endl;
+                    //exit(1);
+                    //}
 
                 return boost::math::log1p( (p_i/q_i))*p_i;
             }
