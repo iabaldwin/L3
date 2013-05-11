@@ -32,8 +32,6 @@ Dataset::Dataset( const std::string& target )  : start_time(0)
 
 Dataset::~Dataset()
 {
-    std::cout << name() << std::endl;
-
     if (pose_reader)
         pose_reader->stop();
    
@@ -45,8 +43,6 @@ Dataset::~Dataset()
 
     for( std::list< boost::shared_ptr< Poco::Thread > >::iterator it= threads.begin(); it != threads.end(); it++ )
         (*it)->join();
-    
-    std::cout << name() << std::endl;
 }
 
 std::ostream& operator<<( std::ostream& o, const Dataset& dataset )

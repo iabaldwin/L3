@@ -13,7 +13,6 @@ namespace L3
         {
             VelocityPlotter()
                 : glv::Plottable( glv::draw::LineStrip, 1 ),
-                    iterator(NULL), 
                     index(-1)
             {
             }
@@ -22,10 +21,10 @@ namespace L3
             {
             }
 
-            int                                     index;
-            L3::ConstantTimeIterator< L3::LHLV>*    iterator; 
-
-            void assignIterator( L3::ConstantTimeIterator< L3::LHLV >* LHLV_iterator )
+            int index;
+            boost::weak_ptr< L3::ConstantTimeIterator< L3::LHLV> > iterator; 
+ 
+            void assignIterator( boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > LHLV_iterator )
             {
                 this->iterator = LHLV_iterator;
             }
@@ -43,12 +42,14 @@ namespace L3
 
             void update()
             {
-                if( !iterator )
+                boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > iterator_ptr = iterator.lock();
+
+                if( !iterator_ptr)
                     return;
 
                 std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
 
-                iterator->getWindow( window );
+                iterator_ptr->getWindow( window );
 
                 if ( window.size() > 0 )
                 {

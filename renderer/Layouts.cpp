@@ -4,7 +4,70 @@ namespace L3
 {
     namespace Visualisers
     {
-            
+        bool DatasetLayout::load( L3::DatasetRunner* runner )
+        {
+            /*
+             *  Timer
+             */
+            time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
+            time_renderer->pos(1200 , 10);
+            top << *time_renderer;
+
+            linear_velocity_plotter->assignIterator( runner->LHLV_iterator );
+            rotational_velocity_plotter->assignIterator( runner->LHLV_iterator );
+
+            /*
+             *  Pose Iterator
+             */
+            // Remove it, if it is already in the composite list     
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
+            // Reset 
+            iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
+            *composite << (*iterator_renderer);
+
+            /*
+             *  Composite Leafs
+             */
+            //L3::Configuration::Begbroke begbroke;
+            //begbroke.loadDatum();
+
+            //// Static map-view
+            //map_view.reset( new L3::Visualisers::LocaleRenderer() );
+            //map_view->load( begbroke );
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
+
+            /*
+             *  Current pose estimate
+             */
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( pose_renderer.get() ) );
+            ////pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
+            pose_renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
+
+            /*
+             *  Locale Bounds
+             */
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( locale_bounds.get() ) );
+            locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
+
+            /*
+             *  Swathe Cloud
+             */
+            L3::Visualisers::Updateable* putative = dynamic_cast<L3::Visualisers::Updateable*>( runtime_cloud_renderer_view.get() );
+            updater->updateables.remove( putative );
+
+            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(550+5), 0, 375-5, 350 ), runner->point_cloud, runner->current ));
+            top << *runtime_cloud_renderer_view; 
+
+            updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
+
+            //point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
+            //top.printDescendents();
+
+        }
+
+
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
         {
             DatasetLayout::load( runner );
@@ -52,7 +115,7 @@ namespace L3
 
             top << *pyramid_renderer;
 
-            
+
             /*
              *  Group: Ancillary
              */

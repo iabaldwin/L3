@@ -39,7 +39,6 @@ namespace L3
                     if( !(container->dataset->validate() &&container->dataset->load() ) )
                         return std::make_pair( false, "L3::Could not validate: " + dataset_target ); 
                                     
-                    //return std::make_pair( true, "L3::Reset done: " + dataset_target ); 
                 }
                 catch( ... )
                 {
@@ -49,9 +48,9 @@ namespace L3
                 try
                 {
                     container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
-                
                     container->runner.reset( new L3::DatasetRunner( container->dataset.get(), container->mission.get() ) );
-               
+                    container->runner->start();
+                    layout->load( container->runner.get() );
                 }
                 catch( ... )
                 {

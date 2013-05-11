@@ -216,62 +216,8 @@ namespace Visualisers
                 /*
                  *  Stand-alone plots
                  */
-                //addLinearVelocityPlot();
-                //addRotationalVelocityPlot();
-            }
-
-            void load( L3::DatasetRunner* runner )
-            {
-                /*
-                 *  Timer
-                 */
-                time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
-                time_renderer->pos(1200 , 10);
-                top << *time_renderer;
-
-                //linear_velocity_plotter->assignIterator( runner->LHLV_iterator.get() );
-                //rotational_velocity_plotter->assignIterator( runner->LHLV_iterator.get() );
-                
-                /*
-                 *  Pose Iterator
-                 */
-                iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
-                *composite << (*iterator_renderer);
-
-                /*
-                 *  Composite Leafs
-                 */
-                //L3::Configuration::Begbroke begbroke;
-                //begbroke.loadDatum();
-
-                //// Static map-view
-                //map_view.reset( new L3::Visualisers::LocaleRenderer() );
-                //map_view->load( begbroke );
-                //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
-
-                /*
-                 *  Current pose estimate
-                 */
-                ////pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
-                //pose_renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) );
-                //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
-
-                /*
-                 *  Locale Bounds
-                 */
-                //locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
-                //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
-
-                /*
-                 *  Swathe Cloud
-                 */
-                //runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(550+5), 0, 375-5, 350 ), runner->point_cloud, runner->current ));
-                //top << *runtime_cloud_renderer_view; 
-                //updater->operator<<( runtime_cloud_renderer_view.get() );
-
-                //point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
-
-
+                addLinearVelocityPlot();
+                addRotationalVelocityPlot();
             }
 
             const L3::Dataset*                          dataset;
@@ -288,6 +234,12 @@ namespace Visualisers
             boost::shared_ptr< L3::Visualisers::PoseRenderer >          pose_renderer;
             boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer >  locale_bounds;
             boost::shared_ptr< L3::Visualisers::PointCloudRendererView >        runtime_cloud_renderer_view; 
+            
+            /*
+             *  Load/reload function
+             */
+            bool load( L3::DatasetRunner* runner );
+
     };
 
     /*

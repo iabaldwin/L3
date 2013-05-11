@@ -563,10 +563,10 @@ namespace Visualisers
 
     void PointCloudRendererView::update()
     {
-        L3::ReadLock lock( cloud->mutex );
-        if( cloud->num_points > 0 ) 
-            L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
-        lock.unlock();
+        //L3::ReadLock lock( cloud->mutex );
+        //if( cloud->num_points > 0 ) 
+            //L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        //lock.unlock();
 
         //L3::SE3 tform( 0, 30, 0, 0, 0, 0 );
         //L3::transform( plot_cloud.get(), &tform );

@@ -194,15 +194,6 @@ struct EstimatorRunner : DatasetRunner
         return *this;
     }
 
-    //EstimatorRunner& setPoseProvider( L3::PoseProvider* provider )
-    //{
-        //this->provider = provider;
-        //(*this) << dynamic_cast<L3::TemporalObserver*>(provider);
-        //(*this) << dynamic_cast<L3::Dumpable*>(provider);
-        //return *this;
-    //}
-
-
     EstimatorRunner& setAlgorithm( L3::Estimator::Algorithm<double>* algorithm )
     {
         this->algorithm = algorithm;
