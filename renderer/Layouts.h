@@ -177,12 +177,18 @@ namespace Visualisers
 
             void addExtra( std::string description, boost::shared_ptr< L3::Visualisers::Leaf > renderable )
             {
-               
-                // Add it to the composite 
-                (*composite) <<  *renderable;
 
-                // Keep it around
-                extras.insert( std::make_pair( description, renderable ) );
+                // Do we already have it?
+                std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > >::iterator it = extras.find( description ); 
+
+                if( it == extras.end() )
+                {    
+                    // Add it to the composite 
+                    (*composite) <<  *renderable;
+
+                    // Keep it around
+                    extras.insert( std::make_pair( description, renderable ) );
+                }
             }
 
             std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > > extras;
