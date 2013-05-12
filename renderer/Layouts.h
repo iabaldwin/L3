@@ -175,6 +175,19 @@ namespace Visualisers
                 *plot_region << *velocity_label;
             }
 
+            void addExtra( std::string description, boost::shared_ptr< L3::Visualisers::Leaf > renderable )
+            {
+               
+                // Add it to the composite 
+                (*composite) <<  *renderable;
+
+                // Keep it around
+                extras.insert( std::make_pair( description, renderable ) );
+            }
+
+            std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > > extras;
+
+
             boost::shared_ptr< glv::View >  scripting_interface;
 
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
@@ -189,6 +202,7 @@ namespace Visualisers
 
             std::list< glv::View* > renderables;
 
+            boost::shared_ptr<L3::Visualisers::Composite>   composite;
             
             boost::shared_ptr<glv::Slider>  scale_factor;
             boost::shared_ptr< glv::Label > scale_factor_label;
@@ -199,7 +213,6 @@ namespace Visualisers
 
             boost::shared_ptr< Updater >                    updater;
             boost::shared_ptr<L3::Visualisers::Grid>        grid;
-            boost::shared_ptr<L3::Visualisers::Composite>   composite;
             boost::shared_ptr<L3::Visualisers::Controller>  controller;
 
             std::list< boost::shared_ptr< glv::Plot > >     plots;

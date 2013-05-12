@@ -214,6 +214,19 @@ struct AnimatedPoseRenderer : PoseRenderer
     void onDraw3D( glv::GLV& g );
 };
 
+struct PoseSequenceRenderer : Leaf
+{ 
+
+    PoseSequenceRenderer( boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > > > pose_sequence ) : pose_sequence(pose_sequence)
+    {
+
+    }
+
+    boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > > > pose_sequence;
+
+    void onDraw3D(glv::GLV& g);
+};
+
 /*
  *  Pose prediction 
  */

@@ -997,5 +997,27 @@ namespace Visualisers
 
     }
 
+    /*
+     *  Pose sequences
+     */
+    void PoseSequenceRenderer::onDraw3D( glv::GLV& g )
+    {
+        if ( pose_sequence)
+        {
+        
+            std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator it = pose_sequence->begin();
+
+            while( it < pose_sequence->end() )
+            {
+                CoordinateSystem( *(it->second) ).onDraw3D(g);
+
+                it+=100;
+            }
+
+
+        }
+
+
+    }
 }
 }

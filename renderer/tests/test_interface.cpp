@@ -57,32 +57,32 @@ struct CustomGLV : glv::GLV
 
 int main (int argc, char ** argv)
 {
-    //boost::shared_ptr< glv::View >  glv_interface( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
+    boost::shared_ptr< glv::View >  glv_interface( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
 
-    //L3::Interface* lua = new L3::LuaInterface();
-    //L3::Interface* l3 = new L3::CommandInterface( boost::shared_ptr< L3::Container > container, NULL );
+    L3::Interface* lua = new L3::LuaInterface();
+    L3::Interface* l3 = new L3::CommandInterface( NULL, boost::shared_ptr< L3::Container >());
 
-    //(*dynamic_cast< L3::Visualisers::GLVInterface* >( glv_interface.get() ) ) << lua << l3;
+    (*dynamic_cast< L3::Visualisers::GLVInterface* >( glv_interface.get() ) ) << lua << l3;
 
-    ////glv::GLV top;
-    //CustomGLV top;
-    //glv::Window win(1400, 800, "L3::Component");
+    //glv::GLV top;
+    CustomGLV top;
+    glv::Window win(1400, 800, "L3::Component");
 
-    //// Colors
-    //top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
+    // Colors
+    top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
-    //L3::Visualisers::Composite                  composite;
-    //L3::Visualisers::BasicPanController         controller(composite.position);
-    //L3::Visualisers::Grid                       grid;
+    L3::Visualisers::Composite                  composite;
+    L3::Visualisers::BasicPanController         controller(composite.position);
+    L3::Visualisers::Grid                       grid;
 
-    //composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
-    //test_leaf leaf;
+    test_leaf leaf;
 
-    //top << ( composite << grid << leaf  ) << (*glv_interface);
+    top << ( composite << grid << leaf  ) << (*glv_interface);
 
-    //win.setGLV(top);
-    //glv::Application::run();
+    win.setGLV(top);
+    glv::Application::run();
 }
 
 
