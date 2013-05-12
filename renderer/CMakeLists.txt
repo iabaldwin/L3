@@ -1,9 +1,17 @@
 find_package( Freetype REQUIRED )
 
+find_package( GLUT REQUIRED )                                    # Rendering
+include_directories( ${GLUT_INCLUDE_DIR} )
+
+find_package( OpenGL REQUIRED )                                  # Rendering
+include_directories( ${OPENGL_INCLUDE_DIR} )
+
+find_package( Bullet REQUIRED )
+#Ray query 
+
+# 3D font experiments
 include_directories( ${FREETYPE_INCLUDE_DIRS} )
-
 include_directories( "/System/Library/Frameworks/OpenGL.framework/Headers/" )
-
 add_definitions( -DOGLFT_NO_QT -DOGLFT_NO_SOLID )
 
 add_library( L3Vis 

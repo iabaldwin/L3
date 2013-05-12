@@ -98,9 +98,8 @@ int main (int argc, char ** argv)
     histogram->operator()( cloud.get() );
 
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator = boost::make_shared<L3::Estimator::DiscreteEstimator<double> >( kl_cost_function, histogram );
-
-    estimator->pose_estimates.reset( new L3::Estimator::GridEstimates(40, 40, 2) );
+    boost::shared_ptr< L3::Estimator::GridEstimates >  xy_grid( new L3::Estimator::GridEstimates( 40, 40, 2) );
+    boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator = boost::make_shared<L3::Estimator::DiscreteEstimator<double> >( kl_cost_function, histogram, xy_grid );
     estimator->operator()( cloud_copy.get(), L3::SE3::ZERO() );
                
     /*

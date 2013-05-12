@@ -250,8 +250,11 @@ namespace Visualisers
         glv::Point3 quad_vertices[4];
         glv::Color quad_colors[4];
 
-        L3::Histogram<double> tmp;
+        if (hist->empty())
+            return;
 
+        L3::Histogram<double> tmp;
+        
         L3::ReadLock lock( hist->mutex );
         L3::clone( hist.get(), &tmp );
         lock.unlock();   

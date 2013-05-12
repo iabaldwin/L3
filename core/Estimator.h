@@ -50,9 +50,26 @@ namespace Estimator
         float x_width, y_width, spacing;
 
         void operator()( const L3::SE3& pose ) ;
-        
-
     };
+
+
+    struct RotationEstimates : PoseEstimates
+    {
+        RotationEstimates( float lower=1.0, float upper=1.0, float spacing=0.1 ) 
+            : lower(lower), 
+                upper(upper), 
+                spacing(spacing) 
+        {
+            position.reset( new L3::SE3( L3::SE3::ZERO() ) );
+        }
+
+        float lower, upper, spacing;
+
+        void operator()( const L3::SE3& pose ) ;
+    };
+
+
+
 
     /*
      *  Smoothing policy
@@ -156,21 +173,24 @@ namespace Estimator
 
     template < typename T >
         struct DiscreteEstimator : Estimator<T>
-    {
-
-        DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience, float lower=10.0, float upper=10.0, float granularity=1.0 ) 
-            : Estimator<T>(f, experience)
         {
-            this->pose_estimates.reset( new GridEstimates( lower, upper, granularity ) );
-        }
-        
-        tbb::task_group group;
-        
-        void dump(){};
+            //DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience, float lower=10.0, float upper=10.0, float granularity=1.0 ) 
+                //: Estimator<T>(f, experience)
 
-        bool operator()( PointCloud<T>* swathe, SE3 estimate );
+            DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience, boost::shared_ptr< PoseEstimates > estimates )
+                : Estimator<T>(f, experience)
+            {
+                //this->pose_estimates.reset( new GridEstimates( lower, upper, granularity ) );
+                this->pose_estimates = estimates;
+            }
+            
+            tbb::task_group group;
+            
+            void dump(){};
 
-    };
+            bool operator()( PointCloud<T>* swathe, SE3 estimate );
+
+        };
 
     template < typename T>
         struct Algorithm
@@ -202,15 +222,25 @@ namespace Estimator
         IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
         {
 
+            GridEstimates       grid ( 10, 10, 1);
+            RotationEstimates   rotation( .5, .5, .1);
+
             for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
                     it != pyramid->end();
                     it++ )
             {
                 L3::ReadLock( (*it)->mutex );
 
+                // Grid 
                 discrete_estimators.push_back( 
-                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it)
+                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< GridEstimates >( new GridEstimates( 10, 10, 1) ) )
                         );
+          
+                // Rotation
+                discrete_estimators.push_back( 
+                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< RotationEstimates >( new RotationEstimates( .5 , .5, .1 ) ) )
+                        );
+
             }
 
         }

@@ -34,7 +34,7 @@ namespace L3
 
             bool empty() const
             {
-                return ((this->x_bins == 0) || (this->y_bins == 0 ) );
+                return ((this->x_bins == 0) || (this->y_bins == 0 ) || (this->x_centre == 0 ) || ( this->y_centre ==0 ) );
             }
 
             void print() const
@@ -162,9 +162,11 @@ namespace L3
 
 
     template <typename T>
-        void copy( Histogram<T>* src, Histogram<T>* dest )
+        bool copy( Histogram<T>* src, Histogram<T>* dest )
         {
-            //L3::ReadLock(src->mutex);
+            if ( src->empty() )
+                return false;
+            
             L3::WriteLock(dest->mutex);
             dest->create( src->x_centre,     
                     src->x_lower,
@@ -176,6 +178,7 @@ namespace L3
                     src->y_bins 
                     );
 
+            return true;
         }
 
     template <typename T>

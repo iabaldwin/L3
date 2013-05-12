@@ -226,13 +226,13 @@ namespace L3
     template <typename T>
         void translate( PointCloud<T>* cloud, L3::SE3 const * pose )
         {
-            // 2. Subtract
             typename PointCloud<T>::ITERATOR it = cloud->begin();
-
+            
             while( it != cloud->end() )
             {
-                (*it).x += pose->X();
-                (*it).y += pose->Y();
+                it->x += pose->X();
+                it->y += pose->Y();
+                
                 it++;
             }
         }

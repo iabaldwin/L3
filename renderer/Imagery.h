@@ -102,7 +102,8 @@ namespace Visualisers
     {
         bool load( L3::Configuration::Locale& locale )        
         {
-            std::string image = "/Users/ian/Documents/begbroke.png" ;
+            //std::string image = "/Users/ian/Documents/begbroke.png" ;
+            std::string image = "/Users/ian/Documents/begbroke_med_res.png" ;
 
             lower_bound_x = locale.x_lower;
             upper_bound_x = locale.x_upper;

@@ -4,6 +4,9 @@ target_link_libraries( test_libconfig config L3 ${Boost_LIBRARIES} )
 add_executable( test_timer test_timer.cpp )
 target_link_libraries( test_timer config L3 ${Boost_LIBRARIES} )
 
+add_executable( test_point_cloud_transform_vs_translate test_point_cloud_transform_vs_translate.cpp )
+target_link_libraries( test_point_cloud_transform_vs_translate config L3 ${Boost_LIBRARIES} )
+
 add_executable( test_conversions test_conversions.cpp )
 target_link_libraries( test_conversions config L3 ${Boost_LIBRARIES} )
 

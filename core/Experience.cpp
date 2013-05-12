@@ -147,10 +147,11 @@ void Experience::run()
          */
         if (update_required)
         {
-            //WriteLock lock( experience_pyramid->mutex );
-            
             // Join clouds
             join( clouds, resident_point_cloud );
+
+            if ( resident_point_cloud->num_points == 0 )
+                return;
 
             // Compute histogram
             std::pair<double,double> min_bound = L3::min<double>( &*resident_point_cloud );

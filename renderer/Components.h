@@ -456,7 +456,7 @@ struct HistogramVoxelRendererView : HistogramVoxelRenderer, glv::View3D
       
         if( hist->empty() )
             return;
-
+        
         L3::ReadLock lock( hist->mutex );
         L3::clone( hist.get(), plot_histogram.get() );
      
@@ -484,6 +484,7 @@ struct HistogramVoxelRendererLeaf : HistogramVoxelRenderer, Leaf
     void onDraw3D( glv::GLV& g )
     {
         L3::ReadLock lock( hist->mutex );
+        
         if ( !hist->empty() ) 
             L3::clone( hist.get(), plot_histogram.get() );
         lock.unlock();

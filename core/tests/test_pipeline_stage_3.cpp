@@ -43,7 +43,7 @@ int main()
      *  Estimation
      */
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0] );
+    L3::Estimator::DiscreteEstimator<double> estimator( kl_cost_function, (*experience->experience_pyramid)[0], boost::make_shared< L3::Estimator::GridEstimates>(10,10,1) );
     L3::Estimator::PassThrough<double> algo( &estimator );
 
     /*

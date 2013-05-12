@@ -14,14 +14,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 find_package( HDF5 )                                             # Matlab interoperability  
 
-find_package( GLUT REQUIRED )                                    # Rendering
-include_directories( ${GLUT_INCLUDE_DIR} )
-
-find_package( GLEW REQUIRED )                                    # Rendering
-
-find_package( OpenGL REQUIRED )                                  # Rendering
-include_directories( ${OPENGL_INCLUDE_DIR} )
-
 #Search for OpenMP, as it doesn't come by default
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package( OpenMP REQUIRED )
