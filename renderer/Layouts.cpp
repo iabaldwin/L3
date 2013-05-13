@@ -137,14 +137,19 @@ namespace L3
             /*
              *  Group: Ancillary
              */
-            ancillary_1.reset( new glv::Box() );
+            //ancillary_1.reset( new glv::Box() );
 
             // Stand-alone scan renderer :: Horizontal
+            L3::Visualisers::Updateable* putative = dynamic_cast<L3::Visualisers::Updateable*>( horizontal_scan_renderer.get() );
+            updater->updateables.remove( putative );
+            
             horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR.get(), glv::Rect( 182.5,175 ) ) );
             updater->operator<<( horizontal_scan_renderer.get() );
 
             (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
 
+            ancillary_1->pos( window.width()-(550+5), 350+5);
+            
             //// Stand-alone scan renderer : Vertical
             ////vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 182.5,175 ) ) );
             ////dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 187, 0);
@@ -162,9 +167,9 @@ namespace L3
             ////(*ancillary_1) << combined_scan_renderer.get();
 
             //// Add it to the view
-            ancillary_1->pos( window.width()-(550+5), 350+5);
-            ancillary_1->fit();
-            this->renderables.push_front( ancillary_1.get() );
+            //ancillary_1->pos( window.width()-(550+5), 350+5);
+            //ancillary_1->fit();
+            //this->renderables.push_front( ancillary_1.get() );
 
             /*
              *  Ancillary 2

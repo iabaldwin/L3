@@ -298,13 +298,14 @@ namespace Visualisers
         public:
 
             EstimatorLayout( glv::Window& win) : DatasetLayout(win)
-        {
-        }
+            {
+                ancillary_1.reset( new glv::Box() );
+                //ancillary_1->pos( window.width()-(550+5), 350+5);
+                //ancillary_1->fit();
+                this->renderables.push_front( ancillary_1.get() );
+            }
 
-            //bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PointCloud<double> > run_time_swathe );
             bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience );
-
-            //L3::EstimatorRunner* runner;
 
             boost::shared_ptr< L3::Experience>                      experience ;
             boost::shared_ptr< L3::Visualisers::PoseRenderer >      estimated_pose_renderer;
