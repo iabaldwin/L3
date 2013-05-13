@@ -25,7 +25,7 @@ add_library( L3Vis
                 CommandInterface.cpp
                 )
             
-target_link_libraries( L3Vis L3 GLV lua opencv_highgui opencv_core Common OGLFT Interface ${BULLET_LIBRARIES} )
+target_link_libraries( L3Vis L3 GLV lua opencv_highgui opencv_core Common OGLFT Interface ${BULLET_LIBRARIES} glf )
 
 add_subdirectory( apps )
 add_subdirectory( tests )
