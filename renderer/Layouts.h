@@ -175,7 +175,7 @@ namespace Visualisers
                 *plot_region << *velocity_label;
             }
 
-            void addExtra( std::string description, boost::shared_ptr< L3::Visualisers::Leaf > renderable )
+            bool addExtra( std::string description, boost::shared_ptr< L3::Visualisers::Leaf > renderable )
             {
 
                 // Do we already have it?
@@ -188,8 +188,31 @@ namespace Visualisers
 
                     // Keep it around
                     extras.insert( std::make_pair( description, renderable ) );
+               
+                    return true;
+                }
+
+                return false;
+            }
+
+            bool removeExtra( std::string description )
+            {
+                // Do we already have it?
+                std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > >::iterator it = extras.find( description ); 
+
+                if( it == extras.end() )
+                {
+                    return false;
+                }
+                else
+                {
+                    composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( it->second.get() ) );
+                    extras.erase( it );
+
+                    return true;
                 }
             }
+
 
             std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > > extras;
 

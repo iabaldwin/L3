@@ -11,12 +11,11 @@ namespace L3
              *Scale
              */
             scale_factor_label.reset( new glv::Label() );
-                    
             scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            
             scale_factor->attachVariable( runner->speedup );
             scale_factor->interval( 5, 1 );
             scale_factor->setValue(5);
-       
 
             top << *scale_factor;
 
@@ -85,6 +84,9 @@ namespace L3
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
         {
+            /*
+             *  Do parent
+             */
             DatasetLayout::load( runner );
 
             /*
@@ -141,7 +143,7 @@ namespace L3
             horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR.get(), glv::Rect( 182.5,175 ) ) );
             updater->operator<<( horizontal_scan_renderer.get() );
 
-            ////(*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
+            (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
 
             //// Stand-alone scan renderer : Vertical
             ////vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 182.5,175 ) ) );
@@ -160,9 +162,9 @@ namespace L3
             ////(*ancillary_1) << combined_scan_renderer.get();
 
             //// Add it to the view
-            ////ancillary_1->pos( window.width()-(550+5), 350+5);
-            ////ancillary_1->fit();
-            ////this->renderables.push_front( ancillary_1.get() );
+            ancillary_1->pos( window.width()-(550+5), 350+5);
+            ancillary_1->fit();
+            this->renderables.push_front( ancillary_1.get() );
 
             /*
              *  Ancillary 2

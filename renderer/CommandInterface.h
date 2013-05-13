@@ -34,12 +34,15 @@ namespace L3
          *  Command functions
          */
         std::pair< bool, std::string > load( const std::string& command );
+        std::pair< bool, std::string > estimate( const std::string& command );
         std::pair< bool, std::string > algo( const std::string& command );
         std::pair< bool, std::string > print( const std::string& command );
         std::pair< bool, std::string > quit( const std::string& command );
         std::pair< bool, std::string > script( const std::string& command );
         
         std::pair< bool, std::string > addTrajectory( const std::string& command );
+        std::pair< bool, std::string > removeTrajectory( const std::string& command );
+        std::pair< bool, std::string > removeTrajectories( const std::string& command );
 
     };
 

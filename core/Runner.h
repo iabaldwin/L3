@@ -167,7 +167,6 @@ struct EstimatorRunner : DatasetRunner
     }
 };
 
-
 } // L3
 #endif
 

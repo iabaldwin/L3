@@ -5,6 +5,7 @@ static inline std::string& ltrim(std::string &s) {
     return s;
 }
 
+std::list< std::string > added_trajectories;
 
 namespace L3
 {
@@ -14,12 +15,15 @@ namespace L3
         expression.reset( new boost::regex("^_" ) );
 
         member_function_map.insert( std::make_pair( "_load", &CommandInterface::load ) );
+        member_function_map.insert( std::make_pair( "_estimate", &CommandInterface::estimate ) );
         member_function_map.insert( std::make_pair( "_algo", &CommandInterface::algo) );
         member_function_map.insert( std::make_pair( "_quit", &CommandInterface::quit) );
         member_function_map.insert( std::make_pair( "_script", &CommandInterface::script) );
         member_function_map.insert( std::make_pair( "_?", &CommandInterface::print) );
         
         member_function_map.insert( std::make_pair( "_add_traj", &CommandInterface::addTrajectory) );
+        member_function_map.insert( std::make_pair( "_remove_traj", &CommandInterface::removeTrajectory) );
+        member_function_map.insert( std::make_pair( "_remove_all_traj", &CommandInterface::removeTrajectories) );
     }
 
     bool CommandInterface::match( const std::string& current )
@@ -38,9 +42,42 @@ namespace L3
             return std::make_pair( std::string( command_start, arguments_start ), std::string( arguments_start, command_and_arguments.end() ) );
     }
 
+    std::vector< std::string > parseArgs( const std::string& command )
+    {
+        std::string::const_iterator ptr = command.begin();
+        std::string::const_iterator break_ptr;
+
+        std::vector< std::string > args;
+
+        while( ptr != command.end() )
+        {
+            ptr = std::find( ptr, command.end(), '-' );
+       
+            if( ptr != command.end() )
+            {
+                break_ptr = std::find( ptr+1, command.end(), ' ' );
+               
+                std::string arg( ptr, break_ptr );
+              
+                if( arg.size() <= 3 )
+                {
+                    args.push_back( arg );
+                }
+                ptr++; 
+            }
+        }
+
+        return args;
+    }
+
     std::pair< bool, std::string > CommandInterface::execute(const std::string& command )
     {
         std::pair< std::string, std::string > command_arguments = parseCommand( command );
+
+        parseArgs( command );
+
+        if ( command_arguments.first.size() == 0 )
+            return std::make_pair( false, "CI::Parse error" );
 
         std::map< std::string, command_interpreter >::iterator it = member_function_map.find( command_arguments.first ); 
         if ( it != member_function_map.end() )
@@ -49,83 +86,17 @@ namespace L3
             return (this->*interpreter)( command_arguments.second );
         }
         else
-            return std::make_pair( false, "CI::No appropriate load command" );
-
-
-        /*
-         *Runner
-         */
-        //{
-
-        //size_t pos = command.find( "run" );
-
-        //if ( pos != std::string::npos )
-        //{
-        //if (!container)
-        //return std::make_pair( retval, "L3::No associated container" );
-
-        //if( !container->experience )
-        //return std::make_pair( retval, "L3::No current experience" );
-
-        //return std::make_pair( true, "L3::Running" );
-
-        //}
-
-        //}
-
-        /*
-         *  Scripting
-         */
-        //{
-        //{
-        //size_t pos = command.find( "script" );
-
-        //if ( pos != std::string::npos )
-        //{
-        //std::string script_target = command.substr( pos+6, command.size() );
-
-                //}
-
-        //}
-
-        /*
-         *  Stop
-         */
-        //{
-        //size_t pos = command.find( "stop" );
-
-        //if ( pos != std::string::npos )
-        //{
-        ////std::cout << "Stop called" << std::endl;
-        ////container->runner.stop();
-
-        //return std::make_pair( true, "L3::Stopped" );
-        //}
-
-        //}
-
-        /*
-         *  Reset
-         */
-        //{
-        //size_t pos = command.find( "reset" );
-
-        //if ( pos != std::string::npos )
-        //{
-        //return std::make_pair( true, "L3::Reset" );
-        //}
-        //}
-        
+            return std::make_pair( false, "CI::No appropriate command [" + command + "]"  );
     }
 
     std::pair< bool, std::string> CommandInterface::load( const std::string& load_command )
     {
-        std::string load_copy( load_command );
-        ltrim(load_copy);
-
         if (!container)
             return std::make_pair( false, "CI::No associated container" );
 
+        std::string load_copy( load_command );
+        ltrim(load_copy);
+        
         try
         {
             container->dataset.reset( new L3::Dataset( load_copy ) );
@@ -135,23 +106,48 @@ namespace L3
         }
         catch( ... )
         {
-            return std::make_pair( false, "L3::No such directory: " + load_copy ); 
+            return std::make_pair( false, "CI::No such directory: " + load_copy ); 
         }
 
+        container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
+        container->runner.reset( new L3::DatasetRunner( container->dataset.get(), container->mission.get() ) );
+        container->runner->start();
+        layout->load( container->runner.get() );
+
+        return std::make_pair( true, "CI::Loaded dataset \t\t<" + load_copy + ">" );
+    }
+
+    std::pair< bool, std::string> CommandInterface::estimate( const std::string& load_command )
+    {
+        if (!container)
+            return std::make_pair( false, "CI::No associated container" );
+
+        std::string load_copy( load_command );
+        ltrim(load_copy);
+        
         try
         {
-            //container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
-            //container->runner.reset( new L3::DatasetRunner( container->dataset.get(), container->mission.get() ) );
-            //container->runner->start();
-            //layout->load( container->runner.get() );
+            container->dataset.reset( new L3::Dataset( load_copy ) );
+
+            if( !(container->dataset->validate() &&container->dataset->load() ) )
+                return std::make_pair( false, "CI::Could not validate: " + load_copy ); 
         }
         catch( ... )
         {
-            return std::make_pair( false, "L3::No such configuration: " + load_copy ); 
+            return std::make_pair( false, "CI::No such directory: " + load_copy ); 
         }
 
-        return std::make_pair( true, "L3::Loaded dataset \t\t<" + load_copy + ">" );
+        L3::Estimator::Algorithm<double>* algorithm = dynamic_cast<L3::EstimatorRunner*>(container->runner.get())->algorithm;
+
+        container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
+        container->runner.reset( new L3::EstimatorRunner( container->dataset.get(), container->mission.get(), container->experience.get() ) );
+        dynamic_cast< L3::EstimatorRunner* >(container->runner.get())->setAlgorithm ( algorithm );
+        container->runner->start();
+        layout->load( container->runner.get() );
+
+        return std::make_pair( true, "CI::Loaded dataset \t\t<" + load_copy + ">" );
     }
+
 
 
     std::pair< bool, std::string> CommandInterface::algo( const std::string& load_command )
@@ -213,11 +209,13 @@ namespace L3
             // Comment
             if( (*it)[0] == '#' )
                 continue;  
+            // Blank line
+            if( it->size() == 0 )
+                continue;
 
             std::pair< bool, std::string > result = (this->execute( *it ));
             if( !result.first )
                 return std::make_pair( false, "CI::Script <" + script_target + "> failed @ " + *it + "\n{ " + result.second + " }\n" );
-        
         }
 
         return std::make_pair( true, "CI::Script <" + script_target + "> succeeded" );
@@ -246,19 +244,21 @@ namespace L3
             // Read all the poses
             pose_reader->read();
 
+            // Create pose sequence
             boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > > poses( new std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > () );
             
             // And extract them
             pose_reader->extract( *poses );
 
             // Here, we add a new component::leaf with the poses
-            // Who owns it?
-
             boost::shared_ptr< L3::Visualisers::PoseSequenceRenderer > sequence( new L3::Visualisers::PoseSequenceRenderer( poses ) );
 
-            //(*layout->composite) << *sequence;
-
+            // Add it in as an extra
             layout->addExtra( dataset_target, sequence );
+
+            // Keep track, in case we want to delete them
+            added_trajectories.push_back( dataset_target );
+
         }
         catch( L3::no_such_folder& except )
         {
@@ -269,7 +269,25 @@ namespace L3
 
     }
 
+    std::pair< bool, std::string> CommandInterface::removeTrajectory( const std::string& command )
+    {
+        if( !layout )
+            return std::make_pair( false, "CI::No associated layout" );
 
+        std::string trajectory_target( command );
+
+        if( layout->removeExtra( trajectory_target ) )
+            return std::make_pair( true, "CI::Removed <" + trajectory_target + ">" );
+        else
+            return std::make_pair( true, "CI::Failed to remove <" + trajectory_target + ">" );
+
+    }
+
+    std::pair< bool, std::string> CommandInterface::removeTrajectories( const std::string& command )
+    {
+        if( !layout )
+            return std::make_pair( false, "CI::No associated layout" );
+    }
 
     std::string CommandInterface::getState()
     {

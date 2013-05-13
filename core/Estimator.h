@@ -217,43 +217,49 @@ namespace Estimator
 
     template < typename T>
         struct IterativeDescent : Algorithm<T>
-    {
-
-        IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
         {
-
-            GridEstimates       grid ( 10, 10, 1);
-            RotationEstimates   rotation( .5, .5, .1);
-
-            for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
-                    it != pyramid->end();
-                    it++ )
+            IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
             {
-                L3::ReadLock( (*it)->mutex );
 
-                // Grid 
-                discrete_estimators.push_back( 
-                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< GridEstimates >( new GridEstimates( 10, 10, 1) ) )
-                        );
-          
-                // Rotation
-                discrete_estimators.push_back( 
-                        boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< RotationEstimates >( new RotationEstimates( .5 , .5, .1 ) ) )
-                        );
+                GridEstimates       grid ( 10, 10, 1);
+                RotationEstimates   rotation( .5, .5, .1);
+
+                for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
+                        it != pyramid->end();
+                        it++ )
+                {
+                    L3::ReadLock( (*it)->mutex );
+
+                    // Grid 
+                    discrete_estimators.push_back( 
+                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< GridEstimates >( new GridEstimates( 10, 10, 1) ) )
+                            );
+              
+                    // Rotation
+                    discrete_estimators.push_back( 
+                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< RotationEstimates >( new RotationEstimates( .5 , .5, .1 ) ) )
+                            );
+
+                }
 
             }
+            
+            boost::shared_ptr< HistogramPyramid<T> > pyramid;
+       
+            std::deque< boost::shared_ptr< DiscreteEstimator<T> > > discrete_estimators;
+            
+            SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
-        }
-        
-        boost::shared_ptr< HistogramPyramid<T> > pyramid;
-   
-        std::deque< boost::shared_ptr< DiscreteEstimator<T> > > discrete_estimators;
-        
-        SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
+        };
+
+    struct AlgorithmFactory 
+    {
+        //static boost::shared_ptr< Algorithm > produce( std::string algorithm_type, std::string cost_function )
+        //{
+
+        //}
 
     };
-
-
 }
 }
 
