@@ -13,6 +13,9 @@ target_link_libraries( test_conversions config L3 ${Boost_LIBRARIES} )
 add_executable( test_kl_computation test_kl_computation.cpp )
 target_link_libraries( test_kl_computation L3 ${Boost_LIBRARIES}   )
 
+add_executable( test_minimisation test_minimisation.cpp )
+target_link_libraries( test_minimisation L3 ${Boost_LIBRARIES}   )
+
 add_executable( test_configuration test_configuration.cpp )
 target_link_libraries( test_configuration L3 ${Boost_LIBRARIES}   )
 

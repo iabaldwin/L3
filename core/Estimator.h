@@ -5,8 +5,13 @@
 #include <tbb/task.h>
 #include <tbb/task_group.h>
 
+#include <boost/bind.hpp>
+
 #include "Histogram.h"
 #include "Smoother.h"
+
+#include <gsl/gsl_multimin.h>
+
 namespace L3
 {
 namespace Estimator
@@ -252,14 +257,51 @@ namespace Estimator
 
         };
 
-    struct AlgorithmFactory 
+    //Minimisation global 
+    double global_minimisation_function(const gsl_vector * x, void * params);
+
+    struct MinimisationParameters
     {
-        //static boost::shared_ptr< Algorithm > produce( std::string algorithm_type, std::string cost_function )
-        //{
-
-        //}
-
+        static Algorithm<double>* global_minimiser; 
     };
+
+    template <typename T>
+        struct Minimisation : Algorithm<T>
+        {
+            Minimisation(CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
+            {
+                const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2;
+                
+                minex_func.n = 3;
+                minex_func.f = L3::Estimator::global_minimisation_function;
+                
+                //minex_func.params = par;
+
+                x = gsl_vector_alloc (3);
+                
+                ss = gsl_vector_alloc (3);
+
+                s = gsl_multimin_fminimizer_alloc (type, 3);
+
+                MinimisationParameters::global_minimiser = this;
+            }
+                
+            gsl_vector *ss, *x;
+                
+            gsl_multimin_function minex_func;
+                   
+            gsl_multimin_fminimizer *s;
+
+            boost::shared_ptr< HistogramPyramid<T> > pyramid;
+        
+            PointCloud<T>* current_swathe;
+
+            SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
+      
+            double getHypothesisCost( gsl_vector* hypothesis );
+
+        };
+
 }
 }
 

@@ -7,7 +7,7 @@ find_package( OpenGL REQUIRED )                                  # Rendering
 include_directories( ${OPENGL_INCLUDE_DIR} )
 
 find_package( Bullet REQUIRED )
-#Ray query 
+include_directories( ${BULLET_INCLUDE_DIRS} )
 
 # 3D font experiments
 include_directories( ${FREETYPE_INCLUDE_DIRS} )
@@ -25,7 +25,7 @@ add_library( L3Vis
                 CommandInterface.cpp
                 )
             
-target_link_libraries( L3Vis L3 GLV lua opencv_highgui opencv_core Common OGLFT Interface )
+target_link_libraries( L3Vis L3 GLV lua opencv_highgui opencv_core Common OGLFT Interface ${BULLET_LIBRARIES} )
 
 add_subdirectory( apps )
 add_subdirectory( tests )

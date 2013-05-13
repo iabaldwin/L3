@@ -744,7 +744,6 @@ namespace Visualisers
         glEnable(GL_POLYGON_STIPPLE);
         glPolygonStipple(L3::Visualisers::mask);
         glv::draw::enable( glv::draw::Blend );
-        //glv::draw::paint( glv::draw::TriangleStrip, points, fan, draw_counter );
         glv::draw::paint( glv::draw::TriangleFan, points, fan, draw_counter );
         glv::draw::disable( glv::draw::Blend );
         glDisable(GL_POLYGON_STIPPLE);

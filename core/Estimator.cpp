@@ -290,6 +290,39 @@ namespace L3
             return refined;
         }
 
+    double global_minimisation_function( const gsl_vector * x, void * params)
+    {
+
+
+    }
+
+    L3::Estimator::Algorithm<double>* L3::Estimator::MinimisationParameters::global_minimiser = NULL;
+
+    template < typename T >
+        SE3 Minimisation<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+        {
+            current_swathe = swathe;
+
+            gsl_vector_set (x, 0, estimate.X() );
+            gsl_vector_set (x, 1, estimate.Y() );
+            gsl_vector_set (x, 2, estimate.Q() );
+
+            gsl_vector_set_all (ss, 1.0);
+        
+        }
+
+    template <typename T>
+        double Minimisation<T>::getHypothesisCost( gsl_vector* hypothesis )
+        {
+            std::vector<double> cost( 1 );
+
+            //Construct pose from hypothesis
+            L3::SE3 pose_estimate( gsl_vector_get( hypothesis, 0 ), gsl_vector_get( hypothesis, 1 ), 0.0, 0.0, 0.0, gsl_vector_get( hypothesis, 2 ) );
+
+            Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[0].get() , this->cost_function, cost.begin() );
+
+        }
+    
     }   // Estimator
 }       // L3
 
@@ -297,3 +330,5 @@ namespace L3
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template L3::SE3 L3::Estimator::Minimisation<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+

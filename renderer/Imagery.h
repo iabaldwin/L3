@@ -9,7 +9,8 @@ namespace L3
 {
 namespace Visualisers
 {
-    
+
+
     struct ImageRenderer : L3::Visualisers::Leaf
     {
 

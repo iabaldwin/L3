@@ -287,6 +287,16 @@ namespace L3
     {
         if( !layout )
             return std::make_pair( false, "CI::No associated layout" );
+        else
+        {
+
+            for( std::list< std::string >::iterator it = added_trajectories.begin();
+                    it != added_trajectories.end();
+                    it++ )
+                this->removeTrajectory( *it );
+
+            return std::make_pair( true, "CI::Trajectories cleared" );
+        }
     }
 
     std::string CommandInterface::getState()
