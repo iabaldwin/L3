@@ -28,6 +28,7 @@ namespace Visualisers
     template <typename T>
     IteratorRenderer<T>::IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator )  : iterator(iterator )
     {
+        this->label.reset( new L3::Visualisers::LeafLabel( this ) );
     }
  
     template <typename T>
@@ -35,18 +36,28 @@ namespace Visualisers
     {
         std::deque< std::pair< double, boost::shared_ptr<T> > > window;
 
-         
         boost::shared_ptr< L3::Iterator<T> > iterator_ptr = iterator.lock();
 
         if( !iterator_ptr )
             return;
 
+
         iterator_ptr->getWindow( window );
         typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
 
+        
         while( it != window.end() )
             L3::Visualisers::CoordinateSystem( *(it++->second) ).onDraw3D( g );
 
+        std::stringstream ss;
+
+        this->tag.x = (it-1)->second->X();
+        this->tag.y = (it-1)->second->Y();
+        ss << (it-1)->first;
+        this->tag.text = ss.str();
+        label->onDraw3D(g);
+
+        
     }
 
     /*

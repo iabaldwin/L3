@@ -35,18 +35,8 @@ struct LeafLabel : Text3D
     {
     }
 
-    void onDraw3D( glv::GLV& g )
-    {
-        glPushMatrix();
-
-        glRotatef( 90, 1, 0, 0 );
-
-        glTranslatef( 0, 20, 0 );
-
-        Text3D::onDraw3D( g );
-
-        glPopMatrix();
-    }
+    void onDraw3D( glv::GLV& g );
+    
 
     Leaf* leaf;
 };

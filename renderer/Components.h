@@ -76,11 +76,20 @@ struct Leaf
     {
         bound_vertices.reset( new glv::Point3[24] ); 
         bound_colors.reset( new glv::Color[24] ); 
+   
+        tag.x = 0.0;
+        tag.y = 0.0;
     }
 
     struct bounds {
         float x,y,z;
     };
+
+    struct label_tag
+    {
+        float x,y;
+        std::string text;
+    } tag;
 
     bounds lower,upper;
 

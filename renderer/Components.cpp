@@ -1001,10 +1001,17 @@ namespace Visualisers
      */
     void PoseSequenceRenderer::onDraw3D( glv::GLV& g )
     {
+        std::stringstream ss;
         if ( pose_sequence)
         {
-        
             std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator it = pose_sequence->begin();
+
+            tag.x = it->second->X();
+            tag.y = it->second->Y();
+
+            ss << it->first;
+
+            tag.text = ss.str();
 
             while( it < pose_sequence->end() )
             {
@@ -1013,9 +1020,7 @@ namespace Visualisers
                 it+=100;
             }
 
-
         }
-
 
     }
 }
