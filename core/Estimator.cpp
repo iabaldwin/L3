@@ -98,10 +98,6 @@ namespace L3
         /*
          *  Cost Functions
          */
-        struct MI :  std::binary_function<double,double,double>
-        {
-
-        };
 
 
         /*
@@ -168,6 +164,54 @@ namespace L3
                 // Accumulate 
                 return std::accumulate( kl_estimate.get(), kl_estimate.get()+(experience.x_bins * experience.y_bins), T(0) );
             }
+
+        /*
+         *  Mutual information
+         */
+        template <typename T>
+        MICostFunction<T>::MICostFunction()
+            {
+                experience_marginal = gsl_histogram_alloc( 20 );
+                swathe_marginal = gsl_histogram_alloc( 20 );
+                joint = gsl_histogram2d_alloc( 20, 20 );
+            }
+
+
+        template < typename T >
+            double MICostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
+            {
+
+                // Find max of both
+                double max_val = std::max( experience.max(), swathe.max() );
+
+                // Reset
+                gsl_histogram_reset( experience_marginal );
+         
+                // Assign ranges
+                gsl_histogram_set_ranges_uniform( experience_marginal, 0, max_val );
+
+                double* data = experience.hist->bin;
+                for( int i=0; i<experience.hist->nx*experience.hist->ny; i++ )
+                    gsl_histogram_increment( experience_marginal, *data++ );
+
+
+                // Reset
+                gsl_histogram_reset( swathe_marginal );
+         
+                // Assign ranges
+                gsl_histogram_set_ranges_uniform( swathe_marginal, 0, max_val );
+
+                data = swathe.hist->bin;
+                for( int i=0; i<swathe.hist->nx*swathe.hist->ny; i++ )
+                    gsl_histogram_increment( swathe_marginal, *data++ );
+
+                
+                gsl_histogram2d_reset( joint );
+
+
+                return 0.0;
+            }
+
 
         /*
          *  Hypothesis Builder
@@ -328,7 +372,9 @@ namespace L3
 
 // Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
+template double L3::Estimator::MICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::Minimisation<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 
+template L3::Estimator::MICostFunction<double>::MICostFunction();

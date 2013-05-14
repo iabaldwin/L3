@@ -11,6 +11,8 @@
 #include "Smoother.h"
 
 #include <gsl/gsl_multimin.h>
+#include <gsl/gsl_histogram.h>
+#include <gsl/gsl_histogram2d.h>
 
 namespace L3
 {
@@ -137,9 +139,26 @@ namespace Estimator
 
     template < typename T >  
         struct KLCostFunction : CostFunction<T>
-    {
-        double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
-    };
+        {
+            double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
+        };
+
+    template < typename T >  
+        struct MICostFunction : CostFunction<T>
+        {
+            MICostFunction();
+
+            double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
+       
+
+            gsl_histogram*      experience_marginal;
+            gsl_histogram*      swathe_marginal;
+            gsl_histogram2d*    joint;
+            
+        };
+
+
+
 
     /*
      * Estimator types

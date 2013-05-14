@@ -103,7 +103,7 @@ namespace Visualisers
     {
         bool load( L3::Configuration::Locale& locale )        
         {
-            //std::string image = "/Users/ian/Documents/begbroke.png" ;
+            //std::string image = "/Users/ian/Documents/begbroke_high_res.jpg";
             std::string image = "/Users/ian/Documents/begbroke_med_res.png" ;
 
             lower_bound_x = locale.x_lower;
@@ -112,10 +112,12 @@ namespace Visualisers
             lower_bound_y = locale.y_lower;
             upper_bound_y = locale.y_upper;
 
-            upper_bound_x = upper_bound_x - lower_bound_x;
+            //upper_bound_x = upper_bound_x - lower_bound_x;
+            upper_bound_x = 1000*.125*4; 
             lower_bound_x = 0.0;
 
-            upper_bound_y = upper_bound_y - lower_bound_y;
+            //upper_bound_y = upper_bound_y - lower_bound_y;
+            upper_bound_y = 1000*.125*4; 
             lower_bound_y = 0.0;
 
             return ImageRenderer::load( image );

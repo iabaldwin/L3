@@ -45,6 +45,21 @@ namespace Visualisers
                         break; 
                 }
             }
+            
+           
+            /*
+             *  Select-click
+             */
+            if ( e == glv::Event::MouseDown )
+            {
+                const glv::Keyboard& k = g.keyboard();
+           
+                if ( k.shift() )
+                {
+                    //Do selection here
+                }
+            }
+
         }
     };
 
@@ -214,9 +229,6 @@ namespace Visualisers
             }
 
 
-            std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > > extras;
-
-
             boost::shared_ptr< glv::View >  scripting_interface;
 
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
@@ -249,6 +261,9 @@ namespace Visualisers
             boost::shared_ptr< EventController > composite_maximise_controller;
 
             std::list< boost::shared_ptr< EventController > > window_controllers;
+            
+            std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > > extras;
+
     };
 
 
@@ -260,13 +275,32 @@ namespace Visualisers
         public:
 
             DatasetLayout( glv::Window& win ) : Layout(win)
-            {
-                /*
-                 *  Stand-alone plots
-                 */
-                addLinearVelocityPlot();
-                addRotationalVelocityPlot();
-            }
+        {
+            /*
+             *  Stand-alone plots
+             */
+            addLinearVelocityPlot();
+            addRotationalVelocityPlot();
+
+            ancillary_1.reset( new glv::Box() );
+            ancillary_1->pos( window.width()-(550+5), 350+5);
+            //ancillary_1->fit();
+            this->renderables.push_front( ancillary_1.get() );
+
+            // Stand-alone scan renderer : Horizontal
+            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 182.5,175 ) ) );
+            updater->operator<<( horizontal_scan_renderer.get() );
+            (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
+
+            // Stand-alone scan renderer : Vertical
+            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(), glv::Rect( 182.5,175 ) ) );
+            dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 187, 0);
+            updater->operator<<( vertical_scan_renderer.get() );
+
+            (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
+
+
+        }
 
             const L3::Dataset*                          dataset;
             const L3::Configuration::Mission*           mission;
@@ -282,7 +316,14 @@ namespace Visualisers
             boost::shared_ptr< L3::Visualisers::PoseRenderer >          pose_renderer;
             boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer >  locale_bounds;
             boost::shared_ptr< L3::Visualisers::PointCloudRendererView >        runtime_cloud_renderer_view; 
+ 
+            //boost::shared_ptr< DataDumper > dumper;
+            boost::shared_ptr< glv::View > ancillary_1;
+            boost::shared_ptr< glv::View > ancillary_2;
             
+            boost::shared_ptr< L3::Visualisers::ScanRenderer2D > horizontal_scan_renderer;
+            boost::shared_ptr< L3::Visualisers::ScanRenderer2D > vertical_scan_renderer;
+           
             /*
              *  Load/reload function
              */
@@ -299,18 +340,13 @@ namespace Visualisers
 
             EstimatorLayout( glv::Window& win) : DatasetLayout(win)
             {
-                ancillary_1.reset( new glv::Box() );
-                //ancillary_1->pos( window.width()-(550+5), 350+5);
-                //ancillary_1->fit();
-                this->renderables.push_front( ancillary_1.get() );
+            
             }
 
             bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience );
 
             boost::shared_ptr< L3::Experience>                      experience ;
             boost::shared_ptr< L3::Visualisers::PoseRenderer >      estimated_pose_renderer;
-            boost::shared_ptr< L3::Visualisers::ScanRenderer2D >    horizontal_scan_renderer;
-            boost::shared_ptr< L3::Visualisers::ScanRenderer2D >    vertical_scan_renderer;
 
             boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> oracle_renderer;
             boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> predicted_pose_renderer;
@@ -329,10 +365,7 @@ namespace Visualisers
 
             boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
 
-            //boost::shared_ptr< DataDumper > dumper;
-            boost::shared_ptr< glv::View > ancillary_1;
-            boost::shared_ptr< glv::View > ancillary_2;
-
+            
             boost::shared_ptr< L3::Visualisers::CostRendererView >          cost_renderer_view;
             boost::shared_ptr< L3::Visualisers::ScanMatchingScanRenderer >  scan_matching_renderer;
             boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;

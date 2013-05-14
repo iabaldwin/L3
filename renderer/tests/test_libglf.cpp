@@ -77,7 +77,7 @@ struct test_leaf : L3::Visualisers::Leaf
         }
 
         
-        char* THEMSG = "Hello, World\0";
+        char* THEMSG = static_cast<char*>("Hello, World\0");
         
         glPushMatrix();
         

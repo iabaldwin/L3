@@ -1,5 +1,7 @@
 #include "Layouts.h"
 
+#include <boost/pointer_cast.hpp>
+
 namespace L3
 {
     namespace Visualisers
@@ -77,7 +79,12 @@ namespace L3
             top << *runtime_cloud_renderer_view; 
             updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
             point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
-            
+           
+            /*
+             *Scan renderers
+             */
+            horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
+            vertical_scan_renderer->windower = runner->vertical_LIDAR;
 
         }
 
@@ -117,7 +124,8 @@ namespace L3
 
             // Predicted estimates
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->algorithm ) ));
+            //algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->algorithm ) ));
+            algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::IterativeDescent<double> >( runner->algorithm ) ));
             algorithm_costs_renderer->draw_bounds = true;
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
 
@@ -140,23 +148,17 @@ namespace L3
             //ancillary_1.reset( new glv::Box() );
 
             // Stand-alone scan renderer :: Horizontal
-            L3::Visualisers::Updateable* putative = dynamic_cast<L3::Visualisers::Updateable*>( horizontal_scan_renderer.get() );
-            updater->updateables.remove( putative );
+            //L3::Visualisers::Updateable* putative = dynamic_cast<L3::Visualisers::Updateable*>( horizontal_scan_renderer.get() );
+            //updater->updateables.remove( putative );
             
-            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR.get(), glv::Rect( 182.5,175 ) ) );
-            updater->operator<<( horizontal_scan_renderer.get() );
+            //horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR.get(), glv::Rect( 182.5,175 ) ) );
+            //updater->operator<<( horizontal_scan_renderer.get() );
 
-            (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
+            //(*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
 
-            ancillary_1->pos( window.width()-(550+5), 350+5);
+            //ancillary_1->pos( window.width()-(550+5), 350+5);
             
-            //// Stand-alone scan renderer : Vertical
-            ////vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( runner->vertical_LIDAR, glv::Rect( 182.5,175 ) ) );
-            ////dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 187, 0);
-            ////updater->operator<<( vertical_scan_renderer.get() );
-
-            ////(*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
-
+            
             ////combined_scan_renderer.reset( new L3::Visualisers::CombinedScanRenderer2D(  runner->horizontal_LIDAR, runner->vertical_LIDAR, glv::Rect(150,150) ) );
             ////combined_scan_renderer->pos( 150*2+2*30, 0 );
             ////for( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = combined_scan_renderer->scan_renderers.begin();

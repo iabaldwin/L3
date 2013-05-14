@@ -9,6 +9,9 @@ namespace L3
 {
 namespace Visualisers
 {
+    /*
+     *Composite
+     */
     void Composite::onDraw3D( glv::GLV& g )
     {
         glv::draw::translate( position.x, position.y, position.z );
@@ -28,8 +31,15 @@ namespace Visualisers
 
     }
 
+    /*
+     *Leaf
+     */
     void Leaf::drawBounds()
     {
+        glv::Color fill_color = selected ? glv::Color( .75, .75, .75, .85  ) : glv::Color( .75, .75, .75, .35  );
+        std::fill( bound_colors.get(), bound_colors.get()+4, fill_color );
+
+
         int counter = 0;
 
         // Bottom
@@ -38,6 +48,8 @@ namespace Visualisers
         bound_vertices[counter++]( upper.x, upper.y, lower.z );
         bound_vertices[counter++]( upper.x, lower.y, lower.z );
 
+
+        glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::LineLoop, bound_vertices.get(), bound_colors.get(), 4 );
      
         // Left Lower
@@ -77,6 +89,7 @@ namespace Visualisers
         bound_vertices[counter++]( upper.x, lower.y, upper.z );
 
         glv::draw::paint( glv::draw::LineLoop, bound_vertices.get(), bound_colors.get(), 4 );
+        glv::draw::disable( glv::draw::Blend );
       
     }
 
@@ -739,7 +752,6 @@ namespace Visualisers
         glv::draw::blendTrans();
         glv::draw::lineWidth(1);
         glv::draw::paint( glv::draw::LineLoop, points, perimeter, draw_counter );
-
            
         glEnable(GL_POLYGON_STIPPLE);
         glPolygonStipple(L3::Visualisers::mask);
@@ -752,7 +764,12 @@ namespace Visualisers
 
     void ScanRenderer2D::update()
     {
-        windower->getWindow( window );
+        boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >  scan_ptr = windower.lock();
+        
+        if ( !scan_ptr )
+            return;
+
+        scan_ptr->getWindow( window );
 
         if (window.size() > 0)
             scan = window.back().second;
@@ -873,12 +890,15 @@ namespace Visualisers
         double min_x=LOWER, min_y=LOWER, min_z=LOWER;
         double max_x=UPPER, max_y=UPPER, max_z=UPPER;
 
+        boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm_ptr = algorithm.lock();
 
-        for( std::deque< boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > >::iterator it = algorithm->discrete_estimators.begin();
-                it != algorithm->discrete_estimators.end(); 
+        if( !algorithm_ptr)
+            return;
+
+        for( std::deque< boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > >::iterator it = algorithm_ptr->discrete_estimators.begin();
+                it != algorithm_ptr->discrete_estimators.end(); 
                 it++ )
         {
-
             std::vector< L3::SE3 > current_estimates;
             std::vector< double >  current_costs;
 

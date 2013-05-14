@@ -54,7 +54,10 @@ namespace Visualisers
         Text3D::setText( leaf->tag.text );
         Text3D::onDraw3D( g );
         glPopMatrix();
-    
+
+        // Draw a bounding box, transparency, etc.
+
+
     }
 
 }

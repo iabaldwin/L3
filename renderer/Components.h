@@ -72,7 +72,9 @@ struct Component : glv::View3D
  */
 struct Leaf 
 {
-    Leaf() : draw_bounds(false)
+    Leaf() 
+        : draw_bounds(false), 
+        selected(false)
     {
         bound_vertices.reset( new glv::Point3[24] ); 
         bound_colors.reset( new glv::Color[24] ); 
@@ -93,7 +95,7 @@ struct Leaf
 
     bounds lower,upper;
 
-    bool draw_bounds;
+    bool draw_bounds, selected;
 
     boost::shared_array< glv::Point3 > bound_vertices;
     boost::shared_array< glv::Color>   bound_colors;
@@ -599,7 +601,7 @@ struct DedicatedPoseRenderer : glv::View3D, Updateable
 struct ScanRenderer2D : Updateable
 {
 
-    ScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower, glv::Color color, float range_threshold=2.0  ) 
+    ScanRenderer2D( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, glv::Color color, float range_threshold=2.0  ) 
         : windower(windower),
             color(color),
             range_threshold(range_threshold)
@@ -615,7 +617,9 @@ struct ScanRenderer2D : Updateable
     glv::Color                              color;
     boost::shared_ptr<L3::LMS151>           scan;
     boost::shared_ptr< glv::View >          label;
-    L3::ConstantTimeIterator< L3::LMS151 >* windower;
+
+    boost::weak_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower;
+    
     std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
     
     void onDraw3D( glv::GLV& g );
@@ -626,13 +630,12 @@ struct ScanRenderer2D : Updateable
 struct HorizontalScanRenderer2DView : glv::View3D, ScanRenderer2D
 {
 
-    HorizontalScanRenderer2DView( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
+    HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, const glv::Rect& rect )
         : glv::View3D( rect ),
             ScanRenderer2D( windower, glv::Color(1,0,0), 5.0  )
 
     {
         rotate_z = 0;
-    
         //label.reset( new glv::Label("LMS151::Horizontal", true) );
         //label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
         label.reset( new glv::Label("LMS151::Horizontal" ) );
@@ -650,7 +653,7 @@ struct HorizontalScanRenderer2DView : glv::View3D, ScanRenderer2D
 struct VerticalScanRenderer2DView : glv::View3D, ScanRenderer2D
 {
 
-    VerticalScanRenderer2DView( L3::ConstantTimeIterator< L3::LMS151 >* windower, const glv::Rect& rect )
+    VerticalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, const glv::Rect& rect )
         : glv::View3D( rect ),
             ScanRenderer2D( windower, glv::Color(0,0,1),0 )
     {
@@ -677,19 +680,14 @@ struct VerticalScanRenderer2DView : glv::View3D, ScanRenderer2D
 struct CombinedScanRenderer2D  : glv::View3D
 {
     
-    CombinedScanRenderer2D( L3::ConstantTimeIterator< L3::LMS151 >* windower_vertical,
-                            L3::ConstantTimeIterator< L3::LMS151 >* windower_horizontal, 
+    CombinedScanRenderer2D( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower_vertical,
+                            boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower_horizontal, 
                             const glv::Rect& rect )
                             : glv::View3D(rect)
 
     {
-        scan_renderers.push_back(
-                boost::make_shared<ScanRenderer2D>( windower_vertical, glv::Color(1,0,0) )
-                );
-
-        scan_renderers.push_back(
-                boost::make_shared<ScanRenderer2D>( windower_vertical, glv::Color(0,0,1) )
-                );
+        scan_renderers.push_back( boost::make_shared<ScanRenderer2D>( windower_vertical, glv::Color(1,0,0) ) );
+        scan_renderers.push_back( boost::make_shared<ScanRenderer2D>( windower_vertical, glv::Color(0,0,1) ) );
     }
 
     void onDraw3D( glv::GLV& g )
@@ -779,8 +777,7 @@ struct CostRendererView : CostRenderer, glv::View3D
  */
 struct AlgorithmCostRenderer  
 {
-    //AlgorithmCostRenderer( boost::shared_ptr< L3::IterativeDescent<double> > algorithm ) 
-    AlgorithmCostRenderer( L3::Estimator::IterativeDescent<double>* algorithm ) 
+    AlgorithmCostRenderer( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) 
         : algorithm(algorithm)
     {
 
@@ -790,15 +787,14 @@ struct AlgorithmCostRenderer
     {
     }
 
-    //boost::shared_ptr< L3::IterativeDescent<double> > algorithm ;
-    L3::Estimator::IterativeDescent<double>* algorithm ;
+    boost::weak_ptr< L3::Estimator::IterativeDescent<double> > algorithm ;
 
 
 };
 
 struct AlgorithmCostRendererLeaf : AlgorithmCostRenderer, Leaf
 {
-    AlgorithmCostRendererLeaf( L3::Estimator::IterativeDescent<double>* algorithm ) 
+    AlgorithmCostRendererLeaf( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) 
         : AlgorithmCostRenderer(algorithm)
 
     {

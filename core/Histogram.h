@@ -63,9 +63,8 @@ namespace L3
             {
                 if ( ( x_bins == 0 ) || (y_bins == 0 ) )
                 {
-                    std::cerr << "Erroneuos parameters! " << std::endl;
-                    print();
-                    throw std::exception(); 
+                    std::cerr << "Erroneous parameters! " << std::endl;
+                    exit(-1); 
                 }
 
                 if ( hist ) // Re-create

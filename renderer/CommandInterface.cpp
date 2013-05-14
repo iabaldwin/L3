@@ -137,7 +137,8 @@ namespace L3
             return std::make_pair( false, "CI::No such directory: " + load_copy ); 
         }
 
-        L3::Estimator::Algorithm<double>* algorithm = dynamic_cast<L3::EstimatorRunner*>(container->runner.get())->algorithm;
+        //L3::Estimator::Algorithm<double>* algorithm = dynamic_cast<L3::EstimatorRunner*>(container->runner.get())->algorithm;
+        boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm = dynamic_cast<L3::EstimatorRunner*>(container->runner.get())->algorithm;
 
         container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
         container->runner.reset( new L3::EstimatorRunner( container->dataset.get(), container->mission.get(), container->experience.get() ) );

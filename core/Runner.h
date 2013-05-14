@@ -147,7 +147,7 @@ struct EstimatorRunner : DatasetRunner
     L3::Experience*                         experience;
     L3::PoseProvider*                       provider;
     L3::ConstantTimeWindower<L3::LHLV>*     windower;
-    L3::Estimator::Algorithm<double>*       algorithm;
+    boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm;
 
     bool update( double time );
 
@@ -160,7 +160,7 @@ struct EstimatorRunner : DatasetRunner
         return *this;
     }
 
-    EstimatorRunner& setAlgorithm( L3::Estimator::Algorithm<double>* algorithm )
+    EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
     {
         this->algorithm = algorithm;
         return *this;

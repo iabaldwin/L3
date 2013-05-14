@@ -35,13 +35,14 @@ int main( int argc, char* argv[] )
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
     // Estimator
+    //L3::Estimator::CostFunction<double>* mi_cost_function = new L3::Estimator::MICostFunction<double>();
     L3::Estimator::CostFunction<double>* kl_cost_function = new L3::Estimator::KLCostFunction<double>();
-    L3::Estimator::IterativeDescent<double> algo( kl_cost_function, experience->experience_pyramid );
+    boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new  L3::Estimator::IterativeDescent<double>(kl_cost_function, experience->experience_pyramid ));
     
     // Create runner
     boost::shared_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( dataset, mission, experience.get() ) );
 
-    runner->setAlgorithm( &algo );
+    runner->setAlgorithm( algo );
     runner->start();
 
     boost::shared_ptr< L3::Container > container( new L3::Container() );
