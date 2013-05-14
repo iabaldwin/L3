@@ -1,5 +1,5 @@
 add_executable( test_ray_query test_ray_query.cpp )
-target_link_libraries( test_ray_query GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} ${BULLET_LIBRARIES} )
+target_link_libraries( test_ray_query GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} ${BULLET_LIBRARIES} )
 
 add_executable( test_freetype test_freetype.cpp )
 target_link_libraries( test_freetype GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} )

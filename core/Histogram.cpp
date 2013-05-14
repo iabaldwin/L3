@@ -48,6 +48,55 @@ namespace L3
             // Data copy
             gsl_histogram2d_memcpy( dest->hist, src->hist );
         }
+
+    template<typename T>
+        struct EntropyAccumulator : std::binary_function<T,T,T>
+        {
+
+            EntropyAccumulator( T normaliser ) : normaliser(normaliser)
+            {
+
+            }
+
+            T normaliser;
+                
+            T tmp;
+
+            T operator()( T a, T p )
+            {
+                tmp = p/normaliser;
+
+                if ( p == 0 )
+                    return a;
+                else
+                    return a + tmp*boost::math::log1p(tmp);
+            }
+
+        };
+
+
+    double compute_entropy( gsl_histogram* histogram )
+    {
+        EntropyAccumulator<double> accumulator( gsl_histogram_sum( histogram ) );
+
+        return std::accumulate( histogram->bin, 
+                histogram->bin+(histogram->n),
+                0.0,
+                accumulator );
+    }
+
+    double compute_entropy( gsl_histogram2d* histogram )
+    {
+        EntropyAccumulator<double> accumulator( gsl_histogram2d_sum( histogram ) );
+
+        return std::accumulate( histogram->bin, 
+                histogram->bin+(histogram->nx*histogram->ny),
+                0.0,
+                accumulator );
+    }
+
+
+
 }
 
 template std::ostream& L3::operator<<( std::ostream& o, const Histogram<double>& h );

@@ -9,7 +9,6 @@
 
 #include "L3.h"
 #include "Components.h"
-#include "TextRenderer.h"
 
 namespace L3
 {
@@ -36,15 +35,16 @@ struct PoseChainRenderer : Leaf
  *  Iterator renderer
  */
 template <typename T>
+//struct IteratorRenderer : LabelledLeaf
 struct IteratorRenderer : Leaf
 {
-    IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator );
-    
+    IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator ) : iterator(iterator )
+    {
+    }
+
     boost::weak_ptr< L3::Iterator<T> > iterator;
    
     void onDraw3D( glv::GLV& g );
-
-    boost::shared_ptr< L3::Visualisers::LeafLabel > label;
 };
 
 /*

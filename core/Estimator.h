@@ -10,10 +10,6 @@
 #include "Histogram.h"
 #include "Smoother.h"
 
-#include <gsl/gsl_multimin.h>
-#include <gsl/gsl_histogram.h>
-#include <gsl/gsl_histogram2d.h>
-
 namespace L3
 {
 namespace Estimator
@@ -146,18 +142,8 @@ namespace Estimator
     template < typename T >  
         struct MICostFunction : CostFunction<T>
         {
-            MICostFunction();
-
             double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
-       
-
-            gsl_histogram*      experience_marginal;
-            gsl_histogram*      swathe_marginal;
-            gsl_histogram2d*    joint;
-            
         };
-
-
 
 
     /*
@@ -198,13 +184,9 @@ namespace Estimator
     template < typename T >
         struct DiscreteEstimator : Estimator<T>
         {
-            //DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience, float lower=10.0, float upper=10.0, float granularity=1.0 ) 
-                //: Estimator<T>(f, experience)
-
             DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience, boost::shared_ptr< PoseEstimates > estimates )
                 : Estimator<T>(f, experience)
             {
-                //this->pose_estimates.reset( new GridEstimates( lower, upper, granularity ) );
                 this->pose_estimates = estimates;
             }
             

@@ -14,15 +14,17 @@ include_directories( ${FREETYPE_INCLUDE_DIRS} )
 include_directories( "/System/Library/Frameworks/OpenGL.framework/Headers/" )
 add_definitions( -DOGLFT_NO_QT -DOGLFT_NO_SOLID )
 
+include_directories( "/Users/ian/code/thirdparty/bullet/Demos/OpenGL/" )
+
 add_library( L3Vis 
                 Visualisers.cpp 
                 Controller.cpp 
                 Components.cpp 
                 Layouts.cpp 
-                TextRenderer.cpp
                 GLVInterface.cpp
                 RenderingUtils.cpp
                 CommandInterface.cpp
+                debug/GLDebugDrawer.cpp 
                 )
             
 target_link_libraries( L3Vis L3 GLV lua opencv_highgui opencv_core Common OGLFT Interface ${BULLET_LIBRARIES} glf )

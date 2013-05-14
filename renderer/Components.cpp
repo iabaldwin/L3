@@ -16,16 +16,16 @@ namespace Visualisers
     {
         glv::draw::translate( position.x, position.y, position.z );
         glv::draw::rotate( position.r, position.p, position.q );
-        
+
         std::list<Leaf*>::iterator leaf_iterator = components.begin();
-        
+
         while( leaf_iterator != components.end() )
         {
             (*leaf_iterator)->onDraw3D( g );
-           
+
             if( ( *leaf_iterator )->draw_bounds )
                 ( *leaf_iterator )->drawBounds();
-            
+
             leaf_iterator++;
         }
 
@@ -51,19 +51,19 @@ namespace Visualisers
 
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::LineLoop, bound_vertices.get(), bound_colors.get(), 4 );
-     
+
         // Left Lower
         counter = 0;
         bound_vertices[counter++]( lower.x, lower.y, lower.z );
         bound_vertices[counter++]( lower.x, lower.y, upper.z );
-        
+
         glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
 
         // Left upper
         counter = 0;
         bound_vertices[counter++]( lower.x, upper.y, lower.z );
         bound_vertices[counter++]( lower.x, upper.y, upper.z );
-        
+
         glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
 
 
@@ -71,14 +71,14 @@ namespace Visualisers
         counter = 0;
         bound_vertices[counter++]( upper.x, upper.y, lower.z );
         bound_vertices[counter++]( upper.x, upper.y, upper.z );
-        
+
         glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
 
         // Right Lower
         counter = 0;
         bound_vertices[counter++]( upper.x, lower.y, lower.z );
         bound_vertices[counter++]( upper.x, lower.y, upper.z );
-        
+
         glv::draw::paint( glv::draw::Lines, bound_vertices.get(), bound_colors.get(), 2 );
 
         // Top
@@ -90,7 +90,7 @@ namespace Visualisers
 
         glv::draw::paint( glv::draw::LineLoop, bound_vertices.get(), bound_colors.get(), 4 );
         glv::draw::disable( glv::draw::Blend );
-      
+
     }
 
     /*
@@ -114,7 +114,7 @@ namespace Visualisers
             colors[counter] = c; 
             vertices[counter++]( i, upper, 0);
         }
-            
+
 
         for ( int i=lower; i<=upper; i+=spacing )
         {
@@ -187,7 +187,7 @@ namespace Visualisers
 
         float x = pose.X();
         float y = pose.Y();
-        
+
         for( int i=0; i<num_points; i++ )
         {
             vertices[i]( (range*cos(angle))+x, (range*sin(angle))+y, 0 );
@@ -267,7 +267,7 @@ namespace Visualisers
             return;
 
         L3::Histogram<double> tmp;
-        
+
         L3::ReadLock lock( hist->mutex );
         L3::clone( hist.get(), &tmp );
         lock.unlock();   
@@ -312,7 +312,7 @@ namespace Visualisers
         L3::ReadLock lock( hist->mutex );
         L3::clone( hist.get(), &tmp );
         lock.unlock();   
-        
+
         mTex.magFilter(GL_NEAREST);
         mTex.dealloc();
         mTex.alloc( tmp.x_bins, tmp.y_bins );
@@ -320,7 +320,7 @@ namespace Visualisers
         double normalizer = tmp.max();
 
         unsigned char * pixs = mTex.buffer<unsigned char>();
-            
+
         for(int j=0; j< tmp.y_bins; j++ )
         {
             for(int i=0; i<tmp.x_bins; i++ )
@@ -376,7 +376,7 @@ namespace Visualisers
                 {
                     float x = plot_histogram->hist->xrange[i];
                     float y = plot_histogram->hist->yrange[j];
-                    
+
                     // Bottom
                     float scale = float(val)/float(max);
 
@@ -519,11 +519,11 @@ namespace Visualisers
      */
     PointCloudRenderer::PointCloudRenderer( boost::shared_ptr< L3::PointCloud<double> > cloud , glv::Color color ) 
         : cloud(cloud),
-            color(color)
+        color(color)
     {
         // Construct the plot cloud
         plot_cloud.reset( new L3::PointCloud<double>() );
-        
+
         // Allocate
         L3::allocate( plot_cloud.get(), 5*1000 );
 
@@ -547,7 +547,7 @@ namespace Visualisers
 
         }
     }
-    
+
     /*
      *  Components :: Point cloud renderer (leaf)
      */
@@ -562,10 +562,10 @@ namespace Visualisers
         if( cloud_ptr->num_points > 0 ) 
             L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
-       
+
         PointCloudRenderer::onDraw3D(g);    
     }
-    
+
     /*
      *  Components :: Point cloud renderer (view)
      */
@@ -577,7 +577,7 @@ namespace Visualisers
         glv::draw::translate( 0, 60, -200 );
 
         PointCloudRenderer::onDraw3D(g);    
-        
+
         if( this->enabled( glv::Property::Maximized ) )
             bounds_renderer->onDraw3D(g);
     }
@@ -656,20 +656,20 @@ namespace Visualisers
         if( boost::shared_ptr< L3::Estimator::PoseEstimates > pose_estimates = estimates.lock() )
         {
 
-        glv::Point3 points[ pose_estimates->estimates.size() ];
-        glv::Color  colors[ pose_estimates->estimates.size() ];
+            glv::Point3 points[ pose_estimates->estimates.size() ];
+            glv::Color  colors[ pose_estimates->estimates.size() ];
 
-        std::vector< L3::SE3 >::iterator it = pose_estimates->estimates.begin();
+            std::vector< L3::SE3 >::iterator it = pose_estimates->estimates.begin();
 
-        int counter = 0;
-        while( it != pose_estimates->estimates.end() )
-        {
-            points[ counter++ ]( it->X(), it->Y(), 0.0 );
-            it++;
-        }
+            int counter = 0;
+            while( it != pose_estimates->estimates.end() )
+            {
+                points[ counter++ ]( it->X(), it->Y(), 0.0 );
+                it++;
+            }
 
-        glv::draw::paint( glv::draw::Points, points, colors, counter );
-    
+            glv::draw::paint( glv::draw::Points, points, colors, counter );
+
         }
     }
 
@@ -752,7 +752,7 @@ namespace Visualisers
             points[draw_counter]( x, y, 0 );
             perimeter[draw_counter].set( color, .75 );
             fan[draw_counter].set( color, 1 );
-            
+
             draw_counter++;
 
         }
@@ -763,7 +763,7 @@ namespace Visualisers
         glv::draw::blendTrans();
         glv::draw::lineWidth(1);
         glv::draw::paint( glv::draw::LineLoop, points, perimeter, draw_counter );
-           
+
         glEnable(GL_POLYGON_STIPPLE);
         glPolygonStipple(L3::Visualisers::mask);
         glv::draw::enable( glv::draw::Blend );
@@ -776,7 +776,7 @@ namespace Visualisers
     void ScanRenderer2D::update()
     {
         boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >  scan_ptr = windower.lock();
-        
+
         if ( !scan_ptr )
             return;
 
@@ -801,8 +801,8 @@ namespace Visualisers
         int counter = 0;
 
         for( L3::Estimator::PoseEstimates::ESTIMATES_ITERATOR it = estimates.estimates.begin();
-            it != estimates.estimates.end();
-            it++ )
+                it != estimates.estimates.end();
+                it++ )
         {
 
             cost = std::isinf( estimates.costs[counter] ) ? 0.0 : estimates.costs[counter] ;
@@ -829,18 +829,18 @@ namespace Visualisers
         //float y_offset = (float)( rand()%100 );
 
         //glv::draw::translate( -1*x_offset, -1*y_offset, -75 );
-        
+
         //glv::Point3 vertices[100];
         //glv::Color  colors[100];
 
         //for( int i=0; i<100; i++ )
-            //vertices[i]( ((rand()%50)-25)+x_offset, ((rand()%50)-25)+y_offset, 0 );
+        //vertices[i]( ((rand()%50)-25)+x_offset, ((rand()%50)-25)+y_offset, 0 );
 
         //glv::draw::paint( glv::draw::Points, vertices, colors, 100 );
 
 
         glv::draw::translate( -1*estimates.position->X(), -1*estimates.position->Y(), -30);
-        
+
         L3::ReadLock lock( estimates.mutex );
         CostRenderer::onDraw3D( g );     
 
@@ -859,10 +859,10 @@ namespace Visualisers
 
         outer_vertices[1]( -500.0, 500.0, 10 );
         outer_colors[1].set( 0, 1, 0, .4); 
-        
+
         outer_vertices[2]( 500.0, 500.0, 10 );
         outer_colors[2].set( 0, 1, 0, .4); 
-        
+
         outer_vertices[3]( 500.0, -500.0, 10 );
         outer_colors[3].set( 0, 1, 0, .4); 
 
@@ -874,7 +874,7 @@ namespace Visualisers
         glv::draw::lineStippling(false);
 
         glv::draw::paint( glv::draw::LineLoop, outer_vertices, outer_colors, 4 );
-        
+
         glv::draw::disable( glv::draw::Blend );
 
     }
@@ -935,7 +935,7 @@ namespace Visualisers
                     plot_color = glv::Color( 0, 1, 0 ); 
                 }
 
-                vertices[counter]( it->X(), it->Y(), layer_height+plot_height );
+                vertices[counter]( it->X(), it->Y(), layer_height+(plot_height*20) );
                 colors[counter] =  plot_color;           
                 counter++;
 
@@ -952,7 +952,7 @@ namespace Visualisers
             layer_height += 20;
 
             glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-        
+
         }
 
         this->lower.x = min_x;
@@ -970,19 +970,19 @@ namespace Visualisers
         boost::scoped_array<double> putative;
 
         L3::ReadLock lock( engine->mutex );
-        
+
         int scan_points = engine->matcher->scan_points;
         int putative_points = engine->matcher->putative_points;
 
         scan.reset( new double[scan_points*3] );
         std::copy( engine->matcher->scan.get(), 
-                    engine->matcher->scan.get()+ scan_points*3, 
-                    scan.get() );
+                engine->matcher->scan.get()+ scan_points*3, 
+                scan.get() );
 
         putative.reset( new double[putative_points*3] );
         std::copy( engine->matcher->putative.get(), 
-                    engine->matcher->putative.get()+putative_points*3,
-                    putative.get() );
+                engine->matcher->putative.get()+putative_points*3,
+                putative.get() );
 
         lock.unlock();
 
@@ -997,33 +997,33 @@ namespace Visualisers
             x = *iterator++;
             y = *iterator++;
             z = *iterator++;
-            
+
             scan_vertices[i]( x, y, 0 );
             scan_colors[i].set( .5, .5, .5, .5 ); 
         }
-  
+
         glv::draw::translateZ( -80 );
 
         glv::Point3 putative_vertices[scan_points];
         glv::Color  putative_colors[scan_points];
 
         iterator = &putative[0];
-    
+
         for( int i=0; i<putative_points; i++ )
         {
             x = *iterator++;
             y = *iterator++;
             z = *iterator++;
-           
+
             putative_vertices[i]( x, y, 0 );
             putative_colors[i].set( 1, 0, 0, .5 ); 
         }
-        
+
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Points, scan_vertices, scan_colors, scan_points );
         glv::draw::paint( glv::draw::Points, putative_vertices, putative_colors, putative_points );
         glv::draw::disable( glv::draw::Blend );
-  
+
 
     }
 
@@ -1054,5 +1054,87 @@ namespace Visualisers
         }
 
     }
+
+    Text3D::Text3D() : scale(4)
+    {
+        glfInit();
+
+        font_descriptor = glfLoadFont( (char*)"/Users/ian/code/thirdparty/glf_distr/fonts/courier1.glf" );
+
+        glfSetCurrentFont(font_descriptor);
+    }
+
+    void Text3D::setText( std::string text )
+    {
+        this->text = text;
+    }
+
+    void Text3D::onDraw3D( glv::GLV& g )
+    {
+        //float currentColor[4];
+        //glGetFloatv(GL_CURRENT_COLOR,currentColor);
+
+        //glColor3f(1.0,0.2,0.3);
+        //glEnable(GL_BLEND);
+        glColor4f( .5, .5, .5, .85 );
+        glPushMatrix();
+        glTranslatef( scale/2, scale/2, 0 );
+        glScalef(scale,scale,1.0);
+        glfGetStringBounds( const_cast<char*>(text.c_str()), &xmin, &ymin, &xmax, &ymax);
+
+        glfDrawSolidString( const_cast<char*>(text.c_str() ) );
+        //glDisable(GL_BLEND);
+        glPopMatrix();
+
+        //glColor4f( currentColor[0], currentColor[1], currentColor[2], currentColor[3] );
+
+    }
+
+    /*
+     *Label renderer
+     */
+
+    void LeafLabel::onDraw3D( glv::GLV& g )
+    {
+        if ( std::isnan( tag->x ) || std::isnan( tag->y ))
+            return;
+
+        //glPushMatrix();
+        glv::draw::push();
+        glRotatef( 90, 1, 0, 0 );
+        glTranslatef( tag->x, 20, -1*tag->y);
+        Text3D::setText( tag->text );
+        Text3D::onDraw3D( g );
+        //glPopMatrix();
+        glv::draw::pop();
+
+        glv::Point3 vertices[4];
+        glv::Color  colors[4];
+        glv::Color  sheen[4];
+
+        std::fill( colors, colors+4, glv::Color( .3, .3, .3, .8 ) );
+        std::fill( sheen, sheen+4, glv::Color( 1, 0, 0, .1 ) );
+
+        // Scale factor
+        float width = Text3D::scale*( Text3D::xmax - Text3D::xmin );
+        float height = Text3D::scale*( Text3D::ymax - Text3D::ymin );
+
+        float margin = 2.0;
+
+        vertices[0]( tag->x-margin, tag->y, 20-margin );
+        vertices[1]( tag->x-margin, tag->y, 20+height+margin );
+        vertices[2]( tag->x +width +margin, tag->y, 20+height+margin  );
+        vertices[3]( tag->x +width +margin, tag->y, 20-margin );
+
+        
+        glv::draw::blendTrans();
+        glv::draw::enable( glv::draw::Blend );
+        glv::draw::paint( glv::draw::LineLoop, vertices, colors, 4 );
+        glv::draw::paint( glv::draw::TriangleFan, vertices, sheen, 4 );
+        glv::draw::disable( glv::draw::Blend );
+
+        // Draw a bounding box, transparency, etc.
+    }
+
 }
 }

@@ -6,16 +6,29 @@
 
 #include "L3.h"
 #include "Visualisers.h"
-#include "TextRenderer.h"
 #include "Components.h"
 
-struct tmp : L3::Visualisers::Leaf
+struct tmp : L3::Visualisers::LabelledLeaf
 {
+
+    tmp()
+    {
+        this->label.reset( new L3::Visualisers::LeafLabel( &this->tag ) );
+    }
+    
+    boost::shared_ptr< L3::Visualisers::LeafLabel > label;
 
     void onDraw3D( glv::GLV& g )
     {
+        
+        std::stringstream ss;
 
+        this->tag.x = 0;
+        this->tag.y = 0;
+        ss << "Hello, World";
+        this->tag.text = ss.str();
 
+        label->onDraw3D(g);
     }
 
 };
@@ -36,12 +49,7 @@ int main (int argc, char ** argv)
 
     tmp tmp_leaf;
 
-    //L3::Visualisers::Text3D     text;
-    L3::Visualisers::LeafLabel text( &tmp_leaf );;
-
-    text.setText( "Testing" );
-
-    top << ( composite << text << grid );
+    top << ( composite << tmp_leaf << grid );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 
