@@ -9,8 +9,11 @@ namespace L3
         bool DatasetLayout::load( L3::DatasetRunner* runner )
         {
 
+            linear_velocity_plotter->assignIterator( runner->LHLV_iterator );
+            rotational_velocity_plotter->assignIterator( runner->LHLV_iterator );
+
             /*
-             *Scale
+             *  Scale
              */
             scale_factor_label.reset( new glv::Label() );
             scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
@@ -28,8 +31,6 @@ namespace L3
             time_renderer->pos(window.width()-155, window.height()-50 );
             top << *time_renderer;
 
-            linear_velocity_plotter->assignIterator( runner->LHLV_iterator );
-            rotational_velocity_plotter->assignIterator( runner->LHLV_iterator );
 
             /*
              *  Pose Iterator
@@ -37,10 +38,6 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
             iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
             *composite << (*iterator_renderer);
-
-            /*
-             *  Composite Leafs
-             */
 
             /*
              *  Static map-view
@@ -72,22 +69,17 @@ namespace L3
             /*
              *  Swathe Cloud
              */
-            L3::Visualisers::Updateable* putative = dynamic_cast<L3::Visualisers::Updateable*>( runtime_cloud_renderer_view.get() );
-            updater->updateables.remove( putative );
-
-            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(550+5), 0, 375-5, 350 ), runner->point_cloud, runner->current ));
-            top << *runtime_cloud_renderer_view; 
-            updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
-            point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
+                
+            runtime_cloud_renderer_view->cloud = runner->point_cloud;
+            runtime_cloud_renderer_view->current_estimate = runner->current;
            
             /*
-             *Scan renderers
+             *  Scan renderers
              */
             horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
             vertical_scan_renderer->windower = runner->vertical_LIDAR;
-
+        
         }
-
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
         {
@@ -141,7 +133,7 @@ namespace L3
 
             top << *pyramid_renderer;
 
-
+            
             /*
              *  Group: Ancillary
              */

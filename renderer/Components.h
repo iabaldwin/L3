@@ -285,7 +285,7 @@ struct PointCloudRenderer
     boost::shared_array< glv::Color >   colors;
     boost::shared_array< glv::Point3 >  vertices;
    
-    boost::shared_ptr< L3::PointCloud<double> > cloud;
+    boost::weak_ptr< L3::PointCloud<double> > cloud;
     boost::shared_ptr< L3::PointCloud<double> > plot_cloud;
 
     void onDraw3D( glv::GLV& g );
@@ -315,12 +315,12 @@ struct PointCloudRendererView: PointCloudRenderer, glv::View3D, Updateable
             current_estimate(estimate)
 
     {
-        bounds_renderer.reset( new PointCloudBoundsRenderer( this->cloud ) );
+        bounds_renderer.reset( new PointCloudBoundsRenderer( cloud ) );
     }
 
     boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer > bounds_renderer;
        
-    boost::shared_ptr< L3::SE3 > current_estimate;
+    boost::weak_ptr< L3::SE3 > current_estimate;
 
     std::pair<double,double> centroid;
     

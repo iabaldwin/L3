@@ -43,6 +43,7 @@ namespace Visualisers
 
                     default:
                         break; 
+                
                 }
             }
             
@@ -99,9 +100,6 @@ namespace Visualisers
                 // Add synched updater
                 updater.reset( new Updater() );
                 this->renderables.push_front( updater.get() );
-
-
-                            
             }
 
             virtual ~Layout()
@@ -116,7 +114,7 @@ namespace Visualisers
                 for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                     top << *it;
 
-                composite_maximise_controller.reset( new DoubleClickMaximiseToggle( main_view) );
+                composite_maximise_controller.reset( new DoubleClickMaximiseToggle( main_view ) );
 
                 window.setGLV(top);
 
@@ -228,7 +226,6 @@ namespace Visualisers
                 }
             }
 
-
             boost::shared_ptr< glv::View >  scripting_interface;
 
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
@@ -275,43 +272,46 @@ namespace Visualisers
         public:
 
             DatasetLayout( glv::Window& win ) : Layout(win)
-        {
-            /*
-             *  Stand-alone plots
-             */
-            addLinearVelocityPlot();
-            addRotationalVelocityPlot();
+            {
+                /*
+                 *  Stand-alone plots
+                 */
+                addLinearVelocityPlot();
+                addRotationalVelocityPlot();
 
-            ancillary_1.reset( new glv::Box() );
-            ancillary_1->pos( window.width()-(550+5), 350+5);
-            //ancillary_1->fit();
-            this->renderables.push_front( ancillary_1.get() );
+                ancillary_1.reset( new glv::Box() );
+                ancillary_1->pos( window.width()-(550+5), 350+5);
+                ancillary_1->fit();
+                this->renderables.push_front( ancillary_1.get() );
 
-            // Stand-alone scan renderer : Horizontal
-            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 182.5,175 ) ) );
-            updater->operator<<( horizontal_scan_renderer.get() );
-            (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
+                // Stand-alone scan renderer : Horizontal
+                horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 182.5,175 ) ) );
+                updater->operator<<( horizontal_scan_renderer.get() );
+                (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
 
-            // Stand-alone scan renderer : Vertical
-            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(), glv::Rect( 182.5,175 ) ) );
-            dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 187, 0);
-            updater->operator<<( vertical_scan_renderer.get() );
+                // Stand-alone scan renderer : Vertical
+                vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(), glv::Rect( 182.5,175 ) ) );
+                dynamic_cast<glv::View*>(vertical_scan_renderer.get())->pos( 187, 0);
+                updater->operator<<( vertical_scan_renderer.get() );
 
-            (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
+                (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
 
+                runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(550+5), 0, 375-5, 350 ), boost::shared_ptr< L3::PointCloud<double> >(), boost::shared_ptr<L3::SE3>() ) );
+                this->renderables.push_front( runtime_cloud_renderer_view.get() );
+                updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
 
-        }
+            }
 
             const L3::Dataset*                          dataset;
             const L3::Configuration::Mission*           mission;
             boost::shared_ptr< L3::DatasetRunner >      runner;
             boost::shared_ptr< TextRenderer<double> >   time_renderer;
             boost::shared_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
+            
+            boost::shared_ptr< EventController > point_cloud_maximise_controller;
 
             boost::shared_ptr< L3::Visualisers::LocaleRenderer>                 map_view;
             boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
-
-            boost::shared_ptr< EventController > point_cloud_maximise_controller;
 
             boost::shared_ptr< L3::Visualisers::PoseRenderer >          pose_renderer;
             boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer >  locale_bounds;

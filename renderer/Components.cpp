@@ -553,9 +553,14 @@ namespace Visualisers
      */
     void PointCloudRendererLeaf::onDraw3D( glv::GLV& g )
     {
-        L3::ReadLock lock( cloud->mutex );
-        if( cloud->num_points > 0 ) 
-            L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
+
+        if( !cloud_ptr )
+            return;
+
+        L3::ReadLock lock( cloud_ptr->mutex );
+        if( cloud_ptr->num_points > 0 ) 
+            L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
        
         PointCloudRenderer::onDraw3D(g);    
@@ -579,9 +584,15 @@ namespace Visualisers
 
     void PointCloudRendererView::update()
     {
-        L3::ReadLock lock( cloud->mutex );
-        if( cloud->num_points > 0 ) 
-            L3::sample( cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
+
+        boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
+
+        if( !cloud_ptr )
+            return;
+
+        L3::ReadLock lock( cloud_ptr->mutex );
+        if( cloud_ptr->num_points > 0 ) 
+            L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
 
         //L3::SE3 tform( 0, 30, 0, 0, 0, 0 );

@@ -41,22 +41,26 @@ struct EventController : glv::EventHandler
         view->addHandler( type, *this );
     }
 
-    Action* action;
-    glv::View* view;
-    L3::Timing::ChronoTimer t;
+    glv::View*  view;
+    Action*     action;
+    
     double last_down;
+    L3::Timing::ChronoTimer t;
  
     virtual bool onEvent( glv::View& v, glv::GLV& g)
     {
         if (( t.elapsed() - last_down ) < .5 )
         {
+            std::cout << action << ":" << view << std::endl;
+
             (*action)( view ); 
             // Debouncer 
-            last_down =0.0; 
+            last_down = 0.0; 
         }
         else
             last_down  = t.elapsed();
 
+        return false;
     }
 };
 
@@ -66,7 +70,6 @@ struct DoubleClickController : EventController
     DoubleClickController( glv::View* view, Action* action ) 
         : EventController( view, glv::Event::MouseDown, action )
     {
-
     }
 
 };
@@ -75,7 +78,6 @@ struct DoubleClickMaximiseToggle : DoubleClickController
 {
     DoubleClickMaximiseToggle( glv::View* view ) : DoubleClickController( view, new Toggle() )
     {
-
     }
 };
 
