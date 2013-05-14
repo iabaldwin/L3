@@ -190,7 +190,6 @@ namespace Visualisers
 
             bool addExtra( std::string description, boost::shared_ptr< L3::Visualisers::Leaf > renderable )
             {
-
                 // Do we already have it?
                 std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > >::iterator it = extras.find( description ); 
 
@@ -300,6 +299,8 @@ namespace Visualisers
                 this->renderables.push_front( runtime_cloud_renderer_view.get() );
                 updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
 
+                // WHY, WHY WHY
+                point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
             }
 
             const L3::Dataset*                          dataset;
