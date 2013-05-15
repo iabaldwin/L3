@@ -6,14 +6,17 @@
 #include "L3.h"
 #include "Visualisers.h"
 #include "Components.h"
-
-#include "BulletInterface.h"
+#include "Controls.h"
+#include "QueryInterface.h"
+#include "Layouts.h"
 
 
 int main (int argc, char ** argv)
 {
 
-    glv::GLV top;
+    //glv::GLV top;
+    L3::Visualisers::L3GLV top;
+
     glv::Window win(1400, 800, "Soaring");
 
     // Colors
@@ -22,11 +25,14 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite              composite;
     L3::Visualisers::BasicPanController     controller(composite.position);
     L3::Visualisers::Grid                   grid;
+            
+    L3::Visualisers::MouseQuery query(  &composite );
 
+    // Add Boxes
+    L3::Visualisers::SelectableLeaf* renderer = new L3::Visualisers::SelectableLeaf( 20 );
+    L3::Visualisers::SelectableLeaf* renderer2 = new L3::Visualisers::SelectableLeaf( 5 );
 
-    boost::shared_ptr< L3::Visualisers::BulletInterface > interface( new L3::Visualisers::BulletInterface() );
-    
-    top << ( composite << *interface << grid );
+    top << ( composite << grid << *renderer << *renderer2);
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
 

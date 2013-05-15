@@ -110,82 +110,88 @@ namespace Visualisers
         }
     };
 
-    struct BulletInterface : L3::Visualisers::Leaf
+    struct QueryInterface : L3::Visualisers::Leaf
     {
         
-        BulletInterface()
+        QueryInterface()
         {
             m_collisionConfiguration.reset( new btDefaultCollisionConfiguration() );
-
             m_dispatcher.reset( new btCollisionDispatcher(m_collisionConfiguration.get() ) );
-
             m_broadphase.reset( new btDbvtBroadphase() );
-
             sol.reset( new btSequentialImpulseConstraintSolver() );
-
             m_dynamicsWorld.reset( new btDiscreteDynamicsWorld( m_dispatcher.get(), m_broadphase.get(), sol.get(), m_collisionConfiguration.get() ) );
-
             m_dynamicsWorld->setGravity(btVector3(0,-10,0));
-
-            addShape();
-
-            t.begin();
+            //addShape();
+            //t.begin();
         }
 
         L3::Timing::ChronoTimer t;
 
         void onDraw3D( glv::GLV& g )
         {
-            btVector3 blue(0,0,1);
-            btVector3 pos(0,0,0);
+            sDebugDraw.drawLine(from,to,btVector4(0,0,0,1));
+                
+            //btVector3 blue(0,0,1);
+            //btVector3 pos(0,0,0);
             
-            if (m_dynamicsWorld)
-            {
+            //if (m_dynamicsWorld)
+            //{
             
-                float ms = t.elapsed();
-                //m_dynamicsWorld->stepSimulation( t.elapsed()/ 1000000.f);
-                m_dynamicsWorld->debugDrawWorld();
-            }
+                //float ms = t.elapsed();
+                ////m_dynamicsWorld->stepSimulation( t.elapsed()/ 1000000.f);
+                //m_dynamicsWorld->debugDrawWorld();
+            //}
 
-            renderer->translate( btVector3(.1, 0, 0 ) );
+            //renderer->translate( btVector3(.1, 0, 0 ) );
 
-            doQuery();
+            //doQuery();
 
-            for( std::list< L3::Visualisers::Leaf* >::iterator it = leafs.begin();
-                    it != leafs.end();
-                    it++ )
-                (*it)->onDraw3D( g );
+            //for( std::list< L3::Visualisers::Leaf* >::iterator it = leafs.begin();
+                    //it != leafs.end();
+                    //it++ )
+                //(*it)->onDraw3D( g );
 
-            t.begin();
+            //t.begin();
            
         }
 
-        SelectableLeaf* renderer;
-        SelectableLeaf* renderer2;
+        //SelectableLeaf* renderer;
+        //SelectableLeaf* renderer2;
         
-        void addShape()
-        {
+        //void addShape()
+        //{
             
-            // Add Box
-            renderer = new L3::Visualisers::SelectableLeaf( 20 );
-            renderer2 = new L3::Visualisers::SelectableLeaf( 5 );
+            //// Add Box
+            //renderer = new L3::Visualisers::SelectableLeaf( 20 );
+            //renderer2 = new L3::Visualisers::SelectableLeaf( 5 );
 
-            leafs.push_back( renderer );
-            leafs.push_back( renderer2 );
-            m_dynamicsWorld->addRigidBody( renderer->box_body.get() );
-            m_dynamicsWorld->addRigidBody( renderer2->box_body.get() );
-        }
+            //leafs.push_back( renderer );
+            //leafs.push_back( renderer2 );
+            //m_dynamicsWorld->addRigidBody( renderer->box_body.get() );
+            //m_dynamicsWorld->addRigidBody( renderer2->box_body.get() );
+        //}
 
-        void doQuery()
+        btVector3 from;
+        btVector3 to;
+                
+
+        void query( double x1, double x2, 
+                    double y1, double y2,
+                    double z1, double z2,
+                    std::list<const btCollisionObject*>& hit_results )
         {
             m_dynamicsWorld->updateAabbs();
             m_dynamicsWorld->computeOverlappingPairs();
 
+            hit_results.clear();
+
             btVector3 red(1,0,0);
             {
-                btVector3 from(-30,-30,30);
-                btVector3 to(0,0,0);
-                sDebugDraw.drawLine(from,to,btVector4(0,0,0,1));
+                //btVector3 from(-30,-30,30);
+                //btVector3 to(0,0,0);
+                
+                from = btVector3(x1, y1, z1);
+                to = btVector3( x2, y2, z2 );
                 
                 btCollisionWorld::AllHitsRayResultCallback allResults(from,to);
                 
@@ -196,31 +202,34 @@ namespace Visualisers
                 {
                     btVector3 p = from.lerp(to,allResults.m_hitFractions[i]);
                     sDebugDraw.drawSphere(p,1,red);
+               
+                    hit_results.push_back( allResults.m_collisionObjects[i] );
                 }
             }
         }
 
-        std::deque< boost::shared_ptr< btRigidBody >  > bodies;
-
         boost::shared_ptr< btDefaultCollisionConfiguration > m_collisionConfiguration;
-
-        boost::shared_ptr< btCollisionDispatcher > m_dispatcher;
-
-        boost::shared_ptr< btBroadphaseInterface >  m_broadphase;
-   
+        
         boost::shared_ptr< btSequentialImpulseConstraintSolver > sol;
-   
+        
         boost::shared_ptr< btDiscreteDynamicsWorld > m_dynamicsWorld;
-   
+        
         btAlignedObjectArray<btCollisionShape*> m_collisionShapes;
                      
+        boost::shared_ptr< btBroadphaseInterface >  m_broadphase;
+        
         boost::shared_ptr< btDefaultMotionState > myMotionState;
-             
+        
+        boost::shared_ptr< btCollisionDispatcher > m_dispatcher;
+
+        std::deque< boost::shared_ptr< btRigidBody >  > bodies;
+
         boost::shared_ptr< btCollisionShape > groundShape;
              
+        std::list< L3::Visualisers::Leaf* > leafs;
+        
         btTransform groundTransform;
    
-        std::list< L3::Visualisers::Leaf* > leafs;
     };
 }
 }

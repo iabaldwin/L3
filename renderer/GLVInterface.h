@@ -8,6 +8,7 @@
 
 #include "L3.h"
 
+#include "RenderCore.h"
 #include "Interface.h"
 
 namespace L3

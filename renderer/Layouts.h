@@ -5,6 +5,7 @@
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
+#include "RenderCore.h"
 #include "Visualisers.h"
 #include "Controls.h"
 #include "Plotters.h"
@@ -15,55 +16,6 @@ namespace L3
 {
 namespace Visualisers
 {
-    /*
-     *  Custom GLV view
-     */
-    struct L3GLV : glv::GLV
-    {
-        bool onEvent( glv::Event::t e, glv::GLV& g)
-        {
-            glv::space_t a =0.0f;
-            glv::space_t b =0.0f;
-
-            if ( e == glv::Event::KeyDown )
-            {
-                const glv::Keyboard& k = g.keyboard();
-
-                switch (k.key())
-                {
-                    case 96:
-                        this->broadcastEvent( static_cast< glv::Event::t>( 20 ) );
-
-                        // This is quite grim
-                        this->setMouseDown(a, b, 1, 1);
-                        this->setMouseUp(a, b, 1, 1);
-
-                    case 126:
-                        this->broadcastEvent( static_cast< glv::Event::t>( 21 ) );
-
-                    default:
-                        break; 
-                
-                }
-            }
-            
-           
-            /*
-             *  Select-click
-             */
-            if ( e == glv::Event::MouseDown )
-            {
-                const glv::Keyboard& k = g.keyboard();
-           
-                if ( k.shift() )
-                {
-                    //Do selection here
-                }
-            }
-
-        }
-    };
-
     class Layout
     {
         public:

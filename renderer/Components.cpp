@@ -29,6 +29,8 @@ namespace Visualisers
             leaf_iterator++;
         }
 
+        glGetDoublev(GL_PROJECTION_MATRIX, projection );
+        glGetDoublev(GL_MODELVIEW_MATRIX, model );
     }
 
     /*

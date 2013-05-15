@@ -22,7 +22,6 @@ namespace L3
 {
 namespace Visualisers
 {
-
     struct Updateable
     {
         virtual void update() = 0;
@@ -198,7 +197,12 @@ namespace Visualisers
 
             // Appropriate view-point
             position.translateZ( -250 );
+       
+            // Log the projection matrix
         }
+
+        double model[16];
+        double projection[16];
 
         control_t                       position;
         std::list<Leaf*>                components; 
