@@ -26,7 +26,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::BasicPanController     controller(composite.position);
     L3::Visualisers::Grid                   grid;
             
-    L3::Visualisers::MouseQuery query(  &composite );
+    L3::Visualisers::MouseQuerySelect query(  &composite );
 
     // Add Boxes
     L3::Visualisers::SelectableLeaf* renderer = new L3::Visualisers::SelectableLeaf( 20 );

@@ -24,6 +24,27 @@ struct NoAction : Action
     }
 };
 
+struct SelectAction : Action
+{
+    void operator()( glv::View* view )
+    {
+        // We are gauranteed of this
+        L3::Visualisers::SelectableLeaf* ptr = dynamic_cast< L3::Visualisers::SelectableLeaf* >( view );
+        //std::cout << "Called" << std::endl; 
+        //ptr->highlighted = true;
+  
+        // Why is this 0?????????
+        std::cout << ptr << std::endl;
+    }
+};
+
+struct HighLightAction : Action
+{
+    void operator()( glv::View* v )
+    {
+    }
+};
+
 struct Maximise : Action
 {
     virtual void operator()( glv::View* v )
@@ -94,8 +115,8 @@ struct DoubleClickMaximiseToggle : DoubleClickController
 
 struct MouseQuery : EventController
 {
-    MouseQuery( glv::View3D* view ) 
-        : EventController( view, static_cast< glv::Event::t >( SELECT_CLICK ), new NoAction() ) ,
+    MouseQuery( glv::View3D* view, Action* action  ) 
+        : EventController( view, static_cast< glv::Event::t >( SELECT_CLICK ), action ) ,
             composite( dynamic_cast< L3::Visualisers::Composite* >(view))
     {
         interface.reset( new L3::Visualisers::QueryInterface() );
@@ -148,7 +169,6 @@ struct MouseQuery : EventController
         
         double x1,y1,z1;
         double x2,y2,z2;
-
         
         int viewport[4];
 
@@ -166,7 +186,7 @@ struct MouseQuery : EventController
         // Project, twice
         gluUnProject( relative_x, 
                       relative_y, 
-                      0.0,
+                      0.0,                      // Frustrum begin
                       composite->model,
                       composite->projection,
                       viewport,
@@ -174,7 +194,7 @@ struct MouseQuery : EventController
 
         gluUnProject( relative_x,
                       relative_y, 
-                      1.0,
+                      1.0,                      // Frustrum end
                       composite->model,
                       composite->projection,
                       viewport,
@@ -183,12 +203,41 @@ struct MouseQuery : EventController
         std::list<const btCollisionObject*> hit_results;
        
         interface->query( x1, x2, y1, y2, z1, z2, hit_results );
-        
-        return false;
+
+        // Find the corresponding views
+        for( std::list<const btCollisionObject*>::iterator it =  hit_results.begin();
+                it != hit_results.end();
+                it++ )
+        {
+            // Action them, bimap needed
+   
+    
+            for( std::map< L3::Visualisers::SelectableLeaf*, btRigidBody*  >::iterator leaf_iterator =  current_leafs.begin();
+                    leaf_iterator != current_leafs.end();
+                    leaf_iterator++ )
+            {
+
+                if( *it == leaf_iterator->second )
+                    (*action)( dynamic_cast<glv::View*>(leaf_iterator->first ) );
+            }
+
+        }
+       
+        return false; //Don't bubble
     }
 
 };
 
+struct MouseQuerySelect : MouseQuery
+{
+    MouseQuerySelect( glv::View3D* view ) 
+        : MouseQuery( view, new SelectAction() )
+    {
+    }
+
+
+};
+ 
 
 //struct DataDumper : EventController
 //{
