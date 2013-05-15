@@ -43,6 +43,16 @@ namespace Visualisers
         }
     };
 
+    struct Controllable
+    {
+        Controllable() : control_x(0.0), control_y(0.0), control_z(0.0)
+        {
+        }
+
+        float control_x,control_y,control_z;
+    };
+
+
     /*
      *  Single entity for 3D rendering
      */
@@ -77,8 +87,7 @@ namespace Visualisers
     struct Leaf 
     {
         Leaf() 
-            : draw_bounds(false), 
-            selected(false)
+            : draw_bounds(false)
         {
             bound_vertices.reset( new glv::Point3[24] ); 
             bound_colors.reset( new glv::Color[24] ); 
@@ -88,9 +97,9 @@ namespace Visualisers
             float x,y,z;
         };
 
-        bounds lower,upper;
+        bool draw_bounds;
 
-        bool draw_bounds, selected;
+        bounds lower,upper;
 
         boost::shared_array< glv::Point3 > bound_vertices;
         boost::shared_array< glv::Color>   bound_colors;
@@ -101,32 +110,33 @@ namespace Visualisers
 
     };
 
+    
     /*
      *  Text
      */
     template <typename T> 
         struct TextRenderer : glv::View
-    {
-        explicit TextRenderer( T& v = 0 ) : t(v), glv::View( glv::Rect(150,25 ) )
         {
-            this->disable( glv::DrawBorder );
-        }
+            explicit TextRenderer( T& v = 0 ) : t(v), glv::View( glv::Rect(150,25 ) )
+            {
+                this->disable( glv::DrawBorder );
+            }
 
-        T& t;
+            T& t;
 
-        void onDraw(glv::GLV& g)
-        {
-            glv::draw::color(1);
-            glv::draw::lineWidth(2);
+            void onDraw(glv::GLV& g)
+            {
+                glv::draw::color(1);
+                glv::draw::lineWidth(2);
 
-            std::stringstream ss;
-            ss.precision( 15 );
+                std::stringstream ss;
+                ss.precision( 15 );
 
-            ss << t;
-            glv::draw::text( ss.str().c_str() );
-        }
+                ss << t;
+                glv::draw::text( ss.str().c_str() );
+            }
 
-    };
+        };
 
 
     struct Text3D : Leaf

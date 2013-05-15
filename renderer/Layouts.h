@@ -263,7 +263,7 @@ namespace Visualisers
             
             boost::shared_ptr< EventController > point_cloud_maximise_controller;
 
-            boost::shared_ptr< L3::Visualisers::LocaleRenderer>                 map_view;
+            //boost::shared_ptr< L3::Visualisers::LocaleRenderer>                 map_view;
             boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
 
             boost::shared_ptr< L3::Visualisers::PoseRenderer >          pose_renderer;

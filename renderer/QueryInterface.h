@@ -70,15 +70,14 @@ namespace Visualisers
 
     struct SelectableLeaf : L3::Visualisers::Leaf
     {
-
-        SelectableLeaf( int size ) : highlighted(true)
+        SelectableLeaf( int x_size, int y_size, int z_size ) : selected(false)
         {
-            box_shape.reset( new btBoxShape( btVector3(size,size,size) ) );
+            box_shape.reset( new btBoxShape( btVector3(x_size, y_size, z_size) ) );
             box_body.reset( new btRigidBody( 0.0f, new btDefaultMotionState, box_shape.get(), btVector3(0,0,0) ) );
             box.reset( new Box( box_body.get() ));
         }
 
-        bool highlighted;
+        bool selected;
         boost::shared_ptr< Box >                box;
         boost::shared_ptr< btRigidBody >        box_body;
         boost::shared_ptr< btCollisionShape >   box_shape;
@@ -87,9 +86,9 @@ namespace Visualisers
         {
             box->update();
             
-            glv::Color c = highlighted ? glv::Color( .7, .7, .7 ) : glv::Color( .2, .2, .2 ) ;
+            glv::Color c = selected ? glv::Color( .7, .7, .7 ) : glv::Color( .2, .2, .2 ) ;
                 
-            glv::Color  colors[16];
+            glv::Color colors[16];
 
             std::fill( colors, colors+sizeof(colors)/sizeof( glv::Color), c );
 
@@ -117,10 +116,9 @@ namespace Visualisers
             m_dynamicsWorld->setGravity(btVector3(0,-10,0));
         }
 
-        L3::Timing::ChronoTimer t;
-
         void onDraw3D( glv::GLV& g )
         {
+            // This is only for debugging
             glv::Point3 vertices[2];
             glv::Color  colors[2];
 
@@ -134,7 +132,6 @@ namespace Visualisers
             glv::draw::lineStippling(false);
 
             sDebugDraw.drawLine(from,to,btVector4(0,0,0,1));
-            
            
             btVector3 red(1,0,0);
             for( std::deque< btVector3 >::iterator it = hits.begin(); it != hits.end(); it++ )
@@ -152,19 +149,24 @@ namespace Visualisers
                     double z1, double z2,
                     std::list<const btCollisionObject*>& hit_results )
         {
+            // Update all axis-aligned bounding boxes
             m_dynamicsWorld->updateAabbs();
             m_dynamicsWorld->computeOverlappingPairs();
 
             hit_results.clear();
 
+            // Create query
             from = btVector3(x1, y1, z1);
             to = btVector3( x2, y2, z2 );
 
             btCollisionWorld::AllHitsRayResultCallback allResults(from,to);
 
             allResults.m_flags |= btTriangleRaycastCallback::kF_KeepUnflippedNormal;
+           
+            // Query
             m_dynamicsWorld->rayTest(from,to,allResults);
 
+            // Dbg
             hits.clear();
 
             for (int i=0;i<allResults.m_hitFractions.size();i++)

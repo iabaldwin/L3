@@ -56,7 +56,7 @@ enum CUSTOM_EVENT_TYPES
             {
                 const glv::Keyboard& k = g.keyboard();
            
-                if ( k.shift() )
+                if ( k.ctrl() )
                     this->broadcastEvent( static_cast< glv::Event::t>( SELECT_CLICK ) );
             }
 

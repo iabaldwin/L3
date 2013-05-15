@@ -25,14 +25,14 @@ int main (int argc, char ** argv)
     L3::Configuration::Begbroke begbroke;
     begbroke.loadDatum();
 
-    L3::Visualisers::LocaleRenderer  locale_renderer;
-    locale_renderer.load( begbroke );
+    //L3::Visualisers::LocaleRenderer  locale_renderer;
+    //locale_renderer.load( begbroke );
 
-    composite.addController( &controller  );
+    //composite.addController( &controller  );
 
-    top << ( composite << grid << locale_renderer );
+    //top << ( composite << grid << locale_renderer );
 
-    composite.stretch(1,1);
+    //composite.stretch(1,1);
 
     win.setGLV(top);
     glv::Application::run();

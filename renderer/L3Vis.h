@@ -5,7 +5,6 @@
 #include "DataProvider.h"
 #include "Imagery.h"
 #include "Layouts.h"
-#include "Node.h"
 #include "Plotters.h"
 #include "RenderingUtils.h"
 #include "VisualiserRunner.h"

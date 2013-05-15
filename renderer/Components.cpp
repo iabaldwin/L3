@@ -17,6 +17,10 @@ namespace Visualisers
         glv::draw::translate( position.x, position.y, position.z );
         glv::draw::rotate( position.r, position.p, position.q );
 
+        glGetDoublev(GL_PROJECTION_MATRIX, projection );
+        glGetDoublev(GL_MODELVIEW_MATRIX, model );
+        glGetIntegerv(GL_VIEWPORT,viewport);
+
         std::list<Leaf*>::iterator leaf_iterator = components.begin();
 
         while( leaf_iterator != components.end() )
@@ -29,16 +33,11 @@ namespace Visualisers
             leaf_iterator++;
         }
 
-        float* ptr = this->modelView();
-
-        for( int i=0;i<16;i++)
-            model[i] = double(ptr[i]); 
-
-
-        glGetDoublev(GL_PROJECTION_MATRIX, projection );
-        glGetDoublev(GL_MODELVIEW_MATRIX, model );
-        glGetIntegerv(GL_VIEWPORT,viewport);
-
+      
+        //if( this->enabled( glv::Property::Focused ) )
+            //std::cout << "Focus" << std::endl;
+        //else
+            //std::cout << "No Focus" << std::endl;
     }
 
     /*
@@ -46,9 +45,8 @@ namespace Visualisers
      */
     void Leaf::drawBounds()
     {
-        glv::Color fill_color = selected ? glv::Color( .75, .75, .75, .85  ) : glv::Color( .75, .75, .75, .35  );
+        glv::Color fill_color = glv::Color( .75, .75, .75, .85  );
         std::fill( bound_colors.get(), bound_colors.get()+4, fill_color );
-
 
         int counter = 0;
 

@@ -7,145 +7,144 @@
 
 #include "L3.h"
 #include "Visualisers.h"
-#include "Node.h"
 
-template <typename T>
-struct ScanGenerator 
-{
-    void operator()( std::vector<T>& data )
-    {
-        data.resize( 541 );
+//template <typename T>
+//struct ScanGenerator 
+//{
+    //void operator()( std::vector<T>& data )
+    //{
+        //data.resize( 541 );
 
-        for( typename std::vector<T>::iterator it = data.begin(); it != data.end(); it ++ )
-            *it = random() % 50;
-    }
-};
+        //for( typename std::vector<T>::iterator it = data.begin(); it != data.end(); it ++ )
+            //*it = random() % 50;
+    //}
+//};
 
-struct Kinematics : L3::Visualisers::Leaf
-{
+//struct Kinematics : L3::Visualisers::Leaf
+//{
 
-    Kinematics()
-    {
-        ScanGenerator<float> generator;
+    //Kinematics()
+    //{
+        //ScanGenerator<float> generator;
        
-        scan.reset( new L3::LMS151() );
-        generator( scan->ranges );
+        //scan.reset( new L3::LMS151() );
+        //generator( scan->ranges );
  
-        pose.reset( new L3::SE3( 20, 20, 0, 0, 0, 0 ) );
+        //pose.reset( new L3::SE3( 20, 20, 0, 0, 0, 0 ) );
 
-        cloud = new L3::PointCloud<double>();
+        //cloud = new L3::PointCloud<double>();
 
-        L3::SE3 calibration = L3::SE3::ZERO();
+        //L3::SE3 calibration = L3::SE3::ZERO();
 
-        projector = new L3::Projector<double>( &calibration, cloud );
+        //projector = new L3::Projector<double>( &calibration, cloud );
   
-        vertices = new glv::Point3[541];
-        colors = new glv::Color[541];
+        //vertices = new glv::Point3[541];
+        //colors = new glv::Color[541];
 
-        controllable = new L3::Visualisers::Controllable( pose );
+        ////controllable = new L3::Visualisers::Controllable( pose );
    
-        c = new L3::Visualisers::CoordinateSystem( *pose );
-    }
+        ////c = new L3::Visualisers::CoordinateSystem( *pose );
+    //}
     
-    SWATHE swathe;
+    //SWATHE swathe;
 
-    boost::shared_ptr< L3::SE3 >        pose;
-    boost::shared_ptr< L3::LMS151 >     scan;
+    //boost::shared_ptr< L3::SE3 >        pose;
+    //boost::shared_ptr< L3::LMS151 >     scan;
 
-    L3::Projector<double>*              projector;
-    L3::PointCloud<double>*             cloud;
+    //L3::Projector<double>*              projector;
+    //L3::PointCloud<double>*             cloud;
 
 
-    L3::Visualisers::Controllable*      controllable;
-    glv::Point3*                        vertices;
-    glv::Color*                         colors;
+    //L3::Visualisers::Controllable*      controllable;
+    //glv::Point3*                        vertices;
+    //glv::Color*                         colors;
         
-    L3::Visualisers::CoordinateSystem*  c;
+    //L3::Visualisers::CoordinateSystem*  c;
 
-    void onDraw3D( glv::GLV& g )
-    {
-        swathe.clear();
-        swathe.push_back( std::make_pair( pose, scan ) );
+    //void onDraw3D( glv::GLV& g )
+    //{
+        //swathe.clear();
+        //swathe.push_back( std::make_pair( pose, scan ) );
 
-        projector->project( swathe );
+        //projector->project( swathe );
 
-        L3::PointCloud<double>::ITERATOR it = cloud->begin();
+        //L3::PointCloud<double>::ITERATOR it = cloud->begin();
        
-        int counter = 0;
-        while( it != cloud->end() )
-        {
-            vertices[counter++]( it->x, it->y, it->z );
-            it++;
-        }
+        //int counter = 0;
+        //while( it != cloud->end() )
+        //{
+            //vertices[counter++]( it->x, it->y, it->z );
+            //it++;
+        //}
    
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        //glv::draw::paint( glv::draw::Points, vertices, colors, counter );
    
-        c->onDraw3D( g );
+        //c->onDraw3D( g );
    
-        controllable->update();
-    }
+        //controllable->update();
+    //}
 
-};
+//};
 
 int main (int argc, char ** argv)
 {
     /*
      *L3
      */
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
-    if( !( dataset.validate() && dataset.load() ) )
-        throw std::exception();
+    //L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+    //if( !( dataset.validate() && dataset.load() ) )
+        //throw std::exception();
    
-    L3::Configuration::Mission mission( dataset );
+    //L3::Configuration::Mission mission( dataset );
 
-    // Constant time iterator over poses
-    L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
+    //// Constant time iterator over poses
+    //L3::ConstantTimeIterator< L3::SE3 >  pose_iterator( dataset.pose_reader );
     
-    // Constant time iterator over LIDAR - declined
-    L3::ConstantTimeIterator< L3::LMS151 > declined_lidar( dataset.LIDAR_readers[ mission.declined ] );
+    //// Constant time iterator over LIDAR - declined
+    //L3::ConstantTimeIterator< L3::LMS151 > declined_lidar( dataset.LIDAR_readers[ mission.declined ] );
     
-    // Constant time iterator over LIDAR - horizontal
-    L3::ConstantTimeIterator< L3::LMS151 > horizontal_lidar( dataset.LIDAR_readers[ mission.horizontal ] );
+    //// Constant time iterator over LIDAR - horizontal
+    //L3::ConstantTimeIterator< L3::LMS151 > horizontal_lidar( dataset.LIDAR_readers[ mission.horizontal ] );
 
-    double time = dataset.start_time;
+    //double time = dataset.start_time;
 
-    // Windowed pose producer
-    L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
+    //// Windowed pose producer
+    //L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
     
-    // Swathe builder
-    L3::SwatheBuilder swathe_builder( &pose_windower, &declined_lidar );
+    //// Swathe builder
+    //L3::SwatheBuilder swathe_builder( &pose_windower, &declined_lidar );
     
-    // Build runner
-    L3::TemporalRunner t;
+    //// Build runner
+    //L3::TemporalRunner t;
 
     /*
      *Visualisation
      */
-    glv::GLV top;
-    glv::Window win(1400, 800, "Visualisation::ScanRenderer");
+    //glv::GLV top;
+    //glv::Window win(1400, 800, "Visualisation::ScanRenderer");
 
-    // Colors
-    top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
+    //// Colors
+    //top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
-    // Point cloud renderer
-    L3::Visualisers::Composite      composite;
-    L3::Visualisers::Controller*    controller = new L3::Visualisers::FPSController( composite.position );
-    L3::Visualisers::Grid           grid;
+    //// Point cloud renderer
+    //L3::Visualisers::Composite      composite;
+    //L3::Visualisers::Controller*    controller = new L3::Visualisers::FPSController( composite.position );
+    //L3::Visualisers::Grid           grid;
 
-    Kinematics k;
+    //Kinematics k;
 
-    composite.addController( controller ).stretch(1,1);
+    //composite.addController( controller ).stretch(1,1);
 
-    // Compose 
-    top << (composite << k << grid) ;
+    //// Compose 
+    //top << (composite << k << grid) ;
 
-    win.setGLV(top);
+    //win.setGLV(top);
 
-    try
-    {
-        glv::Application::run();
-    }
-    catch( ... )
-    {
-    }
+    //try
+    //{
+        //glv::Application::run();
+    //}
+    //catch( ... )
+    //{
+    //}
 }

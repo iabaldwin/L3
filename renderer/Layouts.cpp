@@ -46,10 +46,10 @@ namespace L3
             begbroke.loadDatum();
             
             // Remove it, if it is already in the composite list     
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
-            map_view.reset( new L3::Visualisers::LocaleRenderer() );
-            map_view->load( begbroke );
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
+            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
+            //map_view.reset( new L3::Visualisers::LocaleRenderer() );
+            //map_view->load( begbroke );
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
 
             /*
              *  Current pose estimate
