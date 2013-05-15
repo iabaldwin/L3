@@ -198,9 +198,9 @@ namespace Visualisers
             // Appropriate view-point
             position.translateZ( -250 );
        
-            // Log the projection matrix
         }
 
+        int viewport[4];
         double model[16];
         double projection[16];
 

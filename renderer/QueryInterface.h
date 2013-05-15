@@ -129,8 +129,20 @@ namespace Visualisers
 
         void onDraw3D( glv::GLV& g )
         {
+            glv::Point3 vertices[2];
+            glv::Color  colors[2];
+
+            vertices[0]( from[0], from[1], from[2] );
+            vertices[1]( to[0], to[1], to[2] );
+
+            glv::draw::lineStippling(true);
+            glv::draw::lineWidth(2);
+            glv::draw::lineStipple(4, 0xAAAA );
+            glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
+            glv::draw::lineStippling(false);
+
             sDebugDraw.drawLine(from,to,btVector4(0,0,0,1));
-                
+            
             //btVector3 blue(0,0,1);
             //btVector3 pos(0,0,0);
             
@@ -187,8 +199,8 @@ namespace Visualisers
 
             btVector3 red(1,0,0);
             {
-                //btVector3 from(-30,-30,30);
-                //btVector3 to(0,0,0);
+                //from = btVector3(-30,-70,30);
+                //to = btVector3(0,0,0);
                 
                 from = btVector3(x1, y1, z1);
                 to = btVector3( x2, y2, z2 );

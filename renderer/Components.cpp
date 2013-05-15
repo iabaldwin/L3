@@ -29,8 +29,16 @@ namespace Visualisers
             leaf_iterator++;
         }
 
+        float* ptr = this->modelView();
+
+        for( int i=0;i<16;i++)
+            model[i] = double(ptr[i]); 
+
+
         glGetDoublev(GL_PROJECTION_MATRIX, projection );
         glGetDoublev(GL_MODELVIEW_MATRIX, model );
+        glGetIntegerv(GL_VIEWPORT,viewport);
+
     }
 
     /*

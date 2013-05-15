@@ -145,23 +145,35 @@ struct MouseQuery : EventController
         // Query them
         const glv::Mouse& m = g.mouse();
       
-        int viewport[4];
-        glGetIntegerv(GL_VIEWPORT,viewport);
-
+        
         double x1,y1,z1;
         double x2,y2,z2;
 
+        
+        int viewport[4];
+
+        viewport[0] = composite->left();
+        viewport[1] = composite->top();
+        viewport[2] = composite->right();
+        viewport[3] = composite->bottom();
+
+        double relative_x = m.x();
+        double relative_y = viewport[3]-m.y(); 
+
+        if( (relative_x > viewport[2] ) || (relative_y < 0 ) )
+            return false;
+
         // Project, twice
-        gluUnProject( m.x(),
-                      viewport[3] - m.y(),
+        gluUnProject( relative_x, 
+                      relative_y, 
                       0.0,
                       composite->model,
                       composite->projection,
                       viewport,
                       &x1,&y1,&z1);
 
-        gluUnProject( m.x(),
-                      viewport[3] - m.y(),
+        gluUnProject( relative_x,
+                      relative_y, 
                       1.0,
                       composite->model,
                       composite->projection,
@@ -172,8 +184,6 @@ struct MouseQuery : EventController
        
         interface->query( x1, x2, y1, y2, z1, z2, hit_results );
         
-        std::cout << hit_results.size() << std::endl;
-
         return false;
     }
 
