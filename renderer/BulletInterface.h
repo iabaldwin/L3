@@ -21,69 +21,98 @@ namespace Visualisers
 
     struct Box
     {
-        struct bounds
-        {
-            float x,y,z;
-        };
-
-        bounds lower, upper;
-
-        Box( float x_lower, float y_lower, float z_lower, 
-                float x_upper, float y_upper, float z_upper )
-        {
-
-            lower.x = x_lower;
-            lower.y = y_lower;
-            lower.z = z_lower;
-            
-            upper.x = x_upper;
-            upper.y = y_upper;
-            upper.z = z_upper;
-        }
         
-    };
-
-    struct BoxRenderer : L3::Visualisers::Leaf
-    {
-
-        BoxRenderer() 
+        Box( btRigidBody* box ) : box(box)
         {
-            box = new Box( -10, -10, -10, 10, 10, 10 );
-            box_shape = new btBoxShape( btVector3(10,10,10) );
-            box_body  = new btRigidBody( 10.0f, new btDefaultMotionState, box_shape, btVector3(0,0,0) );
+            bounds = new glv::Point3[2*8];
+       
+            update();
         }
-
-        Box* box;
-        btRigidBody* box_body;
-        btCollisionShape* box_shape;
+  
+        btRigidBody* box;
         
-        void onDraw3D( glv::GLV& g )
+        glv::Point3* bounds;
+
+        void update()
         {
-            glv::Point3 vertices[16];
-            glv::Color  colors[16];
+            btVector3 aabbMin, aabbMax;
+
+            box->getAabb( aabbMin, aabbMax);
 
             // Lower
-            vertices[0]( box->lower.x, box->lower.y, box->lower.z );
-            vertices[1]( box->lower.x, box->upper.y, box->lower.z );
-            vertices[2]( box->upper.x, box->upper.y, box->lower.z );
-            vertices[3]( box->upper.x, box->lower.y, box->lower.z );
+            bounds[0]( aabbMin[0], aabbMin[1], aabbMin[2] );
+            bounds[1]( aabbMin[0], aabbMax[1], aabbMin[2] );
+            bounds[2]( aabbMax[0], aabbMax[1], aabbMin[2] );
+            bounds[3]( aabbMax[0], aabbMin[1], aabbMin[2] );
 
-            glv::draw::paint( glv::draw::LineLoop, vertices, colors, 4 );
+            // Upper 
+            bounds[4]( aabbMin[0], aabbMin[1], aabbMax[2] );
+            bounds[5]( aabbMin[0], aabbMax[1], aabbMax[2] );
+            bounds[6]( aabbMax[0], aabbMax[1], aabbMax[2] );
+            bounds[7]( aabbMax[0], aabbMin[1], aabbMax[2] );
+
+            // Sides
+            bounds[8]( aabbMin[0], aabbMin[1], aabbMin[2] );
+            bounds[9]( aabbMin[0], aabbMin[1], aabbMax[2] );
+            
+            bounds[10]( aabbMin[0], aabbMax[1], aabbMin[2] );
+            bounds[11]( aabbMin[0], aabbMax[1], aabbMax[2] );
+
+            bounds[12]( aabbMax[0], aabbMax[1], aabbMin[2] );
+            bounds[13]( aabbMax[0], aabbMax[1], aabbMax[2] );
+
+            bounds[14]( aabbMax[0], aabbMin[1], aabbMin[2] );
+            bounds[15]( aabbMax[0], aabbMin[1], aabbMax[2] );
+
+        }
+            
+    };
+
+    struct SelectableLeaf : L3::Visualisers::Leaf
+    {
+
+        SelectableLeaf( int size ) : highlighted(true)
+        {
+            box_shape.reset( new btBoxShape( btVector3(size,size,size) ) );
+            box_body.reset( new btRigidBody( 0.0f, new btDefaultMotionState, box_shape.get(), btVector3(0,0,0) ) );
+            box.reset( new Box( box_body.get() ));
+        }
+
+        bool highlighted;
+        boost::shared_ptr< Box >                box;
+        boost::shared_ptr< btRigidBody >        box_body;
+        boost::shared_ptr< btCollisionShape >   box_shape;
+    
+        void translate( const btVector3& vec )
+        {
+            box_body->translate(vec);
+            box->update();
+        }
+
+        void onDraw3D( glv::GLV& g )
+        {
+            glv::Color c = highlighted ? glv::Color( .7, .7, .7 ) : glv::Color( .2, .2, .2 ) ;
+                
+            glv::Color  colors[16];
+
+            std::fill( colors, colors+sizeof(colors)/sizeof( glv::Color), c );
+
+            // Lower
+            glv::draw::paint( glv::draw::LineLoop, box->bounds, colors, 4 );
 
             // Upper
-            vertices[0]( box->lower.x, box->lower.y, box->upper.z );
-            vertices[1]( box->lower.x, box->upper.y, box->upper.z );
-            vertices[2]( box->upper.x, box->upper.y, box->upper.z );
-            vertices[3]( box->upper.x, box->lower.y, box->upper.z );
-
-            glv::draw::paint( glv::draw::LineLoop, vertices, colors, 4 );
+            glv::draw::paint( glv::draw::LineLoop, box->bounds+4, colors, 4 );
        
+            // Sides
+            glv::draw::paint( glv::draw::Lines, box->bounds+8, colors, 8 );
+       
+
         }
     };
 
     struct BulletInterface : L3::Visualisers::Leaf
     {
-
+        
         BulletInterface()
         {
             m_collisionConfiguration.reset( new btDefaultCollisionConfiguration() );
@@ -114,10 +143,11 @@ namespace Visualisers
             {
             
                 float ms = t.elapsed();
-                m_dynamicsWorld->stepSimulation( t.elapsed()/ 1000000.f);
+                //m_dynamicsWorld->stepSimulation( t.elapsed()/ 1000000.f);
                 m_dynamicsWorld->debugDrawWorld();
             }
 
+            renderer->translate( btVector3(.1, 0, 0 ) );
 
             doQuery();
 
@@ -130,13 +160,20 @@ namespace Visualisers
            
         }
 
+        SelectableLeaf* renderer;
+        SelectableLeaf* renderer2;
+        
         void addShape()
         {
             
             // Add Box
-            BoxRenderer* renderer = new L3::Visualisers::BoxRenderer();
+            renderer = new L3::Visualisers::SelectableLeaf( 20 );
+            renderer2 = new L3::Visualisers::SelectableLeaf( 5 );
+
             leafs.push_back( renderer );
-            m_dynamicsWorld->addRigidBody( renderer->box_body );
+            leafs.push_back( renderer2 );
+            m_dynamicsWorld->addRigidBody( renderer->box_body.get() );
+            m_dynamicsWorld->addRigidBody( renderer2->box_body.get() );
         }
 
         void doQuery()
