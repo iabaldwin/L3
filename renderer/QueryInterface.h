@@ -83,14 +83,10 @@ namespace Visualisers
         boost::shared_ptr< btRigidBody >        box_body;
         boost::shared_ptr< btCollisionShape >   box_shape;
     
-        void translate( const btVector3& vec )
-        {
-            box_body->translate(vec);
-            box->update();
-        }
-
         void onDraw3D( glv::GLV& g )
         {
+            box->update();
+            
             glv::Color c = highlighted ? glv::Color( .7, .7, .7 ) : glv::Color( .2, .2, .2 ) ;
                 
             glv::Color  colors[16];
@@ -105,8 +101,6 @@ namespace Visualisers
        
             // Sides
             glv::draw::paint( glv::draw::Lines, box->bounds+8, colors, 8 );
-       
-
         }
     };
 
@@ -121,8 +115,6 @@ namespace Visualisers
             sol.reset( new btSequentialImpulseConstraintSolver() );
             m_dynamicsWorld.reset( new btDiscreteDynamicsWorld( m_dispatcher.get(), m_broadphase.get(), sol.get(), m_collisionConfiguration.get() ) );
             m_dynamicsWorld->setGravity(btVector3(0,-10,0));
-            //addShape();
-            //t.begin();
         }
 
         L3::Timing::ChronoTimer t;
@@ -143,49 +135,17 @@ namespace Visualisers
 
             sDebugDraw.drawLine(from,to,btVector4(0,0,0,1));
             
-            //btVector3 blue(0,0,1);
-            //btVector3 pos(0,0,0);
-            
-            //if (m_dynamicsWorld)
-            //{
-            
-                //float ms = t.elapsed();
-                ////m_dynamicsWorld->stepSimulation( t.elapsed()/ 1000000.f);
-                //m_dynamicsWorld->debugDrawWorld();
-            //}
-
-            //renderer->translate( btVector3(.1, 0, 0 ) );
-
-            //doQuery();
-
-            //for( std::list< L3::Visualisers::Leaf* >::iterator it = leafs.begin();
-                    //it != leafs.end();
-                    //it++ )
-                //(*it)->onDraw3D( g );
-
-            //t.begin();
            
+            btVector3 red(1,0,0);
+            for( std::deque< btVector3 >::iterator it = hits.begin(); it != hits.end(); it++ )
+                sDebugDraw.drawSphere( *it,1,red);
+             
         }
-
-        //SelectableLeaf* renderer;
-        //SelectableLeaf* renderer2;
-        
-        //void addShape()
-        //{
-            
-            //// Add Box
-            //renderer = new L3::Visualisers::SelectableLeaf( 20 );
-            //renderer2 = new L3::Visualisers::SelectableLeaf( 5 );
-
-            //leafs.push_back( renderer );
-            //leafs.push_back( renderer2 );
-            //m_dynamicsWorld->addRigidBody( renderer->box_body.get() );
-            //m_dynamicsWorld->addRigidBody( renderer2->box_body.get() );
-        //}
 
         btVector3 from;
         btVector3 to;
-                
+
+        std::deque< btVector3 > hits;
 
         void query( double x1, double x2, 
                     double y1, double y2,
@@ -197,26 +157,23 @@ namespace Visualisers
 
             hit_results.clear();
 
-            btVector3 red(1,0,0);
-            {
-                //from = btVector3(-30,-70,30);
-                //to = btVector3(0,0,0);
-                
-                from = btVector3(x1, y1, z1);
-                to = btVector3( x2, y2, z2 );
-                
-                btCollisionWorld::AllHitsRayResultCallback allResults(from,to);
-                
-                allResults.m_flags |= btTriangleRaycastCallback::kF_KeepUnflippedNormal;
-                m_dynamicsWorld->rayTest(from,to,allResults);
+            from = btVector3(x1, y1, z1);
+            to = btVector3( x2, y2, z2 );
 
-                for (int i=0;i<allResults.m_hitFractions.size();i++)
-                {
-                    btVector3 p = from.lerp(to,allResults.m_hitFractions[i]);
-                    sDebugDraw.drawSphere(p,1,red);
-               
-                    hit_results.push_back( allResults.m_collisionObjects[i] );
-                }
+            btCollisionWorld::AllHitsRayResultCallback allResults(from,to);
+
+            allResults.m_flags |= btTriangleRaycastCallback::kF_KeepUnflippedNormal;
+            m_dynamicsWorld->rayTest(from,to,allResults);
+
+            hits.clear();
+
+            for (int i=0;i<allResults.m_hitFractions.size();i++)
+            {
+                btVector3 p = from.lerp(to,allResults.m_hitFractions[i]);
+
+                hits.push_back( p );
+
+                hit_results.push_back( allResults.m_collisionObjects[i] );
             }
         }
 
