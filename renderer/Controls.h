@@ -14,36 +14,48 @@ namespace Visualisers
 
 struct Action
 {
-    virtual void operator()( glv::View* v )= 0;
+    virtual void apply( glv::View* v ) = 0;
+    virtual void invert( glv::View* v ){}; 
+
 };
 
 struct NoAction : Action
 {
-    void operator()( glv::View* v )
+    void apply( glv::View* v )
     {
     }
 };
 
 struct SelectAction : Action
 {
-    void operator()( glv::View* view )
+
+    // Apply the action
+    void apply( glv::View* view )
     {
-        // We are gauranteed of this
+        // we are gauranteed of this
         if( L3::Visualisers::SelectableLeaf* ptr = reinterpret_cast< L3::Visualisers::SelectableLeaf* >( view ) )
-            ptr->selected = !ptr->selected;
+            ptr->selected = true;
     }
+
+    void invert(glv::View* view )
+    {
+        if( L3::Visualisers::SelectableLeaf* ptr = reinterpret_cast< L3::Visualisers::SelectableLeaf* >( view ) )
+            ptr->selected = false;
+    }
+
 };
+
 
 struct HighLightAction : Action
 {
-    void operator()( glv::View* v )
+    void apply( glv::View* v )
     {
     }
 };
 
 struct Maximise : Action
 {
-    virtual void operator()( glv::View* v )
+    virtual void apply( glv::View* v )
     {
         v->maximize();
         v->bringToFront();
@@ -52,7 +64,7 @@ struct Maximise : Action
 
 struct Toggle: Action
 {
-    virtual void operator()( glv::View* v )
+    virtual void apply( glv::View* v )
     {
         if ( v->enabled( glv::Property::Maximized ) )
             v->restore();
@@ -81,7 +93,7 @@ struct EventController : glv::EventHandler
     {
         if (( t.elapsed() - last_down ) < .5 )
         {
-            (*action)( view ); 
+            action->apply( view ); 
             // Debouncer 
             last_down = 0.0; 
         }
@@ -201,17 +213,13 @@ struct MouseQuery : EventController
        
         interface->query( x1, x2, y1, y2, z1, z2, hit_results );
 
-        // This is the *deselect* operator = no hit results;
-        //if ( hit_results.empty() )
-        //{
-            //for( std::map< L3::Visualisers::SelectableLeaf*, btRigidBody*  >::iterator leaf_iterator =  current_leafs.begin();
-                    //leaf_iterator != current_leafs.end();
-                    //leaf_iterator++ )
-            //{
-            //HMmmmmmmmmmmmmmmm
-            //}
-    
-        //}
+        // Deselect everything
+        for( std::map< L3::Visualisers::SelectableLeaf*, btRigidBody*  >::iterator leaf_iterator =  current_leafs.begin();
+                leaf_iterator != current_leafs.end();
+                leaf_iterator++ )
+        {
+            action->invert( reinterpret_cast<glv::View*>(leaf_iterator->first ) );
+        }
 
         // Find the corresponding views
         for( std::list<const btCollisionObject*>::iterator it =  hit_results.begin();
@@ -226,7 +234,7 @@ struct MouseQuery : EventController
 
                 if( *it == leaf_iterator->second )
                 {
-                    (*action)( reinterpret_cast<glv::View*>(leaf_iterator->first ) );
+                    action->apply( reinterpret_cast<glv::View*>(leaf_iterator->first ) );
                 }
             }
 
@@ -249,7 +257,7 @@ struct MouseQuerySelect : MouseQuery
 
 struct InputManager : glv::EventHandler
 {
-    std::list< Controllable* >* controllables;
+    std::map< L3::Visualisers::SelectableLeaf*, btRigidBody*  >* controllables;;
 };
 
 struct WASDController : InputManager
@@ -265,24 +273,37 @@ struct WASDController : InputManager
         switch (key)
         {
             case 'w':
-                std::cout << 'w' << std::endl;
-               
+                y+=2;
+                break;
+            
+            case 's':
+                y-=2;
+                break;
+
+            case 'd':
                 x+=2;
                 break;
 
+            case 'a':
+                x-=2;
+                break;
+            
             default: 
                 break;
 
         };
 
-        for( std::list< Controllable* >::iterator it = controllables->begin();
-                it != controllables->end();
-                it++ )
+        for( std::map< L3::Visualisers::SelectableLeaf*, btRigidBody*  >::iterator leaf_iterator = controllables->begin();
+            leaf_iterator != controllables->end(); 
+            leaf_iterator++ )
         {
-            (*it)->control_x += x;
-            (*it)->control_x += y;
+            // Is the selector also controllable?
+            if ( L3::Visualisers::Controllable* ptr = dynamic_cast< L3::Visualisers::Controllable* >( leaf_iterator->first ) )
+            {
+                ptr->control_x += x;
+                ptr->control_y += y;
+            }
         }
-
     }
 };
 
@@ -291,20 +312,9 @@ struct SelectionManager
     SelectionManager( MouseQuerySelect* selector, InputManager* input ) : select(select), input(input)
     {
         selector->view->addHandler( glv::Event::KeyDown, *input );
-   
-        for( std::map< L3::Visualisers::SelectableLeaf*, btRigidBody*  >::iterator leaf_iterator = selector->current_leafs.begin();
-            leaf_iterator !=  selector->current_leafs.end();
-            leaf_iterator++ )
-        {
-            // Is the selector also controllable?
-            if ( L3::Visualisers::Controllable* ptr = dynamic_cast< L3::Visualisers::Controllable* >( leaf_iterator->first ) )
-                controllables.push_back( ptr );
-        }
-   
-        input->controllables = &this->controllables;
-    }
 
-    std::list< Controllable* > controllables;
+        input->controllables = &selector->current_leafs;
+    }
 
     InputManager*       input;
     MouseQuerySelect*   select;
