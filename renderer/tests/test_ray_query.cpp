@@ -13,7 +13,7 @@
 struct tmp : L3::Visualisers::SelectableLeaf, L3::Visualisers::Controllable
 {
 
-    tmp() : L3::Visualisers::SelectableLeaf(120,130,140)
+    tmp() : L3::Visualisers::SelectableLeaf(50,50,50)
     {
 
     }
@@ -21,13 +21,12 @@ struct tmp : L3::Visualisers::SelectableLeaf, L3::Visualisers::Controllable
     void onDraw3D( glv::GLV& g )
     {
         L3::Visualisers::SelectableLeaf::onDraw3D(g);
-
-        glv::draw::translateZ( -500 );
+        
         glv::Point3 pts[1000];
         glv::Color colors[1000];
 
         for( int i=0; i<1000; i++ )
-            pts[i]( random()%100-50, random()%100-50, random()%100 );
+            pts[i]( control_x + random()%100-50, control_y + random()%100-50, control_z + random()%100-50 );
 
         glv::draw::paint( glv::draw::Points, pts, colors, 1000 );
  
