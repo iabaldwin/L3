@@ -231,11 +231,8 @@ struct MouseQuery : EventController
                     leaf_iterator != current_leafs.end();
                     leaf_iterator++ )
             {
-
                 if( *it == leaf_iterator->second )
-                {
                     action->apply( reinterpret_cast<glv::View*>(leaf_iterator->first ) );
-                }
             }
 
         }
@@ -267,30 +264,30 @@ struct WASDController : InputManager
         const glv::Keyboard& k = g.keyboard();
         int key = k.key();
 
-        float x = 0; 
-        float y = 0; 
+        double x = 0; 
+        double y = 0; 
+        double delta = 10.0;
 
         switch (key)
         {
             case 'w':
-                y+=2;
+                y+=delta;
                 break;
             
             case 's':
-                y-=2;
+                y-=delta;
                 break;
 
             case 'd':
-                x+=2;
+                x+=delta;
                 break;
 
             case 'a':
-                x-=2;
+                x-=delta;
                 break;
             
             default: 
                 break;
-
         };
 
         for( std::map< L3::Visualisers::SelectableLeaf*, btRigidBody*  >::iterator leaf_iterator = controllables->begin();
@@ -302,6 +299,9 @@ struct WASDController : InputManager
             {
                 ptr->control_x += x;
                 ptr->control_y += y;
+                if( leaf_iterator->first->selected )
+                    leaf_iterator->second->translate( btVector3(x,y,0) );
+            
             }
         }
     }

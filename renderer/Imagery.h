@@ -17,7 +17,6 @@ namespace Visualisers
     struct ImageData
     {
         IAB::Imagery::IMAGE img;
-        //GLuint name;
     };
 
     struct ImageFactory
@@ -34,63 +33,8 @@ namespace Visualisers
                 return false;
             }
 
-            //GLubyte image_texture[data.img->height][data.img->width][4];
-            
-            ////boost::shared_ptr< boost::multi_array<GLubyte, 3> > texture; 
-            ////data.texture.reset( new boost::multi_array<GLubyte, 3> );
-            ////boost::multi_array<GLubyte, 3>::extent_gen extents;
-            ////data.texture->resize( extents[data.img->height][data.img->width][4] );
-
-            //for(int j=data.img->height-1; j> 0; j--)
-            //{
-                //for(int i=0; i< data.img->width;  i++)
-                //{    
-                    //GLubyte* b = &((GLubyte*)(data.img->imageData + data.img->widthStep*j))[i*3];
-                    //GLubyte* g = &((GLubyte*)(data.img->imageData + data.img->widthStep*j))[i*3+1];
-                    //GLubyte* r = &((GLubyte*)(data.img->imageData + data.img->widthStep*j))[i*3+2];
-
-                    //image_texture[j][i][0] = (GLubyte) *r;
-                    //image_texture[j][i][1] = (GLubyte) *g;
-                    //image_texture[j][i][2] = (GLubyte) *b;
-                    //image_texture[j][i][3] = (GLubyte) 128;
-
-                    ////(*data.texture)[j][i][0] = (GLubyte) *r;
-                    ////(*data.texture)[j][i][1] = (GLubyte) *g;
-                    ////(*data.texture)[j][i][2] = (GLubyte) *b;
-                    ////(*data.texture)[j][i][3] = (GLubyte) 128;
-                //}
-            //}
-
-            //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-            ////glGenTextures(1, &texName);
-            ////glBindTexture(GL_TEXTURE_2D, texName);
-
-            //glGenTextures(1, &data.name );
-            //glBindTexture(GL_TEXTURE_2D, data.name );
-
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            
-            ////glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, 
-                    ////img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                    ////image_texture);  
-
-            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.img->width, 
-                    //data.img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                    //image_texture);  
-
-
-            ////glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.img->width, 
-                    ////data.img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                    ////data.texture.data() );  
-
             return true;
         }
-
-
     };
 
     struct image_bounds
@@ -101,7 +45,6 @@ namespace Visualisers
                     z_bound(-6.0)
         {
         }
-
 
         double lower_x, upper_x, 
                   lower_y, upper_y,
@@ -115,11 +58,6 @@ namespace Visualisers
         {
             GLubyte image_texture[data.img->height][data.img->width][4];
             
-            //boost::shared_ptr< boost::multi_array<GLubyte, 3> > texture; 
-            //data.texture.reset( new boost::multi_array<GLubyte, 3> );
-            //boost::multi_array<GLubyte, 3>::extent_gen extents;
-            //data.texture->resize( extents[data.img->height][data.img->width][4] );
-
             for(int j=data.img->height-1; j> 0; j--)
             {
                 for(int i=0; i< data.img->width;  i++)
@@ -132,47 +70,25 @@ namespace Visualisers
                     image_texture[j][i][1] = (GLubyte) *g;
                     image_texture[j][i][2] = (GLubyte) *b;
                     image_texture[j][i][3] = (GLubyte) 128;
-
-                    //(*data.texture)[j][i][0] = (GLubyte) *r;
-                    //(*data.texture)[j][i][1] = (GLubyte) *g;
-                    //(*data.texture)[j][i][2] = (GLubyte) *b;
-                    //(*data.texture)[j][i][3] = (GLubyte) 128;
                 }
             }
 
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-            //glGenTextures(1, &texName);
-            //glBindTexture(GL_TEXTURE_2D, texName);
-
-            //glGenTextures(1, &data.name );
-            //glBindTexture(GL_TEXTURE_2D, data.name );
-
             glGenTextures(1, &name );
             glBindTexture(GL_TEXTURE_2D, name );
-
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             
-            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, 
-                    //img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                    //image_texture);  
-
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.img->width, 
                     data.img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
                     image_texture);  
-
-
-            //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.img->width, 
-                    //data.img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                    //data.texture.data() );  
         }
         
         GLuint name;
-
         image_bounds b;
         ImageData& data;
 
@@ -184,8 +100,6 @@ namespace Visualisers
         {
             glEnable(GL_TEXTURE_2D);
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-            //glBindTexture(GL_TEXTURE_2D, texName);
-            //glBindTexture(GL_TEXTURE_2D, data.name );
             glBindTexture(GL_TEXTURE_2D, name );
             glBegin(GL_QUADS);
 
@@ -197,19 +111,6 @@ namespace Visualisers
             glEnd();
             glFlush();
             glDisable(GL_TEXTURE_2D);
-      
-            glv::Point3 vertices[4];
-            glv::Color  colors[4];
-
-
-            vertices[0]( b.lower_x, b.upper_y, b.z_bound );
-            vertices[1]( b.upper_x, b.upper_y, b.z_bound );
-            vertices[2]( b.upper_x, b.lower_y, b.z_bound );
-            vertices[3]( b.lower_x, b.lower_y, b.z_bound );
-
-
-            glv::draw::paint( glv::draw::LineLoop, vertices, colors, 4 );
-        
         }
     };
 
@@ -225,9 +126,6 @@ namespace Visualisers
 
         void onDraw3D(glv::GLV& g )
         {
-            //if( !image_renderer->data.initalised )
-                //image_renderer->data.initalise();
-
             image_renderer->onDraw3D(g);
         }
 
@@ -260,9 +158,12 @@ namespace Visualisers
 
             image_bounds b;
 
-            b.upper_x = 1000.0;
-            b.upper_y = 1000.0;
+            b.upper_x = 1000.0*.125*4;
+            b.upper_y = 1000.0*.125*4;
 
+            //b.upper_x = (locale.x_upper - locale.x_lower)*.125*4;
+            //b.upper_y = (locale.y_upper - locale.y_lower)*.125*4;
+            
             return boost::make_shared<LocaleRenderer>( data, b  );
         }
 
