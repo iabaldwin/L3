@@ -74,6 +74,11 @@ namespace L3
              */
             horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
             vertical_scan_renderer->windower = runner->vertical_LIDAR;
+           
+            /*
+             *  Scan matcher
+             */
+            scan_matching_renderer->engine = runner->engine;
         
         }
 
@@ -83,6 +88,8 @@ namespace L3
              *  Do parent
              */
             DatasetLayout::load( runner );
+
+            experience_location->experience = experience;
 
             /*
              *  Histogram Bounds

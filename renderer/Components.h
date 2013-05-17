@@ -794,7 +794,7 @@ namespace Visualisers
 
         }
 
-        boost::shared_ptr< L3::ScanMatching::Engine > engine;
+        boost::weak_ptr< L3::ScanMatching::Engine > engine;
 
         void onDraw3D( glv::GLV& g );
 
@@ -894,6 +894,33 @@ namespace Visualisers
 
     };
 
+    struct ExperienceLocationOverview
+    {
+
+        ExperienceLocationOverview( boost::shared_ptr<L3::Experience> experience ) : experience(experience)
+        {
+        }
+      
+        boost::weak_ptr< L3::Experience >   experience;
+
+        boost::shared_array< glv::Color >   experience_nodes_colors;
+        boost::shared_array< glv::Point3 >  experience_nodes_vertices;
+
+    };
+
+
+    struct ExperienceLocationOverviewView : ExperienceLocationOverview, glv::View
+    {
+        ExperienceLocationOverviewView( const glv::Rect& rect, boost::shared_ptr<L3::Experience> experience ) 
+            : ExperienceLocationOverview( experience ), glv::View(rect)
+        {
+
+        }
+
+        void onDraw(glv::GLV& g);
+        
+
+    };
 
 }   // Visualisers
 }   // L3

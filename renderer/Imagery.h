@@ -42,7 +42,7 @@ namespace Visualisers
        
         image_bounds() : lower_x(.0f), upper_x( .0f),
                     lower_y(.0f), upper_y( .0f ),
-                    z_bound(-5.0)
+                    z_bound(-10.0)
         {
         }
 

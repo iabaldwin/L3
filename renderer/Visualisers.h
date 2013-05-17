@@ -77,7 +77,6 @@ struct SwatheRenderer : Leaf
  */
 struct ExperienceRenderer : Leaf
 {
-
     ExperienceRenderer( boost::shared_ptr<L3::Experience> EXPERIENCE );
 
     int                                 pt_limit, pt_counter, sample_counter; 

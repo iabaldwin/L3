@@ -12,7 +12,6 @@
 #include "Experience.h"
 #include "Estimator.h"
 #include "SwatheBuilder.h"
-#include "Predictor.h"
 #include "ScanMatching.h"
 
 #include <Poco/Task.h>

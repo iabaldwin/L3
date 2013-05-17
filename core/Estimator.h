@@ -160,7 +160,9 @@ namespace Estimator
                 swathe_histogram.reset( new L3::HistogramUniformDistance<double>() );
                 current_swathe.reset( new L3::PointCloud<double>() );
                 current_histogram.reset( new L3::Histogram<double>() );
+                
                 sampled_swathe.reset( new PointCloud<T>() );
+                L3::allocate( sampled_swathe.get(), 1000 );
             }
 
             CostFunction<T>*                        cost_function;

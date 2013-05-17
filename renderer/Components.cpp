@@ -581,7 +581,7 @@ namespace Visualisers
     void PointCloudRendererView::onDraw3D( glv::GLV& g )
     {
         far(500);
-        //glv::draw::translateZ(-250 );
+        // Centering heuristic
         glv::draw::translate( 0, 60, -200 );
 
         PointCloudRenderer::onDraw3D(g);    
@@ -592,7 +592,6 @@ namespace Visualisers
 
     void PointCloudRendererView::update()
     {
-
         boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
 
         if( !cloud_ptr )
@@ -602,16 +601,6 @@ namespace Visualisers
         if( cloud_ptr->num_points > 0 ) 
             L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
-
-        //L3::SE3 tform( 0, 30, 0, 0, 0, 0 );
-        //L3::transform( plot_cloud.get(), &tform );
-
-        //This used to exist, because we had already projected the point cloud
-        //L3::SE3 tmp( *current_estimate );
-        //Eigen::Matrix4f h = tmp.getHomogeneous();
-        //tmp.setHomogeneous( h.inverse() );
-        //L3::transform( point_cloud.get(), &tmp );
-
     }
 
     /*
@@ -974,22 +963,27 @@ namespace Visualisers
 
     void ScanMatchingScanRenderer::onDraw3D( glv::GLV& g )
     {
+        boost::shared_ptr< L3::ScanMatching::Engine > ptr = engine.lock();
+
+        if( !ptr )
+            return;
+
         boost::scoped_array<double> scan;
         boost::scoped_array<double> putative;
 
-        L3::ReadLock lock( engine->mutex );
+        L3::ReadLock lock( ptr->mutex );
 
-        int scan_points = engine->matcher->scan_points;
-        int putative_points = engine->matcher->putative_points;
+        int scan_points = ptr->matcher->scan_points;
+        int putative_points = ptr->matcher->putative_points;
 
         scan.reset( new double[scan_points*3] );
-        std::copy( engine->matcher->scan.get(), 
-                engine->matcher->scan.get()+ scan_points*3, 
+        std::copy( ptr->matcher->scan.get(), 
+                ptr->matcher->scan.get()+ scan_points*3, 
                 scan.get() );
 
         putative.reset( new double[putative_points*3] );
-        std::copy( engine->matcher->putative.get(), 
-                engine->matcher->putative.get()+putative_points*3,
+        std::copy( ptr->matcher->putative.get(), 
+                ptr->matcher->putative.get()+putative_points*3,
                 putative.get() );
 
         lock.unlock();
@@ -1051,7 +1045,7 @@ namespace Visualisers
             std::list< int > window;
 
             int counter = 0;
-            float size=5;
+            
             // Draw transparent
             glv::draw::enable( glv::draw::Blend );
             while( it < pose_sequence->end() )
@@ -1062,10 +1056,11 @@ namespace Visualisers
                 if ( diff > -10  && diff  < 10 ) 
                 {
                     alpha = 1.0;
-                    size = 10-abs(diff);
+                    CoordinateSystem( *(it->second), 10-abs(diff), 1 ).onDraw3D(g);
                 }
+                else
+                    CoordinateSystem( *(it->second), 5, .3 ).onDraw3D(g);
 
-                CoordinateSystem( *(it->second), size, alpha ).onDraw3D(g);
 
                 it+=skip;
                 counter++;
@@ -1160,6 +1155,32 @@ namespace Visualisers
 
         // Draw a bounding box, transparency, etc.
     }
+
+    /*
+     *  Experience location overview
+     */
+
+    void ExperienceLocationOverviewView::onDraw(glv::GLV& g)
+    {
+        boost::shared_ptr< L3::Experience > ptr = experience.lock();
+
+        if( !ptr )
+            return;
+
+        experience_nodes_vertices.reset( new glv::Point3[ptr->sections.size()] );
+        experience_nodes_colors.reset( new glv::Color[ptr->sections.size()] );
+
+        std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
+
+        while( it != ptr->sections.end() )
+        {
+            experience_nodes_vertices[ std::distance( ptr->sections.begin(), it ) ]( it->x, it->y, 0 );
+            experience_nodes_colors[ std::distance( ptr->sections.begin(), it ) ].set( 255, 0, 0 );
+            it++;
+        }
+        glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
+    }
+
 
 }
 }

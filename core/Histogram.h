@@ -151,6 +151,11 @@ namespace L3
 
             }
 
+            ~HistogramUniformDistance()
+            {
+                gsl_histogram2d_free( this->hist );
+            }
+
             float bins_per_metre;
 
             void create( float x_centre,

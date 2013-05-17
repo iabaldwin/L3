@@ -238,10 +238,27 @@ namespace Visualisers
                 addLinearVelocityPlot();
                 addRotationalVelocityPlot();
 
+                // Box 1
                 ancillary_1.reset( new glv::Box() );
                 ancillary_1->pos( window.width()-(550+5), 350+5);
                 ancillary_1->fit();
                 this->renderables.push_front( ancillary_1.get() );
+
+                // Box 2
+                ancillary_2.reset( new glv::Box() );
+                ancillary_2->pos( window.width()-(535), 625 );
+                ancillary_2->fit();
+                this->renderables.push_front( ancillary_2.get() );
+
+                // Scan-matching scan renderer
+                scan_matching_renderer.reset( new L3::Visualisers::ScanMatchingScanRenderer( glv::Rect( 150,150 ),boost::shared_ptr< L3::ScanMatching::Engine >() ) );
+                scan_matching_renderer->pos( 150+30, 0 ); 
+
+                *ancillary_2 << *scan_matching_renderer;
+
+                experience_location.reset( new ExperienceLocationOverviewView( glv::Rect(150,150), boost::shared_ptr<L3::Experience>()  ) ); 
+                *ancillary_2 << *experience_location;
+
 
                 // Stand-alone scan renderer : Horizontal
                 horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 182.5,175 ) ) );
@@ -265,39 +282,41 @@ namespace Visualisers
                 // Dataset scaling factor
                 scale_factor_label.reset( new glv::Label() );
                 scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
-
                 scale_factor->interval( 5, 1 );
-                scale_factor->setValue(5);
 
                 top << *scale_factor;
 
-                
+
             }
 
             double current_time;
 
             const L3::Dataset*                          dataset;
             const L3::Configuration::Mission*           mission;
-            boost::shared_ptr< L3::DatasetRunner >      runner;
+            boost::shared_ptr< DatasetRunner >          runner;
             boost::shared_ptr< TextRenderer<double> >   time_renderer;
-            boost::shared_ptr< L3::Visualisers::IteratorRenderer<L3::SE3> > iterator_renderer;
+            boost::shared_ptr< IteratorRenderer<L3::SE3> > iterator_renderer;
             
             boost::shared_ptr< EventController > point_cloud_maximise_controller;
 
-            boost::shared_ptr< L3::Visualisers::LocaleRenderer >                map_view;
-            boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
+            boost::shared_ptr< LocaleRenderer >                map_view;
+            boost::shared_ptr< HistogramPyramidRendererView  > pyramid_renderer;
 
-            boost::shared_ptr< L3::Visualisers::PoseRenderer >          pose_renderer;
-            boost::shared_ptr< L3::Visualisers::LocaleBoundsRenderer >  locale_bounds;
-            boost::shared_ptr< L3::Visualisers::PointCloudRendererView >        runtime_cloud_renderer_view; 
+            boost::shared_ptr< PoseRenderer >           pose_renderer;
+            boost::shared_ptr< LocaleBoundsRenderer >   locale_bounds;
+            boost::shared_ptr< PointCloudRendererView > runtime_cloud_renderer_view; 
  
             //boost::shared_ptr< DataDumper > dumper;
             boost::shared_ptr< glv::View > ancillary_1;
             boost::shared_ptr< glv::View > ancillary_2;
             
-            boost::shared_ptr< L3::Visualisers::ScanRenderer2D > horizontal_scan_renderer;
-            boost::shared_ptr< L3::Visualisers::ScanRenderer2D > vertical_scan_renderer;
+            boost::shared_ptr< ScanRenderer2D > horizontal_scan_renderer;
+            boost::shared_ptr< ScanRenderer2D > vertical_scan_renderer;
            
+            boost::shared_ptr< ScanMatchingScanRenderer >  scan_matching_renderer;
+    
+            boost::shared_ptr< ExperienceLocationOverviewView > experience_location;
+            
             /*
              *  Load/reload function
              */
@@ -341,7 +360,6 @@ namespace Visualisers
 
             
             boost::shared_ptr< L3::Visualisers::CostRendererView >          cost_renderer_view;
-            boost::shared_ptr< L3::Visualisers::ScanMatchingScanRenderer >  scan_matching_renderer;
             boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
     };
 

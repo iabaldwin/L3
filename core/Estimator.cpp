@@ -229,10 +229,10 @@ namespace L3
                     CostFunction<double>* cost_function, 
                     __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
                         : swathe(swathe), 
-                        estimate(estimate), 
-                        experience(experience), 
-                        cost_function(cost_function),
-                        result_iterator(result_iterator)
+                            estimate(estimate), 
+                            experience(experience), 
+                            cost_function(cost_function),
+                            result_iterator(result_iterator)
             {
             }
 
@@ -298,7 +298,7 @@ namespace L3
                 /*
                  *  Speed considerations
                  */
-                L3::sample( swathe, this->sampled_swathe.get(), 100 );
+                L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
                 
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
 
