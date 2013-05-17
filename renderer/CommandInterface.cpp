@@ -14,16 +14,20 @@ namespace L3
     {
         expression.reset( new boost::regex("^_" ) );
 
-        member_function_map.insert( std::make_pair( "_load", &CommandInterface::load ) );
-        member_function_map.insert( std::make_pair( "_estimate", &CommandInterface::estimate ) );
-        member_function_map.insert( std::make_pair( "_algo", &CommandInterface::algo) );
-        member_function_map.insert( std::make_pair( "_quit", &CommandInterface::quit) );
-        member_function_map.insert( std::make_pair( "_script", &CommandInterface::script) );
-        member_function_map.insert( std::make_pair( "_?", &CommandInterface::print) );
+        member_function_map.insert( std::make_pair( "_load",            std::make_pair( &CommandInterface::load , "Load a dataset, for viewing" ) ));
+        member_function_map.insert( std::make_pair( "_estimate",        std::make_pair( &CommandInterface::estimate , "Load a dataset, for estimation" ) ) );
+        member_function_map.insert( std::make_pair( "_algo",            std::make_pair( &CommandInterface::algo, "Set current estimation algorithm" ) ) );
+        member_function_map.insert( std::make_pair( "_quit",            std::make_pair( &CommandInterface::quit, "Leave" ) ) );
+        member_function_map.insert( std::make_pair( "_script",          std::make_pair( &CommandInterface::script, "Execute a script" ) ) );
+        member_function_map.insert( std::make_pair( "_?",               std::make_pair( &CommandInterface::print, "Print this" ) ) );
         
-        member_function_map.insert( std::make_pair( "_add_traj", &CommandInterface::addTrajectory) );
-        member_function_map.insert( std::make_pair( "_remove_traj", &CommandInterface::removeTrajectory) );
-        member_function_map.insert( std::make_pair( "_remove_all_traj", &CommandInterface::removeTrajectories) );
+        member_function_map.insert( std::make_pair( "_add_traj",        std::make_pair( &CommandInterface::addTrajectory, "Add a visual trajectory" ) ) );
+        member_function_map.insert( std::make_pair( "_add_path",        std::make_pair( &CommandInterface::addPath, "Add a search path") ) );
+        member_function_map.insert( std::make_pair( "_print_path",      std::make_pair( &CommandInterface::printPath, "Print the search path") ) );
+        member_function_map.insert( std::make_pair( "_remove_traj",     std::make_pair( &CommandInterface::removeTrajectory, "Remove a visual trajectory") ) );
+        member_function_map.insert( std::make_pair( "_remove_all_traj", std::make_pair( &CommandInterface::removeTrajectories, "Remove all trajectories") ) );
+   
+        addPath( "/Users/ian/code/L3/scripts/" );
     }
 
     bool CommandInterface::match( const std::string& current )
@@ -79,10 +83,11 @@ namespace L3
         if ( command_arguments.first.size() == 0 )
             return std::make_pair( false, "CI::Parse error" );
 
-        std::map< std::string, command_interpreter >::iterator it = member_function_map.find( command_arguments.first ); 
+        //std::map< std::string, command_interpreter >::iterator it = member_function_map.find( command_arguments.first ); 
+        std::map< std::string, std::pair< command_interpreter, std::string>  >::iterator it = member_function_map.find( command_arguments.first ); 
         if ( it != member_function_map.end() )
         {
-            command_interpreter interpreter = it->second;
+            command_interpreter interpreter = it->second.first;
             return (this->*interpreter)( command_arguments.second );
         }
         else
@@ -147,6 +152,7 @@ namespace L3
         layout->load( container->runner.get() );
 
         return std::make_pair( true, "CI::Loaded dataset \t\t<" + load_copy + ">" );
+    
     }
 
 
@@ -168,10 +174,10 @@ namespace L3
 
         help << std::endl << "--------HELP-----------" << std::endl;;
       
-        for( std::map<std::string, command_interpreter>::iterator it = member_function_map.begin();
+        for( std::map<std::string, std::pair< command_interpreter, std::string > >::iterator it = member_function_map.begin();
                 it != member_function_map.end();
                 it++ )
-            help << it->first << std::endl;
+            help << it->first << "\t:\t" << it->second.second << std::endl;
 
         help << "--------/HELP-----------" << std::endl;;
         return std::make_pair( true, help.str() );
@@ -188,39 +194,96 @@ namespace L3
         std::string script_target ( load_command );
         ltrim(script_target);
 
-        std::ifstream script( script_target.c_str() );
+        if( script_target.size() < 4 )
+            return std::make_pair( false, "CI::Script <" + script_target + "> failed {Erroneous file}" );
 
-        if ( !script.good() )
-            return std::make_pair( false, "CI::Script <" + script_target + "> failed {No such file}" );
+        if( script_target.find( ".L3" ) == std::string::npos )
+            return std::make_pair( false, "CI::Script <" + script_target + "> failed {Erroneous ending }" );
 
-        std::list< std::string > script_history;
+        bool executed = false;
 
-        std::string line;
-
-        while( getline( script, line ) )
-            script_history.push_back( line );
-
-        script.close();
-
-        for( std::list< std::string  >::iterator it = script_history.begin();
-                it != script_history.end(); 
+        for( std::list< boost::filesystem::path >::iterator it = paths.begin();
+                it != paths.end();
                 it++ )
         {
 
-            // Comment
-            if( (*it)[0] == '#' )
-                continue;  
-            // Blank line
-            if( it->size() == 0 )
+            std::string putative_target = (it->string() ) + script_target;
+
+            std::cout << putative_target << std::endl;
+
+            std::ifstream script( putative_target.c_str() );
+
+            if ( !script.good() )
                 continue;
 
-            std::pair< bool, std::string > result = (this->execute( *it ));
-            if( !result.first )
-                return std::make_pair( false, "CI::Script <" + script_target + "> failed @ " + *it + "\n{ " + result.second + " }\n" );
+            std::list< std::string > script_history;
+
+            std::string line;
+
+            while( getline( script, line ) )
+                script_history.push_back( line );
+
+            script.close();
+
+            for( std::list< std::string  >::iterator it = script_history.begin();
+                    it != script_history.end(); 
+                    it++ )
+            {
+
+                // Comment
+                if( (*it)[0] == '#' )
+                    continue;  
+                // Blank line
+                if( it->size() == 0 )
+                    continue;
+
+                std::pair< bool, std::string > result = (this->execute( *it ));
+                if( !result.first )
+                    return std::make_pair( false, "CI::Script <" + script_target + "> failed @ " + *it + "\n{ " + result.second + " }\n" );
+            }
+
         }
 
-        return std::make_pair( true, "CI::Script <" + script_target + "> succeeded" );
+        if( executed )
+            return std::make_pair( true, "CI::Script <" + script_target + "> succeeded" );
+        else
+            return std::make_pair( false, "CI::Script <" + script_target + "> does not exist" );
+
     }
+
+    std::pair< bool, std::string> CommandInterface::printPath( const std::string& load_command )
+    {
+        std::stringstream ss;
+        for( std::list< boost::filesystem::path >::iterator it = paths.begin();
+                it != paths.end();
+                it++ )
+        {
+          
+            ss << it->string() << ":";
+
+        }
+            
+        return std::make_pair( true, ss.str() );
+    }
+
+    std::pair< bool, std::string> CommandInterface::addPath( const std::string& load_command )
+    {
+      
+        std::string load( load_command );
+
+        ltrim( load );
+
+        boost::filesystem::path putative_path( load );
+
+        if( boost::filesystem::is_directory( putative_path ) )
+        {
+            paths.push_back( putative_path );
+            return std::make_pair( true, "CI::Path <" + load_command+ "> added" );
+        }
+        else
+            return std::make_pair( false, "CI::Path <" + load_command+ "> does not exist" );
+    }
+
 
     std::pair< bool, std::string> CommandInterface::addTrajectory( const std::string& load_command )
     {

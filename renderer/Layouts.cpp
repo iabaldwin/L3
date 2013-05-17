@@ -23,11 +23,10 @@ namespace L3
             /*
              *  Timer
              */
-            time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
-            //time_renderer->pos(window.width()-155, window.height()-50 );
-            //top << *time_renderer;
-            //time_renderer->setVariable( runner->current_time ) ;
+             time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
+             time_renderer->pos(window.width()-155, window.height()-50 );
 
+             top << *time_renderer;
 
             /*
              *  Pose Iterator

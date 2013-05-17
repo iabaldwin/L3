@@ -271,11 +271,7 @@ namespace Visualisers
 
                 top << *scale_factor;
 
-                time_renderer.reset( new TextRenderer<double>( current_time ) );
-                time_renderer->pos(window.width()-155, window.height()-50 );
                 
-                top << *time_renderer;
-
             }
 
             double current_time;

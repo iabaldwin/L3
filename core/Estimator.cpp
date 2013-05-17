@@ -298,7 +298,7 @@ namespace L3
                 /*
                  *  Speed considerations
                  */
-                L3::sample( swathe, this->sampled_swathe.get(), 5000 );
+                L3::sample( swathe, this->sampled_swathe.get(), 100 );
                 
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
 
