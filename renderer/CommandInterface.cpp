@@ -101,7 +101,9 @@ namespace L3
 
         std::string load_copy( load_command );
         ltrim(load_copy);
-        
+      
+        std::cout << load_copy << std::endl;
+
         try
         {
             container->dataset.reset( new L3::Dataset( load_copy ) );
@@ -211,6 +213,7 @@ namespace L3
             if ( !script.good() )
                 continue;
 
+            
             std::list< std::string > script_history;
 
             std::string line;
@@ -232,10 +235,14 @@ namespace L3
                 if( it->size() == 0 )
                     continue;
 
+
                 std::pair< bool, std::string > result = (this->execute( *it ));
                 if( !result.first )
                     return std::make_pair( false, "CI::Script <" + script_target + "> failed @ " + *it + "\n{ " + result.second + " }\n" );
+          
             }
+            
+            executed = true;
 
         }
 

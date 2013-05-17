@@ -227,10 +227,17 @@ namespace Visualisers
         glv::Point3 bound_vertices[4];
         glv::Color  bound_colors[4];
 
-        L3::ReadLock( hist->mutex );
+        // Obtain the pointer
+        boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
+      
+        if ( !hist_ptr)
+            return;
 
-        std::pair<float, float> lower_left = hist->coords(0,0);
-        std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
+        // Obtain the mutex
+        L3::ReadLock( hist_ptr->mutex );
+
+        std::pair<float, float> lower_left = hist_ptr->coords(0,0);
+        std::pair<float, float> upper_right = hist_ptr->coords( hist_ptr->x_bins, hist_ptr->y_bins );
 
         this->lower.x = lower_left.first;
         this->lower.y = lower_left.second;
@@ -270,13 +277,19 @@ namespace Visualisers
         glv::Point3 quad_vertices[4];
         glv::Color quad_colors[4];
 
-        if (hist->empty())
+        // Obtain the pointer
+        boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
+      
+        if ( !hist_ptr)
+            return;
+
+        if (hist_ptr->empty())
             return;
 
         L3::Histogram<double> tmp;
 
-        L3::ReadLock lock( hist->mutex );
-        L3::clone( hist.get(), &tmp );
+        L3::ReadLock lock( hist_ptr->mutex );
+        L3::clone( hist_ptr.get(), &tmp );
         lock.unlock();   
 
         float x_delta = tmp.x_delta;
@@ -312,12 +325,18 @@ namespace Visualisers
      */
     void HistogramDensityRenderer::update()
     {
-        if( hist->empty() )
+        // Obtain the pointer
+        boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
+      
+        if ( !hist_ptr)
+            return;
+
+        if( hist_ptr->empty() )
             return;
 
         L3::Histogram<double> tmp;
-        L3::ReadLock lock( hist->mutex );
-        L3::clone( hist.get(), &tmp );
+        L3::ReadLock lock( hist_ptr->mutex );
+        L3::clone( hist_ptr.get(), &tmp );
         lock.unlock();   
 
         mTex.magFilter(GL_NEAREST);
@@ -581,13 +600,14 @@ namespace Visualisers
     void PointCloudRendererView::onDraw3D( glv::GLV& g )
     {
         far(500);
+        
         // Centering heuristic
         glv::draw::translate( 0, 60, -200 );
 
         PointCloudRenderer::onDraw3D(g);    
 
-        if( this->enabled( glv::Property::Maximized ) )
-            bounds_renderer->onDraw3D(g);
+        //if( this->enabled( glv::Property::Maximized ) )
+            //bounds_renderer->onDraw3D(g);
     }
 
     void PointCloudRendererView::update()
@@ -676,7 +696,11 @@ namespace Visualisers
 
     void DedicatedPoseRenderer::update()
     {
-        *pose = provider->operator()();
+        boost::shared_ptr< L3::PoseProvider > ptr = provider.lock();
+        if ( !ptr )
+            return;
+
+        *pose = ptr->operator()();
     }
 
     void DedicatedPoseRenderer::onDraw3D(glv::GLV& g)
@@ -688,30 +712,15 @@ namespace Visualisers
         tmp.Y( 0 );
         tmp.Z( 0 );
 
-        //far(1000);
-
-        //glv::draw::push3D( -1.0, 1.0, 20.0,  150.0, 35 );
-        //glv::draw::push( -1.0, 1.0, 20.0,  150.0, 35 );
-
         glv::draw::translateZ( -25 );
         glv::draw::translateY( 1 );
-        //glv::draw::rotate( 135 , 0 , 45 );
-        //glv::draw::rotate( 45 , 0 , 45 );
-        //glv::draw::rotate( 0 , 0 , 55 );
-
         glv::draw::rotateX( 245 );
         glv::draw::rotateZ( 15 );
-
 
         CoordinateSystem( tmp ).onDraw3D( g );
 
         axes.onDraw3D( g );
-        const char* test = "TEST";
-        //glutStrokeString( GLUT_BITMAP_HELVETICA_18, reinterpret_cast< const unsigned char*>( test ) );
-        //glutBitmapString( GLUT_BITMAP_HELVETICA_18, reinterpret_cast< const unsigned char*>( test ) );
-
-        //glv::draw::pop3D();
-        glv::draw::pop();
+        //glv::draw::pop();
     }
 
     /*
@@ -878,7 +887,7 @@ namespace Visualisers
 
     void HistogramPyramidRendererView::update()
     {
-        for( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it=renderers.begin();
+        for( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it=renderers.begin();
                 it != renderers.end();
                 it++ )
             (*it)->update();
@@ -1162,6 +1171,7 @@ namespace Visualisers
 
     void ExperienceLocationOverviewView::onDraw(glv::GLV& g)
     {
+        
         boost::shared_ptr< L3::Experience > ptr = experience.lock();
 
         if( !ptr )
@@ -1172,6 +1182,7 @@ namespace Visualisers
 
         std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
 
+        glv::draw::push();
         while( it != ptr->sections.end() )
         {
             experience_nodes_vertices[ std::distance( ptr->sections.begin(), it ) ]( it->x, it->y, 0 );
@@ -1179,8 +1190,15 @@ namespace Visualisers
             it++;
         }
         glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
+
+        boost::shared_ptr< L3::PoseProvider > ptr_provider = provider.lock();
+        
+        if( ptr_provider )
+        {
+            *current = ptr_provider->operator()();
+            animation->onDraw3D(g);
+        }
+        glv::draw::pop();
     }
-
-
 }
 }

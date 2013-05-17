@@ -117,16 +117,27 @@ namespace Visualisers
     template <typename T> 
         struct TextRenderer : glv::View
         {
-            explicit TextRenderer( T& v ) : t(v), glv::View( glv::Rect(150,25 ) )
+
+            struct variable_lock
+            {
+                variable_lock( T& t ) : t(t)
+                {
+
+                }
+           
+                T& t;
+            };
+
+            explicit TextRenderer() : glv::View( glv::Rect(150,25 ) )
             {
                 this->disable( glv::DrawBorder );
             }
-
-            T& t;
+            
+            boost::shared_ptr< variable_lock > lock;
 
             void setVariable( T& t )
             {
-                this->t = t;
+                lock.reset( new variable_lock( t ) );
             }
 
             void onDraw(glv::GLV& g)
@@ -137,7 +148,10 @@ namespace Visualisers
                 std::stringstream ss;
                 ss.precision( 15 );
 
-                ss << t;
+                if( lock )
+                {
+                ss << lock->t;
+                }
                 glv::draw::text( ss.str().c_str() );
             }
 
@@ -385,8 +399,8 @@ namespace Visualisers
     {
         PointCloudRendererView( const glv::Rect& r, boost::shared_ptr< L3::PointCloud<double> > cloud, boost::shared_ptr< L3::SE3 > estimate ) 
             : PointCloudRenderer(cloud),
-            glv::View3D(r),
-            current_estimate(estimate)
+                glv::View3D(r),
+                current_estimate(estimate)
 
         {
             bounds_renderer.reset( new PointCloudBoundsRenderer( cloud ) );
@@ -475,7 +489,7 @@ namespace Visualisers
 
         }
 
-        boost::shared_ptr<L3::Histogram<double> > hist;
+        boost::weak_ptr<L3::Histogram<double> > hist;
     };
 
     /*
@@ -552,14 +566,21 @@ namespace Visualisers
         {
             glv::draw::translateZ( -50 );
 
-            if( hist->empty() )
+            // Obtain the pointer
+            boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
+
+            if ( !hist_ptr)
                 return;
 
-            L3::ReadLock lock( hist->mutex );
-            L3::clone( hist.get(), plot_histogram.get() );
 
-            std::pair<float, float> lower_left = hist->coords(0,0);
-            std::pair<float, float> upper_right = hist->coords( hist->x_bins, hist->y_bins );
+            if( hist_ptr->empty() )
+                return;
+
+            L3::ReadLock lock( hist_ptr->mutex );
+            L3::clone( hist_ptr.get(), plot_histogram.get() );
+
+            std::pair<float, float> lower_left = hist_ptr->coords(0,0);
+            std::pair<float, float> upper_right = hist_ptr->coords( hist_ptr->x_bins, hist_ptr->y_bins );
 
             float x_delta = (upper_right.first +lower_left.first)/2.0;
             float y_delta = (upper_right.second +lower_left.second)/2.0;
@@ -581,10 +602,16 @@ namespace Visualisers
 
         void onDraw3D( glv::GLV& g )
         {
-            L3::ReadLock lock( hist->mutex );
+            // Obtain the pointer
+            boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
 
-            if ( !hist->empty() ) 
-                L3::clone( hist.get(), plot_histogram.get() );
+            if ( !hist_ptr)
+                return;
+
+            L3::ReadLock lock( hist_ptr->mutex );
+
+            if ( !hist_ptr->empty() ) 
+                L3::clone( hist_ptr.get(), plot_histogram.get() );
             lock.unlock();
 
             HistogramVoxelRenderer::onDraw3D(g);    
@@ -602,38 +629,69 @@ namespace Visualisers
         {
         }
 
-        boost::shared_ptr<L3::HistogramPyramid<double> > pyramid;
+        boost::weak_ptr<L3::HistogramPyramid<double> > pyramid;
 
     };
 
     struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updateable
     {
-        HistogramPyramidRendererView( const glv::Rect& r, boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid) 
+        HistogramPyramidRendererView( const glv::Rect& r, boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid, int num_pyramids ) 
             : HistogramPyramidRenderer(histogram_pyramid),
-            glv::View(r)
+                glv::View(r),
+                num_pyramids(num_pyramids)
         {
-            this->pyramid = pyramid;    
-
             int width = 175;
             int start = 0;
-            for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
-                    it != this->pyramid->end();
-                    it++ )
+            //for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
+                    //it != this->pyramid->end();
+                    //it++ )
+             for( int i=0; i< num_pyramids; i++ )
             {
-                boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), *it ) );
+                //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), *it ) );
+                boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), boost::shared_ptr< Histogram<double > >() ) );
                 start+= (width+10/3);
-                renderers.push_front( renderer );
+                renderers.push_back( renderer );
                 (*this) << renderer.get();
             }
 
-            this->fit();
-            this->bringToFront();
+             if( histogram_pyramid )
+                 loadPyramid( histogram_pyramid );
+
+            //this->fit();
+            //this->bringToFront();
+        }
+           
+        int num_pyramids;
+        std::deque< boost::shared_ptr< HistogramDensityRenderer > > renderers;
+
+        void loadPyramid( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid )
+        {
+            this->pyramid = histogram_pyramid;
+
+            boost::shared_ptr< L3::HistogramPyramid<double > > pyramid_ptr = this->pyramid.lock();
+
+            if( !pyramid_ptr )
+                return;
+
+            if( std::distance( pyramid_ptr->begin(), pyramid_ptr->end() ) > num_pyramids )
+            {
+            }
+
+            int counter = 0;
+            for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = pyramid_ptr->begin();
+                    it != pyramid_ptr->end();
+                    it++ )
+            {
+                //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), *it ) );
+          
+                renderers[counter++]->hist = *it;
+
+            }
 
         }
 
         void update();
 
-        std::list< boost::shared_ptr< HistogramDensityRenderer > > renderers;
     };
 
 
@@ -642,8 +700,7 @@ namespace Visualisers
      */
     struct DedicatedPoseRenderer : glv::View3D, Updateable
     {
-
-        DedicatedPoseRenderer( L3::PoseProvider* provider, const glv::Rect rect = glv::Rect(50,50), const std::string& text="" ) 
+        DedicatedPoseRenderer( boost::shared_ptr< L3::PoseProvider > provider, const glv::Rect rect = glv::Rect(50,50), const std::string& text="" ) 
             : glv::View3D( rect ),
             provider(provider)
         {
@@ -656,7 +713,7 @@ namespace Visualisers
 
         }
 
-        L3::PoseProvider* provider;
+        boost::weak_ptr< L3::PoseProvider > provider;
 
         boost::shared_ptr<L3::SE3> pose;
 
@@ -733,12 +790,8 @@ namespace Visualisers
         {
             rotate_z = 180;
 
-            //label.reset( new glv::Label("LMS151::Vertical", true) );
-            //label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
-
             label.reset( new glv::Label("LMS151::Vertical" ) );
             label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-
 
             (*this) << *label;
 
@@ -792,9 +845,17 @@ namespace Visualisers
             engine(engine)
         {
 
-        }
+            label.reset( new glv::Label("SM engine" ) );
+            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
 
+            (*this) << *label;
+
+
+        }
+        
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
+        
+        boost::shared_ptr< glv::View > label;
 
         void onDraw3D( glv::GLV& g );
 
@@ -897,12 +958,13 @@ namespace Visualisers
     struct ExperienceLocationOverview
     {
 
-        ExperienceLocationOverview( boost::shared_ptr<L3::Experience> experience ) : experience(experience)
+        ExperienceLocationOverview( boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PoseProvider > provider ) 
+            : experience(experience), provider(provider)
         {
         }
       
+        boost::weak_ptr< L3::PoseProvider > provider;
         boost::weak_ptr< L3::Experience >   experience;
-
         boost::shared_array< glv::Color >   experience_nodes_colors;
         boost::shared_array< glv::Point3 >  experience_nodes_vertices;
 
@@ -911,15 +973,25 @@ namespace Visualisers
 
     struct ExperienceLocationOverviewView : ExperienceLocationOverview, glv::View
     {
-        ExperienceLocationOverviewView( const glv::Rect& rect, boost::shared_ptr<L3::Experience> experience ) 
-            : ExperienceLocationOverview( experience ), glv::View(rect)
+        ExperienceLocationOverviewView( const glv::Rect& rect, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr<L3::PoseProvider>() ) 
+            : ExperienceLocationOverview( experience, provider ), glv::View(rect)
         {
+            label.reset( new glv::Label("Experience" ) );
+            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
 
+            (*this) << *label;
+
+            current.reset( new L3::SE3( L3::SE3::ZERO() ) );
+
+            animation.reset( new AnimatedPoseRenderer( *current ) );
         }
-
+       
+        boost::shared_ptr< L3::SE3 >    current;
+        boost::shared_ptr< glv::View >  label;
+        boost::shared_ptr< AnimatedPoseRenderer > animation;
+        
         void onDraw(glv::GLV& g);
         
-
     };
 
 }   // Visualisers

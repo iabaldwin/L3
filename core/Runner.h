@@ -28,6 +28,7 @@ struct TemporalRunner
     {
         std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), time ) );
     }
+
 };
 
 
@@ -69,11 +70,12 @@ struct DatasetRunner : ThreadedRunner
     Dataset*        dataset;
     float           speedup;
     double          current_time, start_time;  
-    
-    
+   
     std::list < Dumpable* > dumps;
     
     boost::shared_ptr< L3::SE3 > current;
+    
+    boost::shared_ptr< L3::PoseProvider > provider;
 
     boost::shared_ptr< L3::SE3 >                projection;
     boost::shared_ptr< L3::Projector<double> >  projector;
@@ -128,8 +130,6 @@ struct EstimatorRunner : DatasetRunner
             experience(experience)
     {
         estimated.reset( new L3::SE3( L3::SE3::ZERO() ) ); 
-    
-        this->provider = oracle.get();
     }
 
 
@@ -144,7 +144,6 @@ struct EstimatorRunner : DatasetRunner
     boost::shared_ptr< L3::SE3 > estimated;
 
     L3::Experience*                         experience;
-    L3::PoseProvider*                       provider;
     L3::ConstantTimeWindower<L3::LHLV>*     windower;
     boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm;
 

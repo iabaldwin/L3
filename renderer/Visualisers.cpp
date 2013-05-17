@@ -28,19 +28,23 @@ namespace Visualisers
     template <typename T>
     void IteratorRenderer<T>::onDraw3D( glv::GLV& g )
     {
-        std::deque< std::pair< double, boost::shared_ptr<T> > > window;
-
         boost::shared_ptr< L3::Iterator<T> > iterator_ptr = iterator.lock();
 
         if( !iterator_ptr )
             return;
+        
+        SelectableLeaf::onDraw3D(g);
+
+        std::deque< std::pair< double, boost::shared_ptr<T> > > window;
 
         iterator_ptr->getWindow( window );
         typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
-
         
         while( it != window.end() )
             L3::Visualisers::CoordinateSystem( *(it++->second) ).onDraw3D( g );
+
+        current_x= (it-1)->second->X();
+        current_y= (it-1)->second->Y();
 
         //std::stringstream ss;
         //this->tag.x = (it-1)->second->X();

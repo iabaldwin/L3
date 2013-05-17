@@ -174,7 +174,6 @@ struct MouseQuery : EventController
 
         // Query them
         const glv::Mouse& m = g.mouse();
-      
         
         double x1,y1,z1;
         double x2,y2,z2;

@@ -10,6 +10,9 @@ target_link_libraries( test_coordinate_transforms GLV L3Vis ${OPENGL_LIBRARIES} 
 add_executable( test_libglf test_libglf.cpp )
 target_link_libraries( test_libglf GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} glf )
 
+add_executable( test_controls test_controls.cpp )
+target_link_libraries( test_controls GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES})
+
 add_executable( test_input test_input.cpp )
 target_link_libraries( test_input GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES})
 
@@ -65,7 +68,7 @@ add_executable( test_dataset_layout test_dataset_layout.cpp )
 target_link_libraries( test_dataset_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_estimator_layout test_estimator_layout.cpp )
-target_link_libraries( test_estimator_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_estimator_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} readline curses )
 
 add_executable( test_algorithm_visual test_algorithm.cpp )
 target_link_libraries( test_algorithm_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})

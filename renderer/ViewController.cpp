@@ -105,7 +105,7 @@ void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
                    
                     double r = (double)(g.mouse().y() - origin_y) /100;
 
-                    if ( ( current.r > -45 && r < 0 ) || ( current.r < 45 && r > 0 ) )
+                    if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
                         current.r += r;
         
                 }

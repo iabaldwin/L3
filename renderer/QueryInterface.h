@@ -21,23 +21,32 @@ namespace Visualisers
 
     struct Box
     {
-        
-        Box( btRigidBody* box ) : box(box)
+        Box( btCollisionShape* box_shape, btRigidBody* box_body ) 
+            : box_shape(box_shape),
+                box_body(box_body)
         {
             bounds = new glv::Point3[2*8];
-       
-            update();
         }
   
-        btRigidBody* box;
+        btRigidBody* box_body;
+        btCollisionShape* box_shape;
         
         glv::Point3* bounds;
 
-        void update()
+        btVector3 current;
+
+        void update( double x, double y )
         {
+            btTransform transform = box_body->getCenterOfMassTransform();
+            transform.setOrigin(btVector3( x, y, 0 ) );
+            box_body->setCenterOfMassTransform( transform );
+
             btVector3 aabbMin, aabbMax;
 
-            box->getAabb( aabbMin, aabbMax);
+            // Move to current location
+            //box->getAabb( aabbMin, aabbMax);
+            //box->getAabb( transform, aabbMin, aabbMax);
+            box_shape->getAabb( transform, aabbMin, aabbMax);
 
             // Lower
             bounds[0]( aabbMin[0], aabbMin[1], aabbMin[2] );
@@ -74,18 +83,22 @@ namespace Visualisers
         {
             box_shape.reset( new btBoxShape( btVector3(x_size, y_size, z_size) ) );
             box_body.reset( new btRigidBody( 0.0f, new btDefaultMotionState, box_shape.get(), btVector3(0,0,0) ) );
-            box.reset( new Box( box_body.get() ));
+            box.reset( new Box( box_shape.get(), box_body.get() ));
         }
 
         bool selected;
         boost::shared_ptr< Box >                box;
         boost::shared_ptr< btRigidBody >        box_body;
         boost::shared_ptr< btCollisionShape >   box_shape;
-    
+  
+        double current_x, current_y;
+
         void onDraw3D( glv::GLV& g )
         {
-            box->update();
-            
+            box->update( current_x, current_y );
+          
+            //std::cout << current_x << ":" << current_y << std::endl;
+
             glv::Color c = selected ? glv::Color( .7, .7, .7 ) : glv::Color( .2, .2, .2 ) ;
                 
             glv::Color colors[16];
@@ -185,21 +198,9 @@ namespace Visualisers
         
         boost::shared_ptr< btDiscreteDynamicsWorld > m_dynamicsWorld;
         
-        btAlignedObjectArray<btCollisionShape*> m_collisionShapes;
-                     
         boost::shared_ptr< btBroadphaseInterface >  m_broadphase;
         
-        boost::shared_ptr< btDefaultMotionState > myMotionState;
-        
         boost::shared_ptr< btCollisionDispatcher > m_dispatcher;
-
-        std::deque< boost::shared_ptr< btRigidBody >  > bodies;
-
-        boost::shared_ptr< btCollisionShape > groundShape;
-             
-        std::list< L3::Visualisers::Leaf* > leafs;
-        
-        btTransform groundTransform;
    
     };
 }

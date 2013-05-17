@@ -200,7 +200,6 @@ namespace L3
     template <typename T>
         struct HistogramPyramid : Lockable
         {
-
             HistogramPyramid( std::vector<T> densities )
             {
                 for( typename std::vector<T>::iterator it=densities.begin(); 

@@ -43,7 +43,7 @@ int main (int argc, char ** argv)
     boost::shared_ptr< L3::PoseProvider >               pose_provider( new L3::CircularPoseProvider( 25.0 ) );
     L3::Visualisers::PoseProviderRenderer               pose_provider_renderer( pose_provider.get() );
     L3::Visualisers::ExperienceRenderer                 experience_renderer( experience );
-    L3::Visualisers::HistogramPyramidRendererView       pyramid_renderer( glv::Rect(400,400),experience->experience_pyramid );
+    L3::Visualisers::HistogramPyramidRendererView       pyramid_renderer( glv::Rect(400,400),experience->experience_pyramid, 3 );
 
     L3::Visualisers::HistogramDensityRenderer           dbg_density_renderer( glv::Rect(600,400,400,400), (*experience->experience_pyramid)[0]);
 

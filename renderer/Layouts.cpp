@@ -6,6 +6,73 @@ namespace L3
 {
     namespace Visualisers
     {
+
+        DatasetLayout::DatasetLayout( glv::Window& win ) : Layout(win)
+        {
+            /*
+             *  Stand-alone plots
+             */
+            addLinearVelocityPlot();
+            addRotationalVelocityPlot();
+
+            // Box 1
+            ancillary_1.reset( new glv::Table("x x,") );
+            ancillary_1->pos( window.width()-(555), 350+5);
+            this->renderables.push_front( ancillary_1.get() );
+
+            // Stand-alone scan renderer : Horizontal
+            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 180,180 ) ) );
+            updater->operator<<( horizontal_scan_renderer.get() );
+            (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
+            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* > (horizontal_scan_renderer.get() )) );
+
+            // Stand-alone scan renderer : Vertical
+            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(), glv::Rect( 180,180 ) ) );
+            updater->operator<<( vertical_scan_renderer.get() );
+            (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
+            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >(vertical_scan_renderer.get() ) ) );
+
+            // Scan-matching scan renderer
+            scan_matching_renderer.reset( new L3::Visualisers::ScanMatchingScanRenderer( glv::Rect( 180,180 ),boost::shared_ptr< L3::ScanMatching::Engine >() ) );
+            *ancillary_1 << *scan_matching_renderer;
+            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >(scan_matching_renderer.get() ) ) );
+
+            // Stand-alone pose renderer
+            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( boost::shared_ptr<L3::PoseProvider>(), glv::Rect( 180,180 ), std::string("Estimate::INS" ) ) );
+            updater->operator<<( oracle_renderer.get() );
+            *ancillary_1 << *oracle_renderer;
+
+            
+            // Arrange
+            dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
+
+            // Runtime cloud renderer
+            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( window.width()-(550+5), 0, 375-5, 350 ), boost::shared_ptr< L3::PointCloud<double> >(), boost::shared_ptr<L3::SE3>() ) );
+            this->renderables.push_front( runtime_cloud_renderer_view.get() );
+            updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
+
+            point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
+
+            // Dataset scaling factor
+            scale_factor_label.reset( new glv::Label() );
+            scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            scale_factor->interval( 5, 1 );
+
+            top << *scale_factor;
+
+            // Experience renderer
+            experience_location.reset( new ExperienceLocationOverviewView( glv::Rect(180,180), boost::shared_ptr<L3::Experience>()  ) ); 
+            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( experience_location.get() ) );
+            //*ancillary_1 << *experience_location;
+            
+            //time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
+            time_renderer.reset( new TextRenderer<double>() );
+            time_renderer->pos(window.width()-155, window.height()-50 );
+
+            top << *time_renderer;
+
+        }
+
         bool DatasetLayout::load( L3::DatasetRunner* runner )
         {
             /*
@@ -17,16 +84,13 @@ namespace L3
             /*
              *  Scale
              */
-            
+
             scale_factor->attachVariable( runner->speedup );
 
             /*
              *  Timer
              */
-             time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
-             time_renderer->pos(window.width()-155, window.height()-50 );
-
-             top << *time_renderer;
+            time_renderer->setVariable( runner->current_time ); 
 
             /*
              *  Pose Iterator
@@ -40,8 +104,8 @@ namespace L3
              */
             L3::Configuration::Begbroke begbroke;
             begbroke.loadDatum();
-            
-    
+
+
             // Remove it, if it is already in the composite list     
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
             map_view = L3::Visualisers::LocaleRendererFactory::build( begbroke );
@@ -65,21 +129,43 @@ namespace L3
             /*
              *  Swathe Cloud
              */
-                
+
             runtime_cloud_renderer_view->cloud = runner->point_cloud;
             runtime_cloud_renderer_view->current_estimate = runner->current;
-           
+
             /*
              *  Scan renderers
              */
             horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
             vertical_scan_renderer->windower = runner->vertical_LIDAR;
-           
+
             /*
              *  Scan matcher
              */
             scan_matching_renderer->engine = runner->engine;
-        
+
+            /*
+             *  Oracle
+             */
+            oracle_renderer->provider = runner->provider; 
+        }
+
+        /*
+         *  Estimator layout
+         */
+        EstimatorLayout::EstimatorLayout( glv::Window& win) : DatasetLayout(win)
+        {
+
+            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 150*3, 150 ), boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 ) );
+
+            for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
+                    it != pyramid_renderer->renderers.end();
+                    it++ )
+                updater->operator<<( it->get() );
+
+            pyramid_renderer->pos( window.width() - (175+5), 0 );
+
+            top << *pyramid_renderer;
         }
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -90,6 +176,7 @@ namespace L3
             DatasetLayout::load( runner );
 
             experience_location->experience = experience;
+            experience_location->provider = runner->provider;
 
             /*
              *  Histogram Bounds
@@ -102,16 +189,16 @@ namespace L3
             /*
              *  Histogram voxel
              */
-            //histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( (*experience->experience_pyramid)[0] ) ) ;
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
+            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( (*experience->experience_pyramid)[0] ) ) ;
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
 
             //// Swathe Bounds
             ////point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( run_time_swathe ) );
             ////this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
 
-            //// Swathe Cloud
-            ////runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( run_time_swathe ));
-            ////this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
+            // Swathe Cloud
+            //runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( run_time_swathe ));
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
 
             //// Estimated pose
             //estimated_pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->estimated ) );
@@ -129,14 +216,16 @@ namespace L3
              */
             //pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 150*3, 150 ), experience->experience_pyramid ));
             //for ( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
-                    //it != pyramid_renderer->renderers.end();
-                    //it++ )
-                //updater->operator<<( it->get() );
+            //it != pyramid_renderer->renderers.end();
+            //it++ )
+            //updater->operator<<( it->get() );
             //pyramid_renderer->pos( window.width() - (175+5), 0 );
 
             //top << *pyramid_renderer;
 
-            
+            pyramid_renderer->loadPyramid( experience->experience_pyramid );
+
+
             /*
              *  Group: Ancillary
              */
@@ -145,15 +234,15 @@ namespace L3
             // Stand-alone scan renderer :: Horizontal
             //L3::Visualisers::Updateable* putative = dynamic_cast<L3::Visualisers::Updateable*>( horizontal_scan_renderer.get() );
             //updater->updateables.remove( putative );
-            
+
             //horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( runner->horizontal_LIDAR.get(), glv::Rect( 182.5,175 ) ) );
             //updater->operator<<( horizontal_scan_renderer.get() );
 
             //(*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
 
             //ancillary_1->pos( window.width()-(550+5), 350+5);
-            
-            
+
+
             ////combined_scan_renderer.reset( new L3::Visualisers::CombinedScanRenderer2D(  runner->horizontal_LIDAR, runner->vertical_LIDAR, glv::Rect(150,150) ) );
             ////combined_scan_renderer->pos( 150*2+2*30, 0 );
             ////for( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = combined_scan_renderer->scan_renderers.begin();
@@ -172,10 +261,6 @@ namespace L3
              *  Ancillary 2
              */
             ////ancillary_2.reset( new glv::Box() );
-
-            ////// Stand-alone pose renderer
-            ////oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( runner->provider, glv::Rect( 150,150 ), std::string("Estimate::INS" ) ) );
-            ////updater->operator<<( oracle_renderer.get() );
 
             ////// Scan matching scan renderer
             ////scan_matching_renderer.reset( new L3::Visualisers::ScanMatchingScanRenderer( glv::Rect( 150,150 ),runner->engine ) );
