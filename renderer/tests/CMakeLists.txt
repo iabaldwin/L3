@@ -4,6 +4,9 @@ target_link_libraries( test_ray_query GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRA
 add_executable( test_freetype test_freetype.cpp )
 target_link_libraries( test_freetype GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} )
 
+add_executable( test_coordinate_transforms test_coordinate_transforms.cpp )
+target_link_libraries( test_coordinate_transforms GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} glf )
+
 add_executable( test_libglf test_libglf.cpp )
 target_link_libraries( test_libglf GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} glf )
 

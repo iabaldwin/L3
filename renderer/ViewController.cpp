@@ -1,4 +1,4 @@
-#include "Controller.h"
+#include "ViewController.h"
 
 namespace L3
 {
@@ -14,9 +14,18 @@ namespace Visualisers
         updateHomogeneous();
     }
 
-    control_t& control_t::operator+=( control_t& rhs  )
+    control_t& control_t::updateEuler()
     {
         //L3::SE3 pose = L3::Utils::Math::poseFromRotation( this->homogeneous );
+   
+        //this->x = pose.X();
+        //this->y = pose.Y();
+        //this->z = pose.Z();
+        //this->r = pose.R();
+        //this->p = pose.P();
+        //this->q = pose.Q();
+   
+        return *this;
     }
 
     control_t& control_t::translateZ( float z )
@@ -63,8 +72,6 @@ namespace Visualisers
  */
 void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
     {
-        double pitch;
-
         switch (type)
         {
             case (glv::Event::KeyDown):
@@ -79,44 +86,30 @@ void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
                 break;
 
             case (glv::Event::MouseDrag):
-             
+           
                 if ( g.keyboard().shift() )
                 {
                     double x = (double)(g.mouse().x() - origin_x) /100;
                     double y = (double)(g.mouse().y() - origin_y) /100;
-                   
-                    Eigen::Matrix4f tmp = current.homogeneous;
-
-                    tmp( 0,3 ) = 0;
-                    tmp( 1,3 ) = 0;
-                    tmp( 2,3 ) = 0;
-
-                    // New point
+               
                     Eigen::Matrix4f delta = Eigen::Matrix4f::Identity(); 
+          
+                    delta( 0,3)= x;
+                    delta( 2,3)= y;
 
-                    delta(0,3) = x;
-                    delta(1,3) = -1*y;
-
-                    delta *= tmp;
-                       
-                    current.x += delta(0,3);
-                    current.y += delta(1,3);
-
-                    current.updateHomogeneous();
+                    current.homogeneous *= delta;
                 }
-
                 else
                 {
                     current.q += (double)(g.mouse().x() - origin_x) /100;
                    
                     double r = (double)(g.mouse().y() - origin_y) /100;
-                  
-                    if ( current.r > -70 || r > 0 )
+
+                    if ( ( current.r > -45 && r < 0 ) || ( current.r < 45 && r > 0 ) )
                         current.r += r;
-                    else
-                        current.r = -70;
+        
                 }
-                                
+        
                 break;
 
             case (glv::Event::MouseUp):
@@ -127,7 +120,6 @@ void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
 
         }
 
-        current.updateHomogeneous();
     }
 
 /*

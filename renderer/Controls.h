@@ -91,7 +91,7 @@ struct EventController : glv::EventHandler
  
     virtual bool onEvent( glv::View& v, glv::GLV& g)
     {
-        if (( t.elapsed() - last_down ) < .5 )
+        if (( t.elapsed() - last_down ) < .2 )
         {
             action->apply( view ); 
             // Debouncer 
@@ -268,22 +268,26 @@ struct WASDController : InputManager
         double y = 0; 
         double delta = 10.0;
 
+        float multiplier = 1.0;
+        if (k.shift())
+            multiplier = 2.0;
+
         switch (key)
         {
             case 'w':
-                y+=delta;
+                y-=delta*multiplier;
                 break;
             
             case 's':
-                y-=delta;
+                y+=delta*multiplier;
                 break;
 
             case 'd':
-                x+=delta;
+                x-=delta*multiplier;
                 break;
 
             case 'a':
-                x-=delta;
+                x+=delta*multiplier;
                 break;
             
             default: 
@@ -297,11 +301,12 @@ struct WASDController : InputManager
             // Is the selector also controllable?
             if ( L3::Visualisers::Controllable* ptr = dynamic_cast< L3::Visualisers::Controllable* >( leaf_iterator->first ) )
             {
-                ptr->control_x += x;
-                ptr->control_y += y;
                 if( leaf_iterator->first->selected )
+                {
+                    ptr->control_x += x;
+                    ptr->control_y += y;
                     leaf_iterator->second->translate( btVector3(x,y,0) );
-            
+                }
             }
         }
     }

@@ -14,7 +14,7 @@
 #include <boost/shared_array.hpp>
 
 #include "L3.h"
-#include "Controller.h"
+#include "ViewController.h"
 #include "RenderingUtils.h"
 
 
@@ -117,12 +117,17 @@ namespace Visualisers
     template <typename T> 
         struct TextRenderer : glv::View
         {
-            explicit TextRenderer( T& v = 0 ) : t(v), glv::View( glv::Rect(150,25 ) )
+            explicit TextRenderer( T& v ) : t(v), glv::View( glv::Rect(150,25 ) )
             {
                 this->disable( glv::DrawBorder );
             }
 
             T& t;
+
+            void setVariable( T& t )
+            {
+                this->t = t;
+            }
 
             void onDraw(glv::GLV& g)
             {
@@ -207,7 +212,6 @@ namespace Visualisers
 
             // Appropriate view-point
             position.translateZ( -250 );
-       
         }
 
         int viewport[4];
@@ -291,7 +295,8 @@ namespace Visualisers
         void onDraw3D( glv::GLV& g );
     };
 
-    struct PoseSequenceRenderer : LabelledLeaf
+    //struct PoseSequenceRenderer : LabelledLeaf
+    struct PoseSequenceRenderer : Leaf
     { 
 
         PoseSequenceRenderer( boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > > > pose_sequence ) : pose_sequence(pose_sequence)

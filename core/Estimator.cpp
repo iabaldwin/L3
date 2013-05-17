@@ -262,10 +262,7 @@ namespace L3
                 L3::Histogram<double> swathe_histogram;
 
                 if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram ) )
-                {
-                    std::cerr << "Failed to allocate histogram" << std::endl;
                     return;
-                }
                 
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );

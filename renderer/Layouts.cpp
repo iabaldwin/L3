@@ -8,28 +8,25 @@ namespace L3
     {
         bool DatasetLayout::load( L3::DatasetRunner* runner )
         {
-
+            /*
+             *  Velocity plots
+             */
             linear_velocity_plotter->assignIterator( runner->LHLV_iterator );
             rotational_velocity_plotter->assignIterator( runner->LHLV_iterator );
 
             /*
              *  Scale
              */
-            scale_factor_label.reset( new glv::Label() );
-            scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             
             scale_factor->attachVariable( runner->speedup );
-            scale_factor->interval( 5, 1 );
-            scale_factor->setValue(5);
-
-            top << *scale_factor;
 
             /*
              *  Timer
              */
             time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
-            time_renderer->pos(window.width()-155, window.height()-50 );
-            top << *time_renderer;
+            //time_renderer->pos(window.width()-155, window.height()-50 );
+            //top << *time_renderer;
+            //time_renderer->setVariable( runner->current_time ) ;
 
 
             /*
@@ -45,11 +42,11 @@ namespace L3
             L3::Configuration::Begbroke begbroke;
             begbroke.loadDatum();
             
+    
             // Remove it, if it is already in the composite list     
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
-            //map_view.reset( new L3::Visualisers::LocaleRenderer() );
-            //map_view->load( begbroke );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
+            map_view = L3::Visualisers::LocaleRendererFactory::build( begbroke );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
 
             /*
              *  Current pose estimate
@@ -62,9 +59,9 @@ namespace L3
             /*
              *  Locale Bounds
              */
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( locale_bounds.get() ) );
-            locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
+            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( locale_bounds.get() ) );
+            //locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
 
             /*
              *  Swathe Cloud
@@ -91,16 +88,16 @@ namespace L3
             /*
              *  Histogram Bounds
              */
-            histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( (*experience->experience_pyramid)[0]) );
-            histogram_bounds_renderer->depth = -2.0 ;
-            histogram_bounds_renderer->draw_bounds = true;
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
+            //histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( (*experience->experience_pyramid)[0]) );
+            //histogram_bounds_renderer->depth = -2.0 ;
+            //histogram_bounds_renderer->draw_bounds = true;
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
 
             /*
              *  Histogram voxel
              */
-            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( (*experience->experience_pyramid)[0] ) ) ;
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
+            //histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( (*experience->experience_pyramid)[0] ) ) ;
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
 
             //// Swathe Bounds
             ////point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( run_time_swathe ) );
@@ -115,23 +112,23 @@ namespace L3
             //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(estimated_pose_renderer.get() ))); 
 
             // Predicted estimates
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            //algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->algorithm ) ));
-            algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::IterativeDescent<double> >( runner->algorithm ) ));
-            algorithm_costs_renderer->draw_bounds = true;
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
+            ////algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->algorithm ) ));
+            //algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::IterativeDescent<double> >( runner->algorithm ) ));
+            //algorithm_costs_renderer->draw_bounds = true;
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
 
             /*
              *  Stand-alone plots
              */
-            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 150*3, 150 ), experience->experience_pyramid ));
-            for ( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
-                    it != pyramid_renderer->renderers.end();
-                    it++ )
-                updater->operator<<( it->get() );
-            pyramid_renderer->pos( window.width() - (175+5), 0 );
+            //pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 150*3, 150 ), experience->experience_pyramid ));
+            //for ( std::list< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
+                    //it != pyramid_renderer->renderers.end();
+                    //it++ )
+                //updater->operator<<( it->get() );
+            //pyramid_renderer->pos( window.width() - (175+5), 0 );
 
-            top << *pyramid_renderer;
+            //top << *pyramid_renderer;
 
             
             /*

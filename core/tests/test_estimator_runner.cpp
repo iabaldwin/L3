@@ -40,9 +40,13 @@ int main( int argc, char* argv[] )
          */
         L3::Configuration::Mission mission( dataset );
 
+        L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::MICostFunction<double>();
+        boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new  L3::Estimator::IterativeDescent<double>(cost_function, experience->experience_pyramid ));
+ 
         // Create runner
         boost::scoped_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( &dataset, &mission, experience.get() ) );
 
+        runner->setAlgorithm( algo );
         runner->start();
 
         std::stringstream ss;
@@ -54,23 +58,24 @@ int main( int argc, char* argv[] )
         int counter = 0;
         while( true )
         {
-            //ss << runner.current_time;
+            ss << runner->current_time;
 
-            //char* res = readline( (ss.str() + " >> ").c_str() ); 
+            char* res = readline( (ss.str() + " >> ").c_str() ); 
 
-            //if( std::string(res) == "stop" )
-            //break;
 
-            //if ( !res )
-            //break;
 
-            //ss.str( std::string("") );
-
-            if ( counter++ > target )
-            {
-                std::cout << counter-1 << " of " << target<< std::endl;
+            if ( !res )
                 break;
-            }
+
+            if( std::string(res) == "stop" )
+                break;
+            ss.str( std::string("") );
+
+            //if ( counter++ > target )
+            //{
+                //std::cout << counter-1 << " of " << target<< std::endl;
+                //break;
+            //}
         }
 
     }

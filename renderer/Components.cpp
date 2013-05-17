@@ -10,12 +10,17 @@ namespace L3
 namespace Visualisers
 {
     /*
-     *Composite
+     *  Composite
      */
     void Composite::onDraw3D( glv::GLV& g )
     {
+        //glv::draw::rotateZ( position.q );
+        //glv::draw::rotateX( position.p );
+        //glv::draw::rotateY( position.r );
+        glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
-        glv::draw::rotate( position.r, position.p, position.q );
+        
+        //glMultMatrixf( position.homogeneous.data() );
 
         glGetDoublev(GL_PROJECTION_MATRIX, projection );
         glGetDoublev(GL_MODELVIEW_MATRIX, model );
@@ -32,16 +37,10 @@ namespace Visualisers
 
             leaf_iterator++;
         }
-
-      
-        //if( this->enabled( glv::Property::Focused ) )
-            //std::cout << "Focus" << std::endl;
-        //else
-            //std::cout << "No Focus" << std::endl;
     }
 
     /*
-     *Leaf
+     *  Leaf
      */
     void Leaf::drawBounds()
     {
@@ -199,14 +198,14 @@ namespace Visualisers
         for( int i=0; i<num_points; i++ )
         {
             vertices[i]( (range*cos(angle))+x, (range*sin(angle))+y, 0 );
-            colors[i].set( 0, 0, 1, 1.0-double(counter)/20.0 ); 
+            colors[i].set( 1, 1, 1, 1.0-double(counter)/20.0 ); 
             angle += angle_spacing;
         }
 
         glv::draw::enable( glv::draw::Blend );
         glv::draw::lineStippling(true);
         glv::draw::lineStipple(8, 0xAAAA );
-        glv::draw::lineWidth( 2 );
+        glv::draw::lineWidth( ( 20 -counter )/4.0 );
         glv::draw::paint( glv::draw::LineLoop, vertices, colors, num_points );
         glv::draw::disable( glv::draw::Blend );
         glv::draw::lineStippling(false);
@@ -217,7 +216,7 @@ namespace Visualisers
             counter = 0; 
         }
         else
-            range += 0.5;
+            range += 1.5;
     }
 
     /*
@@ -1045,12 +1044,12 @@ namespace Visualisers
         {
             std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator it = pose_sequence->begin();
 
-            tag.x = it->second->X();
-            tag.y = it->second->Y();
+            //tag.x = it->second->X();
+            //tag.y = it->second->Y();
 
             ss << it->first;
 
-            tag.text = ss.str();
+            //tag.text = ss.str();
 
             while( it < pose_sequence->end() )
             {

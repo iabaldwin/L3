@@ -42,7 +42,7 @@ namespace Visualisers
        
         image_bounds() : lower_x(.0f), upper_x( .0f),
                     lower_y(.0f), upper_y( .0f ),
-                    z_bound(-6.0)
+                    z_bound(-5.0)
         {
         }
 
@@ -86,11 +86,16 @@ namespace Visualisers
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data.img->width, 
                     data.img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
                     image_texture);  
+       
+            x_offset = 0;
+            y_offset = 0;
         }
         
         GLuint name;
         image_bounds b;
         ImageData& data;
+
+        double x_offset, y_offset;
 
         virtual ~ImageRenderer()
         {
@@ -103,10 +108,10 @@ namespace Visualisers
             glBindTexture(GL_TEXTURE_2D, name );
             glBegin(GL_QUADS);
 
-            glTexCoord2f(0.0, 0.0); glVertex3f(b.lower_x, b.upper_y, b.z_bound);
-            glTexCoord2f(1.0, 0.0); glVertex3f(b.upper_x, b.upper_y, b.z_bound);
-            glTexCoord2f(1.0, 1.0); glVertex3f(b.upper_x, b.lower_y, b.z_bound);
-            glTexCoord2f(0.0, 1.0); glVertex3f(b.lower_x, b.lower_y, b.z_bound);
+            glTexCoord2f(0.0, 0.0); glVertex3f(b.lower_x-x_offset, b.upper_y-y_offset, b.z_bound);
+            glTexCoord2f(1.0, 0.0); glVertex3f(b.upper_x-x_offset, b.upper_y-y_offset, b.z_bound);
+            glTexCoord2f(1.0, 1.0); glVertex3f(b.upper_x-x_offset, b.lower_y-y_offset, b.z_bound);
+            glTexCoord2f(0.0, 1.0); glVertex3f(b.lower_x-x_offset, b.lower_y-y_offset, b.z_bound);
 
             glEnd();
             glFlush();
@@ -117,7 +122,9 @@ namespace Visualisers
 
     struct LocaleRenderer : SelectableLeaf, Controllable 
     {
-        LocaleRenderer( ImageData data, image_bounds b ) : SelectableLeaf( 100,100,100)
+        LocaleRenderer( ImageData data, image_bounds b ) : SelectableLeaf( (b.upper_x - b.lower_x), 
+                                                                           (b.upper_y - b.lower_y), 
+                                                                            b.z_bound )
         {
             image_renderer.reset( new ImageRenderer( data, b ) );
         }
@@ -126,6 +133,11 @@ namespace Visualisers
 
         void onDraw3D(glv::GLV& g )
         {
+            image_renderer->x_offset = this->control_x;
+            image_renderer->y_offset = this->control_y;
+
+            //std::cout << image_renderer->x_offset << ":" << image_renderer->y_offset << std::endl;
+
             image_renderer->onDraw3D(g);
         }
 
@@ -142,27 +154,18 @@ namespace Visualisers
             ImageData data;
             ImageFactory::Image(image_target, data);
 
-            //lower_bound_x = locale.x_lower;
-            //upper_bound_x = locale.x_upper;
-
-            //lower_bound_y = locale.y_lower;
-            //upper_bound_y = locale.y_upper;
-
-            ////upper_bound_x = upper_bound_x - lower_bound_x;
-            //upper_bound_x = 1000*.125*4; 
-            //lower_bound_x = 0.0;
-
-            ////upper_bound_y = upper_bound_y - lower_bound_y;
-            //upper_bound_y = 1000*.125*4; 
-            //lower_bound_y = 0.0;
-
+          
+            // Image calibration
             image_bounds b;
 
-            b.upper_x = 1000.0*.125*4;
-            b.upper_y = 1000.0*.125*4;
+            double x_offset = 185;
+            double y_offset = 125;
 
-            //b.upper_x = (locale.x_upper - locale.x_lower)*.125*4;
-            //b.upper_y = (locale.y_upper - locale.y_lower)*.125*4;
+            b.lower_x = 0-x_offset;
+            b.lower_y = 0-y_offset;
+            b.upper_x = 1000.0*.125*4-x_offset;
+            b.upper_y = 1000.0*.125*4-y_offset;
+
             
             return boost::make_shared<LocaleRenderer>( data, b  );
         }

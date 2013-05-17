@@ -1,11 +1,14 @@
+#set(CMAKE_CXX_COMPILER "/Users/ian/code/thirdparty/checker-274/libexec/c++-analyzer" )
+#set(CMAKE_C_COMPILER "/Users/ian/code/thirdparty/checker-274/libexec/ccc-analyzer" )
+
 cmake_minimum_required(VERSION 2.6.4)
 
 project(L3)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_C_COMPILER "/usr/bin/llvm-gcc" )
-    set(CMAKE_CXX_COMPILER "/usr/bin/llvm-g++-4.2" )
-endif()
+#if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    #set(CMAKE_C_COMPILER "/usr/bin/llvm-gcc" )
+    #set(CMAKE_CXX_COMPILER "/usr/bin/llvm-g++-4.2" )
+#endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
@@ -20,8 +23,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} )
 endif()
 
-find_package( Eigen3 REQUIRED )
-include_directories( ${EIGEN3_INCLUDE_DIR} )                    # Matrices
+#find_package( Eigen3 REQUIRED )
+#include_directories( ${EIGEN3_INCLUDE_DIR} )                    # Matrices
+include_directories( "/Users/ian/code/build/include/eigen3/" )
 
 find_package( GSL REQUIRED )                                    # Math,statistics
 include_directories( ${GSL_INCLUDE_DIRS} )

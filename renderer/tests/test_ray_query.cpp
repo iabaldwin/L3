@@ -8,7 +8,6 @@
 #include "Components.h"
 #include "Controls.h"
 #include "QueryInterface.h"
-#include "Layouts.h"
 
 struct tmp : L3::Visualisers::SelectableLeaf, L3::Visualisers::Controllable
 {
@@ -29,9 +28,7 @@ struct tmp : L3::Visualisers::SelectableLeaf, L3::Visualisers::Controllable
             pts[i]( control_x + random()%100-50, control_y + random()%100-50, control_z + random()%100-50 );
 
         glv::draw::paint( glv::draw::Points, pts, colors, 1000 );
- 
     }
-
 
 };
 
@@ -51,16 +48,15 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                   grid;
             
     L3::Visualisers::MouseQuerySelect query(  &composite );
-    //L3::Visualisers::SelectionManager selection_manager( &query );
-    L3::Visualisers::WASDManager        selection_manager( &query );
-
+    L3::Visualisers::WASDManager selection_manager( &query );
 
     // Add Boxes
     L3::Visualisers::SelectableLeaf* renderer = new L3::Visualisers::SelectableLeaf( 20, 20, 20 );
     L3::Visualisers::SelectableLeaf* renderer2 = new L3::Visualisers::SelectableLeaf( 5, 10, 15 );
-    tmp* renderer3 = new tmp();
+    //tmp* renderer3 = new tmp();
 
-    top << ( composite << grid << *renderer << *renderer2 << *renderer3 );
+    //top << ( composite << grid << *renderer << *renderer2 << *renderer3 );
+    top << ( composite << grid << *renderer << *renderer2 );
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 

@@ -7,7 +7,7 @@
 
 #include "L3.h"
 #include "Visualisers.h"
-#include "Controller.h"
+#include "ViewController.h"
 
 int main (int argc, char ** argv)
 {

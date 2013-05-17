@@ -12,12 +12,11 @@ struct test_leaf : L3::Visualisers::Leaf
 {
     void onDraw3D(glv::GLV& g)
     {
-        glv::draw::translateZ( -400 );
         glv::Point3 pts[1000];
         glv::Color colors[1000];
 
         for( int i=0; i<1000; i++ )
-            pts[i]( random()%100-50, random()%100-50, random()%100-50 );
+            pts[i]( random()%100-50, random()%100-50, 0 );
 
         glv::draw::paint( glv::draw::Points, pts, colors, 1000 );
     

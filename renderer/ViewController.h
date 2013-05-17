@@ -1,5 +1,5 @@
-#ifndef L3_CONTROLLERS_H
-#define L3_CONTROLLERS_H
+#ifndef L3_VIEW_CONTROLLERS_H
+#define L3_VIEW_CONTROLLERS_H
 
 #include <GLV/glv.h>
 //#ifdef __APPLE__
@@ -28,6 +28,7 @@ struct control_t
     control_t& translateZ( float z );
 
     control_t& updateHomogeneous();
+    control_t& updateEuler();
 
     Eigen::Matrix4f homogeneous;
 
@@ -53,6 +54,18 @@ struct Controller
     control_t& current;
 
 };
+
+struct SceneController : Controller
+{
+
+    SceneController( control_t& control ) : Controller(control)
+    {
+    }
+
+    void onEvent( glv::Event::t type, glv::GLV& g );
+
+};
+
 
 /*
  *  Basic panning motion

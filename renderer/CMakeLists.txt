@@ -18,7 +18,7 @@ include_directories( "/Users/ian/code/thirdparty/bullet/Demos/OpenGL/" )
 
 add_library( L3Vis 
                 Visualisers.cpp 
-                Controller.cpp 
+                ViewController.cpp 
                 Components.cpp 
                 Layouts.cpp 
                 GLVInterface.cpp

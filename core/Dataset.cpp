@@ -23,7 +23,10 @@ Dataset::Dataset( const std::string& target )  : start_time(0)
 
     // Does the directory exist?
     if ( !boost::filesystem::is_directory( root_path ))
+    {
+        std::cerr << "Throwing..." << std::endl;
         throw L3::no_such_folder();
+    }
 
     lookup[".ins"] = INS_file;
     lookup[".lhlv"] = LHLV_file;

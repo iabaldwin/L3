@@ -1,7 +1,7 @@
 #include "Adapters.h"
 #include "Components.h"
-#include "Controller.h"
 #include "Controls.h"
+#include "ViewController.h"
 #include "DataProvider.h"
 #include "Imagery.h"
 #include "Layouts.h"

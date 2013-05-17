@@ -11,6 +11,7 @@
 #include "Plotters.h"
 #include "Imagery.h"
 #include "GLVInterface.h"
+#include "QueryInterface.h"
 
 namespace L3
 {
@@ -44,10 +45,16 @@ namespace Visualisers
                 controller.reset( new L3::Visualisers::BasicPanController( composite->position ) );
                 composite->addController( &*controller );
 
+                // Interface test
+                //toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
+
+                // 3D Query
+                mouse_query.reset( new L3::Visualisers::MouseQuerySelect( composite.get() ) );
+                // Action to perform on queries 
+                selection_manager.reset( new L3::Visualisers::WASDManager( mouse_query.get() ) );
+                
                 // Accumulate views
                 (*main_view) << ( *composite << *grid );
-
-                toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
 
                 // Add synched updater
                 updater.reset( new Updater() );
@@ -191,8 +198,6 @@ namespace Visualisers
 
             std::list< glv::View* > renderables;
 
-            boost::shared_ptr<L3::Visualisers::Composite>   composite;
-            
             boost::shared_ptr<glv::Slider>  scale_factor;
             boost::shared_ptr< glv::Label > scale_factor_label;
             
@@ -200,16 +205,19 @@ namespace Visualisers
 
             std::list< boost::shared_ptr< glv::View > >     labels;
 
+            boost::shared_ptr<L3::Visualisers::Composite>   composite;
+            boost::shared_ptr< EventController > composite_maximise_controller;
+            std::list< boost::shared_ptr< EventController > > window_controllers;
+            
             boost::shared_ptr< Updater >                    updater;
             boost::shared_ptr<L3::Visualisers::Grid>        grid;
             boost::shared_ptr<L3::Visualisers::Controller>  controller;
 
             std::list< boost::shared_ptr< glv::Plot > >     plots;
 
-            boost::shared_ptr< EventController > composite_maximise_controller;
+            boost::shared_ptr< L3::Visualisers::MouseQuerySelect > mouse_query;
+            boost::shared_ptr< L3::Visualisers::WASDManager > selection_manager;
 
-            std::list< boost::shared_ptr< EventController > > window_controllers;
-            
             std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > > extras;
 
     };
@@ -253,7 +261,24 @@ namespace Visualisers
 
                 // WHY, WHY WHY
                 point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
+
+                // Dataset scaling factor
+                scale_factor_label.reset( new glv::Label() );
+                scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+
+                scale_factor->interval( 5, 1 );
+                scale_factor->setValue(5);
+
+                top << *scale_factor;
+
+                time_renderer.reset( new TextRenderer<double>( current_time ) );
+                time_renderer->pos(window.width()-155, window.height()-50 );
+                
+                top << *time_renderer;
+
             }
+
+            double current_time;
 
             const L3::Dataset*                          dataset;
             const L3::Configuration::Mission*           mission;
@@ -263,7 +288,7 @@ namespace Visualisers
             
             boost::shared_ptr< EventController > point_cloud_maximise_controller;
 
-            //boost::shared_ptr< L3::Visualisers::LocaleRenderer>                 map_view;
+            boost::shared_ptr< L3::Visualisers::LocaleRenderer >                map_view;
             boost::shared_ptr< L3::Visualisers::HistogramPyramidRendererView  > pyramid_renderer;
 
             boost::shared_ptr< L3::Visualisers::PoseRenderer >          pose_renderer;
