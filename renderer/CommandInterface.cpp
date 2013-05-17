@@ -194,11 +194,6 @@ namespace L3
         std::string script_target ( load_command );
         ltrim(script_target);
 
-        if( script_target.size() < 4 )
-            return std::make_pair( false, "CI::Script <" + script_target + "> failed {Erroneous file}" );
-
-        if( script_target.find( ".L3" ) == std::string::npos )
-            return std::make_pair( false, "CI::Script <" + script_target + "> failed {Erroneous ending }" );
 
         bool executed = false;
 
@@ -207,7 +202,7 @@ namespace L3
                 it++ )
         {
 
-            std::string putative_target = (it->string() ) + script_target;
+            std::string putative_target = (it->string() ) + script_target + ".L3";
 
             std::cout << putative_target << std::endl;
 
@@ -245,9 +240,9 @@ namespace L3
         }
 
         if( executed )
-            return std::make_pair( true, "CI::Script <" + script_target + "> succeeded" );
+            return std::make_pair( true, "CI::Script <" + script_target + ">.L3 succeeded" );
         else
-            return std::make_pair( false, "CI::Script <" + script_target + "> does not exist" );
+            return std::make_pair( false, "CI::Script <" + script_target + ">.L3 does not exist" );
 
     }
 

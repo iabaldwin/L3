@@ -251,13 +251,13 @@ namespace Visualisers
      */
     struct CoordinateSystem
     {
-        explicit CoordinateSystem( L3::SE3& pose , float scale=10.0f );
+        explicit CoordinateSystem( L3::SE3& pose , float scale=10.0f, float alpha=1.0f );
 
         L3::SE3&                            pose;
         boost::shared_array< glv::Color >   colors;
         boost::shared_array< glv::Point3 >  vertices;
 
-        float scale;
+        float scale, alpha;
 
         void onDraw3D(glv::GLV& g);
 
@@ -301,8 +301,11 @@ namespace Visualisers
 
         PoseSequenceRenderer( boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > > > pose_sequence ) : pose_sequence(pose_sequence)
         {
-
+            highlighted_position = 0;
+            skip = 100; 
         }
+
+        int highlighted_position, skip ;
 
         boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > > > pose_sequence;
 

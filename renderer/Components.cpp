@@ -492,7 +492,8 @@ namespace Visualisers
     /*
      *  Components :: CoordinateSystem
      */
-    CoordinateSystem::CoordinateSystem( L3::SE3& pose, float scale ) : pose( pose ), scale(scale)
+    CoordinateSystem::CoordinateSystem( L3::SE3& pose, float scale, float alpha ) 
+        : pose( pose ), scale(scale), alpha(alpha)
     {
         vertices.reset( new glv::Point3[6] );
 
@@ -504,12 +505,12 @@ namespace Visualisers
         vertices[5]( 0, 0, scale ); 
 
         colors.reset( new glv::Color[6] );
-        colors[0] = glv::Color( 1, 0, 0 ); 
-        colors[1] = glv::Color( 1, 0, 0 ); 
-        colors[2] = glv::Color( 0, 1, 0 ); 
-        colors[3] = glv::Color( 0, 1, 0 ); 
-        colors[4] = glv::Color( 0, 0, 1 ); 
-        colors[5] = glv::Color( 0, 0, 1 ); 
+        colors[0] = glv::Color( 1, 0, 0, alpha ); 
+        colors[1] = glv::Color( 1, 0, 0, alpha ); 
+        colors[2] = glv::Color( 0, 1, 0, alpha ); 
+        colors[3] = glv::Color( 0, 1, 0, alpha ); 
+        colors[4] = glv::Color( 0, 0, 1, alpha ); 
+        colors[5] = glv::Color( 0, 0, 1, alpha ); 
 
     }
 
@@ -1046,13 +1047,35 @@ namespace Visualisers
             ss << it->first;
 
             glv::draw::lineWidth( 1 );
+       
+            std::list< int > window;
+
+            int counter = 0;
+            float size=5;
+            // Draw transparent
+            glv::draw::enable( glv::draw::Blend );
             while( it < pose_sequence->end() )
             {
-                CoordinateSystem( *(it->second) ).onDraw3D(g);
+                float alpha = 0.3;
 
-                it+=100;
+                int diff = (counter - highlighted_position );
+                if ( diff > -10  && diff  < 10 ) 
+                {
+                    alpha = 1.0;
+                    size = 10-abs(diff);
+                }
+
+                CoordinateSystem( *(it->second), size, alpha ).onDraw3D(g);
+
+                it+=skip;
+                counter++;
             }
+            glv::draw::disable( glv::draw::Blend );
+           
+            highlighted_position++;
 
+            if( highlighted_position > pose_sequence->size()/skip )
+                highlighted_position=0;
         }
 
     }
