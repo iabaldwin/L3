@@ -63,8 +63,6 @@ enum CUSTOM_EVENT_TYPES
                 //if ( k.ctrl() )
                 //{
                     //this->broadcastEvent( static_cast< glv::Event::t>( SELECT_CLICK ) );
-
-                    //std::cout << "Select click" << std::endl;
                 //}
             //}
 

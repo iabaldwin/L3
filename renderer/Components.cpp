@@ -1185,28 +1185,29 @@ namespace Visualisers
         if( !ptr )
             return;
 
-        experience_nodes_vertices.reset( new glv::Point3[ptr->sections.size()] );
-        experience_nodes_colors.reset( new glv::Color[ptr->sections.size()] );
-
-        std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
-
-        glv::draw::push();
-        while( it != ptr->sections.end() )
-        {
-            experience_nodes_vertices[ std::distance( ptr->sections.begin(), it ) ]( it->x, it->y, 0 );
-            experience_nodes_colors[ std::distance( ptr->sections.begin(), it ) ].set( 255, 0, 0 );
-            it++;
-        }
-        glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
-
         boost::shared_ptr< L3::PoseProvider > ptr_provider = provider.lock();
         
         if( ptr_provider )
         {
             *current = ptr_provider->operator()();
             animation->onDraw3D(g);
+            //glv::draw::translate( -1*current->X(), -1*current->Y() );
         }
-        glv::draw::pop();
+
+        experience_nodes_vertices.reset( new glv::Point3[ptr->sections.size()] );
+        experience_nodes_colors.reset( new glv::Color[ptr->sections.size()] );
+
+        std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
+
+        int counter =0;
+        while( it != ptr->sections.end() )
+        {
+            experience_nodes_vertices[ counter ]( it->x, it->y, 0 );
+            experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
+            it++;
+        }
+        glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
+            
     }
 }
 }

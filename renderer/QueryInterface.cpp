@@ -33,7 +33,6 @@ namespace L3
                                     double z1, double z2,
                                     std::list<const btCollisionObject*>& hit_results )
         {
-            std::cout << x1 << ":" << x2 << ":" << y1 << ":" << y2 << ":" <<  z1 << ":" << z1 << std::endl;
             // Update all axis-aligned bounding boxes
             m_dynamicsWorld->updateAabbs();
             m_dynamicsWorld->computeOverlappingPairs();

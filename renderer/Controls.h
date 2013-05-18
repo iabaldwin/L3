@@ -148,8 +148,6 @@ struct MouseQuery : EventController
         if ( !k.ctrl() )
             return false; 
 
-        std::cout << "SELECT" << std::endl;
-
         std::list< L3::Visualisers::SelectableLeaf* > leafs;
 
         // Are they query-able?
