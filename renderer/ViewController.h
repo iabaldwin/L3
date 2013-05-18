@@ -129,12 +129,24 @@ struct CompositeController : Controller
 
         bool onEvent(glv::View&, glv::GLV& g)
         {
-            current.q += (double)(g.mouse().x() - origin_x) /100;
+            if ( g.keyboard().shift() )
+            {
+                double x = (double)(g.mouse().x() - origin_x) /100;
+                double y = (double)(g.mouse().y() - origin_y) /100;
 
-            double r = (double)(g.mouse().y() - origin_y) /100;
+                current.x += x;
+                current.y += y;
 
-            if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
-                current.r += r;
+            }
+            else
+            {
+                current.q += (double)(g.mouse().x() - origin_x) /100;
+
+                double r = (double)(g.mouse().y() - origin_y) /100;
+
+                if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
+                    current.r += r;
+            }
         }
 
     };

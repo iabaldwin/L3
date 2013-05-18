@@ -48,7 +48,7 @@ namespace Visualisers
                 // Interface test
                 //toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
 
-                // 3D Query
+                // 3D Query - has to be after controller?
                 mouse_query.reset( new L3::Visualisers::MouseQuerySelect( composite.get() ) );
                 
                 // Accumulate views
