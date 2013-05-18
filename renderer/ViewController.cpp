@@ -70,100 +70,106 @@ namespace Visualisers
 /*
  *  Basic pan controller
  */
-void BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
+bool BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
+//bool BasicPanController::onEvent(glv::View&, glv::GLV&)
     {
-        switch (type)
-        {
-            case (glv::Event::KeyDown):
-                break;
+        //switch (type)
+        //{
+            //case (glv::Event::KeyDown):
+                //break;
 
-            case (glv::Event::KeyRepeat):
-                break;
+            //case (glv::Event::KeyRepeat):
+                //break;
 
-            case (glv::Event::MouseDown):
-                origin_x = g.mouse().x();
-                origin_y = g.mouse().y();
-                break;
+            //case (glv::Event::MouseDown):
+                //origin_x = g.mouse().x();
+                //origin_y = g.mouse().y();
+                //break;
 
-            case (glv::Event::MouseDrag):
+            //case (glv::Event::MouseDrag):
            
-                if ( g.keyboard().shift() )
-                {
-                    double x = (double)(g.mouse().x() - origin_x) /100;
-                    double y = (double)(g.mouse().y() - origin_y) /100;
+                //if ( g.keyboard().shift() )
+                //{
+                    //double x = (double)(g.mouse().x() - origin_x) /100;
+                    //double y = (double)(g.mouse().y() - origin_y) /100;
                
-                    Eigen::Matrix4f delta = Eigen::Matrix4f::Identity(); 
+                    ////Eigen::Matrix4f delta = Eigen::Matrix4f::Identity(); 
           
-                    delta( 0,3)= x;
-                    delta( 2,3)= y;
+                    ////delta( 0,3)= x;
+                    ////delta( 2,3)= y;
 
-                    current.homogeneous *= delta;
-                }
-                else
-                {
-                    current.q += (double)(g.mouse().x() - origin_x) /100;
+                    ////current.homogeneous *= delta;
+               
+                    //current.x += x;
+                    //current.y += y;
+                //}
+                //else
+                //{
+                    //current.q += (double)(g.mouse().x() - origin_x) /1000;
                    
-                    double r = (double)(g.mouse().y() - origin_y) /100;
+                    //double r = (double)(g.mouse().y() - origin_y) /1000;
 
-                    if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
-                        current.r += r;
+                    //if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
+                        //current.r += r;
         
-                }
+                //}
         
-                break;
+                //break;
 
-            case (glv::Event::MouseUp):
-                break;
+            //case (glv::Event::MouseUp):
+                //break;
 
-            default:
-                break;
+            //default:
+                //break;
 
-        }
+        //}
 
+        return true;
     }
 
 /*
  *  FPS controller
  */
-void FPSController::onEvent( glv::Event::t type, glv::GLV& g )
-{
-        Eigen::Matrix4f homogeneous;
+//bool FPSController::onEvent( glv::Event::t type, glv::GLV& g )
+//{
+        //Eigen::Matrix4f homogeneous;
 
-        control_t delta;
+        //control_t delta;
 
-        switch (type)
-        {
-            case (glv::Event::KeyDown):
-            case (glv::Event::KeyRepeat):
-                switch ( g.keyboard().key() )
-                {
-                    case 'w':
-                        delta.y += .5;
-                }
+        //switch (type)
+        //{
+            //case (glv::Event::KeyDown):
+            //case (glv::Event::KeyRepeat):
+                //switch ( g.keyboard().key() )
+                //{
+                    //case 'w':
+                        //delta.y += .5;
+                //}
 
-                break;
+                //break;
 
-            case (glv::Event::MouseDown):
-                break;
+            //case (glv::Event::MouseDown):
+                //break;
 
-            case (glv::Event::MouseDrag):
-                break;
+            //case (glv::Event::MouseDrag):
+                //break;
 
-            case (glv::Event::MouseUp):
-                break;
+            //case (glv::Event::MouseUp):
+                //break;
 
-            case (glv::Event::MouseWheel):
-                break;
+            //case (glv::Event::MouseWheel):
+                //break;
 
-            default:
-                break;
+            //default:
+                //break;
 
-        }
+        //}
 
-        //estimate = estimate + t;
-        //return t;
-        //return control_t();
-}
+        ////estimate = estimate + t;
+        ////return t;
+        ////return control_t();
+//}
+
 
 }
 }

@@ -14,9 +14,7 @@ namespace Visualisers
      */
     void Composite::onDraw3D( glv::GLV& g )
     {
-        //glv::draw::rotateZ( position.q );
-        //glv::draw::rotateX( position.p );
-        //glv::draw::rotateY( position.r );
+        glPushMatrix();
         glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
         
@@ -37,6 +35,7 @@ namespace Visualisers
 
             leaf_iterator++;
         }
+        glPopMatrix();
     }
 
     /*
@@ -1105,7 +1104,7 @@ namespace Visualisers
 
         //glColor3f(1.0,0.2,0.3);
         //glEnable(GL_BLEND);
-        glColor4f( .5, .5, .5, .85 );
+        //glColor4f( .5, .5, .5, .85 );
         glPushMatrix();
         glTranslatef( scale/2, scale/2, 0 );
         glScalef(scale,scale,1.0);

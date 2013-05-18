@@ -14,9 +14,8 @@
 #include <boost/shared_array.hpp>
 
 #include "L3.h"
-#include "ViewController.h"
 #include "RenderingUtils.h"
-
+#include "ViewController.h"
 
 namespace L3
 {
@@ -226,6 +225,8 @@ namespace Visualisers
 
             // Appropriate view-point
             position.translateZ( -250 );
+       
+            this->enable( glv::Property::AlwaysBubble );
         }
 
         int viewport[4];
@@ -236,19 +237,19 @@ namespace Visualisers
         std::list<Leaf*>                components; 
         L3::Visualisers::Controller*    controller;
 
-        Composite& addController( L3::Visualisers::Controller* c )
+        Composite& addController( L3::Visualisers::Controller* controller )
         {
-            controller = c; 
+            //this->controller = controller; 
             return *this;
         }
 
-        bool onEvent( glv::Event::t type, glv::GLV& g )
-        {
-            if (controller)
-                controller->onEvent( type, g );
+        //bool onEvent( glv::Event::t type, glv::GLV& g )
+        //{
+            //if (controller)
+                //controller->onEvent( type, g );
 
-            return true;
-        }
+            //return true;
+        //}
 
         void onDraw3D( glv::GLV& g );
 

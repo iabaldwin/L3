@@ -9,6 +9,8 @@
 #include "Controls.h"
 #include "QueryInterface.h"
 
+#include "Imagery.h"
+
 struct tmp : L3::Visualisers::SelectableLeaf, L3::Visualisers::Controllable
 {
 
@@ -67,16 +69,24 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                   grid;
             
     L3::Visualisers::MouseQuerySelect query(  &composite );
-    L3::Visualisers::WASDManager selection_manager( &query );
+    //L3::Visualisers::WASDManager selection_manager( &query );
 
     // Add Boxes
     L3::Visualisers::SelectableLeaf* renderer = new L3::Visualisers::SelectableLeaf( 20, 20, 20 );
     L3::Visualisers::SelectableLeaf* renderer2 = new L3::Visualisers::SelectableLeaf( 5, 10, 15 );
     tmp* renderer3 = new tmp();
 
+
+    L3::Configuration::Begbroke begbroke;
+    begbroke.loadDatum();
+
+    boost::shared_ptr< L3::Visualisers::LocaleRenderer > locale_renderer = L3::Visualisers::LocaleRendererFactory::build( begbroke );
+
+
+
     (*renderer3) <<  renderer << renderer2;
 
-    top << ( composite << grid << *renderer << *renderer2 << *renderer3 );
+    top << ( composite << grid << *renderer << *renderer2 << *renderer3  << *locale_renderer);
 
     composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 

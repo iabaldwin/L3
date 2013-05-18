@@ -5,6 +5,8 @@
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
+#include <iostream>
+
 namespace L3
 {
 namespace Visualisers
@@ -32,7 +34,8 @@ enum CUSTOM_EVENT_TYPES
 
                 switch (k.key())
                 {
-                    case 96:
+                    //case 96:
+                    case '`':
                         this->broadcastEvent( static_cast< glv::Event::t>( OVERLAY_TOGGLE ) );
 
                         // This is quite grim
@@ -52,13 +55,18 @@ enum CUSTOM_EVENT_TYPES
             /*
              *  Select-click
              */
-            if ( e == glv::Event::MouseDown )
-            {
-                const glv::Keyboard& k = g.keyboard();
-           
-                if ( k.ctrl() )
-                    this->broadcastEvent( static_cast< glv::Event::t>( SELECT_CLICK ) );
-            }
+            //if ( e == glv::Event::MouseDown )
+            //{
+                //const glv::Keyboard& k = g.keyboard();
+
+
+                //if ( k.ctrl() )
+                //{
+                    //this->broadcastEvent( static_cast< glv::Event::t>( SELECT_CLICK ) );
+
+                    //std::cout << "Select click" << std::endl;
+                //}
+            //}
 
         }
     };

@@ -124,7 +124,8 @@ struct DoubleClickMaximiseToggle : DoubleClickController
 struct MouseQuery : EventController
 {
     MouseQuery( glv::View3D* view, Action* action  ) 
-        : EventController( view, static_cast< glv::Event::t >( SELECT_CLICK ), action ) ,
+        //: EventController( view, static_cast< glv::Event::t >( SELECT_CLICK ), action ) ,
+        : EventController( view, glv::Event::MouseDown, action ) ,
             composite( dynamic_cast< L3::Visualisers::Composite* >(view))
     {
         interface.reset( new L3::Visualisers::QueryInterface() );
@@ -142,8 +143,15 @@ struct MouseQuery : EventController
 
     virtual bool onEvent( glv::View& v, glv::GLV& g)
     {
+        const glv::Keyboard& k = g.keyboard();
+
+        if ( !k.ctrl() )
+            return false; 
+
+        std::cout << "SELECT" << std::endl;
+
         std::list< L3::Visualisers::SelectableLeaf* > leafs;
-        
+
         // Are they query-able?
         for( std::list< L3::Visualisers::Leaf* >::iterator it = composite->components.begin();
                 it != composite->components.end();
@@ -169,15 +177,15 @@ struct MouseQuery : EventController
                 interface->m_dynamicsWorld->addRigidBody( (*it)->box_body.get() );
                 current_leafs.insert( std::make_pair(*it, (*it)->box_body.get() ) );
             }
-                 
+
         }
 
         // Query them
         const glv::Mouse& m = g.mouse();
-        
+
         double x1,y1,z1;
         double x2,y2,z2;
-        
+
         int viewport[4];
 
         viewport[0] = composite->left();
@@ -193,23 +201,23 @@ struct MouseQuery : EventController
 
         // Project, twice
         gluUnProject( relative_x, 
-                      relative_y, 
-                      0.0,                      // Frustrum begin
-                      composite->model,
-                      composite->projection,
-                      viewport,
-                      &x1,&y1,&z1);
+                relative_y, 
+                0.0,                      // Frustrum begin
+                composite->model,
+                composite->projection,
+                viewport,
+                &x1,&y1,&z1);
 
         gluUnProject( relative_x,
-                      relative_y, 
-                      1.0,                      // Frustrum end
-                      composite->model,
-                      composite->projection,
-                      viewport,
-                      &x2,&y2,&z2);
+                relative_y, 
+                1.0,                      // Frustrum end
+                composite->model,
+                composite->projection,
+                viewport,
+                &x2,&y2,&z2);
 
         std::list<const btCollisionObject*> hit_results;
-       
+
         interface->query( x1, x2, y1, y2, z1, z2, hit_results );
 
         // Deselect everything
@@ -235,7 +243,7 @@ struct MouseQuery : EventController
             }
 
         }
-       
+
         return false; //Don't bubble
     }
 

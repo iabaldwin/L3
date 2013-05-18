@@ -120,9 +120,9 @@ namespace Visualisers
     };
 
 
-    struct LocaleRenderer : SelectableLeaf, Controllable 
+    struct LocaleRendererMovable : SelectableLeaf, Controllable 
     {
-        LocaleRenderer( ImageData data, image_bounds b ) : SelectableLeaf( (b.upper_x - b.lower_x), 
+        LocaleRendererMovable( ImageData data, image_bounds b ) : SelectableLeaf( (b.upper_x - b.lower_x), 
                                                                            (b.upper_y - b.lower_y), 
                                                                             b.z_bound )
         {
@@ -136,8 +136,22 @@ namespace Visualisers
             image_renderer->x_offset = this->control_x;
             image_renderer->y_offset = this->control_y;
 
-            //std::cout << image_renderer->x_offset << ":" << image_renderer->y_offset << std::endl;
+            image_renderer->onDraw3D(g);
+        }
 
+    };
+
+    struct LocaleRenderer: Leaf
+    {
+        LocaleRenderer( ImageData data, image_bounds b ) 
+        {
+            image_renderer.reset( new ImageRenderer( data, b ) );
+        }
+
+        boost::shared_ptr< ImageRenderer > image_renderer;
+
+        void onDraw3D(glv::GLV& g )
+        {
             image_renderer->onDraw3D(g);
         }
 

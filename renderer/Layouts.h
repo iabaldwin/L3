@@ -36,22 +36,20 @@ namespace Visualisers
                 // Composite view holder
                 composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
                 composite->maximize();  // Maximise within the view
-                main_view->maximize();  // Maximise the view
+                //main_view->maximize();  // Maximise the view, to begin
 
                 // 3D grid 
                 grid.reset( new L3::Visualisers::Grid() );
 
                 // Basic controller
-                controller.reset( new L3::Visualisers::BasicPanController( composite->position ) );
-                composite->addController( &*controller );
+                controller.reset( new L3::Visualisers::CompositeController( composite.get(), composite->position ) );
+                composite_maximise_controller.reset( new L3::Visualisers::DoubleClickMaximiseToggle( main_view ) );
 
                 // Interface test
                 //toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
 
                 // 3D Query
                 mouse_query.reset( new L3::Visualisers::MouseQuerySelect( composite.get() ) );
-                // Action to perform on queries 
-                selection_manager.reset( new L3::Visualisers::WASDManager( mouse_query.get() ) );
                 
                 // Accumulate views
                 (*main_view) << ( *composite << *grid );
@@ -72,8 +70,6 @@ namespace Visualisers
                 // Add renderables provided by children
                 for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                     top << *it;
-
-                composite_maximise_controller.reset( new L3::Visualisers::DoubleClickMaximiseToggle( main_view ) );
 
                 window.setGLV(top);
 

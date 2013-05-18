@@ -33,15 +33,18 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     L3::Visualisers::Composite                  composite;
-    L3::Visualisers::BasicPanController         controller(composite.position);
     L3::Visualisers::Grid                       grid;
-
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
     
+    //L3::Visualisers::BasicPanController         controller(composite.position);
+    //composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+  
+    L3::Visualisers::CompositeController        composite_controller( &composite, composite.position );
+
     test_leaf leaf;
     
     top << ( composite << grid << leaf  );
 
+    composite.stretch(1,1);
     win.setGLV(top);
     glv::Application::run();
 }
