@@ -28,23 +28,17 @@ struct control_t
     double x,y,z,r,p,q;
 };
 
-void convert( const control_t& control, Eigen::Matrix4f& mat );
-
 /*
  *  Core controller class
  */
-//struct Controller : glv::EventHandler
 struct Controller 
 {
     Controller( control_t& position ) : current(position)
     {
     }
 
-    //virtual bool onEvent( glv::Event::t type, glv::GLV& g ) = 0;
-    //virtual bool onEvent(glv::View&, glv::GLV&) = 0;
+    virtual ~Controller(){}
 
-    //glv::space_t origin_x, origin_y;
-    
     control_t& current;
 
 };
@@ -85,7 +79,6 @@ struct FPSController : Controller
     {
     }
 
-    //bool onEvent( glv::Event::t type, glv::GLV& g );
     bool onEvent(glv::View&, glv::GLV&);
 };
 

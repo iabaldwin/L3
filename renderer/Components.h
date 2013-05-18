@@ -12,6 +12,7 @@
 #include <boost/shared_array.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/shared_array.hpp>
+#include <boost/date_time/local_time/local_time.hpp>
 
 #include "L3.h"
 #include "RenderingUtils.h"
@@ -920,7 +921,7 @@ namespace Visualisers
      */
     struct AlgorithmCostRenderer  
     {
-        AlgorithmCostRenderer( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) 
+        AlgorithmCostRenderer( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm ) 
             : algorithm(algorithm)
         {
 
@@ -930,14 +931,12 @@ namespace Visualisers
         {
         }
 
-        boost::weak_ptr< L3::Estimator::IterativeDescent<double> > algorithm ;
-
-
+        boost::weak_ptr< L3::Estimator::Algorithm<double> > algorithm ;
     };
 
     struct AlgorithmCostRendererLeaf : AlgorithmCostRenderer, Leaf
     {
-        AlgorithmCostRendererLeaf( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) 
+        AlgorithmCostRendererLeaf( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm ) 
             : AlgorithmCostRenderer(algorithm)
 
         {
@@ -947,7 +946,6 @@ namespace Visualisers
         void onDraw3D( glv::GLV& g );
 
     };
-
 
     /*
      *  Locale: Bounds Renderer
@@ -1001,6 +999,23 @@ namespace Visualisers
         void onDraw(glv::GLV& g);
         
     };
+
+/*
+ *  Chase
+ */
+struct ChaseController : Controller, Leaf
+{
+    ChaseController( glv::View3D* view, control_t& position, L3::SE3& chase ) 
+        : Controller(position),
+            chase(chase)
+    {
+    }
+
+    L3::SE3& chase;
+    
+    void onDraw3D( glv::GLV& g );
+};
+
 
 }   // Visualisers
 }   // L3

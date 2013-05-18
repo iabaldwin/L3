@@ -7,6 +7,49 @@ namespace L3
     namespace Visualisers
     {
 
+        Layout::Layout( glv::Window& win ) : window(win)
+        {
+            /*
+             *  Lua interface
+             */
+            scripting_interface.reset( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
+            this->renderables.push_front( scripting_interface.get() );
+
+            // Create the main view
+            main_view = new glv::View( glv::Rect(0,0, .6*window.width(),500));
+            this->renderables.push_front( main_view );
+
+            // Composite view holder
+            composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
+            composite->maximize();  // Maximise within the view
+            main_view->maximize();  // Maximise the view, to begin
+            composite_maximise_controller.reset( new L3::Visualisers::DoubleClickMaximiseToggle( main_view ) );
+
+            // 3D grid 
+            grid.reset( new L3::Visualisers::Grid() );
+            
+            // Basic controller
+            controller.reset( new L3::Visualisers::CompositeController( composite.get(), composite->position ) );
+            // Chase camera
+            //controller.reset( new L3::Visualisers::ChaseController( composite.get(), composite->position, *runner->current ) );
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(controller.get() ) ) );
+            
+            // 3D Query - has to be after controller?
+            mouse_query.reset( new L3::Visualisers::MouseQuerySelect( composite.get() ) );
+
+            // Accumulate views
+            (*main_view) << ( *composite << *grid );
+
+            // Add synched updater
+            updater.reset( new Updater() );
+            this->renderables.push_front( updater.get() );
+
+            table_holder.reset( new glv::Table( "x,", 0, 0 ) );
+
+            top << *table_holder;
+        }
+
+
         DatasetLayout::DatasetLayout( glv::Window& win ) : Layout(win)
         {
             /*
@@ -58,7 +101,7 @@ namespace L3
             scale_factor->interval( 5, 1 );
 
             top << *scale_factor;
-                        
+
             //time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
             time_renderer.reset( new TextRenderer<double>() );
             time_renderer->pos(window.width()-155, window.height()-50 );
@@ -69,7 +112,7 @@ namespace L3
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
 
             ancillary_1->enable( glv::Property::DrawBorder );
-            
+
             (*table_holder ) << ancillary_1.get();
         }
 
@@ -153,8 +196,6 @@ namespace L3
              *  Oracle
              */
             oracle_renderer->provider = runner->provider; 
-        
-        
         }
 
         /*
@@ -163,6 +204,9 @@ namespace L3
         EstimatorLayout::EstimatorLayout( glv::Window& win) : DatasetLayout(win)
         {
 
+            /*
+             *  Histogram pyramid
+             */
             pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 150*3, 150 ), boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 ) );
 
             for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
@@ -170,15 +214,20 @@ namespace L3
                     it++ )
                 updater->operator<<( it->get() );
 
-            pyramid_renderer->pos( window.width() - (175+5), 0 );
-
-            //top << *pyramid_renderer;
-
             (*table_holder) << *pyramid_renderer;
 
-            //histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( (*experience->experience_pyramid)[0]) );
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> >() ) );
             histogram_bounds_renderer->depth = -2.0 ;
+
+            /*
+             *  Cost visualisation
+             */
+            algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( boost::shared_ptr< L3::Estimator::Algorithm<double> >() ) );
+
+            /*
+             *  Experience histogram voxel
+             */
+            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( boost::shared_ptr<L3::Histogram<double> >() ) );
         }
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -188,6 +237,9 @@ namespace L3
              */
             DatasetLayout::load( runner );
 
+            /*
+             *  Experience & location
+             */
             experience_location->experience = experience;
             experience_location->provider = runner->provider;
 
@@ -202,42 +254,21 @@ namespace L3
              *  Histogram voxel
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf .get() ) );
-            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( (*experience->experience_pyramid)[0] ) ) ;
+            histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
 
-            //// Estimated pose
-            //estimated_pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->estimated ) );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(estimated_pose_renderer.get() ))); 
-
-            // Predicted estimates
+            /*
+             *  Predicted estimates
+             */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            ////algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( dynamic_cast<L3::Estimator::IterativeDescent<double>* >( runner->algorithm ) ));
-            //algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::IterativeDescent<double> >( runner->algorithm ) ));
-            //algorithm_costs_renderer->draw_bounds = true;
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+            algorithm_costs_renderer->algorithm = runner->algorithm;
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
 
             /*
              *  Stand-alone plots
              */
             pyramid_renderer->loadPyramid( experience->experience_pyramid );
 
-            /*
-             *  Cost visualisation 
-             */
-            ////cost_renderer_view.reset( new L3::Visualisers::CostRendererView( *(runner->estimator->pose_estimates),  glv::Rect( win.width()-510,  win.height()-250, 200, 200 ) ) );
-            ////this->renderables.push_front( cost_renderer_view.get() );
-
-            ////dumper.reset( new DataDumper( runner->dumps ) );
-            ////main_view->addGlobalInterface( glv::Event::KeyDown, dumper.get() );
-
-            //// Truly dbg
-            ////debug_renderer.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->estimator->current_swathe ));
-            ////this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_renderer.get() ) ) );
-            ////debug_renderer->color = glv::Color( 160, 32, 240 ); 
-
-            ////debug_histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( runner->estimator->current_histogram ) );
-            ////this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(debug_histogram_bounds_renderer.get() ) ) );
-            ////debug_histogram_bounds_renderer->depth = -12.0;
         }
     }
 }

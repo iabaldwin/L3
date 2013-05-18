@@ -21,44 +21,7 @@ namespace Visualisers
     {
         public:
 
-            Layout( glv::Window& win ) : window(win)
-            {
-                /*
-                 *  Lua interface
-                 */
-                scripting_interface.reset( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
-                this->renderables.push_front( scripting_interface.get() );
-
-                // Create the main view
-                main_view = new glv::View( glv::Rect(0,0, .6*window.width(),500));
-                this->renderables.push_front( main_view );
-
-                // Composite view holder
-                composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
-                composite->maximize();  // Maximise within the view
-                main_view->maximize();  // Maximise the view, to begin
-
-                // 3D grid 
-                grid.reset( new L3::Visualisers::Grid() );
-
-                // Basic controller
-                controller.reset( new L3::Visualisers::CompositeController( composite.get(), composite->position ) );
-                composite_maximise_controller.reset( new L3::Visualisers::DoubleClickMaximiseToggle( main_view ) );
-
-                // 3D Query - has to be after controller?
-                mouse_query.reset( new L3::Visualisers::MouseQuerySelect( composite.get() ) );
-                
-                // Accumulate views
-                (*main_view) << ( *composite << *grid );
-
-                // Add synched updater
-                updater.reset( new Updater() );
-                this->renderables.push_front( updater.get() );
-           
-                table_holder.reset( new glv::Table( "x,", 0, 0 ) );
-           
-                top << *table_holder;
-            }
+            Layout( glv::Window& win );
 
             boost::shared_ptr< glv::Table > table_holder;
 

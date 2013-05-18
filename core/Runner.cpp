@@ -103,12 +103,12 @@ namespace L3
         *current = predicted;
 
         /*
-         *Update the experience
+         *  Update the experience
          */
         experience->update( predicted.X(), predicted.Y() );
 
         /*
-         *Estimate
+         *  Estimate
          */
        
         *estimated = algorithm->operator()( projector->cloud, predicted );

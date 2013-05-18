@@ -14,7 +14,7 @@ namespace Visualisers
      */
     void Composite::onDraw3D( glv::GLV& g )
     {
-        glPushMatrix();
+        //glPushMatrix();
         glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
         
@@ -35,7 +35,7 @@ namespace Visualisers
 
             leaf_iterator++;
         }
-        glPopMatrix();
+        //glPopMatrix();
     }
 
     /*
@@ -384,7 +384,6 @@ namespace Visualisers
      */
     void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
     {
-        glv::draw::push();
         int counter = 0;
 
         double max = gsl_histogram2d_max_val( plot_histogram->hist );
@@ -506,7 +505,6 @@ namespace Visualisers
             }
 
         }
-        glv::draw::pop();
     }
 
     /*
@@ -728,7 +726,6 @@ namespace Visualisers
         CoordinateSystem( tmp ).onDraw3D( g );
 
         axes.onDraw3D( g );
-        //glv::draw::pop();
     }
 
     /*
@@ -907,6 +904,24 @@ namespace Visualisers
      */
     void AlgorithmCostRendererLeaf::onDraw3D( glv::GLV& g )
     {
+        // Does it exist?
+        boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm_ptr = algorithm.lock();
+
+        if( !algorithm_ptr)
+        {
+            std::cerr << "No associated algorithm" << std::endl;
+            return;
+        }
+
+        // Can we handle it?
+        boost::shared_ptr< L3::Estimator::IterativeDescent<double> > discrete_algorithm_ptr = boost::dynamic_pointer_cast< L3::Estimator::IterativeDescent<double> >( algorithm_ptr );
+       
+        if( !discrete_algorithm_ptr )
+        {
+            std::cerr << "Could not cast" << std::endl;
+            return;
+        }
+
         double layer_height = 20;
 
         double LOWER = std::numeric_limits<double>::infinity();
@@ -915,13 +930,8 @@ namespace Visualisers
         double min_x=LOWER, min_y=LOWER, min_z=LOWER;
         double max_x=UPPER, max_y=UPPER, max_z=UPPER;
 
-        boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm_ptr = algorithm.lock();
-
-        if( !algorithm_ptr)
-            return;
-
-        for( std::deque< boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > >::iterator it = algorithm_ptr->discrete_estimators.begin();
-                it != algorithm_ptr->discrete_estimators.end(); 
+        for( std::deque< boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > >::iterator it = discrete_algorithm_ptr->discrete_estimators.begin();
+                it != discrete_algorithm_ptr->discrete_estimators.end(); 
                 it++ )
         {
             std::vector< L3::SE3 > current_estimates;
@@ -949,7 +959,7 @@ namespace Visualisers
                     plot_color = glv::Color( 0, 1, 0 ); 
                 }
 
-                vertices[counter]( it->X(), it->Y(), layer_height+(plot_height*20) );
+                vertices[counter]( it->X(), it->Y(), layer_height+(plot_height) );
                 colors[counter] =  plot_color;           
                 counter++;
 
@@ -966,7 +976,6 @@ namespace Visualisers
             layer_height += 20;
 
             glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-
         }
 
         this->lower.x = min_x;
@@ -978,6 +987,9 @@ namespace Visualisers
 
     }
 
+    /*
+     *  Scan-matching scan renderer
+     */
     void ScanMatchingScanRenderer::onDraw3D( glv::GLV& g )
     {
         boost::shared_ptr< L3::ScanMatching::Engine > ptr = engine.lock();
@@ -1209,5 +1221,17 @@ namespace Visualisers
         glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
             
     }
+
+
+    /*
+     *  Specific controllers
+     */
+
+    void ChaseController::onDraw3D( glv::GLV& g )
+    {
+        current.x = -1*chase.X();
+        current.y = -1*chase.Y();
+    }
+
 }
 }
