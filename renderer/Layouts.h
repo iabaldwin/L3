@@ -45,9 +45,6 @@ namespace Visualisers
                 controller.reset( new L3::Visualisers::CompositeController( composite.get(), composite->position ) );
                 composite_maximise_controller.reset( new L3::Visualisers::DoubleClickMaximiseToggle( main_view ) );
 
-                // Interface test
-                //toggle_button.reset( new glv::Button( glv::Rect(20,20) ) );
-
                 // 3D Query - has to be after controller?
                 mouse_query.reset( new L3::Visualisers::MouseQuerySelect( composite.get() ) );
                 
@@ -57,7 +54,13 @@ namespace Visualisers
                 // Add synched updater
                 updater.reset( new Updater() );
                 this->renderables.push_front( updater.get() );
+           
+                table_holder.reset( new glv::Table( "x,", 0, 0 ) );
+           
+                top << *table_holder;
             }
+
+            boost::shared_ptr< glv::Table > table_holder;
 
             virtual ~Layout()
             {
@@ -70,6 +73,10 @@ namespace Visualisers
                 // Add renderables provided by children
                 for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                     top << *it;
+
+                table_holder->arrange();
+            
+                table_holder->pos( window.width()-(555), 0);
 
                 window.setGLV(top);
 
@@ -182,11 +189,10 @@ namespace Visualisers
 
             boost::shared_ptr< glv::View >  scripting_interface;
 
-            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
-            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter;
-
         protected:
 
+            
+            
             L3GLV top;
 
             glv::View*      main_view;
@@ -197,12 +203,10 @@ namespace Visualisers
             boost::shared_ptr<glv::Slider>  scale_factor;
             boost::shared_ptr< glv::Label > scale_factor_label;
             
-            boost::shared_ptr< glv::Widget > toggle_button;
-
             std::list< boost::shared_ptr< glv::View > >     labels;
 
+            boost::shared_ptr< EventController >            composite_maximise_controller;
             boost::shared_ptr<L3::Visualisers::Composite>   composite;
-            boost::shared_ptr< EventController > composite_maximise_controller;
             std::list< boost::shared_ptr< EventController > > window_controllers;
             
             boost::shared_ptr< Updater >                    updater;
@@ -210,6 +214,9 @@ namespace Visualisers
             boost::shared_ptr<L3::Visualisers::Controller>  controller;
 
             std::list< boost::shared_ptr< glv::Plot > >     plots;
+
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
+            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter;
 
             boost::shared_ptr< L3::Visualisers::MouseQuerySelect > mouse_query;
             boost::shared_ptr< L3::Visualisers::WASDManager > selection_manager;

@@ -16,21 +16,14 @@ namespace L3
             addRotationalVelocityPlot();
 
             // Box 1
-            //ancillary_1.reset( new glv::Table("x | | , x x x,") );
-            //ancillary_1.reset( new glv::Table("x . x , | | x,") );
             ancillary_1.reset( new glv::Table("x - x , | | x, x x x, ") );
-            ancillary_1->pos( window.width()-(555), 5);
-            this->renderables.push_front( ancillary_1.get() );
 
             // Runtime cloud renderer
             runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( 360, 360 ), boost::shared_ptr< L3::PointCloud<double> >(), boost::shared_ptr<L3::SE3>() ) );
-            //this->renderables.push_front( runtime_cloud_renderer_view.get() );
             updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
-
-            point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
-
             *ancillary_1 << *runtime_cloud_renderer_view;
 
+            point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
 
             // Stand-alone scan renderer : Horizontal
             horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 180,180 ) ) );
@@ -76,6 +69,8 @@ namespace L3
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
 
             ancillary_1->enable( glv::Property::DrawBorder );
+            
+            (*table_holder ) << ancillary_1.get();
         }
 
         bool DatasetLayout::load( L3::DatasetRunner* runner )
@@ -178,7 +173,9 @@ namespace L3
             pyramid_renderer->pos( window.width() - (175+5), 0 );
 
             //top << *pyramid_renderer;
-        
+
+            (*table_holder) << *pyramid_renderer;
+
             //histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( (*experience->experience_pyramid)[0]) );
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> >() ) );
             histogram_bounds_renderer->depth = -2.0 ;

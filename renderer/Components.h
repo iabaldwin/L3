@@ -637,14 +637,15 @@ namespace Visualisers
 
     };
 
-    struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updateable
+    //struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updateable
+    struct HistogramPyramidRendererView : glv::Table, HistogramPyramidRenderer, Updateable
     {
         HistogramPyramidRendererView( const glv::Rect& r, boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid, int num_pyramids ) 
             : HistogramPyramidRenderer(histogram_pyramid),
-                glv::View(r),
+                glv::Table( "x x x, "),
                 num_pyramids(num_pyramids)
         {
-            int width = 175;
+            int width = 180;
             int start = 0;
             //for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
                     //it != this->pyramid->end();
@@ -652,8 +653,9 @@ namespace Visualisers
              for( int i=0; i< num_pyramids; i++ )
             {
                 //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), *it ) );
-                boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), boost::shared_ptr< Histogram<double > >() ) );
-                start+= (width+10/3);
+                //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), boost::shared_ptr< Histogram<double > >() ) );
+                boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
+                //start+= (width+10/3);
                 renderers.push_back( renderer );
                 (*this) << renderer.get();
             }
@@ -663,6 +665,8 @@ namespace Visualisers
 
             //this->fit();
             //this->bringToFront();
+       
+             this->arrange();
         }
            
         int num_pyramids;
