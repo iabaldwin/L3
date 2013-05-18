@@ -157,8 +157,6 @@ namespace L3
     
     }
 
-
-
     std::pair< bool, std::string> CommandInterface::algo( const std::string& load_command )
     {
         if (!container)

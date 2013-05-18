@@ -36,7 +36,7 @@ namespace Visualisers
                 // Composite view holder
                 composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
                 composite->maximize();  // Maximise within the view
-                //main_view->maximize();  // Maximise the view, to begin
+                main_view->maximize();  // Maximise the view, to begin
 
                 // 3D grid 
                 grid.reset( new L3::Visualisers::Grid() );
@@ -256,6 +256,8 @@ namespace Visualisers
             
             boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> oracle_renderer;
             
+            boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf > runtime_cloud_renderer_leaf; 
+            
             /*
              *  Load/reload function
              */
@@ -280,7 +282,6 @@ namespace Visualisers
             boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> predicted_pose_renderer;
 
             boost::shared_ptr< L3::Visualisers::PredictorRenderer >             predictor_renderer;
-            boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >        runtime_cloud_renderer_leaf; 
             boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >      point_cloud_bounds_renderer;
             boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
             boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;

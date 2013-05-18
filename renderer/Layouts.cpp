@@ -120,16 +120,15 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
 
             /*
-             *  Locale Bounds
+             *  Run-time swathe
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( locale_bounds.get() ) );
-            //locale_bounds.reset( new L3::Visualisers::LocaleBoundsRenderer() );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(locale_bounds.get() ))); 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( runtime_cloud_renderer_leaf.get() ) );
+            runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->point_cloud, runner->provider ));
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
 
             /*
-             *  Swathe Cloud
+             *  Swathe cloud, separate view
              */
-
             runtime_cloud_renderer_view->cloud = runner->point_cloud;
             runtime_cloud_renderer_view->current_estimate = runner->current;
 
@@ -148,6 +147,8 @@ namespace L3
              *  Oracle
              */
             oracle_renderer->provider = runner->provider; 
+        
+        
         }
 
         /*
@@ -196,10 +197,7 @@ namespace L3
             ////point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( run_time_swathe ) );
             ////this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
 
-            // Swathe Cloud
-            //runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( run_time_swathe ));
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
-
+            
             //// Estimated pose
             //estimated_pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->estimated ) );
             //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(estimated_pose_renderer.get() ))); 

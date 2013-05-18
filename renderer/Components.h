@@ -386,9 +386,12 @@ namespace Visualisers
      */
     struct PointCloudRendererLeaf : PointCloudRenderer, Leaf
     {
-        PointCloudRendererLeaf( boost::shared_ptr< L3::PointCloud<double> > cloud ) : PointCloudRenderer(cloud)
+        PointCloudRendererLeaf( boost::shared_ptr< L3::PointCloud<double> > cloud, boost::shared_ptr< L3::PoseProvider > pose_provider = boost::shared_ptr<L3::PoseProvider>() ) 
+            : PointCloudRenderer(cloud), provider(pose_provider)
         {
         }
+
+        boost::weak_ptr< L3::PoseProvider > provider;
 
         void onDraw3D( glv::GLV& g );
     };

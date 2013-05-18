@@ -384,6 +384,7 @@ namespace Visualisers
      */
     void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
     {
+        glv::draw::push();
         int counter = 0;
 
         double max = gsl_histogram2d_max_val( plot_histogram->hist );
@@ -505,6 +506,7 @@ namespace Visualisers
             }
 
         }
+        glv::draw::pop();
     }
 
     /*
@@ -559,19 +561,15 @@ namespace Visualisers
 
     void PointCloudRenderer::onDraw3D( glv::GLV& g )
     {
-        if ( plot_cloud->num_points > 0 )
+        for( int i=0; i<plot_cloud->num_points; i++) 
         {
-            for( int i=0; i<plot_cloud->num_points; i++) 
-            {
-                vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
-                //colors[i] = color; 
-                // TODO: Have a color policy
-                colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
-            }
-
-            glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
-
+            vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
+            //colors[i] = color; 
+            // TODO: Have a color policy
+            colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
         }
+
+        glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
     }
 
     /*
@@ -584,10 +582,21 @@ namespace Visualisers
         if( !cloud_ptr )
             return;
 
+        if( cloud_ptr->num_points == 0 ) 
+            return;
+
         L3::ReadLock lock( cloud_ptr->mutex );
-        if( cloud_ptr->num_points > 0 ) 
-            L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
         lock.unlock();
+
+        boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
+
+        // Transform?
+        if( provider_ptr )
+        {
+            L3::SE3 pose = provider_ptr->operator()();
+            L3::transform( plot_cloud.get(), &pose );
+        }
 
         PointCloudRenderer::onDraw3D(g);    
     }

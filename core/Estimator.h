@@ -172,7 +172,7 @@ namespace Estimator
             boost::shared_ptr<L3::Histogram<T> >    experience_histogram;
             boost::shared_ptr<L3::PointCloud<T> >   current_swathe;
 
-            boost::shared_ptr< PointCloud<T> > sampled_swathe;
+            boost::shared_ptr< PointCloud<T> >      sampled_swathe;
             
             virtual ~Estimator()
             {
@@ -209,18 +209,21 @@ namespace Estimator
     template < typename T>
         struct PassThrough : Algorithm<T>
         {
-            PassThrough(  Estimator<T>* estimator ) : estimator(estimator)
+            PassThrough(  CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid )
+                : pyramid(experience_pyramid)
             {
             }
 
-            Estimator<T>* estimator;
-
-            SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) 
+            struct EstimateData : Lockable
             {
-                estimator->operator()( swathe, estimate );
-           
-                return estimate;
-            }
+                boost::shared_ptr< L3::Histogram< double > > swathe_histogram;
+                boost::shared_ptr< L3::Histogram< double > > experience_histogram;
+            }data;
+
+            boost::shared_ptr< HistogramPyramid<T> > pyramid;
+
+            SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
+            
         };
 
     template < typename T>

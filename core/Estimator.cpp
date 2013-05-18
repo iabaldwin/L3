@@ -95,6 +95,8 @@ namespace L3
 
         /*
          *  Cost Functions
+         *  1.  KL divergence, smoothed
+         *  2.  MI smoothed
          */
 
 
@@ -314,7 +316,6 @@ namespace L3
                 group.wait();
 
                 return true;
-
             }
 
     template < typename T>
@@ -338,6 +339,51 @@ namespace L3
 
             return refined;
         }
+
+    template < typename T>
+        SE3 PassThrough<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
+            {
+                // Lock the experience histogram
+                L3::ReadLock( (*pyramid[0])->mutex );
+                L3::ReadLock swathe_lock( swathe->mutex );
+
+                if (swathe->num_points == 0 ) 
+                    return false;
+
+                /*
+                 *  Speed considerations
+                 */
+                //L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
+
+                //std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
+
+                //std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
+                
+                std::vector< double > costs(1);
+
+                //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
+                Hypothesis( swathe, estimate, (*pyramid[0]).get() , this->cost_function, costs.begin() )();
+
+                //L3::WriteLock( this->data.mutex );
+                //histogram.reset( new L3::Histogram<double>() ); 
+
+                //while( it != this->pose_estimates->estimates.end() )
+                //{
+                    //group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
+                    //it++;
+                //}
+
+                //// Synch
+                //group.wait();
+
+                //return true;
+            }
+
+
+
+    /*
+     *  Algorithm: Minimisation
+     */
 
     double global_minimisation_function( const gsl_vector * x, void * params)
     {
