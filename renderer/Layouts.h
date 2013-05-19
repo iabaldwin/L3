@@ -23,8 +23,6 @@ namespace Visualisers
 
             Layout( glv::Window& win );
 
-            boost::shared_ptr< glv::Table > table_holder;
-
             virtual ~Layout()
             {
             }
@@ -157,13 +155,14 @@ namespace Visualisers
 
         protected:
 
-            
-            
             L3GLV top;
 
             glv::View*      main_view;
             glv::Window&    window; 
 
+            //boost::shared_ptr< glv::Table > table_holder;
+            boost::shared_ptr< CustomTable > table_holder;
+            
             std::list< glv::View* > renderables;
 
             boost::shared_ptr< glv::Slider >  scale_factor;

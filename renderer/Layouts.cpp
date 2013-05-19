@@ -44,7 +44,8 @@ namespace L3
             updater.reset( new Updater() );
             this->renderables.push_front( updater.get() );
 
-            table_holder.reset( new glv::Table( "x,", 0, 0 ) );
+            //table_holder.reset( new glv::Table( "x,", 0, 0 ) );
+            table_holder.reset( new CustomTable( "x,", 0, 0 ) );
 
             top << *table_holder;
         }

@@ -26,13 +26,16 @@ namespace ScanMatching
                 cloud_out.reset(new pcl::PointCloud<pcl::PointXYZ>);
             }
 
-            virtual bool match(  const L3::LMS151& current_scan ) = 0;
+            //virtual bool match(  const L3::LMS151& current_scan ) = 0;
+            virtual bool match(  const std::pair< double,  boost::shared_ptr< L3::LMS151 > > current_scan ) = 0;
 
             boost::shared_array< double > scan;
             int scan_points;
             
             boost::shared_array< double > putative;
             int putative_points;
+
+            std::pair< double, double > instantaneous_velocity;
 
         protected:
 
@@ -44,7 +47,8 @@ namespace ScanMatching
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out;
            
             bool initialised;
-            
+
+            double previous_time;
                 
     };
 
@@ -52,13 +56,12 @@ namespace ScanMatching
     {
         public:
 
-            bool match(  const L3::LMS151& current_scan );
+            bool match(  const std::pair< double, boost::shared_ptr< L3::LMS151 > >current_scan );
 
     };
 
     struct Engine : L3::TemporalObserver, Lockable
-    {
-
+    { 
         Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
             windower(windower)
         {
@@ -77,7 +80,6 @@ namespace ScanMatching
 
 }
 }
-
 
 
 

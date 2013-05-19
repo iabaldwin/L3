@@ -34,15 +34,18 @@ namespace L3
 {
 namespace ScanMatching
 {
-    bool ICP::match(  const L3::LMS151& current_scan )
+    //bool ICP::match(  const L3::LMS151& current_scan )
+    bool ICP::match(  const std::pair< double,  boost::shared_ptr< L3::LMS151 > > current_scan ) 
     {
         if ( !initialised )
         {
             scan.reset( new double[541*3] );
-            scan_points = do_projection( current_scan, scan.get() );
+            scan_points = do_projection( *(current_scan.second), scan.get() );
 
             initialised = true;
-            
+       
+            previous_time = current_scan.first;
+
             return false;
         }
 
@@ -69,7 +72,7 @@ namespace ScanMatching
          *  Putative
          */
         putative.reset( new double[541*3] );
-        putative_points  = do_projection( current_scan, putative.get() );
+        putative_points  = do_projection( (*current_scan.second), putative.get() );
 
         cloud_out->width    = putative_points;
         cloud_out->height   = 1;
@@ -92,15 +95,17 @@ namespace ScanMatching
 
         icp.align(Final);
 
-        Eigen::Matrix4f transformation * icp.getFinalTransformation();
+        Eigen::Matrix4f transformation = icp.getFinalTransformation();
 
         // TAke in a pair, instead of just a scan - need the time
-        //double vel = sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) )/
+        instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
 
         // Do swap
         scan.swap( putative );
         scan_points = putative_points;
-   
+ 
+        previous_time = current_scan.first;
+
         return true;
     }
     
@@ -113,7 +118,8 @@ namespace ScanMatching
         if ( window.size() > 0 )
         {
             L3::WriteLock( this->mutex );
-            retval = matcher->match( *(window.back().second ) ); 
+            //retval = matcher->match( *(window.back().second ) ); 
+            retval = matcher->match( window.back() ); 
         }
   
         return retval;

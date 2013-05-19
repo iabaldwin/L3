@@ -44,7 +44,7 @@ namespace Visualisers
             dumpHistory(); 
 
         // Master disable
-        if ( e== static_cast< glv::Event::t>( OVERLAY_TOGGLE ) )
+        if ( e == static_cast< glv::Event::t>( OVERLAY_TOGGLE ) )
         {
             visibility ? this->disable(glv::Visible) : this->enable(glv::Visible);
             visibility = !visibility; 

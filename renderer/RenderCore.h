@@ -15,7 +15,8 @@ namespace Visualisers
 enum CUSTOM_EVENT_TYPES
     {
         OVERLAY_TOGGLE = 20,
-        SELECT_CLICK 
+        SELECT_CLICK,
+        TABLE_TOGGLE
     };
 
     /*
@@ -42,8 +43,11 @@ enum CUSTOM_EVENT_TYPES
                         this->setMouseDown(a, b, 1, 1);
                         this->setMouseUp(a, b, 1, 1);
 
-                    case 126:
-                        //this->broadcastEvent( static_cast< glv::Event::t>( SELECT_CLICK ) );
+                        break;
+
+                    case glv::Key::Escape:
+                        this->broadcastEvent( static_cast< glv::Event::t>( TABLE_TOGGLE ) );
+                        break;
 
                     default:
                         break; 
@@ -67,6 +71,19 @@ enum CUSTOM_EVENT_TYPES
             //}
 
         }
+    };
+
+    struct  CustomTable : glv::Table
+    {
+
+        CustomTable( const char * arrangement="<", glv::space_t padX=3, glv::space_t padY=3, const glv::Rect& r= glv::Rect(0)) 
+            : Table( arrangement, padX, padY, r )
+        {
+              //this->enable( glv::DrawBack | glv::DrawBorder | glv::CropChildren | glv::FocusHighlight | glv::Controllable);
+              this->enable( glv::DrawBack | glv::Controllable);
+        }
+
+        bool onEvent( glv::Event::t type, glv::GLV& g );
     };
 
 }

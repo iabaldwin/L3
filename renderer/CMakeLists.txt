@@ -17,6 +17,7 @@ add_definitions( -DOGLFT_NO_QT -DOGLFT_NO_SOLID )
 include_directories( "/Users/ian/code/thirdparty/bullet/Demos/OpenGL/" )
 
 add_library( L3Vis 
+                RenderCore.cpp
                 Visualisers.cpp 
                 ViewController.cpp 
                 Components.cpp 
