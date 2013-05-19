@@ -39,7 +39,6 @@ class Iterator : public TemporalObserver
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > buffered_window;
 
-        //boost::shared_ptr< L3::SlidingWindow<T> > windower;
         boost::weak_ptr< L3::SlidingWindow<T> > windower;
 };
 

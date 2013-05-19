@@ -57,6 +57,8 @@ namespace Visualisers
         ImageRenderer( ImageData& data, image_bounds b )  : b(b), data(data)
         {
             GLubyte image_texture[data.img->height][data.img->width][4];
+            //GLubyte (*image_texture) = malloc[data.img->height][data.img->width][4];
+            //GLubyte (*image_texture)[data.img->width] = (GLubyte*)malloc(data.img->height*data.img->width*4);
             
             for(int j=data.img->height-1; j> 0; j--)
             {
@@ -159,31 +161,8 @@ namespace Visualisers
 
     struct LocaleRendererFactory
     {
-
-        static boost::shared_ptr< LocaleRenderer > build( L3::Configuration::Locale& locale )        
-        {
-            // This should be embedded in the configuration     
-            std::string image_target = "/Users/ian/Documents/begbroke_med_res.png" ;
-
-            ImageData data;
-            ImageFactory::Image(image_target, data);
-
-          
-            // Image calibration
-            image_bounds b;
-
-            double x_offset = 185;
-            double y_offset = 125;
-
-            b.lower_x = 0-x_offset;
-            b.lower_y = 0-y_offset;
-            b.upper_x = 1000.0*.125*4-x_offset;
-            b.upper_y = 1000.0*.125*4-y_offset;
-
-            
-            return boost::make_shared<LocaleRenderer>( data, b  );
-        }
-
+        static boost::shared_ptr< LocaleRenderer > buildLocale( L3::Configuration::Locale& locale );
+        static boost::shared_ptr< LocaleRenderer > buildMap( L3::Configuration::Locale& locale );
     };
 
 }

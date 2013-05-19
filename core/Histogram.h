@@ -35,7 +35,8 @@ namespace L3
 
             virtual ~Histogram()
             {
-                gsl_histogram2d_free( hist );
+                if( hist )
+                    gsl_histogram2d_free( hist );
             }
 
             bool empty() const

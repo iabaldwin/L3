@@ -51,7 +51,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::SwatheRenderer         swathe_renderer( &swathe_builder ); 
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    composite.stretch(1,1);
 
     L3::Visualisers::VisualiserRunner runner( dataset->start_time );
 

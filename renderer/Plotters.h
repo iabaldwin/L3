@@ -21,7 +21,14 @@ namespace L3
             {
             }
 
+            void setParent( boost::shared_ptr< glv::Plot > plotter )
+            {
+                plot_parent = plotter;
+            }
+
             int index;
+            double current;
+            boost::weak_ptr< glv::Plot > plot_parent; 
             boost::weak_ptr< L3::ConstantTimeIterator< L3::LHLV> > iterator; 
  
             void assignIterator( boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > LHLV_iterator )
@@ -40,6 +47,18 @@ namespace L3
                 }
             }
 
+            template <typename T>
+                struct maximum : std::binary_function<bool,T,T>
+            {
+
+                bool operator()( T* a, T* b )
+                {
+                    //return (a->second->data[index] )>  (a->second->data[index] );
+                }
+
+            };
+            
+
             void update()
             {
                 boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > iterator_ptr = iterator.lock();
@@ -50,6 +69,8 @@ namespace L3
                 std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
 
                 iterator_ptr->getWindow( window );
+
+                current = -1*std::numeric_limits<double>::infinity();
 
                 if ( window.size() > 0 )
                 {
@@ -64,10 +85,25 @@ namespace L3
                     while( i() && counter < window.size() ) 
                     {
                         double d = window[counter++].second->data[index];
+
+                        if ( d > current )
+                            current = d;
+
                         mData.assign( d, i[0], i[1] );
                     }
 
                 }
+
+                boost::shared_ptr< glv::View > parent = plot_parent.lock();
+               
+                if( parent )
+                {
+                    boost::shared_ptr< glv::Plot > parent_plot = boost::dynamic_pointer_cast< glv::Plot >( parent );
+                   
+                    if ( parent_plot )
+                        parent_plot->range( -1, current + 2.0 , 1 );
+                }
+               
             }
 
         };

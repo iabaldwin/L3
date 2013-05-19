@@ -55,8 +55,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::ScanRenderer           scan_renderer( &swathe_builder ); 
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
-    composite.addController( controller );
-
     // Add watchers
     composite << scan_renderer << pose_renderer << grid;
 

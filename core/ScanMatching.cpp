@@ -1,8 +1,5 @@
 #include "ScanMatching.h"
 
-#include <ICP/icp.h>
-#include <ICP/icpPointToPlane.h>
-
 int do_projection( const L3::LMS151& current_scan, double* matrix, double threshold = 5.0 )
 {
     double* matrix_ptr = matrix;
@@ -49,14 +46,56 @@ namespace ScanMatching
             return false;
         }
 
+        /*
+         *  Scan
+         */
+        cloud_in->width    = scan_points;
+        cloud_in->height   = 1;
+        cloud_in->is_dense = false;
+
+        cloud_in->points.resize (cloud_in->width * cloud_in->height);
+
+        double* cloud_ptr = scan.get();
+
+        for( int i=0; i< scan_points; i++ )
+        {
+            cloud_in->points[i].x = *cloud_ptr++;
+            cloud_in->points[i].y = *cloud_ptr++;
+            cloud_in->points[i].z = *cloud_ptr++;
+        }
+
+
+        /*
+         *  Putative
+         */
         putative.reset( new double[541*3] );
         putative_points  = do_projection( current_scan, putative.get() );
-        
-        Matrix R = Matrix::eye(3);
-        Matrix t(3,1);
-      
-        IcpPointToPlane icp( scan.get(), scan_points, 3);
-        icp.fit(putative.get(),putative_points,R,t,-1);
+
+        cloud_out->width    = putative_points;
+        cloud_out->height   = 1;
+        cloud_out->is_dense = false;
+
+        cloud_out->points.resize (cloud_out->width * cloud_out->height);
+
+        cloud_ptr = putative.get();
+
+        for( int i=0; i< putative_points; i++ )
+        {
+            cloud_out->points[i].x = *cloud_ptr++;
+            cloud_out->points[i].y = *cloud_ptr++;
+            cloud_out->points[i].z = *cloud_ptr++;
+        }
+
+        icp.setInputCloud(cloud_in);
+        icp.setInputTarget(cloud_out);
+        pcl::PointCloud<pcl::PointXYZ> Final;
+
+        icp.align(Final);
+
+        Eigen::Matrix4f transformation * icp.getFinalTransformation();
+
+        // TAke in a pair, instead of just a scan - need the time
+        //double vel = sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) )/
 
         // Do swap
         scan.swap( putative );

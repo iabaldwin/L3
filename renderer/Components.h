@@ -238,20 +238,6 @@ namespace Visualisers
         std::list<Leaf*>                components; 
         L3::Visualisers::Controller*    controller;
 
-        Composite& addController( L3::Visualisers::Controller* controller )
-        {
-            //this->controller = controller; 
-            return *this;
-        }
-
-        //bool onEvent( glv::Event::t type, glv::GLV& g )
-        //{
-            //if (controller)
-                //controller->onEvent( type, g );
-
-            //return true;
-        //}
-
         void onDraw3D( glv::GLV& g );
 
         Composite& operator<<( Leaf& leaf )

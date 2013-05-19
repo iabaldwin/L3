@@ -56,7 +56,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::HistogramVoxelRendererLeaf     histogram_voxel_renderer_leaf( histogram );
     //L3::Visualisers::HistogramVoxelRendererView     histogram_voxel_renderer_view( glv::Rect(500,0,500,300), histogram );
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    composite.stretch(1,1);
     //updater->operator<< (dynamic_cast<L3::Visualisers::Updateable*>(&histogram_density_renderer));
 
     // Add drawables and updateables

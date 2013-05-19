@@ -57,7 +57,7 @@ int main (int argc, char ** argv)
     experience_renderer.addPoseProvider( pose_provider.get() );
 
     // Associate controller
-    composite.addController( controller.get() ).stretch(1,1);
+    composite.stretch(1,1);
 
     // Combine
     top << (composite << grid << experience_renderer << pose_provider_renderer ) << pyramid_renderer << updater << dbg_density_renderer;

@@ -38,7 +38,7 @@ class Parser:
     def __init__(self, hdf_dataset_root ):
         self._dataset = hdf_dataset_root
         self._start = []
-        self._limit = 0
+        self._limit = []
         self._binary = False
 
     def binary( self ):
@@ -59,16 +59,24 @@ class Parser:
 
             with open( os.path.join( directory, self.name()  ), open_str ) as f:
                 
+                lower_limit = self._limit[0]
+                upper_limit = self._limit[1]
+
+
                 for entry in self._data:
+       
+                    if (lower_limit <=0 and upper_limit >= 0):
+                        if self._binary:
+                            f.write( entry )
+                        else:
+                            print >>f, entry
 
-                    self._limit -= 1
-                    if self._limit <= 0:
-                        break
+                    #self._limit[0] -= 1  
+                    #self._limit[1] -= 1
 
-                    if self._binary:
-                        f.write( entry )
-                    else:
-                        print >>f, entry
+                    lower_limit -= 1  
+                    upper_limit -= 1
+
     # Helpers
     @staticmethod
     def hdf5ArrayToString( arr ):
@@ -82,7 +90,7 @@ class INS(Parser):
         self.mission = mission
 
     def parse( self ):
-
+        
         t = self._dataset['poses']['interpolated']['ins'][0]
         x = self._dataset['poses']['interpolated']['ins'][1]
         y = self._dataset['poses']['interpolated']['ins'][2]
@@ -116,8 +124,10 @@ class INS(Parser):
 
         return self
 
-    def limit( self, limit ):
-        self._limit = 100*limit     # Approx 100Hz
+    def duration( self, limit ):
+        #self._limit = 100*limit     # Approx 100Hz
+        #self._limit = (100*i for i in limit) # Approx 100Hz
+        self._limit = (100*limit[0], 100*limit[1])
         return self
 
     def name(self):
@@ -171,8 +181,10 @@ class LHLV(Parser):
     def name(self):
         return 'OxTS.lhlv'
 
-    def limit( self, limit ):
-        self._limit = 100*limit     # Approx 100Hz
+    def duration( self, limit ):
+        #self._limit = 100*limit     # Approx 100Hz
+        #self._limit = (100*i for i in limit) 
+        self._limit = (100*limit[0], 100*limit[1])# Approx 100Hz
         return self
 
 
@@ -198,10 +210,10 @@ class LIDAR(Parser):
 
         return self
 
-    def limit( self, limit ):
-        self._limit = 50*limit     # Approx 50Hz
+    def duration( self, limit ):
+        #self._limit = 50*limit     # Approx 50Hz
+        self._limit = (50*limit[0], 50*limit[1])
         return self
-
 
     def write( self, directory ):
 
@@ -212,23 +224,24 @@ class LIDAR(Parser):
 
             for lidar in self._data:
 
-                limit = self._limit
+                lower_limit = self._limit[0]
+                upper_limit = self._limit[1]
+
 
                 with open( os.path.join( directory, lidar[0] + '.lidar', ), 'wb' ) as f:
                     
                     for entry in lidar[1]:
 
-                        limit -= 1
-                        if limit <= 0:
-                            break
-
-                        if self._binary:
-                            arr =  array.array('d', entry.tolist() )
-                            f.write( arr.tostring())
+                        if (lower_limit <=0 and upper_limit >= 0 ):
                         
-                        else:
-                            data = map( lambda x: '%.18f' % x, entry.tolist() ) 
-                            print >>f, ' '.join( data )
+                            if self._binary:
+                                arr =  array.array('d', entry.tolist() )
+                                f.write( arr.tostring())
+                            
+                            else:
+                                data = map( lambda x: '%.18f' % x, entry.tolist() ) 
+                                print >>f, ' '.join( data )
                         
 
-
+                        lower_limit -= 1  
+                        upper_limit -= 1

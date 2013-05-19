@@ -75,7 +75,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::BasicPanController         controller(composite.position);
     L3::Visualisers::Grid                       grid;
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    composite.stretch(1,1);
 
     test_leaf leaf;
 

@@ -69,8 +69,6 @@ int main (int argc, char ** argv)
     histogram_pixel_renderer_2.update();
     histogram_pixel_renderer_3.update();
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-
     top << (composite << grid << histogram_renderer << histogram_bounds_renderer ) << histogram_pixel_renderer_1 << histogram_pixel_renderer_2  << histogram_pixel_renderer_3;
 
     std::ofstream histogram_output( "histogram_1.dat" );

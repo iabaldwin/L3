@@ -36,7 +36,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                       grid;
     
     //L3::Visualisers::BasicPanController         controller(composite.position);
-    //composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
   
     L3::Visualisers::CompositeController        composite_controller( &composite, composite.position );
 

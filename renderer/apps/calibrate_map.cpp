@@ -58,7 +58,7 @@ int main (int argc, char ** argv)
 
     // Here, we add a new component::leaf with the poses
     boost::shared_ptr< L3::Visualisers::PoseSequenceRenderer > sequence( new L3::Visualisers::PoseSequenceRenderer( poses ) );
-    boost::shared_ptr< L3::Visualisers::LocaleRenderer > locale_renderer = L3::Visualisers::LocaleRendererFactory::build( begbroke );
+    boost::shared_ptr< L3::Visualisers::LocaleRenderer > locale_renderer = L3::Visualisers::LocaleRendererFactory::buildLocale( begbroke );
 
 
     // Add Boxes
@@ -66,8 +66,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::SelectableLeaf* renderer2 = new L3::Visualisers::SelectableLeaf( 5, 10, 15 );
 
     top << ( composite << grid << *renderer << *renderer2 << *locale_renderer << *sequence );
-
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
     win.setGLV(top);
     glv::Application::run();

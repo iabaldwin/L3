@@ -20,22 +20,19 @@ int main (int argc, char ** argv)
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
-    //L3::Visualisers::Composite          composite( glv::Rect( 1000, 800 ) );
-    L3::Visualisers::Composite          composite;
-    L3::Visualisers::BasicPanController controller(composite.position);
-    L3::Visualisers::Grid               grid;
+    L3::Visualisers::Grid                   grid;
+    L3::Visualisers::Composite              composite;
+    L3::Visualisers::CompositeController    controller( &composite, composite.position );
 
     L3::Configuration::Begbroke begbroke;
     begbroke.loadDatum();
 
-    boost::shared_ptr< L3::Visualisers::LocaleRenderer > locale_renderer = L3::Visualisers::LocaleRendererFactory::build( begbroke );
+    boost::shared_ptr< L3::Visualisers::LocaleRenderer > locale_renderer = L3::Visualisers::LocaleRendererFactory::buildMap( begbroke );
 
-    L3::Visualisers::MouseQuerySelect query(  &composite );
-    L3::Visualisers::WASDManager selection_manager( &query );
+    //L3::Visualisers::MouseQuerySelect query(  &composite );
+    //L3::Visualisers::WASDManager selection_manager( &query );
 
     top << ( composite << grid << *locale_renderer  );
-
-    composite.addController( &controller  );
 
     composite.stretch(1,1);
 

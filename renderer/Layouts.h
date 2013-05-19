@@ -92,6 +92,8 @@ namespace Visualisers
                 // Add plot region
                 boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 500+5, .6*window.width(), 150-5), *linear_velocity_plotter ) );
 
+                linear_velocity_plotter->setParent( plot_region );
+
                 plot_region->range( 0, 1000, 0 );
                 plot_region->range( -1, 10 , 1 );
 
@@ -102,6 +104,7 @@ namespace Visualisers
 
                 // Add rendererable
                 this->renderables.push_front( plot_region.get() );
+                
                 // Mark as updateable
                 updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter.get()) );
 
@@ -163,8 +166,9 @@ namespace Visualisers
 
             std::list< glv::View* > renderables;
 
-            boost::shared_ptr<glv::Slider>  scale_factor;
-            boost::shared_ptr< glv::Label > scale_factor_label;
+            boost::shared_ptr< glv::Slider >  scale_factor;
+            boost::shared_ptr< glv::Slider >  window_duration;
+            boost::shared_ptr< glv::Label >   scale_factor_label;
             
             std::list< boost::shared_ptr< glv::View > >     labels;
 

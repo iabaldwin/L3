@@ -48,9 +48,11 @@ bool ConstantTimeIterator<T>::update( double time )
 
     this->mutex.lock();
     this->window.clear();
-   
+ 
+    double swathe_length_local = swathe_length;
+
     // Working backwards, build up the data swathe
-    while( data_swathe_length < swathe_length )
+    while( data_swathe_length < swathe_length_local )
     {
         // At the beginning? Is this all we have?
         if ( it_back_iterator == this->buffered_window.begin() )

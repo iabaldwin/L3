@@ -56,7 +56,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::BasicPanController controller( composite_view.position );
     L3::Visualisers::Grid               grid;
 
-    composite_view.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    composite_view.stretch(1,1);
 
     // Transform tester
     Transformer<double> transformer( cloud.get() );

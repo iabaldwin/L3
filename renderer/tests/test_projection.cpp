@@ -41,7 +41,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid           grid;
     L3::Visualisers::SwatheRenderer swathe_renderer( &swathe_builder ); 
 
-    composite.addController( &controller );
     composite.current_time = time;
     composite.sf = 2.0;
 

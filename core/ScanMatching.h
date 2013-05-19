@@ -6,6 +6,10 @@
 #include "Datatypes.h"
 #include "Iterator.h"
 
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
+
 #include <boost/shared_array.hpp>
 
 namespace L3
@@ -18,6 +22,8 @@ namespace ScanMatching
           
             ScanMatcher() : initialised(false)
             {
+                cloud_in.reset(new pcl::PointCloud<pcl::PointXYZ>);
+                cloud_out.reset(new pcl::PointCloud<pcl::PointXYZ>);
             }
 
             virtual bool match(  const L3::LMS151& current_scan ) = 0;
@@ -29,7 +35,14 @@ namespace ScanMatching
             int putative_points;
 
         protected:
-            
+
+              
+            pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+
+            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in;
+        
+            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out;
+           
             bool initialised;
             
                 

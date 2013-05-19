@@ -51,7 +51,7 @@ int main (int argc, char ** argv)
 
     top << ( composite << tmp_leaf << grid );
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    composite.stretch(1,1);
 
     win.setGLV(top);
     glv::Application::run();

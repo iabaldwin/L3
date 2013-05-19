@@ -94,26 +94,44 @@ namespace L3
             scan_matching_renderer.reset( new L3::Visualisers::ScanMatchingScanRenderer( glv::Rect( 180,180 ),boost::shared_ptr< L3::ScanMatching::Engine >() ) );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >(scan_matching_renderer.get() ) ) );
             *ancillary_1 << *scan_matching_renderer;
-
+           
+            /*
+             *Text & controls
+             */
+            ancillary_2.reset( new glv::Table("x , " ) );
+            
             // Dataset scaling factor
-            scale_factor_label.reset( new glv::Label() );
             scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             scale_factor->interval( 5, 1 );
+            scale_factor_label.reset( new glv::Label() );
+            
+            (*ancillary_2) << *scale_factor;
 
-            top << *scale_factor;
+            window_duration.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            window_duration->interval( 10, 50 );
+
+            (*ancillary_2) << *window_duration;
 
             //time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
             time_renderer.reset( new TextRenderer<double>() );
             time_renderer->pos(window.width()-155, window.height()-50 );
 
-            top << *time_renderer;
+            //top << *time_renderer;
+            (*ancillary_2) << *time_renderer;
 
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
+            dynamic_cast< glv::Table* >(ancillary_2.get())->arrange();
 
             ancillary_1->enable( glv::Property::DrawBorder );
+            ancillary_2->enable( glv::Property::DrawBorder );
 
             (*table_holder ) << ancillary_1.get();
+            top << ancillary_2.get();
+       
+            ancillary_2->pos( win.width() - 200, win.height() - 50 );
+       
+
         }
 
         bool DatasetLayout::load( L3::DatasetRunner* runner )
@@ -129,6 +147,11 @@ namespace L3
              */
 
             scale_factor->attachVariable( runner->speedup );
+
+            /*
+             *  Window duration
+             */
+            window_duration->attachVariable( runner->vertical_LIDAR->swathe_length );
 
             /*
              *  Timer
@@ -151,7 +174,7 @@ namespace L3
 
             // Remove it, if it is already in the composite list     
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
-            map_view = L3::Visualisers::LocaleRendererFactory::build( begbroke );
+            map_view = L3::Visualisers::LocaleRendererFactory::buildLocale( begbroke );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
 
             /*
@@ -196,6 +219,16 @@ namespace L3
              *  Oracle
              */
             oracle_renderer->provider = runner->provider; 
+        
+       
+            /*
+             *  Update view
+             */
+
+            L3::SE3 start_pose = runner->provider->operator()();
+
+            composite->position.x = -1*start_pose.X();
+            composite->position.y = -1*start_pose.Y();
         }
 
         /*

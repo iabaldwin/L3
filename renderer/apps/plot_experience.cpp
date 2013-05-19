@@ -188,7 +188,7 @@ int main (int argc, char ** argv)
     ColoredExperienceRenderer     colored_experience_renderer( experience );
     
     // Associate controller
-    composite.addController( controller ).stretch(1,1);
+    composite.stretch(1,1);
 
     // Combine
     top << (composite << grid << colored_experience_renderer ) ;

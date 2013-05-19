@@ -51,7 +51,7 @@ int main (int argc, char ** argv)
 
     smoother.smooth( histogram_copy.get() );
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    composite.stretch(1,1);
 
     boost::shared_ptr< L3::Visualisers::Updater > updater( new L3::Visualisers::Updater() );
   

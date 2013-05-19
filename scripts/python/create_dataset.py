@@ -20,13 +20,16 @@ if __name__=="__main__":
     mission = Configuration.Mission( os.path.join( c.configuration_directory, os.path.split( sys.argv[1] )[-1] + '.config' )  )
 
     parsers = []
+    
+    # Start
+    start = 2*60
 
-    # 20 minutes of data
-    limit = 20*60
-
-    parsers.append( Parsers.INS( dataset.root, mission ).binary().limit( limit ).parse() )
-    parsers.append( Parsers.LHLV( dataset.root ).binary().limit( limit ).parse() )
-    parsers.append( Parsers.LIDAR( dataset.root ).binary().limit( limit ).parse() )
+    # End
+    limit = 25*60
+    
+    parsers.append( Parsers.INS( dataset.root, mission ).binary().duration( (start,limit) ).parse() )
+    parsers.append( Parsers.LHLV( dataset.root ).binary().duration( (start,limit) ).parse() )
+    parsers.append( Parsers.LIDAR( dataset.root ).binary().duration( (start,limit) ).parse() )
 
     [ parser.write(dataset.target_directory) for parser in parsers ]
 

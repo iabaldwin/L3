@@ -21,6 +21,7 @@ add_library( L3Vis
                 ViewController.cpp 
                 Components.cpp 
                 Layouts.cpp 
+                Imagery.cpp
                 GLVInterface.cpp
                 RenderingUtils.cpp
                 CommandInterface.cpp

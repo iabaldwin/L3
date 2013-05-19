@@ -134,7 +134,7 @@ int main (int argc, char ** argv)
     Visualiser visualiser( cloud_copy, estimator, histogram  );
     (*updater) << &visualiser;
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) ).stretch(1,1);
+    composite.stretch(1,1);
 
     // Add drawables and updateables
     top << (composite << grid << histogram_bounds_renderer << point_cloud_composite << cost_renderer << visualiser ) << updater.get() << histogram_density_renderer_view;

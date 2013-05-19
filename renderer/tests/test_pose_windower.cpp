@@ -42,8 +42,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                   grid;
     L3::Visualisers::PoseWindowerRenderer   pose_renderer( &pose_windower ); 
 
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-
     top << (composite << pose_renderer << grid );
 
     win.setGLV(top);

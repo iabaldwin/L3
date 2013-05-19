@@ -26,8 +26,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::DoubleClickMaximiseToggle* toggle1 = new L3::Visualisers::DoubleClickMaximiseToggle( &composite );
     L3::Visualisers::DoubleClickMaximiseToggle* toggle2 = new L3::Visualisers::DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() );
     
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
-
     top << ( composite << grid ) << (*runtime_cloud_renderer_view);
     
     win.setGLV(top);

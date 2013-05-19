@@ -133,8 +133,6 @@ int main (int argc, char ** argv)
 
     //Kinematics k;
 
-    //composite.addController( controller ).stretch(1,1);
-
     //// Compose 
     //top << (composite << k << grid) ;
 

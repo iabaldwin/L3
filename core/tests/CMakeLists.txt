@@ -37,6 +37,9 @@ target_link_libraries( test_dataset_runner L3 ${Boost_LIBRARIES}  readline curse
 add_executable( test_estimator_runner test_estimator_runner.cpp )
 target_link_libraries( test_estimator_runner config L3 ${Boost_LIBRARIES} readline curses )
 
+add_executable( test_libICP test_libICP.cpp )
+target_link_libraries( test_libICP config L3 ${Boost_LIBRARIES} )
+
 add_executable( test_utils test_utils.cpp )
 target_link_libraries( test_utils L3 ${Boost_LIBRARIES}  )
 

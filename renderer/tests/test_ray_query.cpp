@@ -80,15 +80,13 @@ int main (int argc, char ** argv)
     L3::Configuration::Begbroke begbroke;
     begbroke.loadDatum();
 
-    boost::shared_ptr< L3::Visualisers::LocaleRenderer > locale_renderer = L3::Visualisers::LocaleRendererFactory::build( begbroke );
+    boost::shared_ptr< L3::Visualisers::LocaleRenderer > locale_renderer = L3::Visualisers::LocaleRendererFactory::buildLocale( begbroke );
 
 
 
     (*renderer3) <<  renderer << renderer2;
 
     top << ( composite << grid << *renderer << *renderer2 << *renderer3  << *locale_renderer);
-
-    composite.addController( dynamic_cast<L3::Visualisers::Controller*>( &controller ) );
 
     win.setGLV(top);
     glv::Application::run();
