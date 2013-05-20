@@ -82,7 +82,7 @@ int main( int argc, char* argv[] )
     container->experience = experience;
     container->runner     = runner;
 
-    glv::Window win(1400, 800, "Visualisation::Estimator");
+    glv::Window win(1400, 800, "Visualisation::Estimation");
 
     L3::Visualisers::EstimatorLayout layout( win );
     

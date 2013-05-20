@@ -1,8 +1,9 @@
 add_library( L3 
     Dataset.cpp 
     Datatypes.cpp 
-    AbstractFactory.cpp 
     Iterator.cpp 
+    AbstractFactory.cpp 
+    SwatheBuilder.cpp 
     Windower.cpp 
     PointCloud.cpp 
     Utils.cpp 

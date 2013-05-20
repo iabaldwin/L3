@@ -1219,10 +1219,8 @@ namespace Visualisers
         {
             *current = ptr_provider->operator()();
             animation->onDraw3D(g);
-            glv::draw::translate( -1*current->X(), -1*current->Y() );
+            glv::draw::translate( current->X(), current->Y() );
       
-            std::cout << *current << std::endl;
-
             x_offset = current->X();
             y_offset = current->Y();
         }
@@ -1239,16 +1237,16 @@ namespace Visualisers
 
         int counter =0;
         
-        glv::draw::pointSize( 3 );
-        while( it != ptr->sections.end() )
-        {
-            experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
-            experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
-            it++;
-        }
+        //glv::draw::pointSize( 3 );
+        //while( it != ptr->sections.end() )
+        //{
+            //experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
+            //experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
+            //it++;
+        //}
         
-        glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
-        glv::draw::pointSize( 1 );
+        //glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
+        //glv::draw::pointSize( 1 );
            
         glv::draw::pop();
     }
