@@ -689,35 +689,25 @@ namespace Visualisers
 
     };
 
-    //struct HistogramPyramidRendererView : glv::View, HistogramPyramidRenderer, Updateable
     struct HistogramPyramidRendererView : glv::Table, HistogramPyramidRenderer, Updateable
     {
-        HistogramPyramidRendererView( const glv::Rect& r, boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid, int num_pyramids ) 
+        HistogramPyramidRendererView( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid, int num_pyramids ) 
             : HistogramPyramidRenderer(histogram_pyramid),
                 glv::Table( "x x x, "),
                 num_pyramids(num_pyramids)
         {
             int width = 180;
             int start = 0;
-            //for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->pyramid->begin();
-                    //it != this->pyramid->end();
-                    //it++ )
              for( int i=0; i< num_pyramids; i++ )
             {
-                //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), *it ) );
-                //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), boost::shared_ptr< Histogram<double > >() ) );
                 boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
-                //start+= (width+10/3);
                 renderers.push_back( renderer );
                 (*this) << renderer.get();
             }
 
              if( histogram_pyramid )
                  loadPyramid( histogram_pyramid );
-
-            //this->fit();
-            //this->bringToFront();
-       
+             
              this->arrange();
         }
            
@@ -735,19 +725,15 @@ namespace Visualisers
 
             if( std::distance( pyramid_ptr->begin(), pyramid_ptr->end() ) > num_pyramids )
             {
+                // We have too many pyramids to render, I don't think this will
+                // ever be an issue. 
             }
 
             int counter = 0;
             for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = pyramid_ptr->begin();
                     it != pyramid_ptr->end();
                     it++ )
-            {
-                //boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( 0, start, width, width), *it ) );
-          
                 renderers[counter++]->hist = *it;
-
-            }
-
         }
 
         void update();
@@ -1028,10 +1014,11 @@ namespace Visualisers
     };
 
 
-    struct ExperienceLocationOverviewView : ExperienceLocationOverview, glv::View
+    struct ExperienceLocationOverviewView : ExperienceLocationOverview, glv::View3D
     {
         ExperienceLocationOverviewView( const glv::Rect& rect, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr<L3::PoseProvider>() ) 
-            : ExperienceLocationOverview( experience, provider ), glv::View(rect)
+            : ExperienceLocationOverview( experience, provider ), 
+                glv::View3D(rect)
         {
             label.reset( new glv::Label("Experience" ) );
             label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
@@ -1047,7 +1034,7 @@ namespace Visualisers
         boost::shared_ptr< glv::View >  label;
         boost::shared_ptr< AnimatedPoseRenderer > animation;
         
-        void onDraw(glv::GLV& g);
+        void onDraw3D(glv::GLV& g);
         
     };
 

@@ -40,8 +40,8 @@ namespace L3
         (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << engine.get() << pose_windower.get() << swathe_builder.get();
 
         current.reset( new L3::SE3( L3::SE3::ZERO() ) );
-    
-        //this->provider = oracle.get();
+   
+        // This, should be TMP
         this->provider = oracle;
     }
     

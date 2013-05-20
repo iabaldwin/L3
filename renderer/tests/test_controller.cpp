@@ -35,8 +35,6 @@ int main (int argc, char ** argv)
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::Grid                       grid;
     
-    //L3::Visualisers::BasicPanController         controller(composite.position);
-  
     L3::Visualisers::CompositeController        composite_controller( &composite, composite.position );
 
     test_leaf leaf;

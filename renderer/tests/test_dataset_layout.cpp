@@ -36,13 +36,13 @@ int main( int argc, char* argv[] )
     container->mission    = boost::shared_ptr< L3::Configuration::Mission >( mission );
 
     glv::Window win(1400, 800, "Visualisation::DatasetLayout");
-   
 
     L3::Visualisers::DatasetLayout layout(win);
 
     L3::Interface* command_interface = new L3::CommandInterface( &layout, container );
     L3::Interface* lua_interface = new L3::LuaInterface();
 
+    // Add interfaces
     (*dynamic_cast< L3::Visualisers::GLVInterface* >( layout.scripting_interface.get() ) ) << command_interface << lua_interface;
 
     layout.load( runner );

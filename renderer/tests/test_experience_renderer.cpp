@@ -18,7 +18,7 @@ int main (int argc, char ** argv)
     
     try
     {
-        L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+        L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" );
         L3::ExperienceLoader experience_loader( dataset );
         experience = experience_loader.experience;
     }
@@ -37,30 +37,30 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
     
     // Point cloud renderer
-    L3::Visualisers::Composite                          composite;
-    boost::shared_ptr< L3::Visualisers::Controller >    controller( new L3::Visualisers::BasicPanController( composite.position ) );
     L3::Visualisers::Grid                               grid;
+    L3::Visualisers::Composite                          composite( glv::Rect(800,800));
+    L3::Visualisers::CompositeController                controller( &composite, composite.position );
     boost::shared_ptr< L3::PoseProvider >               pose_provider( new L3::CircularPoseProvider( 25.0 ) );
     L3::Visualisers::PoseProviderRenderer               pose_provider_renderer( pose_provider.get() );
     L3::Visualisers::ExperienceRenderer                 experience_renderer( experience );
-    L3::Visualisers::HistogramPyramidRendererView       pyramid_renderer( glv::Rect(400,400),experience->experience_pyramid, 3 );
+    L3::Visualisers::HistogramPyramidRendererView       pyramid_renderer( experience->experience_pyramid, 3 );
 
-    L3::Visualisers::HistogramDensityRenderer           dbg_density_renderer( glv::Rect(600,400,400,400), (*experience->experience_pyramid)[0]);
+    L3::Visualisers::ExperienceLocationOverviewView     experience_view( glv::Rect(250,250), experience );
 
-    dbg_density_renderer.update();
+    experience_view.pos( win.width() - 400, win.height() - 350 );
+
+    experience_view.provider = pose_provider;
+
+    pyramid_renderer.pos( win.width()- (180*3), 0 );
 
     L3::Visualisers::Updater updater;
-    //updater << &pyramid_renderer << &dbg_density_renderer;
     updater << &pyramid_renderer;
 
     // Associate pose provider
     experience_renderer.addPoseProvider( pose_provider.get() );
 
-    // Associate controller
-    composite.stretch(1,1);
-
     // Combine
-    top << (composite << grid << experience_renderer << pose_provider_renderer ) << pyramid_renderer << updater << dbg_density_renderer;
+    top << (composite << grid << experience_renderer << pose_provider_renderer ) << pyramid_renderer << updater << experience_view;
 
     // Run
     win.setGLV(top);

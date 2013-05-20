@@ -1205,22 +1205,32 @@ namespace Visualisers
      *  Experience location overview
      */
 
-    void ExperienceLocationOverviewView::onDraw(glv::GLV& g)
+    void ExperienceLocationOverviewView::onDraw3D(glv::GLV& g)
     {
-        
-        boost::shared_ptr< L3::Experience > ptr = experience.lock();
+        far(1000); 
 
-        if( !ptr )
-            return;
+        //glv::draw::rotateZ(180);
+        glv::draw::translateZ( -850 );
+        
+        double x_offset=0, y_offset=0;
 
         boost::shared_ptr< L3::PoseProvider > ptr_provider = provider.lock();
-        
         if( ptr_provider )
         {
             *current = ptr_provider->operator()();
             animation->onDraw3D(g);
-            //glv::draw::translate( -1*current->X(), -1*current->Y() );
+            glv::draw::translate( -1*current->X(), -1*current->Y() );
+      
+            std::cout << *current << std::endl;
+
+            x_offset = current->X();
+            y_offset = current->Y();
         }
+
+        boost::shared_ptr< L3::Experience > ptr = experience.lock();
+
+        if( !ptr )
+            return;
 
         experience_nodes_vertices.reset( new glv::Point3[ptr->sections.size()] );
         experience_nodes_colors.reset( new glv::Color[ptr->sections.size()] );
@@ -1228,14 +1238,19 @@ namespace Visualisers
         std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
 
         int counter =0;
+        
+        glv::draw::pointSize( 3 );
         while( it != ptr->sections.end() )
         {
-            experience_nodes_vertices[ counter ]( it->x, it->y, 0 );
+            experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
             experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
             it++;
         }
+        
         glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
-            
+        glv::draw::pointSize( 1 );
+           
+        glv::draw::pop();
     }
 
 

@@ -254,7 +254,7 @@ namespace L3
             /*
              *  Histogram pyramid
              */
-            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView(  glv::Rect( 150*3, 150 ), boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 ) );
+            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView( boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 ) );
 
             for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
                     it != pyramid_renderer->renderers.end();

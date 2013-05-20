@@ -71,7 +71,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                           grid;
     L3::Visualisers::Composite                      composite;
     L3::Visualisers::BasicPanController             controller( composite.position );
-    L3::Visualisers::HistogramPyramidRendererView   pyramid_renderer( glv::Rect( 150,150 ), pyramid, 3 );
+    L3::Visualisers::HistogramPyramidRendererView   pyramid_renderer( pyramid, 3 );
 
     for ( std::deque< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > >::iterator it = pyramid_renderer.renderers.begin();
                     it != pyramid_renderer.renderers.end();
