@@ -141,6 +141,22 @@ namespace Visualisers
     }
 
     /*
+     *  Grid [spatial]
+     */
+    void SpatialGrid::onDraw3D(glv::GLV& g)
+    { 
+  
+        int rounded_x = (int)(current_x)-(int(current_x) % 100) ;
+        int rounded_y = (int)(current_y)-(int(current_y) % 100);
+
+        glv::draw::push();
+        glv::draw::translate( rounded_x, rounded_y, 0.0);
+        Grid::onDraw3D( g );
+        glv::draw::pop();
+    }
+
+
+    /*
      *  Components :: DefaultAxes
      */
     DefaultAxes::DefaultAxes()

@@ -40,7 +40,45 @@ namespace Visualisers
         Updater& operator<<( Updateable* updateable )
         {
             updateables.push_front( updateable );
+       
+            return *this;
         }
+    };
+
+    struct SpatialUpdater : glv::View
+    {
+        SpatialUpdater( boost::shared_ptr< L3::PoseProvider > provider ) : provider(provider)
+        {
+
+        }
+
+        boost::weak_ptr< L3::PoseProvider > provider;
+
+        std::list < SpatialObserver* > observers;
+
+        void onDraw(glv::GLV& g)
+        {
+            boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
+
+            if( !provider_ptr )
+                return;
+
+            L3::SE3 pose = provider_ptr->operator()();
+
+            double x = pose.X();
+            double y = pose.Y();
+            for( std::list< SpatialObserver* >::iterator it = observers.begin(); it != observers.end(); it++ )
+                (*it)->update( x, y );
+        }
+
+        SpatialUpdater& operator<<( SpatialObserver* observer )
+        {
+            observers.push_front( observer );
+            return *this;
+        }
+
+
+
     };
 
     struct Controllable
@@ -451,6 +489,33 @@ namespace Visualisers
 
         float lower, upper, spacing;
 
+        void onDraw3D(glv::GLV& g);
+
+    };
+
+    /*
+     *  Spatial grid
+     */
+    struct SpatialGrid : Grid, SpatialObserver
+    {
+        
+        SpatialGrid( float lower=-500, float upper=500, float spacing=50)
+            : Grid( lower, upper, spacing ),
+                current_x(0.0),
+                current_y(0.0)
+        {
+            
+        }
+
+        double current_x;
+        double current_y;
+
+        bool update( double x, double y )
+        {
+            current_x = x;
+            current_y = y;
+        }
+        
         void onDraw3D(glv::GLV& g);
 
     };

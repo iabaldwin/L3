@@ -68,7 +68,7 @@ namespace Visualisers
                 // Add rendererable
                 this->renderables.push_front( plot_region.get() );
                 // Mark as updateable
-                updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter.get()) );
+                temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter.get()) );
 
                 boost::shared_ptr< glv::View > velocity_label( new glv::Label("Rotational velocity. (rad/s)" ) );
                 velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
@@ -104,7 +104,7 @@ namespace Visualisers
                 this->renderables.push_front( plot_region.get() );
                 
                 // Mark as updateable
-                updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter.get()) );
+                temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter.get()) );
 
                 boost::shared_ptr< glv::View > velocity_label( new glv::Label("Linear velocity (m/s)" ) );
                 velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
@@ -175,7 +175,8 @@ namespace Visualisers
             boost::shared_ptr<L3::Visualisers::Composite>   composite;
             std::list< boost::shared_ptr< EventController > > window_controllers;
             
-            boost::shared_ptr< Updater >                    updater;
+            boost::shared_ptr< Updater >                    temporal_updater;
+            boost::shared_ptr< SpatialUpdater >             spatial_updater;
             boost::shared_ptr<L3::Visualisers::Grid>        grid;
             boost::shared_ptr<L3::Visualisers::Controller>  controller;
 

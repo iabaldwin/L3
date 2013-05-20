@@ -40,9 +40,13 @@ namespace L3
             // Accumulate views
             (*main_view) << ( *composite << *grid );
 
-            // Add synched updater
-            updater.reset( new Updater() );
-            this->renderables.push_front( updater.get() );
+            // Add synched temporal updater
+            temporal_updater.reset( new Updater() );
+            this->renderables.push_front( temporal_updater.get() );
+
+            // Add synched spatial updater
+            spatial_updater.reset( new SpatialUpdater( boost::shared_ptr< L3::PoseProvider>() ) );
+            this->renderables.push_front( spatial_updater.get() );
 
             //table_holder.reset( new glv::Table( "x,", 0, 0 ) );
             table_holder.reset( new CustomTable( "x,", 0, 0 ) );
@@ -64,26 +68,26 @@ namespace L3
 
             // Runtime cloud renderer
             runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( 360, 360 ), boost::shared_ptr< L3::PointCloud<double> >(), boost::shared_ptr<L3::SE3>() ) );
-            updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
+            temporal_updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
             *ancillary_1 << *runtime_cloud_renderer_view;
 
             point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
 
             // Stand-alone scan renderer : Horizontal
             horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 180,180 ) ) );
-            updater->operator<<( horizontal_scan_renderer.get() );
+            temporal_updater->operator<<( horizontal_scan_renderer.get() );
             (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* > (horizontal_scan_renderer.get() )) );
 
             // Stand-alone scan renderer : Vertical
             vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(), glv::Rect( 180,180 ) ) );
-            updater->operator<<( vertical_scan_renderer.get() );
+            temporal_updater->operator<<( vertical_scan_renderer.get() );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >(vertical_scan_renderer.get() ) ) );
             (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
 
             // Stand-alone pose renderer
             oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( boost::shared_ptr<L3::PoseProvider>(), glv::Rect( 180,180 ), std::string("Estimate::INS" ) ) );
-            updater->operator<<( oracle_renderer.get() );
+            temporal_updater->operator<<( oracle_renderer.get() );
             *ancillary_1 << *oracle_renderer;
 
             // Experience renderer
@@ -220,8 +224,17 @@ namespace L3
              *  Oracle
              */
             oracle_renderer->provider = runner->provider; 
-        
-       
+      
+            /*
+             *  Spatial grid
+             */
+            spatial_updater->provider = runner->provider;
+            spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( grid.get() ) ) );
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) );
+            grid.reset( new SpatialGrid() );
+            composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) ) );
+            spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( grid.get() ) );
+    
             /*
              *  Update view
              */
@@ -246,7 +259,7 @@ namespace L3
             for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
                     it != pyramid_renderer->renderers.end();
                     it++ )
-                updater->operator<<( it->get() );
+                temporal_updater->operator<<( it->get() );
 
             (*table_holder) << *pyramid_renderer;
 

@@ -93,12 +93,12 @@ namespace ScanMatching
         icp.setInputTarget(cloud_out);
         pcl::PointCloud<pcl::PointXYZ> Final;
 
-        icp.align(Final);
+        //icp.align(Final);
 
-        Eigen::Matrix4f transformation = icp.getFinalTransformation();
+        //Eigen::Matrix4f transformation = icp.getFinalTransformation();
 
         // TAke in a pair, instead of just a scan - need the time
-        instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
+        //instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
 
         // Do swap
         scan.swap( putative );
