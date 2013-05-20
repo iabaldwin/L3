@@ -6,11 +6,12 @@ import Parsers
 import Configuration
 
 def printUsage():
-    return "Usage: %s <dataset_name>" % sys.argv[0]
+    return "Usage: %s <dataset_name> <double:start> <double:end>" % sys.argv[0]
 
 if __name__=="__main__":
 
-    if len( sys.argv ) < 2:
+    print len( sys.argv )
+    if len( sys.argv ) < 4:
         sys.exit( printUsage() )
 
     dataset = Parsers.dataset( sys.argv[1] )
@@ -22,11 +23,14 @@ if __name__=="__main__":
     parsers = []
     
     # Start
-    start = 2*60
+    #start = 2*60
+    start = float(sys.argv[2])*60
 
     # End
-    limit = 25*60
-    
+    #limit = 25*60
+    limit = float(sys.argv[3])*60
+
+
     parsers.append( Parsers.INS( dataset.root, mission ).binary().duration( (start,limit) ).parse() )
     parsers.append( Parsers.LHLV( dataset.root ).binary().duration( (start,limit) ).parse() )
     parsers.append( Parsers.LIDAR( dataset.root ).binary().duration( (start,limit) ).parse() )
