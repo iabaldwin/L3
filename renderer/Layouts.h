@@ -166,7 +166,8 @@ namespace Visualisers
             std::list< glv::View* > renderables;
 
             boost::shared_ptr< glv::Slider >  scale_factor;
-            boost::shared_ptr< glv::Slider >  window_duration;
+            boost::shared_ptr< glv::Slider >  window_duration_INS;
+            boost::shared_ptr< glv::Slider >  window_duration_LIDAR;
             boost::shared_ptr< glv::Label >   scale_factor_label;
             
             std::list< boost::shared_ptr< glv::View > >     labels;

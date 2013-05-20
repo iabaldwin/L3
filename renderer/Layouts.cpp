@@ -112,12 +112,18 @@ namespace L3
             
             (*ancillary_2) << *scale_factor;
 
-            window_duration.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
-            window_duration->interval( 10, 50 );
+            window_duration_LIDAR.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            window_duration_LIDAR->interval( 10, 50 );
+            
+            (*ancillary_2) << *window_duration_LIDAR;
 
-            (*ancillary_2) << *window_duration;
 
-            //time_renderer.reset( new TextRenderer<double>( runner->current_time ) );
+            window_duration_INS.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            window_duration_INS->interval( 10, 50 );
+            
+            (*ancillary_2) << *window_duration_INS;
+
+
             time_renderer.reset( new TextRenderer<double>() );
             time_renderer->pos(window.width()-155, window.height()-50 );
 
@@ -156,7 +162,8 @@ namespace L3
             /*
              *  Window duration
              */
-            window_duration->attachVariable( runner->vertical_LIDAR->swathe_length );
+            window_duration_LIDAR->attachVariable( runner->vertical_LIDAR->swathe_length );
+            window_duration_INS->attachVariable( runner->LHLV_iterator->swathe_length );
 
             /*
              *  Timer
