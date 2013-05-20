@@ -20,7 +20,8 @@ namespace L3
         // Point-clouds
         point_cloud.reset( new L3::PointCloud<double>() );
         projection.reset( new L3::SE3( L3::SE3::ZERO() ) );
-        
+
+        // Get the calibratoin
         L3::Configuration::convert( mission->lidars[mission->declined], *projection );
 
         projector.reset( new L3::Projector<double>( projection.get(), point_cloud.get() ) );
@@ -36,13 +37,18 @@ namespace L3
 
         // Scan matching engine
         engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
+       
+        // Predictor
+        predictor.reset( new L3::Predictor( LHLV_iterator.get() ) );
         
-        (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << engine.get() << pose_windower.get() << swathe_builder.get();
+        (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << engine.get() << pose_windower.get() << swathe_builder.get() << predictor.get();
 
         current.reset( new L3::SE3( L3::SE3::ZERO() ) );
-   
+ 
         // This, should be TMP
         this->provider = oracle;
+    
+   
     }
     
     /*
@@ -86,7 +92,7 @@ namespace L3
              *  Update everything else
              */
             update( current_time );
-       
+     
             *current = oracle->operator()();
         }
 

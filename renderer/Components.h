@@ -10,6 +10,7 @@
 
 #include <boost/ref.hpp>
 #include <boost/shared_array.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/shared_array.hpp>
 #include <boost/date_time/local_time/local_time.hpp>
@@ -1037,6 +1038,33 @@ namespace Visualisers
         void onDraw3D(glv::GLV& g);
         
     };
+
+
+    struct DatasetOverviewView : glv::View3D
+    {
+
+        DatasetOverviewView( const glv::Rect& rect, boost::shared_ptr< L3::Dataset > dataset, boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr< L3::PoseProvider >() ) 
+            : glv::View3D(rect), 
+                provider( provider )
+        {
+            boost::scoped_ptr <L3::IO::BinaryReader< L3::SE3 > > pose_reader( ( new L3::IO::BinaryReader<L3::SE3>() ) ) ;
+
+            if (pose_reader->open( dataset->path() + "/OxTS.ins" ) )
+            {
+
+                poses.reset ( new std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > () );
+                pose_reader->read();
+                pose_reader->extract( *poses );
+            }
+        }
+               
+        boost::weak_ptr< L3::PoseProvider > provider;
+        boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > > poses;
+            
+        void onDraw3D( glv::GLV& g );
+    };
+
+
 
 /*
  *  Chase

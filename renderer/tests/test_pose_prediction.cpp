@@ -19,7 +19,7 @@ struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
     }
 
     double                              time;
-    L3::Predictor                       predictor;
+    //L3::Predictor                       predictor;
     L3::PoseWindower*                   windower;
     L3::ConstantTimeIterator<L3::LHLV>* iterator; 
 
@@ -31,15 +31,15 @@ struct VisualiserRunner : L3::Visualisers::Leaf, L3::TemporalRunner
         L3::SE3 current = windower->operator()();
         L3::SE3 predicted = L3::SE3::ZERO();
 
-        predictor.predict( predicted, current, iterator->window.begin(), iterator->window.end() );
+        //predictor.predict( predicted, current, iterator->window.begin(), iterator->window.end() );
 
-        std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = predictor.chain.begin();
-        while( it != predictor.chain.end() )
-        {
-            //L3::Visualisers::CoordinateSystem( it->second ).onDraw3D( g ); 
-            L3::Visualisers::CoordinateSystem( *(it->second )  ).onDraw3D( g ); 
-            it++;
-        }
+        //std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = predictor.chain.begin();
+        //while( it != predictor.chain.end() )
+        //{
+            ////L3::Visualisers::CoordinateSystem( it->second ).onDraw3D( g ); 
+            //L3::Visualisers::CoordinateSystem( *(it->second )  ).onDraw3D( g ); 
+            //it++;
+        //}
     }
 
 };

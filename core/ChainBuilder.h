@@ -45,7 +45,6 @@ namespace L3
             
             L3::Iterator<L3::LHLV>*      LHLV_iterator;
 
-
     };
 
 }

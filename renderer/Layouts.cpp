@@ -173,7 +173,7 @@ namespace L3
             scale_factor->attachVariable( runner->speedup );
 
             /*
-             *  Window duration
+             *  Window parameters
              */
             window_duration_LIDAR->attachVariable( runner->vertical_LIDAR->swathe_length );
             window_duration_INS->attachVariable( runner->LHLV_iterator->swathe_length );

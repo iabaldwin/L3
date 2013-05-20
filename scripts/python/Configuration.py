@@ -36,24 +36,24 @@ class Mission(Configuration):
 
         if ( npos != -1 ):
             self.locale = 'Begbroke'
-            self.x -= 616648.701255
-            self.y -= 5742069.101970
-            self.z -= 73.0
+            self.x = 616648.701255
+            self.y = 5742069.101970
+            self.z = 73.0
 
         elif ' '.join(data).find( 'Woodstock'  ):
             self.locale = 'Woodstock'
-            self.x -= 613210.368664
-            self.y -= 5745105.147059
-            self.z -= 73.0
+            self.x = 613210.368664
+            self.y = 5745105.147059
+            self.z = 73.0
 
 
         else:
             self.locale = ''
 
-    def repr( self ):
+    def __repr__( self ):
         return self.name
 
-    def str( self ):
+    def __str__( self ):
         return self.name
 
 

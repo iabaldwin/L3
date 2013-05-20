@@ -13,6 +13,7 @@
 #include "Estimator.h"
 #include "SwatheBuilder.h"
 #include "ScanMatching.h"
+#include "Predictor.h"
 
 #include <Poco/Task.h>
 #include <Poco/TaskManager.h>
@@ -80,8 +81,8 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::SE3 >                projection;
     boost::shared_ptr< L3::Projector<double> >  projector;
     boost::shared_ptr< L3::PointCloud<double> > point_cloud;
-    
     boost::shared_ptr< L3::SwatheBuilder >      swathe_builder;
+    boost::shared_ptr< L3::Predictor >          predictor;
 
     boost::shared_ptr< L3::ConstantTimeWindower< L3::SE3 > >    oracle;
     boost::shared_ptr< L3::ConstantTimeWindower< L3::LHLV > >   pose_windower;

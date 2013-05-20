@@ -43,9 +43,12 @@ namespace Visualisers
         while( it != window.end() )
             L3::Visualisers::CoordinateSystem( *(it++->second) ).onDraw3D( g );
 
+        if ( !window.empty() )
+        {
         current_x= (it-1)->second->X();
         current_y= (it-1)->second->Y();
-
+        
+        }
         //std::stringstream ss;
         //this->tag.x = (it-1)->second->X();
         //this->tag.y = (it-1)->second->Y();

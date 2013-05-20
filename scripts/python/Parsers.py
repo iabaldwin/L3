@@ -107,13 +107,17 @@ class INS(Parser):
         p = np.reshape( p, (1, t.size) )
         q = np.reshape( q, (1, t.size) )
 
-        #x -= self.mission.x
-        #y -= self.mission.y
-        #z -= self.mission.z
+        x -= self.mission.x
+        y -= self.mission.y
+        z -= self.mission.z
 
-        x -= 616648.701255
-        y -= 5742069.101970
-        z -= 73
+        #print self.mission.x
+        #print self.mission.y
+        #print self.mission.z
+
+        #x -= 616648.701255
+        #y -= 5742069.101970
+        #z -= 73
 
         data = np.concatenate( (t, x, y, z, r, p, q), 0 ).transpose();
 

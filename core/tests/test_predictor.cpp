@@ -32,9 +32,8 @@ int main()
         L3::SE3 predicted = L3::SE3::ZERO();
         L3::SE3 current = L3::SE3::ZERO();
 
-        L3::Predictor predictor;
-        
-        predictor.predict( predicted, current, iterator.window.begin(), iterator.window.end() );
+        //L3::Predictor predictor;
+        //predictor.predict( predicted, current, iterator.window.begin(), iterator.window.end() );
     }
 
 

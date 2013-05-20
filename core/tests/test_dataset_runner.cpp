@@ -37,30 +37,19 @@ int main( int argc, char* argv[] )
     std::stringstream ss;
     ss.precision( 16 );
   
-    //int target = random()%1000 
-    int target = 100000000;
-
     while( true )
     {
-        //ss << runner.current_time;
+        ss << runner.current_time;
 
-        //char* res = readline( (ss.str() + " >> ").c_str() ); 
+        char* res = readline( (ss.str() + " >> ").c_str() ); 
 
-        //if( std::string(res) == "stop" )
-            //break;
-
-        //if ( !res )
-            //break;
-   
-        //ss.str( std::string("") );
-
-
-        static int counter = 0;
-        if ( counter++ > target )
-        {
-            std::cout << counter-1 << " of " << target<< std::endl;
+        if( std::string(res) == "stop" )
             break;
-        }
+
+        if ( !res )
+            break;
+   
+        ss.str( std::string("") );
     }
 }
 

@@ -10,7 +10,6 @@ def printUsage():
 
 if __name__=="__main__":
 
-    print len( sys.argv )
     if len( sys.argv ) < 4:
         sys.exit( printUsage() )
 
@@ -19,6 +18,8 @@ if __name__=="__main__":
 
     c = Configuration.Configuration()
     mission = Configuration.Mission( os.path.join( c.configuration_directory, os.path.split( sys.argv[1] )[-1] + '.config' )  )
+
+    print mission
 
     parsers = []
     
