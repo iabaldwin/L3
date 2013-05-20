@@ -1259,11 +1259,14 @@ namespace Visualisers
      {
          glv::Point3    vertices[ poses->size() ];
          glv::Color     colors[ poses->size() ];
+         
          boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
 
          if( provider_ptr )
          {
              L3::SE3 pose = provider_ptr->operator()();
+             //*current_pose  =  provider_ptr->operator()();
+             //glv::draw::translate( -1*current_pose->X(), -1*current_pose->Y(), 0.0 );
              glv::draw::translate( -1*pose.X(), -1*pose.Y(), 0.0 );
          }
 
@@ -1280,6 +1283,8 @@ namespace Visualisers
          glv::draw::translate(0,0,-550);
          glv::draw::lineWidth(10.0);
          glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+     
+         renderer->onDraw3D(g);
      }
 
 

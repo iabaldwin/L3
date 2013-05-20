@@ -1051,13 +1051,18 @@ namespace Visualisers
 
             if (pose_reader->open( dataset->path() + "/OxTS.ins" ) )
             {
-
                 poses.reset ( new std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > () );
                 pose_reader->read();
                 pose_reader->extract( *poses );
             }
+       
+            current_pose.reset( new L3::SE3( L3::SE3::ZERO() ) );
+       
+            renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *current_pose ) );
         }
-               
+        
+        boost::shared_ptr< L3::SE3 > current_pose;
+        boost::shared_ptr< L3::Visualisers::AnimatedPoseRenderer > renderer;
         boost::weak_ptr< L3::PoseProvider > provider;
         boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > > poses;
             

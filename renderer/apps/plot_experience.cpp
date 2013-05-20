@@ -129,9 +129,6 @@ struct ColoredExperienceRenderer : L3::Visualisers::Leaf
                 it++ )
         {
             glv::draw::paint( glv::draw::Points, (*it)->vertices, (*it)->colors, (*it)->size );
-       
-            std::cout << (*it)->vertices[0].x << ":" <<  (*it)->vertices[0].y << ":" << (*it)->vertices[0].z << std::endl;
-        
         }
     }
 
@@ -182,10 +179,10 @@ int main (int argc, char ** argv)
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
     // Point cloud renderer
-    L3::Visualisers::Composite    composite;
-    L3::Visualisers::Controller*  controller = new L3::Visualisers::BasicPanController( composite.position );
-    L3::Visualisers::Grid         grid;
-    ColoredExperienceRenderer     colored_experience_renderer( experience );
+    L3::Visualisers::Composite              composite;
+    L3::Visualisers::CompositeController    composite_controller( &composite, composite.position );
+    L3::Visualisers::Grid                   grid;
+    ColoredExperienceRenderer               colored_experience_renderer( experience );
     
     // Associate controller
     composite.stretch(1,1);
