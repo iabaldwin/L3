@@ -206,6 +206,7 @@ class LIDAR(Parser):
 
                 LIDAR_name = Parser.hdf5ArrayToString( data['name'].value )
 
+                # Add in here, reflectances
                 self._data.append( (LIDAR_name,data['ranges'].value.transpose()) )
 
         return self

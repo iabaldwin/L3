@@ -20,10 +20,11 @@ class Projector
 
     public:
 
-        L3::PointCloud<T>* cloud;
-        size_t allocated_size;
 
-        Projector( L3::SE3* calib, L3::PointCloud<T>* cloud ) : cloud(cloud), allocated_size(500)
+        Projector( L3::SE3* calib, L3::PointCloud<T>* cloud ) 
+            : cloud(cloud), 
+            allocated_size(500), 
+            skip(1)
         {
             calibration = calib->getHomogeneous(); 
 
@@ -31,6 +32,10 @@ class Projector
             cloud->points = new L3::Point<T>[ allocated_size*541 ]; 
         }
 
+        L3::PointCloud<T>* cloud;
+        size_t allocated_size;
+        int skip;
+        
         void reallocate( size_t size )
         {
             delete [] cloud->points;
@@ -38,7 +43,7 @@ class Projector
             allocated_size = size;
         }
 
-        void project( SWATHE& swathe, size_t skip = 2  );
+        void project( SWATHE& swathe );
         
     };
 

@@ -16,7 +16,7 @@ namespace L3
     };
 
     template <typename T>
-    void Projector<T>::project( SWATHE& swathe, size_t skip  )
+    void Projector<T>::project( SWATHE& swathe )
     {
 
 #ifndef NDEBUG
@@ -40,12 +40,14 @@ namespace L3
 
         int counter = 0;
 
+        int local_skip = skip;
+
 //#pragma omp parallel private(pair_counter,x,y,scan_counter ) shared(n, swathe_ptr, points_ptr, calib_ptr  )
         {
 //#pragma omp for  nowait
             //for( pair_counter=0; pair_counter < n; pair_counter+=20 ) 
-            //for( pair_counter=0; pair_counter < n; pair_counter += skip ) 
-            for( pair_counter=0; pair_counter < n; ++pair_counter ) 
+            //for( pair_counter=0; pair_counter < n; ++pair_counter ) 
+            for( pair_counter=0; pair_counter < n; pair_counter += local_skip ) 
             {
                 Eigen::Matrix4f XY = Eigen::Matrix4f::Identity();
                 
@@ -109,4 +111,4 @@ namespace L3
 }
 
 // Explicit Instantiation
-template void L3::Projector<double>::project(std::vector<std::pair<boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> >, std::allocator<std::pair<boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> > > >&, unsigned long);
+template void L3::Projector<double>::project(std::vector<std::pair<boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> >, std::allocator<std::pair<boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> > > >& );

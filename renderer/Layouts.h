@@ -12,6 +12,7 @@
 #include "Imagery.h"
 #include "GLVInterface.h"
 #include "QueryInterface.h"
+#include "LogCapture.h"
 
 namespace L3
 {
@@ -162,14 +163,19 @@ namespace Visualisers
 
             //boost::shared_ptr< glv::Table > table_holder;
             boost::shared_ptr< CustomTable > table_holder;
-            
+          
+            boost::shared_ptr< LogCapture > log_capture;
+
             std::list< glv::View* > renderables;
 
             boost::shared_ptr< glv::Slider >  scale_factor;
-            boost::shared_ptr< glv::Slider >  window_duration_INS;
-            boost::shared_ptr< glv::Slider >  window_duration_LIDAR;
             boost::shared_ptr< glv::Label >   scale_factor_label;
             
+            boost::shared_ptr< glv::Slider >  window_duration_INS;
+            boost::shared_ptr< glv::Slider >  window_duration_LIDAR;
+            boost::shared_ptr< glv::Slider >  point_cloud_downsample;
+            
+           
             std::list< boost::shared_ptr< glv::View > >     labels;
 
             boost::shared_ptr< EventController >            composite_maximise_controller;

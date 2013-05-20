@@ -27,6 +27,7 @@ add_library( L3Vis
                 RenderingUtils.cpp
                 CommandInterface.cpp
                 QueryInterface.cpp
+                LogCapture.cpp
                 debug/GLDebugDrawer.cpp 
                 )
             

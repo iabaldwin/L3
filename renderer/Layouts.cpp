@@ -52,6 +52,14 @@ namespace L3
             table_holder.reset( new CustomTable( "x,", 0, 0 ) );
 
             top << *table_holder;
+
+            log_capture.reset( new LogCapture() );
+     
+            std::cout << "HI" << std::endl;
+            std::cout << "THERE" << std::endl;
+            log_capture->bringToFront();
+
+            top << *log_capture;
         }
 
 
@@ -117,11 +125,16 @@ namespace L3
             
             (*ancillary_2) << *window_duration_LIDAR;
 
-
             window_duration_INS.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             window_duration_INS->interval( 10, 50 );
             
             (*ancillary_2) << *window_duration_INS;
+
+
+            point_cloud_downsample.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            point_cloud_downsample->interval( 1, 10 );
+            
+            (*ancillary_2) << *point_cloud_downsample;
 
 
             time_renderer.reset( new TextRenderer<double>() );
@@ -164,6 +177,7 @@ namespace L3
              */
             window_duration_LIDAR->attachVariable( runner->vertical_LIDAR->swathe_length );
             window_duration_INS->attachVariable( runner->LHLV_iterator->swathe_length );
+            point_cloud_downsample->attachVariable( runner->projector->skip );
 
             /*
              *  Timer
@@ -326,3 +340,4 @@ namespace L3
         }
     }
 }
+
