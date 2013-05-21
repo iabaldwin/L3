@@ -91,6 +91,8 @@ namespace L3
     template <typename T>
         bool join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds, boost::shared_ptr<L3::PointCloud<T> >& result )
         {
+            result.reset();
+
             long unsigned int size = 0;
 
             L3::PointCloud<T>* resultant_cloud = new L3::PointCloud<T>();
@@ -102,7 +104,6 @@ namespace L3
                     it != clouds.end();
                     it++ )
             {
-
                 size += (*it)->num_points;
             }
 

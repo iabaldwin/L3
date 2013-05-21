@@ -288,20 +288,18 @@ namespace Visualisers
      *  Components :: HistogramVertexRenderer
      */
 
-    void HistogramVertexRenderer::onDraw3D( glv::GLV& g)
+    void HistogramVertexRenderer::onDraw( glv::GLV& g)
     {
-        glv::Point3 quad_vertices[4];
-        glv::Color quad_colors[4];
-
         // Obtain the pointer
         boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
-      
+
         if ( !hist_ptr)
             return;
 
         if (hist_ptr->empty())
             return;
 
+        std::cout << "Drawing..." << std::endl;
         L3::Histogram<double> tmp;
 
         L3::ReadLock lock( hist_ptr->mutex );
@@ -311,29 +309,23 @@ namespace Visualisers
         float x_delta = tmp.x_delta;
         float y_delta = tmp.y_delta;
 
+        glv::Point3     vertices[ tmp.x_bins*tmp.y_bins];
+        glv::Color      colors[ tmp.x_bins*tmp.y_bins];
+
+        int counter = 0;;
+
         for( unsigned int i=0; i < tmp.x_bins; i++ )
         {
             for( unsigned int j=0; j < tmp.y_bins; j++ )
             {
                 unsigned int val = tmp.bin( i, j );
 
-                glv::Color c = glv::Color( val/10.0 );
-
-                std::pair<float,float> coords = tmp.coords( i, j);
-
-                quad_colors[0] = c;
-                quad_vertices[0]( coords.first-x_delta/2.5, coords.second-y_delta/2.5, val );
-                quad_colors[1] = c;
-                quad_vertices[1]( coords.first-x_delta/2.5, coords.second+y_delta/2.5, val );
-                quad_colors[2] = c;
-                quad_vertices[2]( coords.first+x_delta/2.5, coords.second+y_delta/2.5, val );
-                quad_colors[3] = c;
-                quad_vertices[3]( coords.first+x_delta/2.5, coords.second-y_delta/2.5, val );
-
-                glv::draw::paint( glv::draw::TriangleFan, quad_vertices, quad_colors, 4 );
+                vertices[counter]( counter, val, 0 );
 
             }
         }
+
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
     }
 
     /*

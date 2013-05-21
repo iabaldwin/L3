@@ -43,6 +43,8 @@ namespace L3
             std::copy( result, 
                         result+(hist->x_bins*hist->y_bins), 
                         hist->hist->bin );
+       
+            delete [] result;
         }
 
 }

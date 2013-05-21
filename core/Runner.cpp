@@ -130,7 +130,7 @@ namespace L3
         /*
          *  Estimate
          */
-        *estimated = algorithm->operator()( projector->cloud, predicted );
+        //*estimated = algorithm->operator()( projector->cloud, predicted );
 
         return true;
     }

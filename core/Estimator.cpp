@@ -285,8 +285,8 @@ namespace L3
                 /*
                  *  Smoothing
                  */
-                //L3::BoxSmoother< double, 5 > smoother;
-                //smoother.smooth( &swathe_histogram );
+                L3::BoxSmoother< double, 5 > smoother;
+                smoother.smooth( swathe_histogram.get() );
 
                 // Compute cost
                 //*result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
@@ -367,22 +367,22 @@ namespace L3
                 /*
                  *  Speed considerations
                  */
-                L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
+                //L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
 
-                std::vector< double > costs(1);
+                //std::vector< double > costs(1);
 
                 //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                Hypothesis h( swathe, &estimate, (*pyramid)[0].get() , this->cost_function, costs.begin() );
-                h();
+                //Hypothesis h( swathe, &estimate, (*pyramid)[0].get() , this->cost_function, costs.begin() );
+                //h();
 
-                if( h.swathe_histogram->empty() )
-                    return L3::SE3::ZERO(); 
+                //if( h.swathe_histogram->empty() )
+                    //return L3::SE3::ZERO(); 
 
-                L3::WriteLock ( this->data.swathe_histogram->mutex ); 
-                L3::clone( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
+                //L3::WriteLock ( this->data.swathe_histogram->mutex ); 
+                //L3::clone( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
               
-                L3::WriteLock ( this->data.experience_histogram->mutex ); 
-                L3::clone( (*pyramid)[0].get(), this->data.experience_histogram.get() );
+                //L3::WriteLock ( this->data.experience_histogram->mutex ); 
+                //L3::clone( (*pyramid)[0].get(), this->data.experience_histogram.get() );
 
                 return L3::SE3::ZERO();
             }

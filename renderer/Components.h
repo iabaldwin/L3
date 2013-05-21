@@ -2,7 +2,6 @@
 #define L3_COMPONENTS_H
 
 #include <iostream>
-
 #include <GLV/glv.h>
 
 // Text
@@ -536,212 +535,7 @@ namespace Visualisers
 
     };
 
-    /*
-     *  Histograms
-     */
-    struct HistogramRenderer 
-    {
-        HistogramRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : hist(histogram)
-        {
-
-        }
-
-        boost::weak_ptr<L3::Histogram<double> > hist;
-    };
-
-    /*
-     *  Histogram :: Bounds Renderer
-     */
-    struct HistogramBoundsRenderer : HistogramRenderer, Leaf
-    {
-        HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : HistogramRenderer(histogram) , depth(-5.0)
-        {
-        }
-
-        float depth;
-
-        void onDraw3D(glv::GLV& g);
-    };
-
-    /*
-     *  Histogram :: Vertex Renderer
-     */
-    struct HistogramVertexRenderer : HistogramRenderer, Leaf
-    {
-        HistogramVertexRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : HistogramRenderer(histogram)
-        {
-        }
-
-        void onDraw3D(glv::GLV& g);
-    };
-
-    /*
-     *  Histogram :: Density renderer
-     */
-    struct HistogramDensityRenderer : glv::View, HistogramRenderer, Updateable
-    {
-        HistogramDensityRenderer(const glv::Rect& rect, boost::shared_ptr<L3::Histogram<double> > histogram )
-            : glv::View(rect), 
-            HistogramRenderer(histogram),
-            mTex(0,0,GL_RGBA,GL_UNSIGNED_BYTE)
-        {
-        }
-
-        glv::Texture2 mTex;
-
-        void update();
-        void onDraw( glv::GLV& g );
-    };
-
-    /*
-     *  Histogram :: Voxel Renderer
-     */
-    struct HistogramVoxelRenderer : HistogramRenderer, Updateable
-    {
-        HistogramVoxelRenderer(boost::shared_ptr<L3::Histogram<double> > histogram  )
-            : HistogramRenderer(histogram)
-        {
-            plot_histogram.reset( new L3::Histogram<double>() );
-        }
-
-        boost::shared_ptr< L3::Histogram<double> > plot_histogram;
-
-        void onDraw3D( glv::GLV& g );
-
-        virtual void update(){};
-    };
-
-
-    struct HistogramVoxelRendererView : HistogramVoxelRenderer, glv::View3D
-    {
-        HistogramVoxelRendererView( const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram  )
-            : HistogramVoxelRenderer(histogram), glv::View3D(r)
-        {
-        }
-
-        void onDraw3D( glv::GLV& g )
-        {
-            glv::draw::translateZ( -50 );
-
-            // Obtain the pointer
-            boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
-
-            if ( !hist_ptr)
-                return;
-
-
-            if( hist_ptr->empty() )
-                return;
-
-            L3::ReadLock lock( hist_ptr->mutex );
-            L3::clone( hist_ptr.get(), plot_histogram.get() );
-
-            std::pair<float, float> lower_left = hist_ptr->coords(0,0);
-            std::pair<float, float> upper_right = hist_ptr->coords( hist_ptr->x_bins, hist_ptr->y_bins );
-
-            float x_delta = (upper_right.first +lower_left.first)/2.0;
-            float y_delta = (upper_right.second +lower_left.second)/2.0;
-
-            glv::draw::translate( -1*x_delta, -1*y_delta, 0.0  );
-
-            HistogramVoxelRenderer::onDraw3D(g);    
-
-        }
-
-    };
-
-    struct HistogramVoxelRendererLeaf : HistogramVoxelRenderer, Leaf
-    {
-        HistogramVoxelRendererLeaf(boost::shared_ptr<L3::Histogram<double> > histogram  )
-            : HistogramVoxelRenderer(histogram)
-        {
-        }
-
-        void onDraw3D( glv::GLV& g )
-        {
-            // Obtain the pointer
-            boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
-
-            if ( !hist_ptr)
-                return;
-
-            L3::ReadLock lock( hist_ptr->mutex );
-
-            if ( !hist_ptr->empty() ) 
-                L3::clone( hist_ptr.get(), plot_histogram.get() );
-            lock.unlock();
-
-            HistogramVoxelRenderer::onDraw3D(g);    
-        }
-
-    };
-
-    /*
-     *  Pyramid renderer
-     */
-    struct HistogramPyramidRenderer
-    {
-        HistogramPyramidRenderer( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid) 
-            : pyramid(histogram_pyramid)
-        {
-        }
-
-        boost::weak_ptr<L3::HistogramPyramid<double> > pyramid;
-
-    };
-
-    struct HistogramPyramidRendererView : glv::Table, HistogramPyramidRenderer, Updateable
-    {
-        HistogramPyramidRendererView( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid, int num_pyramids ) 
-            : HistogramPyramidRenderer(histogram_pyramid),
-                glv::Table( "x x x, "),
-                num_pyramids(num_pyramids)
-        {
-            int width = 180;
-            int start = 0;
-             for( int i=0; i< num_pyramids; i++ )
-            {
-                boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
-                renderers.push_back( renderer );
-                (*this) << renderer.get();
-            }
-
-             if( histogram_pyramid )
-                 loadPyramid( histogram_pyramid );
-             
-             this->arrange();
-        }
-           
-        int num_pyramids;
-        std::deque< boost::shared_ptr< HistogramDensityRenderer > > renderers;
-
-        void loadPyramid( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid )
-        {
-            this->pyramid = histogram_pyramid;
-
-            boost::shared_ptr< L3::HistogramPyramid<double > > pyramid_ptr = this->pyramid.lock();
-
-            if( !pyramid_ptr )
-                return;
-
-            if( std::distance( pyramid_ptr->begin(), pyramid_ptr->end() ) > num_pyramids )
-            {
-                // We have too many pyramids to render, I don't think this will
-                // ever be an issue. 
-            }
-
-            int counter = 0;
-            for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = pyramid_ptr->begin();
-                    it != pyramid_ptr->end();
-                    it++ )
-                renderers[counter++]->hist = *it;
-        }
-
-        void update();
-
-    };
-
-
+    
     /*
      *  Single pose orientation renderer
      */
@@ -1068,6 +862,223 @@ namespace Visualisers
             
         void onDraw3D( glv::GLV& g );
     };
+
+    /*
+     *  Histograms
+     */
+    struct HistogramRenderer 
+    {
+        HistogramRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : hist(histogram)
+        {
+
+        }
+
+        boost::weak_ptr<L3::Histogram<double> > hist;
+    };
+
+    /*
+     *  Histogram :: Bounds Renderer
+     */
+    struct HistogramBoundsRenderer : HistogramRenderer, Leaf
+    {
+        HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> > histogram ) : HistogramRenderer(histogram) , depth(-5.0)
+        {
+        }
+
+        float depth;
+
+        void onDraw3D(glv::GLV& g);
+    };
+
+    
+    /*
+     *  Histogram :: Density renderer
+     */
+    struct HistogramDensityRenderer : glv::View, HistogramRenderer, Updateable
+    {
+        HistogramDensityRenderer(const glv::Rect& rect, boost::shared_ptr<L3::Histogram<double> > histogram )
+            : glv::View(rect), 
+            HistogramRenderer(histogram),
+            mTex(0,0,GL_RGBA,GL_UNSIGNED_BYTE)
+        {
+        }
+
+        glv::Texture2 mTex;
+
+        void update();
+        void onDraw( glv::GLV& g );
+    };
+
+    /*
+     *  Histogram :: Voxel Renderer
+     */
+    struct HistogramVoxelRenderer : HistogramRenderer, Updateable
+    {
+        HistogramVoxelRenderer(boost::shared_ptr<L3::Histogram<double> > histogram  )
+            : HistogramRenderer(histogram)
+        {
+            plot_histogram.reset( new L3::Histogram<double>() );
+        }
+
+        boost::shared_ptr< L3::Histogram<double> > plot_histogram;
+
+        void onDraw3D( glv::GLV& g );
+
+        virtual void update(){};
+    };
+
+
+    struct HistogramVoxelRendererView : HistogramVoxelRenderer, glv::View3D
+    {
+        HistogramVoxelRendererView( const glv::Rect& r, boost::shared_ptr<L3::Histogram<double> > histogram  )
+            : HistogramVoxelRenderer(histogram), glv::View3D(r)
+        {
+        }
+
+        void onDraw3D( glv::GLV& g )
+        {
+            glv::draw::translateZ( -50 );
+
+            // Obtain the pointer
+            boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
+
+            if ( !hist_ptr)
+                return;
+
+
+            if( hist_ptr->empty() )
+                return;
+
+            L3::ReadLock lock( hist_ptr->mutex );
+            L3::clone( hist_ptr.get(), plot_histogram.get() );
+
+            std::pair<float, float> lower_left = hist_ptr->coords(0,0);
+            std::pair<float, float> upper_right = hist_ptr->coords( hist_ptr->x_bins, hist_ptr->y_bins );
+
+            float x_delta = (upper_right.first +lower_left.first)/2.0;
+            float y_delta = (upper_right.second +lower_left.second)/2.0;
+
+            glv::draw::translate( -1*x_delta, -1*y_delta, 0.0  );
+
+            HistogramVoxelRenderer::onDraw3D(g);    
+
+        }
+
+    };
+
+    struct HistogramVoxelRendererLeaf : HistogramVoxelRenderer, Leaf
+    {
+        HistogramVoxelRendererLeaf(boost::shared_ptr<L3::Histogram<double> > histogram  )
+            : HistogramVoxelRenderer(histogram)
+        {
+        }
+
+        void onDraw3D( glv::GLV& g )
+        {
+            // Obtain the pointer
+            boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
+
+            if ( !hist_ptr)
+                return;
+
+            L3::ReadLock lock( hist_ptr->mutex );
+
+            if ( !hist_ptr->empty() ) 
+                L3::clone( hist_ptr.get(), plot_histogram.get() );
+            lock.unlock();
+
+            HistogramVoxelRenderer::onDraw3D(g);    
+        }
+
+    };
+
+
+    /*
+     *  Histogram :: Vertex Renderer
+     */
+    struct HistogramVertexRenderer : HistogramRenderer, glv::View
+    {
+        HistogramVertexRenderer( const glv::Rect rect, boost::shared_ptr<L3::Histogram<double> > histogram ) 
+            : HistogramRenderer(histogram), glv::View(rect)
+        {
+            std::cout << "initialised" << std::endl;
+        }
+
+        void onDraw(glv::GLV& g);
+    };
+
+
+    /*
+     *  Pyramid renderer
+     */
+    struct HistogramPyramidRenderer
+    {
+        HistogramPyramidRenderer( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid) 
+            : pyramid(histogram_pyramid)
+        {
+        }
+
+        boost::weak_ptr<L3::HistogramPyramid<double> > pyramid;
+
+    };
+
+    struct HistogramPyramidRendererView : glv::Table, HistogramPyramidRenderer, Updateable
+    {
+        HistogramPyramidRendererView( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid, int num_pyramids ) 
+            : HistogramPyramidRenderer(histogram_pyramid),
+                glv::Table( "x x x, "),
+                num_pyramids(num_pyramids)
+        {
+            int width = 180;
+            int start = 0;
+             for( int i=0; i< num_pyramids; i++ )
+            {
+                boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
+                renderers.push_back( renderer );
+                (*this) << renderer.get();
+            }
+
+             if( histogram_pyramid )
+                 loadPyramid( histogram_pyramid );
+             
+             this->arrange();
+        }
+           
+        int num_pyramids;
+        std::deque< boost::shared_ptr< HistogramDensityRenderer > > renderers;
+
+        void loadPyramid( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid )
+        {
+            this->pyramid = histogram_pyramid;
+
+            boost::shared_ptr< L3::HistogramPyramid<double > > pyramid_ptr = this->pyramid.lock();
+
+            if( !pyramid_ptr )
+                return;
+
+            if( std::distance( pyramid_ptr->begin(), pyramid_ptr->end() ) > num_pyramids )
+            {
+                // We have too many pyramids to render, I don't think this will
+                // ever be an issue. 
+            }
+
+            int counter = 0;
+            for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = pyramid_ptr->begin();
+                    it != pyramid_ptr->end();
+                    it++ )
+                renderers[counter++]->hist = *it;
+        }
+
+        void update();
+
+    };
+
+
+
+
+
+
+
 
 
 

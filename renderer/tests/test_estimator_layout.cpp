@@ -10,34 +10,6 @@
 
 #include <readline/readline.h>
 
-struct app_runner : Poco::Runnable
-{
-
-    app_runner( L3::Visualisers::EstimatorLayout* layout ) : layout(layout)
-    {
-        thread.start(*this);
-    }
-
-    L3::Visualisers::EstimatorLayout* layout;
-
-    ~app_runner()
-    {
-        std::cout << "Done" << std::endl;
-        if ( thread.isRunning() )
-            thread.join();
-    }
-
-    Poco::Thread thread;
-
-    void run()
-    {
-        layout->run();
-   
-        std::cout << "Done" << std::endl;
-    }
-
-};
-
 int main( int argc, char* argv[] )
 {
     if ( argc != 2 ) 

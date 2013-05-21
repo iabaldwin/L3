@@ -166,17 +166,21 @@ void Experience::run()
             if ( map_it == resident_sections.end() )
             {
                 update_required = true; 
-                //Load the pair
+                
+                //Load 
                 std::pair< unsigned int, L3::Point<double>* > load_result = load(*it);
 
                 L3::PointCloud<double>* cloud = new L3::PointCloud<double>();
+
+                //L3::allocate( cloud, load_result.first );
+                //std::copy( load_result.second, load_result.second + load_result.first, cloud->points );
+                //delete [] load_result.second;
 
                 cloud->num_points = load_result.first;
                 cloud->points = load_result.second;
 
                 // Insert, mark it as required by default
                 resident_sections.insert( std::make_pair( *it, std::make_pair( true, boost::shared_ptr<L3::PointCloud<double> >( cloud ) ) ) );
-
             }
             else
             {
@@ -194,6 +198,7 @@ void Experience::run()
             if( !map_it->second.first )
             {
                 update_required = true; 
+                map_it->second.second.reset(); 
                 resident_sections.erase( map_it++ );
             }
             else
@@ -209,48 +214,42 @@ void Experience::run()
             // Join clouds
             join( clouds, resident_point_cloud );
 
-            if ( resident_point_cloud->num_points == 0 )
+            if ( resident_point_cloud->num_points != 0 )
             {
-                return;
+                // Compute histogram
+                std::pair<double,double> min_bound = L3::min<double>( &*resident_point_cloud );
+                std::pair<double,double> max_bound = L3::max<double>( &*resident_point_cloud );
+                std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
+
+                //L3::BoxSmoother< double, 3 > smoother; 
+                L3::GaussianSmoother< double > smoother; 
+
+                for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->experience_pyramid->begin();
+                        it != this->experience_pyramid->end();
+                        it++ )
+                {
+
+                    boost::shared_ptr<L3::HistogramUniformDistance<double> > current_histogram = boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(*it);
+
+                    WriteLock lock( current_histogram->mutex );
+
+                    current_histogram->create(  means.first, 
+                            min_bound.first, 
+                            max_bound.first,
+                            means.second,                   
+                            min_bound.second, 
+                            max_bound.second );
+
+
+                    current_histogram->operator()( resident_point_cloud.get() );
+                    smoother.smooth( current_histogram.get() );
+                    lock.unlock();
+                
+                }
             }
-
-            // Compute histogram
-            std::pair<double,double> min_bound = L3::min<double>( &*resident_point_cloud );
-            std::pair<double,double> max_bound = L3::max<double>( &*resident_point_cloud );
-            std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
-
-            //L3::BoxSmoother< double, 3 > smoother; 
-            L3::GaussianSmoother< double > smoother; 
-
-            for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->experience_pyramid->begin();
-                    it != this->experience_pyramid->end();
-                    it++ )
-            {
-
-                boost::shared_ptr<L3::HistogramUniformDistance<double> > current_histogram = boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(*it);
-            
-                WriteLock lock( current_histogram->mutex );
-
-                current_histogram->create(  means.first, 
-                                            min_bound.first, 
-                                            max_bound.first,
-                                            means.second,                   
-                                            min_bound.second, 
-                                            max_bound.second );
-
-
-                current_histogram->operator()( resident_point_cloud.get() );
-                smoother.smooth( current_histogram.get() );
-            
-                lock.unlock();
-            }
-
-
         }
 
         // Play nice
-        //usleep( .05*1e6 );
-        //usleep( .1*1e6 );
         usleep( .2*1e6 );
     }
 }

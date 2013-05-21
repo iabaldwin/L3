@@ -75,7 +75,11 @@ namespace L3
                 }
 
                 if ( hist ) // Re-create
+                {
+                    gsl_histogram2d_reset( hist );
                     gsl_histogram2d_free( hist );
+                }
+
 
                 this->x_centre= x_centre;
                 this->x_lower = x_lower;

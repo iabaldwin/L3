@@ -81,10 +81,7 @@ struct PointCloud  : Lockable
 
     ~PointCloud()
     {
-        if (num_points > 0 && points )
-        {
-            delete [] points;
-        }
+        delete [] points;
     }
 
     typedef L3::Point<T>* ITERATOR;
