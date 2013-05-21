@@ -64,9 +64,18 @@ namespace L3
         double real_time_elapsed = t.elapsed();
 
         current_time = start_time;
+            
+        L3::Timing::ChronoTimer performance_timer;
+
+        std::vector<double> timings(5);
+
+        int performance_index;
 
         while( running )
         {
+            performance_index = 0;
+            performance_timer.begin();
+
             current_time += ( t.elapsed() - real_time_elapsed )*speedup;
                 
             real_time_elapsed = t.elapsed(); 
@@ -75,11 +84,13 @@ namespace L3
              *  Update all watchers
              */
             TemporalRunner::update( current_time );
+            timings[ performance_index++ ] = performance_timer.elapsed();
 
             /*
              *  Recompute swathe
              */
             swathe_builder->update( current_time );
+            timings[ performance_index++ ] = performance_timer.elapsed();
 
             /*
              *  Point cloud generation, projection
@@ -87,11 +98,13 @@ namespace L3
             L3::WriteLock point_cloud_lock( projector->cloud->mutex );
             projector->project( swathe_builder->swathe );
             point_cloud_lock.unlock();
+            timings[ performance_index++ ] = performance_timer.elapsed();
 
             /*
              *  Update everything else
              */
             update( current_time );
+            timings[ performance_index++ ] = performance_timer.elapsed();
      
             *current = oracle->operator()();
         }
@@ -116,7 +129,6 @@ namespace L3
         /*
          *  Estimate
          */
-       
         *estimated = algorithm->operator()( projector->cloud, predicted );
 
         return true;
