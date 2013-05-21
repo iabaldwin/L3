@@ -37,21 +37,42 @@ struct experience_section
     unsigned int payload_size;
 };
 
+struct SelectionPolicy
+{
+    virtual bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window ) 
+    {
+        return false;
+    }
+};
+
+struct KNNPolicy : SelectionPolicy
+{
+    bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window );
+};
+
+struct StrictlyRetrospectivePolicy : SelectionPolicy
+{
+    bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window );
+};
+
+
+
+
 /*
  *Core experience
  */
 struct Experience : SpatialObserver, Poco::Runnable
 {
+    Experience( std::deque<experience_section> sections, std::string& fname, boost::shared_ptr< SelectionPolicy > policy, int WINDOW=10 );
+    
+    std::deque<experience_section>          sections;
+    int                            window;
+    bool                                    running;
+    double                                  _x,_y;
+    std::ifstream                           data;
+    Poco::Thread                            thread;
+    boost::shared_ptr< SelectionPolicy >    policy; 
 
-    Experience( std::deque<experience_section>  SECTIONS, std::string& fname, unsigned int WINDOW=10 );
-    
-    std::deque<experience_section>  sections;
-    unsigned int                    window;
-    bool                            running;
-    double                          _x,_y;
-    std::ifstream                   data;
-    Poco::Thread                    thread;
-    
     std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
   
     boost::shared_ptr< L3::PointCloud<double> >  resident_point_cloud;
@@ -116,7 +137,8 @@ struct ExperienceLoader
 
         experience_index.close();
 
-        experience.reset( new Experience( sections, experience_name, window_sections ) );
+        //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< KNNPolicy >() ), window_sections ) );
+        experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< StrictlyRetrospectivePolicy >() ), window_sections ) );
     }
         
 };
@@ -174,7 +196,7 @@ struct ExperienceBuilder
 
         double absolute_start_time = 0;
 
-        // Read LIDAr data, element at a time
+        // Read LIDAR data, element at a time
         while( LIDAR_reader->read() )
         {
             // Extract scan

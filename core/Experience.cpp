@@ -23,16 +23,88 @@ bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned
 }
 
 /*
+ *  Selection Policies
+ */
+
+bool StrictlyRetrospectivePolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
+{
+    /*
+     *  Initialise distances
+     */
+    std::vector< std::pair< double, unsigned int > > distances;
+
+    /*
+     *  Calculate distances to all sections
+     */
+    for( unsigned int i=0; i<sections->size(); i++ )
+        distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( (*sections)[i].x, (*sections)[i].y)  ), i ) ); 
+   
+    /*
+     *  Sort the distances
+     */
+    std::sort( distances.begin(), distances.end() );
+
+    required_sections.clear();
+    
+    std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
+  
+    int window_cpy(window);
+
+    //Here is the magic
+    for( unsigned int i=distances.front().second; window_cpy-->0  && i>=0; i-- )
+        required_sections.push_front( i );
+        //required_sections.push_front( distances_iterator++->second );
+    
+        
+    required_sections.push_front( distances_iterator++->second );
+
+    return true;
+
+}
+
+bool KNNPolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
+{
+    /*
+     *  Initialise distances
+     */
+    std::vector< std::pair< double, unsigned int > > distances;
+
+    /*
+     *  Calculate distances to all sections
+     */
+    for( unsigned int i=0; i<sections->size(); i++ )
+        distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( (*sections)[i].x, (*sections)[i].y)  ), i ) ); 
+   
+    /*
+     *  Sort the distances
+     */
+    std::sort( distances.begin(), distances.end() );
+    std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
+
+    /*
+     *  Build up a list of required sections
+     */
+    required_sections.clear();
+    for( unsigned int i=0; i<window && i<distances.size(); i++ )
+        required_sections.push_front( distances_iterator++->second );
+    
+    return ( !required_sections.empty() );
+}
+
+
+/*
  *  Experience
  */
 
-Experience::Experience( std::deque<experience_section>  SECTIONS, 
+Experience::Experience( std::deque<experience_section> sections, 
             std::string& fname, 
-            unsigned int WINDOW ) 
-                : sections(SECTIONS), 
-                    window(WINDOW),
+            boost::shared_ptr< SelectionPolicy > policy,
+            int window ) 
+                : sections(sections), 
+                    window(window),
                     running(true),
-                    _x(0.0), _y(0.0)
+                    _x(0.0), _y(0.0),
+                    policy(policy)
 {
     // Open 
     data.open( fname.c_str(), std::ios::binary );
@@ -59,33 +131,20 @@ Experience::~Experience()
         thread.join();          
 }
 
+
 void Experience::run()
 {
     while( running )
     {
-        std::vector< std::pair< double, unsigned int > > distances;
-
         /*
-         *Calculate distances to all sections
-         */
-        for( unsigned int i=0; i<sections.size(); i++ )
-            distances.push_back( std::make_pair( norm( std::make_pair( _x, _y ), std::make_pair( sections[i].x, sections[i].y)  ), i ) ); 
-
-        /*
-         *Sort the distances
-         */
-        std::sort( distances.begin(), distances.end() );
-        std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
-
-        /*
-         *  Build up a list of required sections
+         *  Choose the sections required according to some policy
          */
         std::list<unsigned int> required_sections;
-        for( unsigned int i=0; i<window-1 && i<distances.size(); i++ )
-            required_sections.push_front( distances_iterator++->second );
+        if ( !policy->operator()( &sections, _x, _y, required_sections, window ) )  // Catastrophe
+            break;
 
         /*
-         *Mark everything as *NOT* required
+         *  Mark everything as *NOT* required
          */
         for( std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloud<double> > > >::iterator map_it = resident_sections.begin();
                 map_it != resident_sections.end();
@@ -151,7 +210,9 @@ void Experience::run()
             join( clouds, resident_point_cloud );
 
             if ( resident_point_cloud->num_points == 0 )
+            {
                 return;
+            }
 
             // Compute histogram
             std::pair<double,double> min_bound = L3::min<double>( &*resident_point_cloud );

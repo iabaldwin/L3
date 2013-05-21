@@ -130,11 +130,15 @@ namespace L3
             
             (*ancillary_2) << *window_duration_INS;
 
-
             point_cloud_downsample.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             point_cloud_downsample->interval( 1, 10 );
             
             (*ancillary_2) << *point_cloud_downsample;
+
+            experience_window.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            experience_window->interval( 5, 25 );
+            
+            (*ancillary_2) << *experience_window;
 
 
             time_renderer.reset( new TextRenderer<double>() );
@@ -153,7 +157,7 @@ namespace L3
             (*table_holder ) << ancillary_1.get();
             top << ancillary_2.get();
        
-            ancillary_2->pos( win.width() - 200, win.height() - 50 );
+            ancillary_2->pos( win.width() - 200, win.height() - 250 );
        
 
         }
@@ -337,6 +341,7 @@ namespace L3
              */
             pyramid_renderer->loadPyramid( experience->experience_pyramid );
 
+            experience_window->attachVariable( runner->experience->window );
         }
     }
 }
