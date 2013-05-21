@@ -1267,7 +1267,13 @@ namespace Visualisers
              L3::SE3 pose = provider_ptr->operator()();
              //*current_pose  =  provider_ptr->operator()();
              //glv::draw::translate( -1*current_pose->X(), -1*current_pose->Y(), 0.0 );
+             //*current_pose  =  pose;
              glv::draw::translate( -1*pose.X(), -1*pose.Y(), 0.0 );
+
+             pose.X( -1*pose.X() );
+             pose.Y( -1*pose.Y() );
+
+             L3::Visualisers::AnimatedPoseRenderer( pose ).onDraw3D(g);
          }
 
          int counter= 0;

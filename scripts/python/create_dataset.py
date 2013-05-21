@@ -25,11 +25,13 @@ if __name__=="__main__":
     
     # Start
     #start = 2*60
-    start = float(sys.argv[2])*60
+    #start = float(sys.argv[2])*60
+    start = float(sys.argv[2])
 
     # End
     #limit = 25*60
-    limit = float(sys.argv[3])*60
+    #limit = float(sys.argv[3])*60
+    limit = float(sys.argv[3])
 
 
     parsers.append( Parsers.INS( dataset.root, mission ).binary().duration( (start,limit) ).parse() )
