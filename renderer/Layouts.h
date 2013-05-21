@@ -36,9 +36,17 @@ namespace Visualisers
                 for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
                     top << *it;
 
-                table_holder->arrange();
-            
-                table_holder->pos( window.width()-(555), 0);
+                for( std::deque< boost::shared_ptr< glv::Table > >::iterator it = tables.begin();
+                        it != tables.end();
+                        it++)
+                {
+                    (*it)->arrange();
+                    (*it)->pos( window.width()-(555), 0);
+                }
+
+                toggler = boost::make_shared< TableToggler >( &tables );
+
+                top << *toggler;
 
                 window.setGLV(top);
 
@@ -160,16 +168,19 @@ namespace Visualisers
 
             glv::View*      main_view;
             glv::Window&    window; 
-
-            //boost::shared_ptr< glv::Table > table_holder;
-            boost::shared_ptr< CustomTable > table_holder;
-          
-            boost::shared_ptr< LogCapture > log_capture;
-
+            
             std::list< glv::View* > renderables;
 
-            boost::shared_ptr< glv::Slider >  scale_factor;
+            boost::shared_ptr< LogCapture > log_capture;
+
+            //std::deque< boost::shared_ptr< CustomTable > > display_table;
+            //std::deque< boost::shared_ptr< CustomTable > > tables;
+           
+            boost::shared_ptr< TableToggler > toggler;
+            std::deque< boost::shared_ptr< glv::Table > > tables;
+          
             boost::shared_ptr< glv::Label >   scale_factor_label;
+            boost::shared_ptr< glv::Slider >  scale_factor;
             
             boost::shared_ptr< glv::Slider >  window_duration_INS;
             boost::shared_ptr< glv::Slider >  window_duration_LIDAR;

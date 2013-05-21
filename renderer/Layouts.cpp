@@ -48,18 +48,19 @@ namespace L3
             spatial_updater.reset( new SpatialUpdater( boost::shared_ptr< L3::PoseProvider>() ) );
             this->renderables.push_front( spatial_updater.get() );
 
-            //table_holder.reset( new glv::Table( "x,", 0, 0 ) );
-            table_holder.reset( new CustomTable( "x,", 0, 0 ) );
+            // Tables
+            //display_table.reset( new CustomTable( "x,", 0, 0 ) );
+            //boost::shared_ptr< CustomTable > table = boost::make_shared< CustomTable >( "x,", 0, 0 );
+            boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
+            top << *table;
 
-            top << *table_holder;
+            tables.push_back( table );
 
-            log_capture.reset( new LogCapture() );
-     
-            std::cout << "HI" << std::endl;
-            std::cout << "THERE" << std::endl;
-            log_capture->bringToFront();
-
-            top << *log_capture;
+            //log_capture.reset( new LogCapture() );
+            //std::cout << "HI" << std::endl;
+            //std::cout << "THERE" << std::endl;
+            //log_capture->bringToFront();
+            //top << *log_capture;
         }
 
 
@@ -154,12 +155,14 @@ namespace L3
             ancillary_1->enable( glv::Property::DrawBorder );
             ancillary_2->enable( glv::Property::DrawBorder );
 
-            (*table_holder ) << ancillary_1.get();
-            top << ancillary_2.get();
+            (*tables[0]  ) << ancillary_1.get();
        
-            ancillary_2->pos( win.width() - 200, win.height() - 250 );
-       
-
+            //boost::shared_ptr< CustomTable > table = boost::make_shared< CustomTable >( "x,", 0, 0 );
+            boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
+            (*table) << ancillary_2.get();
+            
+            top << *table;
+            tables.push_back( table );
         }
 
         bool DatasetLayout::load( L3::DatasetRunner* runner )
@@ -286,7 +289,8 @@ namespace L3
                     it++ )
                 temporal_updater->operator<<( it->get() );
 
-            (*table_holder) << *pyramid_renderer;
+            //(*display_table) << *pyramid_renderer;
+            (*tables[0]) << *pyramid_renderer;
 
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> >() ) );
             histogram_bounds_renderer->depth = -2.0 ;

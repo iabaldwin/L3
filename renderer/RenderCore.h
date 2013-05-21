@@ -1,11 +1,14 @@
 #ifndef L3_VISUALISERS_RENDER_CORE_H
 #define L3_VISUALISERS_RENDER_CORE_H
 
+#include <deque> 
+#include <iostream>
+
 #include <GLV/glv.h>
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
 
-#include <iostream>
+#include <boost/shared_ptr.hpp>
 
 namespace L3
 {
@@ -45,8 +48,9 @@ enum CUSTOM_EVENT_TYPES
 
                         break;
 
-                    case glv::Key::Escape:
+                    case glv::Key::Tab:
                         this->broadcastEvent( static_cast< glv::Event::t>( TABLE_TOGGLE ) );
+                        
                         break;
 
                     default:
@@ -54,22 +58,6 @@ enum CUSTOM_EVENT_TYPES
                 
                 }
             }
-            
-           
-            /*
-             *  Select-click
-             */
-            //if ( e == glv::Event::MouseDown )
-            //{
-                //const glv::Keyboard& k = g.keyboard();
-
-
-                //if ( k.ctrl() )
-                //{
-                    //this->broadcastEvent( static_cast< glv::Event::t>( SELECT_CLICK ) );
-                //}
-            //}
-
         }
     };
 
@@ -84,6 +72,18 @@ enum CUSTOM_EVENT_TYPES
         }
 
         bool onEvent( glv::Event::t type, glv::GLV& g );
+    };
+
+    struct TableToggler : glv::View
+    {
+
+        TableToggler( std::deque< boost::shared_ptr< glv::Table > > * tables );
+        
+        int current_table;
+        std::deque< boost::shared_ptr< glv::Table > > * tables;
+
+        bool onEvent( glv::Event::t type, glv::GLV& g );
+        
     };
 
 }
