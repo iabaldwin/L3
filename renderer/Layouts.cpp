@@ -122,12 +122,12 @@ namespace L3
             (*ancillary_2) << *scale_factor;
 
             window_duration_LIDAR.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
-            window_duration_LIDAR->interval( 10, 50 );
+            window_duration_LIDAR->interval( 1, 30);
             
             (*ancillary_2) << *window_duration_LIDAR;
 
             window_duration_INS.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
-            window_duration_INS->interval( 10, 50 );
+            window_duration_INS->interval( 1, 30 );
             
             (*ancillary_2) << *window_duration_INS;
 
@@ -359,8 +359,9 @@ namespace L3
              */
             experience_window->attachVariable( runner->experience->window );
        
-            debug_algorithm_renderer->algorithm  = boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm );
-      
+            //debug_algorithm_renderer->algorithm  = boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm );
+     
+            debug_algorithm_renderer->setInstance(  boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm ));
         }
     }
 }

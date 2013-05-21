@@ -934,10 +934,7 @@ namespace Visualisers
         boost::shared_ptr< L3::Estimator::IterativeDescent<double> > discrete_algorithm_ptr = boost::dynamic_pointer_cast< L3::Estimator::IterativeDescent<double> >( algorithm_ptr );
        
         if( !discrete_algorithm_ptr )
-        {
-            std::cerr << "Could not cast" << std::endl;
             return;
-        }
 
         double layer_height = 20;
 

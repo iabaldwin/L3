@@ -214,6 +214,9 @@ namespace Estimator
             {
                 sampled_swathe.reset( new PointCloud<T>() );
                 L3::allocate( sampled_swathe.get(), 1000 );
+           
+                data.swathe_histogram.reset( new L3::Histogram<double>() );
+                data.experience_histogram.reset( new L3::Histogram<double>() );
             }
             
             CostFunction<T>* cost_function;
