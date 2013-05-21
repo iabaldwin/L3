@@ -5,11 +5,11 @@ namespace Visualisers
 {
         boost::shared_ptr< LocaleRenderer > LocaleRendererFactory::buildLocale( L3::Configuration::Locale& locale )        
         {
-            // This should be embedded in the configuration     
-            std::string image_target = "/Users/ian/Documents/begbroke_med_res.png" ;
+            std::stringstream ss;
+            ss << "/Users/ian/Documents/" << locale.name << ".png";
 
             ImageData data;
-            ImageFactory::Image(image_target, data);
+            ImageFactory::Image(ss.str(), data);
           
             // Image calibration
             image_bounds b;

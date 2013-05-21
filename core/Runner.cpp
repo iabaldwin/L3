@@ -5,6 +5,7 @@ namespace L3
 
     DatasetRunner::DatasetRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup ) 
         : dataset(dataset), 
+            mission(mission),
             speedup(speedup),
             current_time(0.0),
             start_time(dataset->start_time)

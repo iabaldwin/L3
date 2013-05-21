@@ -14,7 +14,6 @@ namespace Visualisers
      */
     void Composite::onDraw3D( glv::GLV& g )
     {
-        //glPushMatrix();
         glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
         
@@ -26,6 +25,9 @@ namespace Visualisers
 
         std::list<Leaf*>::iterator leaf_iterator = components.begin();
 
+        L3::SE3 origin = L3::SE3::ZERO();
+        CoordinateSystem( origin, 20.0 ).onDraw3D(g);
+
         while( leaf_iterator != components.end() )
         {
             (*leaf_iterator)->onDraw3D( g );
@@ -35,7 +37,6 @@ namespace Visualisers
 
             leaf_iterator++;
         }
-        //glPopMatrix();
     }
 
     /*

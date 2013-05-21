@@ -13,12 +13,22 @@ int main()
     {
         try
         {
-        L3::Configuration::Mission mission( *it );
-        std::cout << mission << std::endl;
+            L3::Configuration::Mission mission( *it );
+            std::cout << mission << std::endl;
+     
+            std::cout << mission.locale << std::endl;
+
+            L3::Configuration::Locale* locale = L3::Configuration::LocaleFactory().getLocale( mission.locale );
+
+            std::cout << locale->z << std::endl;
         }
         catch( ... )
         {
             std::cerr << "Error: " << *it << std::endl;
         }
     }
+
+
+
+
 }

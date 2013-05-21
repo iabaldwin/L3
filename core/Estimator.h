@@ -210,9 +210,14 @@ namespace Estimator
         struct PassThrough : Algorithm<T>
         {
             PassThrough(  CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid )
-                : pyramid(experience_pyramid)
+                : pyramid(experience_pyramid),cost_function(cost_function)
             {
+                sampled_swathe.reset( new PointCloud<T>() );
+                L3::allocate( sampled_swathe.get(), 1000 );
             }
+            
+            CostFunction<T>* cost_function;
+            boost::shared_ptr< PointCloud<T> > sampled_swathe;
 
             struct EstimateData : Lockable
             {

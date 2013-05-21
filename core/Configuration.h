@@ -79,6 +79,16 @@ struct Mission : Configuration
         loadAll( target );
     }
 
+    std::string locale;
+    std::string target;
+    std::string description;
+    std::map< std::string, LIDARParameters > lidars;
+
+    // Estimation
+    std::string horizontal;
+    std::string declined;
+
+
     Mission( const std::string& target )  
     {
         this->target = target;
@@ -101,17 +111,13 @@ struct Mission : Configuration
         if ( !loadEstimation() )
             throw std::exception();
 
+        if ( !loadLocale() )
+            throw std::exception();
+
         return true;
     }
 
-    std::string target;
-    std::string description;
-    std::map< std::string, LIDARParameters > lidars;
-
-    // Estimation
-    std::string horizontal;
-    std::string declined;
-
+    
     bool loadDescription();
     bool loadLocale();
     bool loadLIDARS();
@@ -122,7 +128,7 @@ struct Mission : Configuration
 struct Locale : Configuration
 {
 
-    Locale( const std::string& locale ) 
+    Locale( const std::string& locale ) : name(locale)
     {
 
         // Load configuration directory 
@@ -136,6 +142,9 @@ struct Locale : Configuration
         if ( !load( p.string() ) && loadDatum() )
             throw std::exception();
     }
+
+    std::string name;
+    double x_lower, x_upper, y_lower, y_upper, z;
 
     bool loadDatum()
     {
@@ -174,8 +183,6 @@ struct Locale : Configuration
         return true;
     }
 
-    double x_lower, x_upper, y_lower, y_upper, z;
-
 };
 
 struct Begbroke : Locale
@@ -192,6 +199,31 @@ struct Woodstock : Locale
     {};
 };
 
+
+struct LocaleFactory
+{
+
+    LocaleFactory()
+    {
+        locales.insert( std::make_pair( "Woodstock", new Woodstock() ));
+        locales.insert( std::make_pair( "Begbroke", new Begbroke() ) );
+    }
+
+    Locale* getLocale( std::string locale )
+    {
+        std::map< std::string, Locale* >::iterator it = locales.find(  locale );
+
+        std::cout << locale << std::endl;
+
+        if( it != locales.end() )
+            return it->second;
+        else
+            return NULL;
+    }
+
+    std::map< std::string, Locale* > locales;
+
+};
 
 /*
  *Conversion

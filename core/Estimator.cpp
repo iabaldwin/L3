@@ -244,9 +244,18 @@ namespace L3
             CostFunction<double> *          cost_function;
             __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator ;
 
+            /*
+             *Changes
+             */
+            boost::shared_ptr< L3::Histogram<double> > swathe_histogram;
+            boost::shared_ptr< L3::Histogram<double> > swathe_hist;
+            boost::shared_ptr< L3::PointCloud<double> > hypothesis;
+
             void operator()()
             {
-                boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
+                //boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
+
+                hypothesis.reset( new L3::PointCloud<double>() );
 
                 /*
                  *  Copy point cloud
@@ -261,13 +270,17 @@ namespace L3
                 /*
                  *  Histogram
                  */
-                L3::Histogram<double> swathe_histogram;
+                //L3::Histogram<double> swathe_histogram;
 
-                if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram ) )
+                swathe_histogram.reset( new L3::Histogram<double>() );
+
+                //if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram ) )
+                if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), swathe_histogram.get() ) )
                     return;
                 
                 // Produce swathe histogram
-                swathe_histogram( hypothesis.get() );
+                //swathe_histogram( hypothesis.get() );
+                (*swathe_histogram)( hypothesis.get() );
 
                 /*
                  *  Smoothing
@@ -276,7 +289,8 @@ namespace L3
                 //smoother.smooth( &swathe_histogram );
 
                 // Compute cost
-                *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
+                //*result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
+                *result_iterator = cost_function->operator()( *this->experience, *swathe_histogram );
             }
 
         };
@@ -344,39 +358,33 @@ namespace L3
         SE3 PassThrough<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
                 // Lock the experience histogram
-                L3::ReadLock( (*pyramid[0])->mutex );
+                L3::ReadLock( (*pyramid)[0]->mutex );
                 L3::ReadLock swathe_lock( swathe->mutex );
 
                 if (swathe->num_points == 0 ) 
-                    return false;
+                    return L3::SE3::ZERO();
 
                 /*
                  *  Speed considerations
                  */
-                //L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
+                L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
 
-                //std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
-
-                //std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
-                
                 std::vector< double > costs(1);
 
                 //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                Hypothesis( swathe, estimate, (*pyramid[0]).get() , this->cost_function, costs.begin() )();
+                Hypothesis h( swathe, &estimate, (*pyramid)[0].get() , this->cost_function, costs.begin() );
+                h();
 
-                //L3::WriteLock( this->data.mutex );
-                //histogram.reset( new L3::Histogram<double>() ); 
+                
+                L3::WriteLock data_lock( this->data.mutex );
+                data.swathe_histogram.reset( new L3::Histogram<double>() );
+                data.experience_histogram.reset( new L3::Histogram<double>() );
+                L3::copy( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
+                L3::copy( (*pyramid)[0].get(), this->data.experience_histogram.get() );
 
-                //while( it != this->pose_estimates->estimates.end() )
-                //{
-                    //group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                    //it++;
-                //}
+                data_lock.unlock();
 
-                //// Synch
-                //group.wait();
-
-                //return true;
+                return L3::SE3::ZERO();
             }
 
 
@@ -424,6 +432,9 @@ namespace L3
 // Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template double L3::Estimator::MICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
+
 template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+
+template L3::SE3 L3::Estimator::PassThrough<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::Minimisation<double>::operator()(L3::PointCloud<double>*, L3::SE3);

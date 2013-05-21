@@ -201,13 +201,11 @@ namespace L3
             /*
              *  Static map-view
              */
-            L3::Configuration::Begbroke begbroke;
-            begbroke.loadDatum();
+            L3::Configuration::Locale* config = L3::Configuration::LocaleFactory().getLocale( runner->mission->locale );
 
-
-            // Remove it, if it is already in the composite list     
+            //// Remove it, if it is already in the composite list     
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
-            map_view = L3::Visualisers::LocaleRendererFactory::buildLocale( begbroke );
+            map_view = L3::Visualisers::LocaleRendererFactory::buildLocale( *config );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
 
             /*
@@ -289,7 +287,6 @@ namespace L3
                     it++ )
                 temporal_updater->operator<<( it->get() );
 
-            //(*display_table) << *pyramid_renderer;
             (*tables[0]) << *pyramid_renderer;
 
             histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> >() ) );
@@ -304,6 +301,18 @@ namespace L3
              *  Experience histogram voxel
              */
             histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( boost::shared_ptr<L3::Histogram<double> >() ) );
+
+            /*
+             *  Debug Cost visualisation
+             */
+            debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
+            
+            for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = debug_algorithm_renderer->renderers.begin();
+                    it != debug_algorithm_renderer->renderers.end();
+                    it++ )
+                temporal_updater->operator<<( it->get() );
+            top << *debug_algorithm_renderer;
+            tables.push_back( debug_algorithm_renderer );
         }
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -341,11 +350,17 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
 
             /*
-             *  Stand-alone plots
+             *  Stand-alone pyramid renderer
              */
             pyramid_renderer->loadPyramid( experience->experience_pyramid );
 
+            /*
+             *  Experience overview
+             */
             experience_window->attachVariable( runner->experience->window );
+       
+            debug_algorithm_renderer->algorithm  = boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm );
+      
         }
     }
 }

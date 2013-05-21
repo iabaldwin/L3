@@ -69,6 +69,7 @@ struct DatasetRunner : ThreadedRunner
     }
 
     Dataset*        dataset;
+    Configuration::Mission*        mission;
     float           speedup;
     double          current_time, start_time;  
    
