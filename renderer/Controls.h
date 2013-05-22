@@ -310,6 +310,7 @@ struct WASDController : InputManager
                 {
                     ptr->control_x += x;
                     ptr->control_y += y;
+                    //ptr->control_z += z;
                     leaf_iterator->second->translate( btVector3(x,y,0) );
                 }
             }

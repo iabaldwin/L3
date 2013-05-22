@@ -35,10 +35,10 @@ namespace Visualisers
 
         btVector3 current;
 
-        void update( double x, double y )
+        void update( double x, double y, double z )
         {
             btTransform transform = box_body->getCenterOfMassTransform();
-            transform.setOrigin(btVector3( x, y, 0 ) );
+            transform.setOrigin(btVector3( x, y, z ) );
             box_body->setCenterOfMassTransform( transform );
 
             btVector3 aabbMin, aabbMax;
@@ -91,11 +91,11 @@ namespace Visualisers
         boost::shared_ptr< btRigidBody >        box_body;
         boost::shared_ptr< btCollisionShape >   box_shape;
   
-        double current_x, current_y;
+        double current_x, current_y, current_z;
 
         void onDraw3D( glv::GLV& g )
         {
-            box->update( current_x, current_y );
+            box->update( current_x, current_y, current_z);
           
             glv::Color c = selected ? glv::Color( .7, .7, .7 ) : glv::Color( .2, .2, .2 ) ;
                 

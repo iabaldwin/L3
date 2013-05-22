@@ -567,12 +567,14 @@ namespace Visualisers
 
     void PointCloudRenderer::onDraw3D( glv::GLV& g )
     {
+        boost::tuple<double,double,double> bounds = L3::min( plot_cloud.get() );
         for( int i=0; i<plot_cloud->num_points; i++) 
         {
             vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
             //colors[i] = color; 
             // TODO: Have a color policy
-            colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
+            //colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
+            colors[i] = glv::Color( (plot_cloud->points[i].z - bounds.get<2>())/10.0 );
         }
 
         glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
@@ -651,18 +653,23 @@ namespace Visualisers
         L3::copy( cloud.get(), tmp.get() ); 
         point_cloud_lock.unlock();
 
-        std::pair<double, double> lower_left = min( tmp.get() );
-        std::pair<double, double> upper_right = max( tmp.get() );
+        //std::pair<double, double> lower_left = min( tmp.get() );
+        //std::pair<double, double> upper_right = max( tmp.get() );
+
+        boost::tuple<double, double, double> lower_left = min( tmp.get() );
+        boost::tuple<double, double, double> upper_right = max( tmp.get() );
+
+
 
         glv::draw::blendTrans();
 
-        bound_vertices[0]( lower_left.first, lower_left.second, -3.0 );
+        bound_vertices[0]( lower_left.get<0>(), lower_left.get<1>(), -3.0 );
         bound_colors[0].set( 0, 1, 1, .25 );
-        bound_vertices[1]( lower_left.first, upper_right.second, -3.0 );
+        bound_vertices[1]( lower_left.get<0>(), upper_right.get<1>(), -3.0 );
         bound_colors[1].set( 0, 1, 1, .25 );
-        bound_vertices[2]( upper_right.first, upper_right.second, -3.0 );
+        bound_vertices[2]( upper_right.get<0>(), upper_right.get<1>(), -3.0 );
         bound_colors[2].set( 0, 1, 1, .25 );
-        bound_vertices[3]( upper_right.first, lower_left.second, -3.0 );
+        bound_vertices[3]( upper_right.get<0>(), lower_left.get<1>(), -3.0 );
         bound_colors[3].set( 0, 1, 1, .25 );
 
         glv::draw::lineStippling(true);
@@ -997,6 +1004,7 @@ namespace Visualisers
      */
     void ScanMatchingScanRenderer::onDraw3D( glv::GLV& g )
     {
+        // Are we still valid
         boost::shared_ptr< L3::ScanMatching::Engine > ptr = engine.lock();
 
         if( !ptr )
@@ -1005,6 +1013,7 @@ namespace Visualisers
         boost::scoped_array<double> scan;
         boost::scoped_array<double> putative;
 
+        // Lock
         L3::ReadLock lock( ptr->mutex );
 
         int scan_points = ptr->matcher->scan_points;
@@ -1060,6 +1069,13 @@ namespace Visualisers
         glv::draw::paint( glv::draw::Points, putative_vertices, putative_colors, putative_points );
         glv::draw::disable( glv::draw::Blend );
 
+        // Are we maximised?
+        if (enabled( glv::Maximized ))
+        {
+            trajectory->enable( glv::Visible );
+        }
+        else
+            trajectory->disable( glv::Visible );
 
     }
 

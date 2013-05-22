@@ -45,16 +45,10 @@ namespace Visualisers
 
         if ( !window.empty() )
         {
-        current_x= (it-1)->second->X();
-        current_y= (it-1)->second->Y();
-        
+            current_x= (it-1)->second->X();
+            current_y= (it-1)->second->Y();
+            current_z= (it-1)->second->Z();
         }
-        //std::stringstream ss;
-        //this->tag.x = (it-1)->second->X();
-        //this->tag.y = (it-1)->second->Y();
-        //ss << (it-1)->first;
-        //this->tag.text = ss.str();
-        //label->onDraw3D(g);
     }
 
     /*

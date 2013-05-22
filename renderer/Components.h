@@ -689,8 +689,14 @@ namespace Visualisers
 
             (*this) << *label;
 
-
+            trajectory.reset( new glv::View( glv::Rect(150,150)) );
+      
+            // We are not visible by default
+            (*this) << *trajectory;
+            trajectory->disable( glv::Visible );
         }
+
+        boost::shared_ptr< glv::View > trajectory;
 
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
 

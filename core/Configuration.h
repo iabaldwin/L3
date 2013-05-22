@@ -213,8 +213,6 @@ struct LocaleFactory
     {
         std::map< std::string, Locale* >::iterator it = locales.find(  locale );
 
-        std::cout << locale << std::endl;
-
         if( it != locales.end() )
             return it->second;
         else

@@ -4,6 +4,8 @@
 #include <vector>
 #include <omp.h>
 
+#include "boost/tuple/tuple.hpp"
+
 #include "Utils.h"
 
 /*
@@ -103,13 +105,13 @@ template <typename T>
 void allocate( PointCloud<T>* cloud, size_t size  );
 
 template< typename T >
-std::pair<T,T> mean( PointCloud<T>* cloud );
+boost::tuple<T,T,T> mean( PointCloud<T>* cloud );
 
 template< typename T >
-std::pair<T,T> min( PointCloud<T>* cloud );
+boost::tuple<T,T,T> min( PointCloud<T>* cloud );
 
 template< typename T >
-std::pair<T,T> max( PointCloud<T>* cloud );
+boost::tuple<T,T,T> max( PointCloud<T>* cloud );
 
 template <typename T>
 bool join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds, boost::shared_ptr<L3::PointCloud<T> >& result  );

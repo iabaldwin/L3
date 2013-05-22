@@ -215,9 +215,15 @@ void Experience::run()
             if ( resident_point_cloud->num_points != 0 )
             {
                 // Compute histogram
-                std::pair<double,double> min_bound = L3::min<double>( &*resident_point_cloud );
-                std::pair<double,double> max_bound = L3::max<double>( &*resident_point_cloud );
-                std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
+                //std::pair<double,double> min_bound = L3::min<double>( &*resident_point_cloud );
+                //std::pair<double,double> max_bound = L3::max<double>( &*resident_point_cloud );
+                //std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
+
+                boost::tuple<double,double,double> min_bound = L3::min<double>( &*resident_point_cloud );
+                boost::tuple<double,double,double> max_bound = L3::max<double>( &*resident_point_cloud );
+                boost::tuple<double,double,double> means     = L3::mean( &*resident_point_cloud );
+
+
 
                 //L3::BoxSmoother< double, 3 > smoother; 
                 L3::GaussianSmoother< double > smoother; 
@@ -231,12 +237,20 @@ void Experience::run()
 
                     WriteLock lock( current_histogram->mutex );
 
-                    current_histogram->create(  means.first, 
-                            min_bound.first, 
-                            max_bound.first,
-                            means.second,                   
-                            min_bound.second, 
-                            max_bound.second );
+                    //current_histogram->create(  means.first, 
+                            //min_bound.first, 
+                            //max_bound.first,
+                            //means.second,                   
+                            //min_bound.second, 
+                            //max_bound.second );
+
+                    current_histogram->create(  means.get<0>(), 
+                            min_bound.get<0>(), 
+                            max_bound.get<0>(),
+                            means.get<1>(),                   
+                            min_bound.get<1>(), 
+                            max_bound.get<1>());
+
 
 
                     current_histogram->operator()( resident_point_cloud.get() );

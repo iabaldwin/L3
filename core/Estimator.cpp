@@ -237,6 +237,7 @@ namespace L3
                 //smoother.smooth( &swathe_histogram );
 
                 //static int counter = 0;
+                //std::cout << counter++ << std::endl;
                 //if ( counter++ == 400 )
                 //{
                     //std::ofstream stream( "swathe.cloud" );
@@ -299,7 +300,6 @@ namespace L3
 
                 static int counter = 0;
               
-                //std::cout << counter << std::endl;
                 if ( counter++ == -1 )
                 {
                     int swathe_counter = 0;
@@ -346,7 +346,6 @@ namespace L3
             
             discrete_estimators[0]->operator()( swathe, estimate );
             std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
-            std::cout << *it << std::endl;
             SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
             discrete_estimators[1]->operator()( swathe, refined );
@@ -361,8 +360,8 @@ namespace L3
             it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
             refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
 
-            //return refined;
-            return L3::SE3::ZERO();
+            return refined;
+            //return L3::SE3::ZERO();
         }
 
     template < typename T>

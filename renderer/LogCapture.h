@@ -32,7 +32,7 @@ namespace Visualisers
 
         struct LogCapture : glv::TextView
         {
-            LogCapture()
+            LogCapture() : glv::TextView( glv::Rect( 600,300 ) )
             {
                 //sb.open(OutputSink());
                 sb.open(sink);

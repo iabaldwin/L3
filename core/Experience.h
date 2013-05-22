@@ -246,10 +246,11 @@ struct ExperienceBuilder
                 std::cout << point_cloud->num_points << " points in " << t.elapsed() << "s" << std::endl;
 #endif
                 // Compute mean
-                std::pair<double,double> means = mean( point_cloud.get()  );
+                boost::tuple<double,double,double> means = mean( point_cloud.get()  );
 
-                std::cout << means.first << " " << means.second << std::endl;
-              
+                //std::cout << means.first << " " << means.second << std::endl;
+                std::cout << means.get<0>() << " " << means.get<1>() << std::endl;
+
                 //  Writing : DATA
                 //  1. Write points 
                 unsigned int payload_size = point_cloud->num_points*sizeof(L3::Point<double>);
@@ -258,8 +259,14 @@ struct ExperienceBuilder
                 //  1. Write the ID
                 experience_index.write( (char*)(&id), sizeof(int) ); id++;
                 //  2. write the x,y location
-                experience_index.write( (char*)(&means.first), sizeof(double) );
-                experience_index.write( (char*)(&means.second), sizeof(double) );
+                //experience_index.write( (char*)(&means.first), sizeof(double) );
+                //experience_index.write( (char*)(&means.second), sizeof(double) );
+              
+                // Changes
+                experience_index.write( (char*)(&means.get<0>()), sizeof(double) );
+                experience_index.write( (char*)(&means.get<1>()), sizeof(double) );
+              
+
                 //  3. write the start position
                 experience_index.write( (char*)(&stream_position), sizeof(unsigned int) );
                 //  4. write the payload size

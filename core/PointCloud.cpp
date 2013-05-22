@@ -17,7 +17,7 @@ namespace L3
         }
 
     template< typename T >
-        std::pair<T,T> mean( PointCloud<T>* cloud )
+        boost::tuple<T,T,T> mean( PointCloud<T>* cloud )
         {
             typename L3::PointCloud<T>::ITERATOR it = cloud->begin();
 
@@ -37,11 +37,11 @@ namespace L3
                 it++;
             }
 
-            return std::make_pair(x/(T)cloud->num_points,y/(T)cloud->num_points);
+            return boost::tuple<T,T,T>( x/(T)cloud->num_points, y/(T)cloud->num_points, z/(T)cloud->num_points );
         }
 
     template< typename T >
-        std::pair<T,T> min( PointCloud<T>* cloud )
+        boost::tuple<T,T,T>  min( PointCloud<T>* cloud )
         {
             typename L3::PointCloud<T>::ITERATOR it = cloud->begin();
 
@@ -61,11 +61,11 @@ namespace L3
                 it++;
             }
 
-            return std::make_pair(x,y);
+            return boost::tuple<T,T,T>( x,y,z);
         }
 
     template< typename T >
-        std::pair<T,T> max( PointCloud<T>* cloud )
+        boost::tuple<T,T,T> max( PointCloud<T>* cloud )
         {
             typename L3::PointCloud<T>::ITERATOR it = cloud->begin();
 
@@ -85,7 +85,7 @@ namespace L3
                 it++;
             }
 
-            return std::make_pair(x,y);
+            return boost::tuple<T,T,T>(x,y,z);
         }
 
     template <typename T>
@@ -290,14 +290,14 @@ template void                           L3::transform( L3::PointCloud<double>*, 
 template void                           L3::translate( L3::PointCloud<double>*, L3::SE3 const* );
 template bool                           L3::copy( PointCloud<double>*, PointCloud<double>*);
 
-template std::pair<double, double>      L3::mean<double>(L3::PointCloud<double>*);
-template std::pair<float, float>        L3::mean<float>(L3::PointCloud<float>*);
+template boost::tuple<double, double, double>      L3::mean<double>(L3::PointCloud<double>*);
+template boost::tuple<float, float, float>        L3::mean<float>(L3::PointCloud<float>*);
 template bool L3::join( std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds, boost::shared_ptr<L3::PointCloud<double> >& result );
 template void                           L3::centerPointCloud<double>( PointCloud<double>* cloud );
 
 template bool                           L3::sample( L3::PointCloud<double>*,  L3::PointCloud<double>*, int, bool );
-template std::pair<double,double>       L3::max( PointCloud<double>* );
-template std::pair<double,double>       L3::min( PointCloud<double>* );
+template boost::tuple<double,double,double>       L3::max( PointCloud<double>* );
+template boost::tuple<double,double,double>       L3::min( PointCloud<double>* );
 
 template void                           L3::gaussianCloud( PointCloud<double>*, double, double );
 

@@ -53,14 +53,9 @@ namespace L3
             //boost::shared_ptr< CustomTable > table = boost::make_shared< CustomTable >( "x,", 0, 0 );
             boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
             top << *table;
-
             tables.push_back( table );
 
-            //log_capture.reset( new LogCapture() );
-            //std::cout << "HI" << std::endl;
-            //std::cout << "THERE" << std::endl;
-            //log_capture->bringToFront();
-            //top << *log_capture;
+            
         }
 
 
@@ -149,6 +144,12 @@ namespace L3
             // Statistics
             statistics.reset( new Statistics() );
             (*ancillary_2) << *statistics;
+
+            //std::cout << "HI" << std::endl;
+            //log_capture.reset( new LogCapture() );
+            //std::cout << "THERE" << std::endl;
+            //log_capture->bringToFront();
+            //(*ancillary_2) << *log_capture;
 
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
