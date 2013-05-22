@@ -144,7 +144,7 @@ namespace Visualisers
     /*
      *  Grid [spatial]
      */
-    void SpatialGrid::onDraw3D(glv::GLV& g)
+    void DynamicGrid::onDraw3D(glv::GLV& g)
     { 
   
         int rounded_x = (int)(current_x)-(int(current_x) % 100) ;

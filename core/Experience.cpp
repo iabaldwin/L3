@@ -48,9 +48,9 @@ bool StrictlyRetrospectivePolicy::operator()( std::deque< experience_section>* s
     
     int window_cpy(window);
 
-    for( int i=0; i< distances.size();i++ )
-        std::cout << distances[i].second << " ";
-    std::cout << std::endl << "------------------------" << std::endl;
+    //for( int i=0; i< distances.size();i++ )
+        //std::cout << distances[i].second << " ";
+    //std::cout << std::endl << "------------------------" << std::endl;
 
     //Here is the magic
     for( unsigned int i=distances.front().second; window_cpy-->0  && i>=0; i-- )

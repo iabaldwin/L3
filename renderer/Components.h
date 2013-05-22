@@ -494,10 +494,10 @@ namespace Visualisers
     /*
      *  Spatial grid
      */
-    struct SpatialGrid : Grid, SpatialObserver
+    struct DynamicGrid : Grid, SpatialObserver
     {
 
-        SpatialGrid( float lower=-500, float upper=500, float spacing=50)
+        DynamicGrid( float lower=-500, float upper=500, float spacing=50)
             : Grid( lower, upper, spacing ),
             current_x(0.0),
             current_y(0.0)

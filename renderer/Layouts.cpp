@@ -161,9 +161,9 @@ namespace L3
        
             boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
             (*table) << ancillary_2.get();
+            tables.push_back( table );
             
             top << *table;
-            tables.push_back( table );
         }
 
         bool DatasetLayout::load( L3::DatasetRunner* runner )
@@ -258,7 +258,7 @@ namespace L3
             spatial_updater->provider = runner->provider;
             spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( grid.get() ) ) );
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) );
-            grid.reset( new SpatialGrid() );
+            grid.reset( new DynamicGrid() );
             composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) ) );
             spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( grid.get() ) );
   
@@ -311,7 +311,7 @@ namespace L3
             histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( boost::shared_ptr<L3::Histogram<double> >() ) );
 
             /*
-             *  Debug Cost visualisation
+             *  Debug algorithm renderer
              */
             debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
            
@@ -324,6 +324,10 @@ namespace L3
 
             top << *debug_algorithm_renderer;
             tables.push_back( debug_algorithm_renderer );
+       
+            /*
+             *  Current algorithm renderer
+             */
         }
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -370,8 +374,42 @@ namespace L3
              *  Experience overview
              */
             experience_window->attachVariable( runner->experience->window );
-       
-            debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )) ;
+  
+            /*
+             *  Table based algorithm renderer
+             */
+
+            algorithm_renderer = AlgorithmRendererFactory::Produce( runner->algorithm );
+
+            if (algorithm_renderer)
+            {
+                // Already there?
+                std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), algorithm_renderer );
+
+                if ( it != tables.end() )
+                {
+                    //(*it)->remove();
+                    tables.erase( it );
+                }
+
+                else
+                {
+                    tables.push_back( algorithm_renderer );
+                    top << *algorithm_renderer;
+                }
+            }
+
+            /*
+             *  Debug algorithm renderer - render costs,etc at INS pose
+             */
+            if (!debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )))
+            {
+                std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), debug_algorithm_renderer );
+          
+                if ( it != tables.end() )
+                    tables.erase( it );
+            }
+
         }
     }
 }

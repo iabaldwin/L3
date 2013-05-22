@@ -14,6 +14,7 @@
 #include "QueryInterface.h"
 #include "LogCapture.h"
 #include "DebugAlgorithmRenderer.h"
+#include "AlgorithmRenderer.h"
 
 namespace L3
 {
@@ -174,9 +175,6 @@ namespace Visualisers
 
             boost::shared_ptr< LogCapture > log_capture;
 
-            //std::deque< boost::shared_ptr< CustomTable > > display_table;
-            //std::deque< boost::shared_ptr< CustomTable > > tables;
-           
             boost::shared_ptr< TableToggler > toggler;
             std::deque< boost::shared_ptr< glv::Table > > tables;
           
@@ -294,7 +292,8 @@ namespace Visualisers
             boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
     
             boost::shared_ptr< L3::Visualisers::DebugAlgorithmRenderer >    debug_algorithm_renderer;
-    
+
+            boost::shared_ptr< AlgorithmVisualiser > algorithm_renderer;
     };
 
 } 

@@ -127,15 +127,6 @@ namespace L3
                 p_i = (p_i == 0) ? std::numeric_limits<T>::epsilon() : p_i;
                 q_i = (q_i == 0) ? std::numeric_limits<T>::epsilon() : q_i;
 
-                //policy->P( p_i );
-                //policy->Q( q_i );
-
-                //if ( q_i==0 || p_i ==0 || q_norm==0 || p_norm == 0 )
-                    //{
-                    //std::cout << p << "," << p_norm << " " << q << q_norm << std::endl;
-                    //exit(1);
-                    //}
-
                 return boost::math::log1p( (p_i/q_i))*p_i;
             }
 
@@ -175,66 +166,7 @@ namespace L3
 
                 int size = experience.hist->nx*experience.hist->ny;
 
-                double* exp_copy = new double[size];
-                double* swathe_copy = new double[size];
-
-                std::copy( experience.hist->bin, experience.hist->bin+size, exp_copy );
-                std::copy( swathe.hist->bin, swathe.hist->bin+size, swathe_copy );
-
-                //std::transform( exp_copy, exp_copy+size, exp_copy,std::bind2nd( std::plus<double>(), std::numeric_limits<double>::epsilon() ) );
-                //std::transform( swathe_copy, swathe_copy+size, swathe_copy, std::bind2nd( std::plus<double>(), std::numeric_limits<double>::epsilon() ) );
-
-                std::transform( exp_copy, exp_copy+size, exp_copy,std::bind2nd( std::plus<double>(), 1.0 ));
-                std::transform( swathe_copy, swathe_copy+size, swathe_copy, std::bind2nd( std::plus<double>(), 1.0) );
-
-                std::transform( exp_copy, exp_copy+size, exp_copy,std::bind2nd( std::divides<double>(), experience.normalizer()+1 ) );
-                std::transform( swathe_copy, swathe_copy+size, swathe_copy, std::bind2nd( std::divides<double>(), swathe.normalizer() + 1 ) );
-
-                //mi = -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, experience.hist->nx*experience.hist->ny);
-                double mi = -1*calculateMutualInformation( exp_copy, swathe_copy, size );
-
-                //return mi;
-
-                //int num_bins = 256;
-
-                //gsl_histogram2d* joint = gsl_histogram2d_alloc( num_bins, num_bins );
-                //gsl_histogram* swathe_marginal = gsl_histogram_alloc( num_bins );
-                //gsl_histogram* experience_marginal = gsl_histogram_alloc( num_bins );
-
-                //// Find max of both
-                //double max_val = (std::max( experience.max(), swathe.max() ))+.5;
-                //double min_val = (std::min( experience.min(), swathe.min() ));
-
-                //gsl_histogram2d_set_ranges_uniform( joint, min_val, max_val, min_val, max_val );
-                //gsl_histogram_set_ranges_uniform( swathe_marginal, min_val, max_val ) ;
-                //gsl_histogram_set_ranges_uniform( experience_marginal, min_val, max_val ) ;
-
-                //double* experience_data = experience.hist->bin;
-                //double* swathe_data = swathe.hist->bin;
-
-                //for( int i=0; i< swathe.hist->nx*swathe.hist->ny; i++ )
-                //{
-                    //gsl_histogram2d_increment( joint,               *experience_data, *swathe_data );
-                    //gsl_histogram_increment( swathe_marginal,       *swathe_data ) ;
-                    //gsl_histogram_increment( experience_marginal,   *experience_data );
-                    
-                    //experience_data++;
-                    //swathe_data++;
-                //}
-
-                //double mi = (compute_entropy(swathe_marginal) + compute_entropy(experience_marginal)) - compute_entropy(joint);
-
-                //if( std::isnan( mi ) )
-                    //exit(-1);
-
-                
-                //gsl_histogram2d_free( joint );
-                //gsl_histogram_free( swathe_marginal );
-                //gsl_histogram_free( experience_marginal );
-
-                delete [] exp_copy;
-                delete [] swathe_copy;
-                return mi;
+                return -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, size);
             }
 
 
@@ -270,8 +202,8 @@ namespace L3
 
             void operator()()
             {
-                //boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
-                hypothesis.reset( new L3::PointCloud<double>() );
+                boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
+                //hypothesis.reset( new L3::PointCloud<double>() );
 
                 /*
                  *  Copy point cloud
@@ -286,22 +218,22 @@ namespace L3
                 /*
                  *  Histogram
                  */
-                //L3::Histogram<double> swathe_histogram;
-                swathe_histogram.reset( new L3::Histogram<double>() );
+                L3::Histogram<double> swathe_histogram;
+                //swathe_histogram.reset( new L3::Histogram<double>() );
 
-                //if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram ) )
-                if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), swathe_histogram.get() ) )
+                //if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), swathe_histogram.get() ) )
+                if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram ) )
                     return;
                 
                 // Produce swathe histogram
-                //swathe_histogram( hypothesis.get() );
-                (*swathe_histogram)( hypothesis.get() );
+                swathe_histogram( hypothesis.get() );
+                //(*swathe_histogram)( hypothesis.get() );
 
                 /*
                  *  Smoothing
                  */
-                L3::GaussianSmoother< double> smoother;
-                smoother.smooth( swathe_histogram.get() );
+                //L3::GaussianSmoother< double> smoother;
+                //smoother.smooth( swathe_histogram.get() );
                 //smoother.smooth( &swathe_histogram );
 
                 //static int counter = 0;
@@ -333,8 +265,8 @@ namespace L3
 
 
                 // Compute cost
-                //*result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
-                *result_iterator = cost_function->operator()( *this->experience, *swathe_histogram );
+                //*result_iterator = cost_function->operator()( *this->experience, *swathe_histogram );
+                *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
 
         };
@@ -345,12 +277,14 @@ namespace L3
         template < typename T >
             bool DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
+                L3::WriteLock master( this->mutex );
+
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
                 
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
-                //L3::ReadLock swathe_lock( swathe->mutex );
+                L3::ReadLock swathe_lock( swathe->mutex );
 
                 if (swathe->num_points == 0 ) 
                     return false;
@@ -361,18 +295,47 @@ namespace L3
                 L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
                 
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
-
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
 
-                while( it != this->pose_estimates->estimates.end() )
+                static int counter = 0;
+              
+                //std::cout << counter << std::endl;
+                if ( counter++ == -1 )
                 {
-                    group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                    it++;
+                    int swathe_counter = 0;
+                    while( it != this->pose_estimates->estimates.end() )
+                    {
+                        Hypothesis h( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ );
+                        h();
+
+                        std::stringstream ss;
+
+                        ss << "clouds/cloud_" << swathe_counter++ << ".dat";
+
+                        std::ofstream stream( ss.str().c_str() );
+                        stream << *(h.hypothesis );
+                        stream.close();
+
+                        stream.open( "experience.hist" );
+                        stream << *(this->experience_histogram);
+                        stream.close();
+
+
+                        it++;
+                   
+                    }
                 }
+                else
+                {
+                    while( it != this->pose_estimates->estimates.end() )
+                    {
+                        group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
+                        it++;
+                    }
 
-                // Synch
-                group.wait();
-
+                    // Synch
+                    group.wait();
+                }
                 return true;
             }
 
@@ -383,19 +346,20 @@ namespace L3
             
             discrete_estimators[0]->operator()( swathe, estimate );
             std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
+            std::cout << *it << std::endl;
             SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
-            //discrete_estimators[1]->operator()( swathe, refined );
-            //it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
-            //refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
+            discrete_estimators[1]->operator()( swathe, refined );
+            it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
+            refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
 
-            //discrete_estimators[2]->operator()( swathe, refined );
-            //it = std::min_element( discrete_estimators[2]->pose_estimates->costs.begin() , discrete_estimators[2]->pose_estimates->costs.end() );
-            //refined = discrete_estimators[2]->pose_estimates->estimates[ std::distance( discrete_estimators[2]->pose_estimates->costs.begin(), it )] ;
+            discrete_estimators[2]->operator()( swathe, refined );
+            it = std::min_element( discrete_estimators[2]->pose_estimates->costs.begin() , discrete_estimators[2]->pose_estimates->costs.end() );
+            refined = discrete_estimators[2]->pose_estimates->estimates[ std::distance( discrete_estimators[2]->pose_estimates->costs.begin(), it )] ;
 
-            //discrete_estimators[3]->operator()( swathe, refined );
-            //it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
-            //refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
+            discrete_estimators[3]->operator()( swathe, refined );
+            it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
+            refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
 
             //return refined;
             return L3::SE3::ZERO();

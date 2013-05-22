@@ -147,9 +147,9 @@ struct EstimatorRunner : DatasetRunner
     
     boost::shared_ptr< L3::SE3 > estimated;
 
-    L3::Experience*                         experience;
-    L3::ConstantTimeWindower<L3::LHLV>*     windower;
-    boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm;
+    L3::Experience*                                         experience;
+    L3::ConstantTimeWindower<L3::LHLV>*                     windower;
+    boost::shared_ptr< L3::Estimator::Algorithm<double> >   algorithm;
 
     bool update( double time );
 

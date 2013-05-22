@@ -152,7 +152,7 @@ namespace Estimator
      * Estimator types
      */
     template < typename T >
-        struct Estimator 
+        struct Estimator : Lockable
         {
             Estimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<double> > experience ) 
                 : cost_function(f), 

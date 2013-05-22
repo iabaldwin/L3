@@ -19,8 +19,9 @@ include_directories( "/Users/ian/code/thirdparty/bullet/Demos/OpenGL/" )
 add_library( L3Vis 
                 RenderCore.cpp
                 Visualisers.cpp 
-                ViewController.cpp 
                 Components.cpp 
+                AlgorithmRenderer.cpp
+                ViewController.cpp 
                 Layouts.cpp 
                 Imagery.cpp
                 GLVInterface.cpp
