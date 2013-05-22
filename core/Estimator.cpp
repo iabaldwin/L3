@@ -123,7 +123,6 @@ namespace L3
                 double p_i = p/p_norm;
                 double q_i = q/q_norm;
 
-
                 // Policy should be here
                 p_i = (p_i == 0) ? std::numeric_limits<T>::epsilon() : p_i;
                 q_i = (q_i == 0) ? std::numeric_limits<T>::epsilon() : q_i;
@@ -171,52 +170,71 @@ namespace L3
         template < typename T >
             double MICostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
             {
-                double experience_normalizer = experience.normalizer();
-                double swathe_normalizer     = swathe.normalizer();
-
-                if( swathe_normalizer == 0 || experience_normalizer  == 0 )
+                if ( experience.empty() || swathe.empty() )
                     return std::numeric_limits<T>::infinity();
 
-                int num_bins = 100;
+                int size = experience.hist->nx*experience.hist->ny;
 
-                gsl_histogram2d* joint = gsl_histogram2d_alloc( num_bins, num_bins );
-                gsl_histogram* swathe_marginal = gsl_histogram_alloc( num_bins );
-                gsl_histogram* experience_marginal = gsl_histogram_alloc( num_bins );
+                double* exp_copy = new double[size];
+                double* swathe_copy = new double[size];
 
-                // Find max of both
-                double max_val = (std::max( experience.max(), swathe.max() ))+.5;
+                std::copy( experience.hist->bin, experience.hist->bin+size, exp_copy );
+                std::copy( swathe.hist->bin, swathe.hist->bin+size, swathe_copy );
 
-                gsl_histogram2d_set_ranges_uniform( joint, 0, max_val, 0, max_val );
-                gsl_histogram_set_ranges_uniform( swathe_marginal, 0, max_val ) ;
-                gsl_histogram_set_ranges_uniform( experience_marginal, 0, max_val ) ;
+                //std::transform( exp_copy, exp_copy+size, exp_copy,std::bind2nd( std::plus<double>(), std::numeric_limits<double>::epsilon() ) );
+                //std::transform( swathe_copy, swathe_copy+size, swathe_copy, std::bind2nd( std::plus<double>(), std::numeric_limits<double>::epsilon() ) );
 
-                double* experience_data = experience.hist->bin;
-                double* swathe_data = swathe.hist->bin;
+                std::transform( exp_copy, exp_copy+size, exp_copy,std::bind2nd( std::plus<double>(), 1.0 ));
+                std::transform( swathe_copy, swathe_copy+size, swathe_copy, std::bind2nd( std::plus<double>(), 1.0) );
 
-                for( int i=0; i< swathe.hist->nx*swathe.hist->ny; i++ )
-                {
-                    gsl_histogram2d_increment( joint, *experience_data, *swathe_data );
+                std::transform( exp_copy, exp_copy+size, exp_copy,std::bind2nd( std::divides<double>(), experience.normalizer()+1 ) );
+                std::transform( swathe_copy, swathe_copy+size, swathe_copy, std::bind2nd( std::divides<double>(), swathe.normalizer() + 1 ) );
 
-                    gsl_histogram_increment( swathe_marginal, *swathe_data ) ;
-                    gsl_histogram_increment( experience_marginal, *experience_data );
+                //mi = -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, experience.hist->nx*experience.hist->ny);
+                double mi = -1*calculateMutualInformation( exp_copy, swathe_copy, size );
+
+                //return mi;
+
+                //int num_bins = 256;
+
+                //gsl_histogram2d* joint = gsl_histogram2d_alloc( num_bins, num_bins );
+                //gsl_histogram* swathe_marginal = gsl_histogram_alloc( num_bins );
+                //gsl_histogram* experience_marginal = gsl_histogram_alloc( num_bins );
+
+                //// Find max of both
+                //double max_val = (std::max( experience.max(), swathe.max() ))+.5;
+                //double min_val = (std::min( experience.min(), swathe.min() ));
+
+                //gsl_histogram2d_set_ranges_uniform( joint, min_val, max_val, min_val, max_val );
+                //gsl_histogram_set_ranges_uniform( swathe_marginal, min_val, max_val ) ;
+                //gsl_histogram_set_ranges_uniform( experience_marginal, min_val, max_val ) ;
+
+                //double* experience_data = experience.hist->bin;
+                //double* swathe_data = swathe.hist->bin;
+
+                //for( int i=0; i< swathe.hist->nx*swathe.hist->ny; i++ )
+                //{
+                    //gsl_histogram2d_increment( joint,               *experience_data, *swathe_data );
+                    //gsl_histogram_increment( swathe_marginal,       *swathe_data ) ;
+                    //gsl_histogram_increment( experience_marginal,   *experience_data );
                     
-                    experience_data++;
-                    swathe_data++;
-                }
+                    //experience_data++;
+                    //swathe_data++;
+                //}
 
-                double mi = compute_entropy(swathe_marginal) + compute_entropy(experience_marginal) - compute_entropy(joint);
+                //double mi = (compute_entropy(swathe_marginal) + compute_entropy(experience_marginal)) - compute_entropy(joint);
 
-                if( std::isnan( mi ) )
-                {
-                    std::cout << "INVALID" << std::endl;
-                    mi = std::numeric_limits<T>::infinity();
-                }
+                //if( std::isnan( mi ) )
+                    //exit(-1);
 
-                gsl_histogram2d_free( joint );
-                gsl_histogram_free( swathe_marginal );
-                gsl_histogram_free( experience_marginal );
+                
+                //gsl_histogram2d_free( joint );
+                //gsl_histogram_free( swathe_marginal );
+                //gsl_histogram_free( experience_marginal );
 
-                return -1*mi;
+                delete [] exp_copy;
+                delete [] swathe_copy;
+                return mi;
             }
 
 
@@ -248,13 +266,11 @@ namespace L3
              *Changes
              */
             boost::shared_ptr< L3::Histogram<double> > swathe_histogram;
-            boost::shared_ptr< L3::Histogram<double> > swathe_hist;
             boost::shared_ptr< L3::PointCloud<double> > hypothesis;
 
             void operator()()
             {
                 //boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
-
                 hypothesis.reset( new L3::PointCloud<double>() );
 
                 /*
@@ -271,7 +287,6 @@ namespace L3
                  *  Histogram
                  */
                 //L3::Histogram<double> swathe_histogram;
-
                 swathe_histogram.reset( new L3::Histogram<double>() );
 
                 //if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram ) )
@@ -285,8 +300,37 @@ namespace L3
                 /*
                  *  Smoothing
                  */
-                L3::BoxSmoother< double, 5 > smoother;
+                L3::GaussianSmoother< double> smoother;
                 smoother.smooth( swathe_histogram.get() );
+                //smoother.smooth( &swathe_histogram );
+
+                //static int counter = 0;
+                //if ( counter++ == 400 )
+                //{
+                    //std::ofstream stream( "swathe.cloud" );
+                    //stream << *hypothesis;
+                    //stream.close();
+                   
+                    //stream.open( "experience.hist" );
+                    //stream << *experience;
+                    //stream.close();
+
+                    ////stream.open( "experience_smoothed.hist" );
+                    ////std::copy( exp_copy, exp_copy+size, std::ostream_iterator<double>( stream, " " ) );
+                    ////stream.close();
+
+                    //stream.open( "swathe.hist") ;
+                    //stream << swathe;
+                    //stream.close();
+
+                    ////stream.open( "swathe_smoothed.hist" );
+                    ////std::copy( swathe_copy, swathe_copy+size, std::ostream_iterator<double>( stream, " " ) );
+                    ////stream.close();
+
+                    //exit(-1);
+
+                //}
+
 
                 // Compute cost
                 //*result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
@@ -303,14 +347,14 @@ namespace L3
             {
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
-
+                
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
-                L3::ReadLock swathe_lock( swathe->mutex );
+                //L3::ReadLock swathe_lock( swathe->mutex );
 
                 if (swathe->num_points == 0 ) 
                     return false;
-
+                
                 /*
                  *  Speed considerations
                  */
@@ -335,30 +379,33 @@ namespace L3
     template < typename T>
         SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
         {
+            L3::ReadLock swathe_lock( swathe->mutex );
+            
             discrete_estimators[0]->operator()( swathe, estimate );
             std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
             SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
-            discrete_estimators[1]->operator()( swathe, refined );
-            it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
-            refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
+            //discrete_estimators[1]->operator()( swathe, refined );
+            //it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
+            //refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
 
-            discrete_estimators[2]->operator()( swathe, refined );
-            it = std::min_element( discrete_estimators[2]->pose_estimates->costs.begin() , discrete_estimators[2]->pose_estimates->costs.end() );
-            refined = discrete_estimators[2]->pose_estimates->estimates[ std::distance( discrete_estimators[2]->pose_estimates->costs.begin(), it )] ;
+            //discrete_estimators[2]->operator()( swathe, refined );
+            //it = std::min_element( discrete_estimators[2]->pose_estimates->costs.begin() , discrete_estimators[2]->pose_estimates->costs.end() );
+            //refined = discrete_estimators[2]->pose_estimates->estimates[ std::distance( discrete_estimators[2]->pose_estimates->costs.begin(), it )] ;
 
-            discrete_estimators[3]->operator()( swathe, refined );
-            it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
-            refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
+            //discrete_estimators[3]->operator()( swathe, refined );
+            //it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
+            //refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
 
-            return refined;
+            //return refined;
+            return L3::SE3::ZERO();
         }
 
     template < typename T>
         SE3 PassThrough<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
                 // Lock the experience histogram
-                L3::ReadLock( (*pyramid)[0]->mutex );
+                L3::ReadLock histogram_read_lock( (*pyramid)[1]->mutex );
                 L3::ReadLock swathe_lock( swathe->mutex );
 
                 if (swathe->num_points == 0 ) 
@@ -367,22 +414,22 @@ namespace L3
                 /*
                  *  Speed considerations
                  */
-                //L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
+                L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
 
-                //std::vector< double > costs(1);
+                std::vector< double > costs(1);
 
                 //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                //Hypothesis h( swathe, &estimate, (*pyramid)[0].get() , this->cost_function, costs.begin() );
-                //h();
+                Hypothesis h( swathe, &estimate, (*pyramid)[1].get() , this->cost_function, costs.begin() );
+                h();
 
-                //if( h.swathe_histogram->empty() )
-                    //return L3::SE3::ZERO(); 
+                if( h.swathe_histogram->empty() )
+                    return L3::SE3::ZERO(); 
 
-                //L3::WriteLock ( this->data.swathe_histogram->mutex ); 
-                //L3::clone( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
+                L3::WriteLock ( this->data.swathe_histogram->mutex ); 
+                L3::clone( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
               
-                //L3::WriteLock ( this->data.experience_histogram->mutex ); 
-                //L3::clone( (*pyramid)[0].get(), this->data.experience_histogram.get() );
+                L3::WriteLock ( this->data.experience_histogram->mutex ); 
+                L3::clone( (*pyramid)[0].get(), this->data.experience_histogram.get() );
 
                 return L3::SE3::ZERO();
             }

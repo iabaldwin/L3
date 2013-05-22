@@ -40,7 +40,7 @@ namespace Visualisers
         Updater& operator<<( Updateable* updateable )
         {
             updateables.push_front( updateable );
-       
+
             return *this;
         }
     };
@@ -148,52 +148,50 @@ namespace Visualisers
 
     };
 
-    
+
     /*
      *  Text
      */
     template <typename T> 
         struct TextRenderer : glv::View
+    {
+        struct variable_lock
         {
-
-            struct variable_lock
+            variable_lock( T& t ) : t(t)
             {
-                variable_lock( T& t ) : t(t)
-                {
-
-                }
-           
-                T& t;
-            };
-
-            explicit TextRenderer() : glv::View( glv::Rect(150,25 ) )
-            {
-                this->disable( glv::DrawBorder );
-            }
-            
-            boost::shared_ptr< variable_lock > lock;
-
-            void setVariable( T& t )
-            {
-                lock.reset( new variable_lock( t ) );
             }
 
-            void onDraw(glv::GLV& g)
-            {
-                glv::draw::color(1);
-                glv::draw::lineWidth(2);
-
-                std::stringstream ss;
-                ss.precision( 15 );
-
-                if( lock )
-                {
-                ss << lock->t;
-                }
-                glv::draw::text( ss.str().c_str() );
-            }
-
+            T& t;
         };
+
+        explicit TextRenderer() : glv::View( glv::Rect(150,25 ) )
+        {
+            this->disable( glv::DrawBorder );
+        }
+
+        boost::shared_ptr< variable_lock > lock;
+
+        void setVariable( T& t )
+        {
+            lock.reset( new variable_lock( t ) );
+        }
+
+        void onDraw(glv::GLV& g)
+        {
+            glv::draw::color(1);
+            glv::draw::lineWidth(2);
+
+            std::stringstream ss;
+            ss.precision( 15 );
+
+            if( lock )
+            {
+                ss << lock->t;
+            }
+            glv::draw::text( ss.str().c_str() );
+        }
+
+    };
 
 
     struct Text3D : Leaf
@@ -244,7 +242,7 @@ namespace Visualisers
         label_tag tag;
 
         boost::shared_ptr< L3::Visualisers::LeafLabel > label;
-        
+
     };
 
 
@@ -264,7 +262,7 @@ namespace Visualisers
 
             // Appropriate view-point
             position.translateZ( -250 );
-       
+
             this->enable( glv::Property::AlwaysBubble );
         }
 
@@ -428,8 +426,8 @@ namespace Visualisers
     {
         PointCloudRendererView( const glv::Rect& r, boost::shared_ptr< L3::PointCloud<double> > cloud, boost::shared_ptr< L3::SE3 > estimate ) 
             : PointCloudRenderer(cloud),
-                glv::View3D(r),
-                current_estimate(estimate)
+            glv::View3D(r),
+            current_estimate(estimate)
 
         {
             bounds_renderer.reset( new PointCloudBoundsRenderer( cloud ) );
@@ -498,13 +496,13 @@ namespace Visualisers
      */
     struct SpatialGrid : Grid, SpatialObserver
     {
-        
+
         SpatialGrid( float lower=-500, float upper=500, float spacing=50)
             : Grid( lower, upper, spacing ),
-                current_x(0.0),
-                current_y(0.0)
+            current_x(0.0),
+            current_y(0.0)
         {
-            
+
         }
 
         double current_x;
@@ -515,7 +513,7 @@ namespace Visualisers
             current_x = x;
             current_y = y;
         }
-        
+
         void onDraw3D(glv::GLV& g);
 
     };
@@ -535,7 +533,7 @@ namespace Visualisers
 
     };
 
-    
+
     /*
      *  Single pose orientation renderer
      */
@@ -693,9 +691,9 @@ namespace Visualisers
 
 
         }
-        
+
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
-        
+
         boost::shared_ptr< glv::View > label;
 
         void onDraw3D( glv::GLV& g );
@@ -800,7 +798,7 @@ namespace Visualisers
             : experience(experience), provider(provider)
         {
         }
-      
+
         boost::weak_ptr< L3::PoseProvider > provider;
         boost::weak_ptr< L3::Experience >   experience;
         boost::shared_array< glv::Color >   experience_nodes_colors;
@@ -813,7 +811,7 @@ namespace Visualisers
     {
         ExperienceLocationOverviewView( const glv::Rect& rect, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr<L3::PoseProvider>() ) 
             : ExperienceLocationOverview( experience, provider ), 
-                glv::View3D(rect)
+            glv::View3D(rect)
         {
             label.reset( new glv::Label("Experience" ) );
             label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
@@ -824,13 +822,13 @@ namespace Visualisers
 
             animation.reset( new AnimatedPoseRenderer( *current ) );
         }
-       
+
         boost::shared_ptr< L3::SE3 >    current;
         boost::shared_ptr< glv::View >  label;
         boost::shared_ptr< AnimatedPoseRenderer > animation;
-        
+
         void onDraw3D(glv::GLV& g);
-        
+
     };
 
 
@@ -839,7 +837,7 @@ namespace Visualisers
 
         DatasetOverviewView( const glv::Rect& rect, boost::shared_ptr< L3::Dataset > dataset, boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr< L3::PoseProvider >() ) 
             : glv::View3D(rect), 
-                provider( provider )
+            provider( provider )
         {
             boost::scoped_ptr <L3::IO::BinaryReader< L3::SE3 > > pose_reader( ( new L3::IO::BinaryReader<L3::SE3>() ) ) ;
 
@@ -849,17 +847,17 @@ namespace Visualisers
                 pose_reader->read();
                 pose_reader->extract( *poses );
             }
-       
+
             current_pose.reset( new L3::SE3( L3::SE3::ZERO() ) );
-       
+
             renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *current_pose ) );
         }
-        
+
         boost::shared_ptr< L3::SE3 > current_pose;
         boost::shared_ptr< L3::Visualisers::AnimatedPoseRenderer > renderer;
         boost::weak_ptr< L3::PoseProvider > provider;
         boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > > poses;
-            
+
         void onDraw3D( glv::GLV& g );
     };
 
@@ -890,7 +888,7 @@ namespace Visualisers
         void onDraw3D(glv::GLV& g);
     };
 
-    
+
     /*
      *  Histogram :: Density renderer
      */
@@ -1001,7 +999,6 @@ namespace Visualisers
         HistogramVertexRenderer( const glv::Rect rect, boost::shared_ptr<L3::Histogram<double> > histogram ) 
             : HistogramRenderer(histogram), glv::View(rect)
         {
-            std::cout << "initialised" << std::endl;
         }
 
         void onDraw(glv::GLV& g);
@@ -1026,24 +1023,24 @@ namespace Visualisers
     {
         HistogramPyramidRendererView( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid, int num_pyramids ) 
             : HistogramPyramidRenderer(histogram_pyramid),
-                glv::Table( "x x x, "),
-                num_pyramids(num_pyramids)
+            glv::Table( "x x x, "),
+            num_pyramids(num_pyramids)
         {
             int width = 180;
             int start = 0;
-             for( int i=0; i< num_pyramids; i++ )
+            for( int i=0; i< num_pyramids; i++ )
             {
                 boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
                 renderers.push_back( renderer );
                 (*this) << renderer.get();
             }
 
-             if( histogram_pyramid )
-                 loadPyramid( histogram_pyramid );
-             
-             this->arrange();
+            if( histogram_pyramid )
+                loadPyramid( histogram_pyramid );
+
+            this->arrange();
         }
-           
+
         int num_pyramids;
         std::deque< boost::shared_ptr< HistogramDensityRenderer > > renderers;
 
@@ -1074,29 +1071,50 @@ namespace Visualisers
     };
 
 
-
-
-
-
-
-
-
-
-/*
- *  Chase
- */
-struct ChaseController : Controller, Leaf
-{
-    ChaseController( glv::View3D* view, control_t& position, L3::SE3& chase ) 
-        : Controller(position),
-            chase(chase)
+    struct Statistics : glv::Table
     {
-    }
+        Statistics();
+        
+        std::vector< boost::shared_ptr< glv::Label > > labels;
 
-    L3::SE3& chase;
-    
-    void onDraw3D( glv::GLV& g );
-};
+        boost::shared_ptr< TextRenderer<double> > observer_update;;
+        boost::shared_ptr< TextRenderer<double> > swathe_generation;;
+        boost::shared_ptr< TextRenderer<double> > points_per_second;
+        boost::shared_ptr< TextRenderer<double> > estimation;
+
+        void load( L3::DatasetRunner* runner )
+        {
+            observer_update->setVariable( runner->timings[0] );
+            swathe_generation->setVariable( runner->timings[1] );
+            points_per_second->setVariable( runner->timings[2] );
+            estimation->setVariable( runner->timings[3] );
+        }
+
+
+    };
+
+
+
+
+
+
+
+
+    /*
+     *  Chase
+     */
+    struct ChaseController : Controller, Leaf
+    {
+        ChaseController( glv::View3D* view, control_t& position, L3::SE3& chase ) 
+            : Controller(position),
+            chase(chase)
+        {
+        }
+
+        L3::SE3& chase;
+
+        void onDraw3D( glv::GLV& g );
+    };
 
 
 }   // Visualisers

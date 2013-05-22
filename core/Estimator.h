@@ -10,6 +10,8 @@
 #include "Histogram.h"
 #include "Smoother.h"
 
+#include "MI/MutualInformation.h"
+
 namespace L3
 {
 namespace Estimator

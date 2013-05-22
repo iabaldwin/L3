@@ -137,8 +137,8 @@ struct ExperienceLoader
 
         experience_index.close();
 
-        experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< KNNPolicy >() ), window_sections ) );
-        //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< StrictlyRetrospectivePolicy >() ), window_sections ) );
+        //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< KNNPolicy >() ), window_sections ) );
+        experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< StrictlyRetrospectivePolicy >() ), window_sections ) );
     }
         
 };

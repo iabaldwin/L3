@@ -40,14 +40,23 @@ namespace Visualisers
         std::deque< boost::shared_ptr< HistogramVertexRenderer > >    vertex_renderers;
         std::deque< boost::shared_ptr< HistogramDensityRenderer > >   density_renderers;
 
-        void setInstance( boost::shared_ptr< L3::Estimator::PassThrough<double> > algo)
+        bool setInstance( boost::shared_ptr< L3::Estimator::PassThrough<double> > algo)
         {
             this->algorithm = algo;
            
             boost::shared_ptr< L3::Estimator::PassThrough<double> > algo_ptr = this->algorithm.lock();
 
             if( !algo_ptr )
-                return;
+            {
+                this->disable( glv::Visible );
+                this->density_renderers[0]->disable( glv::Visible ); 
+                this->density_renderers[1]->disable( glv::Visible ); 
+                
+                this->vertex_renderers[0]->disable( glv::Visible ); 
+                this->vertex_renderers[1]->disable( glv::Visible ); 
+
+                return false;
+            }
 
             this->density_renderers[0]->hist = algo_ptr->data.swathe_histogram;
             this->density_renderers[1]->hist = algo_ptr->data.experience_histogram;
@@ -55,6 +64,8 @@ namespace Visualisers
 
             this->vertex_renderers[0]->hist = algo_ptr->data.swathe_histogram;
             this->vertex_renderers[1]->hist = algo_ptr->data.experience_histogram;
+       
+            return true;
         }
 
         boost::weak_ptr< L3::Estimator::PassThrough<double> > algorithm ;

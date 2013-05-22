@@ -80,6 +80,7 @@ class SE3 : public Pose
         static SE3 UNIT_Y();
         static SE3 UNIT_Z();
 
+        SE3();
         SE3( double X, double Y, double Z, double R, double P, double Q);
         SE3( const std::vector<double> v );
         

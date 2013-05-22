@@ -21,14 +21,35 @@ namespace L3
 
             bool update( double t );
 
-            bool predict( L3::SE3& predicted, L3::SE3& current );
+            bool predict( const L3::SE3& current );
 
-        private:
+        protected:
 
             L3::Iterator<L3::LHLV>*      LHLV_iterator;
 
             double previous_update;
 
+    };
+
+
+    class ParticleFilter : public Predictor
+    {
+
+        public:
+            ParticleFilter( L3::Iterator<L3::LHLV>* iterator, int num_particles = 100 ) 
+                : Predictor(iterator), num_particles(num_particles)
+            {
+                particles.resize( num_particles ); 
+            }
+
+            int num_particles;
+
+            std::vector< L3::SE3 > particles;
+
+            bool predict( const L3::SE3& current );
+
+            bool update( double t );
+            
     };
 
 }

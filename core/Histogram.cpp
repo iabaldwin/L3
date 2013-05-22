@@ -80,9 +80,9 @@ namespace L3
         EntropyAccumulator<double> accumulator( gsl_histogram_sum( histogram ) );
 
         return std::accumulate( histogram->bin, 
-                histogram->bin+(histogram->n),
-                0.0,
-                accumulator );
+                                histogram->bin+(histogram->n),
+                                0.0,
+                                accumulator );
     }
 
     double compute_entropy( gsl_histogram2d* histogram )
@@ -90,9 +90,9 @@ namespace L3
         EntropyAccumulator<double> accumulator( gsl_histogram2d_sum( histogram ) );
 
         return std::accumulate( histogram->bin, 
-                histogram->bin+(histogram->nx*histogram->ny),
-                0.0,
-                accumulator );
+                                histogram->bin+(histogram->nx*histogram->ny),
+                                0.0,
+                                accumulator );
     }
 
 

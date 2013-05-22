@@ -7,6 +7,16 @@
 namespace L3
 {
 
+    bool ParticleFilter::update( double t )
+    {
+
+    }
+
+    bool ParticleFilter::predict( const L3::SE3& current )
+    {
+
+    }
+
     bool Predictor::update( double t )
     {
         // 1. Find the element closest to the last upate
@@ -27,7 +37,7 @@ namespace L3
         previous_update = t;
     }
 
-    bool Predictor::predict( L3::SE3& predicted, L3::SE3& current )
+    bool Predictor::predict( const L3::SE3& current )
     {
         // Destructive resize 
         //chain.resize( std::distance( start, end ) );

@@ -58,6 +58,11 @@ SE3 SE3::UNIT_Z()
     return SE3(0,0,1,0,0,0);
 }
 
+SE3::SE3()
+{
+    x = y = z = r = p = q = 0;        
+}
+
 SE3::SE3( double x, double y, double z, double r, double p, double q)
     : x(x), y(y), z(z), 
         r(r), p(p), q(q)

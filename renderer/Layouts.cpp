@@ -110,7 +110,7 @@ namespace L3
             *ancillary_1 << *scan_matching_renderer;
            
             /*
-             *Text & controls
+             * Text & controls
              */
             ancillary_2.reset( new glv::Table("x , " ) );
             
@@ -141,12 +141,14 @@ namespace L3
             
             (*ancillary_2) << *experience_window;
 
-
             time_renderer.reset( new TextRenderer<double>() );
             time_renderer->pos(window.width()-155, window.height()-50 );
 
-            //top << *time_renderer;
             (*ancillary_2) << *time_renderer;
+
+            // Statistics
+            statistics.reset( new Statistics() );
+            (*ancillary_2) << *statistics;
 
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
@@ -259,7 +261,12 @@ namespace L3
             grid.reset( new SpatialGrid() );
             composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) ) );
             spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( grid.get() ) );
-    
+  
+            /*
+             *  Statistics
+             */
+            statistics->load( runner );
+                
             /*
              *  Update view
              */
@@ -268,6 +275,8 @@ namespace L3
 
             composite->position.x = -1*start_pose.X();
             composite->position.y = -1*start_pose.Y();
+        
+        
         }
 
         /*
@@ -279,42 +288,42 @@ namespace L3
             /*
              *  Histogram pyramid
              */
-            //pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView( boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 ) );
+            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView( boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 ) );
 
-            //for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
-                    //it != pyramid_renderer->renderers.end();
-                    //it++ )
-                //temporal_updater->operator<<( it->get() );
+            for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
+                    it != pyramid_renderer->renderers.end();
+                    it++ )
+                temporal_updater->operator<<( it->get() );
 
-            //(*tables[0]) << *pyramid_renderer;
+            (*tables[0]) << *pyramid_renderer;
 
-            //histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> >() ) );
-            //histogram_bounds_renderer->depth = -2.0 ;
+            histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> >() ) );
+            histogram_bounds_renderer->depth = -2.0 ;
 
             /*
              *  Cost visualisation
              */
-            //algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( boost::shared_ptr< L3::Estimator::Algorithm<double> >() ) );
+            algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( boost::shared_ptr< L3::Estimator::Algorithm<double> >() ) );
 
             /*
              *  Experience histogram voxel
              */
-            //histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( boost::shared_ptr<L3::Histogram<double> >() ) );
+            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( boost::shared_ptr<L3::Histogram<double> >() ) );
 
             /*
              *  Debug Cost visualisation
              */
-            //debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
+            debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
            
-            //for( int i=0; i<2; i++ )
-            //{
-                ////temporal_updater->operator<<( it->get() );
-                ////temporal_updater->operator<<( dynamic_cast< L3::Updateable* >( debug_algorithm_renderer->vertex_renderers[i].get() ) );
-                //temporal_updater->operator<<( dynamic_cast< Updateable* >( debug_algorithm_renderer->density_renderers[i].get() ) );
-            //}
+            for( int i=0; i<2; i++ )
+            {
+                //temporal_updater->operator<<( it->get() );
+                //temporal_updater->operator<<( dynamic_cast< L3::Updateable* >( debug_algorithm_renderer->vertex_renderers[i].get() ) );
+                temporal_updater->operator<<( dynamic_cast< Updateable* >( debug_algorithm_renderer->density_renderers[i].get() ) );
+            }
 
-            //top << *debug_algorithm_renderer;
-            //tables.push_back( debug_algorithm_renderer );
+            top << *debug_algorithm_renderer;
+            tables.push_back( debug_algorithm_renderer );
         }
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -327,42 +336,42 @@ namespace L3
             /*
              *  Experience & location
              */
-            //experience_location->experience = experience;
-            //experience_location->provider = runner->provider;
+            experience_location->experience = experience;
+            experience_location->provider = runner->provider;
 
             /*
              *  Stand-alone pyramid renderer
              */
-            //pyramid_renderer->loadPyramid( experience->experience_pyramid );
+            pyramid_renderer->loadPyramid( experience->experience_pyramid );
 
 
             /*
              *  Histogram Bounds
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) );
-            //histogram_bounds_renderer->hist = (*experience->experience_pyramid)[0];
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) );
+            histogram_bounds_renderer->hist = (*experience->experience_pyramid)[0];
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
 
             /*
              *  Histogram voxel
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf .get() ) );
-            //histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf .get() ) );
+            histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
 
             /*
              *  Predicted estimates
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            //algorithm_costs_renderer->algorithm = runner->algorithm;
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
+            algorithm_costs_renderer->algorithm = runner->algorithm;
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
             
             /*
              *  Experience overview
              */
-            //experience_window->attachVariable( runner->experience->window );
+            experience_window->attachVariable( runner->experience->window );
        
-            //debug_algorithm_renderer->setInstance(  boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm ));
+            debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )) ;
         }
     }
 }

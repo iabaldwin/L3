@@ -299,7 +299,6 @@ namespace Visualisers
         if (hist_ptr->empty())
             return;
 
-        std::cout << "Drawing..." << std::endl;
         L3::Histogram<double> tmp;
 
         L3::ReadLock lock( hist_ptr->mutex );
@@ -1283,6 +1282,34 @@ namespace Visualisers
          renderer->onDraw3D(g);
      }
 
+
+     /*
+      * Statistics
+      */
+
+     Statistics::Statistics() : glv::Table( "x," )
+    {
+        observer_update.reset( new TextRenderer<double>() );
+        swathe_generation.reset( new TextRenderer<double>() );
+        points_per_second.reset( new TextRenderer<double>() );
+        estimation.reset( new TextRenderer<double>() );
+
+        observer_update->enable( glv::DrawBorder );
+
+        (*this) << dynamic_cast< glv::View* >(observer_update.get()) <<
+                   dynamic_cast< glv::View* >(swathe_generation.get()) <<
+                   dynamic_cast< glv::View* >(points_per_second.get()) <<
+                   dynamic_cast< glv::View* >(estimation.get());
+
+        boost::shared_ptr< glv::Label > observer_label = boost::make_shared< glv::Label >( "Observer update" );
+        labels.push_back( observer_label );
+
+        observer_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
+        (*observer_update) << (*observer_label );
+
+        this->fit();
+        this->arrange();
+    }
 
     /*
      *  Specific controllers

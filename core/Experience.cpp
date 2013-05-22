@@ -46,18 +46,16 @@ bool StrictlyRetrospectivePolicy::operator()( std::deque< experience_section>* s
 
     required_sections.clear();
     
-    std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
-  
     int window_cpy(window);
+
+    for( int i=0; i< distances.size();i++ )
+        std::cout << distances[i].second << " ";
+    std::cout << std::endl << "------------------------" << std::endl;
 
     //Here is the magic
     for( unsigned int i=distances.front().second; window_cpy-->0  && i>=0; i-- )
         required_sections.push_front( i );
-        //required_sections.push_front( distances_iterator++->second );
     
-        
-    required_sections.push_front( distances_iterator++->second );
-
     return true;
 
 }

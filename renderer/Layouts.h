@@ -61,7 +61,7 @@ namespace Visualisers
                  */
 
                 // Add plotter
-                rotational_velocity_plotter.reset( new L3::Visualisers::RotationalVelocityPlotter() );
+                rotational_velocity_plotter.reset( new RotationalVelocityPlotter() );
                 rotational_velocity_plotter->stroke( 2.0 );
 
                 boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *rotational_velocity_plotter ) );
@@ -94,7 +94,7 @@ namespace Visualisers
                  *  Linear Velocity
                  */
                 // Add plotter
-                linear_velocity_plotter.reset( new L3::Visualisers::LinearVelocityPlotter() );
+                linear_velocity_plotter.reset( new LinearVelocityPlotter() );
                 linear_velocity_plotter->stroke( 2.0 );
 
                 // Add plot region
@@ -124,10 +124,10 @@ namespace Visualisers
                 *plot_region << *velocity_label;
             }
 
-            bool addExtra( std::string description, boost::shared_ptr< L3::Visualisers::Leaf > renderable )
+            bool addExtra( std::string description, boost::shared_ptr< Leaf > renderable )
             {
                 // Do we already have it?
-                std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > >::iterator it = extras.find( description ); 
+                std::map< std::string, boost::shared_ptr< Leaf > >::iterator it = extras.find( description ); 
 
                 if( it == extras.end() )
                 {    
@@ -146,7 +146,7 @@ namespace Visualisers
             bool removeExtra( std::string description )
             {
                 // Do we already have it?
-                std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > >::iterator it = extras.find( description ); 
+                std::map< std::string, boost::shared_ptr< Leaf > >::iterator it = extras.find( description ); 
 
                 if( it == extras.end() )
                 {
@@ -154,7 +154,7 @@ namespace Visualisers
                 }
                 else
                 {
-                    composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( it->second.get() ) );
+                    composite->components.remove( dynamic_cast<Leaf*>( it->second.get() ) );
                     extras.erase( it );
 
                     return true;
@@ -192,21 +192,21 @@ namespace Visualisers
             std::list< boost::shared_ptr< glv::View > >     labels;
 
             boost::shared_ptr< EventController >            composite_maximise_controller;
-            boost::shared_ptr<L3::Visualisers::Composite>   composite;
+            boost::shared_ptr< Composite>   composite;
             std::list< boost::shared_ptr< EventController > > window_controllers;
             
-            boost::shared_ptr< Updater >                    temporal_updater;
-            boost::shared_ptr< SpatialUpdater >             spatial_updater;
-            boost::shared_ptr<L3::Visualisers::Grid>        grid;
-            boost::shared_ptr<L3::Visualisers::Controller>  controller;
+            boost::shared_ptr< Grid>            grid;
+            boost::shared_ptr< Controller>      controller;
+            boost::shared_ptr< Updater >        temporal_updater;
+            boost::shared_ptr< SpatialUpdater > spatial_updater;
 
             std::list< boost::shared_ptr< glv::Plot > >     plots;
 
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
             boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter;
 
-            boost::shared_ptr< L3::Visualisers::MouseQuerySelect > mouse_query;
-            boost::shared_ptr< L3::Visualisers::WASDManager > selection_manager;
+            boost::shared_ptr< WASDManager > selection_manager;
+            boost::shared_ptr< MouseQuerySelect > mouse_query;
 
             std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > > extras;
 
@@ -248,10 +248,12 @@ namespace Visualisers
     
             boost::shared_ptr< ExperienceLocationOverviewView > experience_location;
             
-            boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> oracle_renderer;
+            boost::shared_ptr< DedicatedPoseRenderer> oracle_renderer;
             
-            boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf > runtime_cloud_renderer_leaf; 
-            
+            boost::shared_ptr< PointCloudRendererLeaf > runtime_cloud_renderer_leaf; 
+          
+            boost::shared_ptr< Statistics > statistics;
+
             /*
              *  Load/reload function
              */

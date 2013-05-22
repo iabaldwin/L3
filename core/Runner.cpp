@@ -48,8 +48,8 @@ namespace L3
  
         // This, should be TMP
         this->provider = oracle;
-    
    
+        timings.resize(5);
     }
     
     /*
@@ -67,8 +67,6 @@ namespace L3
         current_time = start_time;
             
         L3::Timing::ChronoTimer performance_timer;
-
-        std::vector<double> timings(5);
 
         int performance_index;
 
@@ -130,7 +128,7 @@ namespace L3
         /*
          *  Estimate
          */
-        //*estimated = algorithm->operator()( projector->cloud, predicted );
+        *estimated = algorithm->operator()( projector->cloud, predicted );
 
         return true;
     }

@@ -97,6 +97,8 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::ScanMatching::Engine > engine;
     boost::shared_ptr< L3::ScanMatching::ScanMatcher > scan_matcher;
         
+    std::vector<double> timings;
+        
     void run();
     
     virtual bool update( double time )
