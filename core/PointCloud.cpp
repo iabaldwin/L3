@@ -61,7 +61,7 @@ namespace L3
                 it++;
             }
 
-            return boost::tuple<T,T,T>( x,y,z);
+            return boost::make_tuple( x, y, z );
         }
 
     template< typename T >
@@ -85,7 +85,7 @@ namespace L3
                 it++;
             }
 
-            return boost::tuple<T,T,T>(x,y,z);
+            return boost::make_tuple(x,y,z);
         }
 
     template <typename T>
