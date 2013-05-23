@@ -1089,6 +1089,8 @@ namespace Visualisers
         {
             this->color( glv::Color( 1, 0, 0, .5 ) );
             this->stroke(2);
+       
+            
         }
   
         std::deque<double> plot_data;

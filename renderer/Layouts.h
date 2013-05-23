@@ -72,7 +72,7 @@ namespace Visualisers
                 plot_region->range( 0, 1000, 0 );
                 plot_region->range( -1, 1, 1 );
 
-                plot_region->numbering(true);
+                //plot_region->numbering(true);
                 plot_region->showNumbering(true);
 
                 plots.push_front( plot_region );
@@ -109,8 +109,9 @@ namespace Visualisers
                 plot_region->range( 0, 1000, 0 );
                 plot_region->range( -1, 10 , 1 );
 
-                plot_region->numbering(true);
+                //plot_region->numbering(true);
                 plot_region->showNumbering(true);
+                plot_region->numbering(false,0);
 
                 plots.push_front( plot_region );
 

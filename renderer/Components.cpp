@@ -1353,6 +1353,11 @@ namespace Visualisers
             plottables.push_back( plottable );
             plots.push_back( plot );
 
+            //plot->numbering(true,1);
+            plot->showNumbering(true);
+            plot->numbering(false,0);
+            //plot->showGrid(false);
+            
             plot->range( 0, 100, 0 );
             plot->range( -.1, 2, 1 );
             (*this) << *plot;

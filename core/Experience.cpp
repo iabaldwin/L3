@@ -38,7 +38,7 @@ bool StrictlyRetrospectivePolicy::operator()( std::deque< experience_section>* s
      */
     for( unsigned int i=0; i<sections->size(); i++ )
         distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( (*sections)[i].x, (*sections)[i].y)  ), i ) ); 
-   
+ 
     /*
      *  Sort the distances
      */
@@ -48,14 +48,14 @@ bool StrictlyRetrospectivePolicy::operator()( std::deque< experience_section>* s
     
     int window_cpy(window);
 
-    //for( int i=0; i< distances.size();i++ )
-        //std::cout << distances[i].second << " ";
-    //std::cout << std::endl << "------------------------" << std::endl;
-
     //Here is the magic
-    for( unsigned int i=distances.front().second; window_cpy-->0  && i>=0; i-- )
-        required_sections.push_front( i );
-    
+    for( int i=distances.front().second; window_cpy-->0  && i>=0; i-- )
+    {
+        int load_val = i >=0 ? i : sections->size()-i;
+        required_sections.push_front( load_val );
+   
+    }
+  
     return true;
 
 }
@@ -137,9 +137,10 @@ void Experience::run()
         /*
          *  Choose the sections required according to some policy
          */
+       
         std::list<unsigned int> required_sections;
         if ( !policy->operator()( &sections, _x, _y, required_sections, window ) )  // Catastrophe
-            break;
+            exit(-1);
 
         /*
          *  Mark everything as *NOT* required
@@ -170,14 +171,10 @@ void Experience::run()
 
                 L3::PointCloud<double>* cloud = new L3::PointCloud<double>();
 
-                //L3::allocate( cloud, load_result.first );
-                //std::copy( load_result.second, load_result.second + load_result.first, cloud->points );
-                //delete [] load_result.second;
-
                 cloud->num_points = load_result.first;
                 cloud->points = load_result.second;
 
-                // Insert, mark it as required by default
+                // Insert, mark it as required by default, transfer ownership
                 resident_sections.insert( std::make_pair( *it, std::make_pair( true, boost::shared_ptr<L3::PointCloud<double> >( cloud ) ) ) );
             }
             else
