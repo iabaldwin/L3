@@ -1099,13 +1099,6 @@ namespace Visualisers
 
     };
 
-
-
-
-
-
-
-
     /*
      *  Chase
      */

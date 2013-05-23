@@ -33,6 +33,9 @@ namespace Visualisers
             void run()
             {
                 top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
+                
+                toggler = boost::make_shared< TableToggler >(  glv::Rect( window.width()-300, window.height()-20, 40, 10 ), &tables );
+                top << *toggler;
 
                 // Add renderables provided by children
                 for( std::list< glv::View* >::iterator it = renderables.begin(); it != renderables.end(); it++ )
@@ -46,13 +49,10 @@ namespace Visualisers
                     (*it)->pos( window.width()-(555), 0);
                 }
 
-                toggler = boost::make_shared< TableToggler >( &tables );
-
-                top << *toggler;
-
                 window.setGLV(top);
 
                 glv::Application::run();
+            
             }
 
             void addRotationalVelocityPlot()

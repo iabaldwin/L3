@@ -14,34 +14,42 @@ namespace Visualisers
     }
 
 
-    TableToggler::TableToggler( std::deque< boost::shared_ptr< glv::Table > > * tables ) : tables(tables), current_table(0)
-        {
+    TableToggler::TableToggler(  const glv::Rect& rect, std::deque< boost::shared_ptr< glv::Table > > * tables ) : tables(tables), current_table(0), glv::View(rect)
+    {
 
-            for( std::deque< boost::shared_ptr< glv::Table > >::iterator it = tables->begin();
-                    it != tables->end();
-                    it++ )
+        for( std::deque< boost::shared_ptr< glv::Table > >::iterator it = tables->begin();
+                it != tables->end();
+                it++ )
             (*it)->disable( glv::Property::Visible );
 
-            (*tables)[0]->enable( glv::Property::Visible );
-        
-            this->disable( glv::DrawBorder | glv::CropChildren | glv::FocusHighlight  | glv::Visible );
-        }
+        (*tables)[0]->enable( glv::Property::Visible );
 
+        this->enable( glv::DrawBorder );
+
+        page_pointer.reset( new glv::Buttons( rect, 4, 1 ,false, true));
+        this->operator<<( *page_pointer );
+
+        page_pointer->maximize();
+
+            
+        page_pointer->setValue( true, 0, 0 );
+    }
 
     bool TableToggler::onEvent( glv::Event::t type, glv::GLV& g )
     {
         if ( (int)type == TABLE_TOGGLE ) 
         {
             (*tables)[current_table]->disable( glv::Property::Visible );
-         
+
             current_table++;
 
             if( current_table == tables->size() )
                 current_table = 0;
- 
+
             (*tables)[current_table]->enable( glv::Property::Visible );
 
-           
+            page_pointer->setValue( true, current_table, 0 );
+
         }
 
     }

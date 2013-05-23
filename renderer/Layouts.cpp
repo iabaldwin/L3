@@ -54,10 +54,7 @@ namespace L3
             boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
             top << *table;
             tables.push_back( table );
-
-            
         }
-
 
         DatasetLayout::DatasetLayout( glv::Window& win ) : Layout(win)
         {

@@ -59,25 +59,36 @@ namespace L3
             if( !ptr )
                 return;
             
-            glv::draw::rotate( -15, 0, 0 );
-            glv::draw::translate( -1*ptr->pose_estimates->position->X(), -1*ptr->pose_estimates->position->Y(), -65 );
+            glv::draw::translate( -1*ptr->pose_estimates->position->X(), -1*ptr->pose_estimates->position->Y(), -55 );
 
+            //L3::ReadLock lock_a( ptr->mutex );
+            L3::ReadLock lock( ptr->pose_estimates->mutex );
+            std::vector<L3::SE3> estimates( ptr->pose_estimates->estimates.begin(), ptr->pose_estimates->estimates.end() );
+            std::vector<double> costs( ptr->pose_estimates->costs.begin(), ptr->pose_estimates->costs.end() );
+            lock.unlock();
 
-            L3::ReadLock lock( ptr->mutex );
+            glv::Point3 vertices[ estimates.size()];
+            glv::Color  colors[ estimates.size()];
 
-            glv::Point3 vertices[ ptr->pose_estimates->estimates.size()];
-            glv::Color  colors[ ptr->pose_estimates->estimates.size()];
+            // Find min
+            double min_val = *(std::min_element( costs.begin(), costs.end() ) );
+            double max_val = *(std::max_element( costs.begin(), costs.end() ) );
 
-            for( int i=0; i<ptr->pose_estimates->estimates.size(); i++ )
+            for( int i=0; i< estimates.size(); i++ )
             {
-                vertices[i]( ptr->pose_estimates->estimates[i].X(),
-                                ptr->pose_estimates->estimates[i].Y(),
-                                ptr->pose_estimates->costs[i]*20 );
-          
-                colors[i].set( fabs(ptr->pose_estimates->costs[i]*5 ) );
+                double z_val = costs[i];
+
+                //z_val -= (min_val-.5);
+
+                z_val *= 1.0/max_val;
+
+                vertices[i]( estimates[i].X(),
+                                estimates[i].Y(),
+                                z_val );
+                
+                colors[i].set( fabs( z_val ) );
             }
           
-
             glv::draw::paint( glv::draw::Points, vertices, colors, ptr->pose_estimates->estimates.size() );
 
         }

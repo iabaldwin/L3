@@ -63,7 +63,6 @@ enum CUSTOM_EVENT_TYPES
 
     struct  CustomTable : glv::Table
     {
-
         CustomTable( const char * arrangement="<", glv::space_t padX=3, glv::space_t padY=3, const glv::Rect& r= glv::Rect(0)) 
             : Table( arrangement, padX, padY, r )
         {
@@ -76,14 +75,13 @@ enum CUSTOM_EVENT_TYPES
 
     struct TableToggler : glv::View
     {
-
-        TableToggler( std::deque< boost::shared_ptr< glv::Table > > * tables );
+        TableToggler( const glv::Rect& rect, std::deque< boost::shared_ptr< glv::Table > > * tables );
         
         int current_table;
+        boost::shared_ptr< glv::Buttons > page_pointer;
         std::deque< boost::shared_ptr< glv::Table > > * tables;
 
         bool onEvent( glv::Event::t type, glv::GLV& g );
-        
     };
 
 }
