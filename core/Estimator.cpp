@@ -169,7 +169,14 @@ namespace L3
 
                 int size = experience.hist->nx*experience.hist->ny;
 
+                //L3::Timing::ChronoTimer t; t.begin();
+                //double mi = -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, size);
+                //std::cout << "time: " << t.elapsed() << std::endl;;
+                //std::cout.flush();
+                //return mi;
+
                 return -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, size);
+           
             }
 
         template < typename T >
@@ -406,14 +413,14 @@ namespace L3
                 Hypothesis h( swathe, &estimate, (*pyramid)[1].get() , this->cost_function, costs.begin() );
                 h();
 
-                if( h.swathe_histogram->empty() )
-                    return L3::SE3::ZERO(); 
+                //if( h.swathe_histogram->empty() )
+                    //return L3::SE3::ZERO(); 
 
-                L3::WriteLock ( this->data.swathe_histogram->mutex ); 
-                L3::clone( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
+                //L3::WriteLock ( this->data.swathe_histogram->mutex ); 
+                //L3::clone( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
               
-                L3::WriteLock ( this->data.experience_histogram->mutex ); 
-                L3::clone( (*pyramid)[0].get(), this->data.experience_histogram.get() );
+                //L3::WriteLock ( this->data.experience_histogram->mutex ); 
+                //L3::clone( (*pyramid)[0].get(), this->data.experience_histogram.get() );
 
                 return L3::SE3::ZERO();
             }

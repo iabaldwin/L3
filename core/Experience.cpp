@@ -160,12 +160,11 @@ Experience::Experience( std::deque<experience_section> sections,
 
     densities.push_back( .5 );
     densities.push_back( .75 );
-    densities.push_back( 1.5 );
+    //densities.push_back( 1.5 );
 
     //densities.push_back( 1 );
     //densities.push_back( 2 );
     //densities.push_back( 10 );
-
 
     experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
     resident_point_cloud.reset( new L3::PointCloud<double>() );
@@ -274,10 +273,9 @@ void Experience::run()
                 boost::tuple<double,double,double> max_bound = L3::max<double>( &*resident_point_cloud );
                 boost::tuple<double,double,double> means     = L3::mean( &*resident_point_cloud );
 
-
-
                 //L3::BoxSmoother< double, 3 > smoother; 
-                L3::GaussianSmoother< double > smoother; 
+                //L3::GaussianSmoother< double > smoother; 
+                L3::LogisticSmoother< double > smoother; 
 
                 for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->experience_pyramid->begin();
                         it != this->experience_pyramid->end();
@@ -287,13 +285,6 @@ void Experience::run()
                     boost::shared_ptr<L3::HistogramUniformDistance<double> > current_histogram = boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(*it);
 
                     WriteLock lock( current_histogram->mutex );
-
-                    //current_histogram->create(  means.first, 
-                            //min_bound.first, 
-                            //max_bound.first,
-                            //means.second,                   
-                            //min_bound.second, 
-                            //max_bound.second );
 
                     current_histogram->create(  means.get<0>(), 
                             min_bound.get<0>(), 
@@ -306,6 +297,7 @@ void Experience::run()
 
                     current_histogram->operator()( resident_point_cloud.get() );
                     smoother.smooth( current_histogram.get() );
+                    
                     lock.unlock();
                 
                 }

@@ -95,13 +95,9 @@ namespace L3
 
                 counter++;
 
-                std::cout << counter << std::endl;
-
-                if ( counter > 100 )
+                if ( counter == 60 )
                     init = true;
 
-                //if( !( *current == L3::SE3::ZERO() ) )
-                    //init = true; 
             }
 
             /*

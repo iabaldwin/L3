@@ -2,6 +2,19 @@
 
 namespace L3
 {
+    template <typename T>
+        void LogisticSmoother<T>::smooth( L3::Histogram<T>* hist ) 
+        {
+            double* bin_ptr = hist->hist->bin;
+            for( unsigned int x = 0; x < hist->hist->nx*hist->hist->ny; x++ )
+            {
+                if( *bin_ptr > 300 )
+                    *bin_ptr=300;
+                    
+                bin_ptr++;
+            }
+        };
+
 
     template <typename T, int N>
         void Smoother<T,N>::smooth( L3::Histogram<T>* hist ) 
@@ -54,3 +67,6 @@ template void L3::BoxSmoother<double, 15>::smooth(L3::Histogram<double>*);
 template void L3::BoxSmoother<double, 7>::smooth(L3::Histogram<double>*);
 template void L3::BoxSmoother<double, 5>::smooth(L3::Histogram<double>*);
 template void L3::BoxSmoother<double, 3>::smooth(L3::Histogram<double>*);
+
+template void L3::LogisticSmoother<double>::smooth(L3::Histogram<double>*);
+//template void L3::LogisticSmoother<double>::smooth( L3::Histogram<double>* hist );

@@ -11,11 +11,17 @@ namespace L3
     template <>
         struct StaticCheck<true>{};
 
-    struct SmootherInterface
-    {
-        virtual ~SmootherInterface()
+        struct SmootherInterface
         {
-        }
+            virtual ~SmootherInterface()
+            {
+            }
+        };
+
+    template <typename T>
+        struct LogisticSmoother : SmootherInterface
+    {
+        void smooth( L3::Histogram<T>* hist );
     };
 
     template <typename T, int N>
@@ -30,7 +36,6 @@ namespace L3
             double filter[N][N];
 
             void smooth( L3::Histogram<T>* hist );
-
             virtual ~Smoother()
             {}
 
