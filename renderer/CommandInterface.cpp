@@ -102,8 +102,6 @@ namespace L3
         std::string load_copy( load_command );
         ltrim(load_copy);
       
-        std::cout << load_copy << std::endl;
-
         try
         {
             container->dataset.reset( new L3::Dataset( load_copy ) );

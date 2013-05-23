@@ -138,9 +138,19 @@ namespace L3
 
             (*ancillary_2) << *time_renderer;
 
-            // Statistics
+            /*
+             *  Statistics
+             */
             statistics.reset( new Statistics() );
+            
+            for( std::vector< boost::shared_ptr< StatisticsPlottable > >::iterator it = statistics-> plottables.begin();
+                    it != statistics->plottables.end();
+                    it++)
+                temporal_updater->operator<<( it->get() );
+            
             (*ancillary_2) << *statistics;
+
+
 
             //std::cout << "HI" << std::endl;
             //log_capture.reset( new LogCapture() );
@@ -149,7 +159,9 @@ namespace L3
             //(*ancillary_2) << *log_capture;
 
             // Arrange
+            dynamic_cast< glv::Table* >(ancillary_1.get())->fit();
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
+            dynamic_cast< glv::Table* >(ancillary_2.get())->fit();
             dynamic_cast< glv::Table* >(ancillary_2.get())->arrange();
 
             ancillary_1->enable( glv::Property::DrawBorder );
@@ -264,7 +276,8 @@ namespace L3
              *  Statistics
              */
             statistics->load( runner );
-                
+        
+            
             /*
              *  Update view
              */

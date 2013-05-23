@@ -47,18 +47,6 @@ namespace L3
                 }
             }
 
-            template <typename T>
-                struct maximum : std::binary_function<bool,T,T>
-            {
-
-                bool operator()( T* a, T* b )
-                {
-                    //return (a->second->data[index] )>  (a->second->data[index] );
-                }
-
-            };
-            
-
             void update()
             {
                 boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > iterator_ptr = iterator.lock();
@@ -99,7 +87,6 @@ namespace L3
                 if( parent )
                 {
                     boost::shared_ptr< glv::Plot > parent_plot = boost::dynamic_pointer_cast< glv::Plot >( parent );
-                   
                     if ( parent_plot )
                         parent_plot->range( -1, current + 2.0 , 1 );
                 }

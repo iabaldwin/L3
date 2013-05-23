@@ -77,7 +77,7 @@ enum CUSTOM_EVENT_TYPES
     {
         TableToggler( const glv::Rect& rect, std::deque< boost::shared_ptr< glv::Table > > * tables );
         
-        int current_table;
+        int current_table, num_tables;
         boost::shared_ptr< glv::Buttons > page_pointer;
         std::deque< boost::shared_ptr< glv::Table > > * tables;
 

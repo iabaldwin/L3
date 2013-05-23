@@ -23,7 +23,7 @@ namespace Visualisers
     {
         glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
-        
+
         //glMultMatrixf( position.homogeneous.data() );
 
         glGetDoublev(GL_PROJECTION_MATRIX, projection );
@@ -153,7 +153,7 @@ namespace Visualisers
      */
     void DynamicGrid::onDraw3D(glv::GLV& g)
     { 
-  
+
         int rounded_x = (int)(current_x)-(int(current_x) % 100) ;
         int rounded_y = (int)(current_y)-(int(current_y) % 100);
 
@@ -252,7 +252,7 @@ namespace Visualisers
 
         // Obtain the pointer
         boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
-      
+
         if ( !hist_ptr)
             return;
 
@@ -341,7 +341,7 @@ namespace Visualisers
     {
         // Obtain the pointer
         boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
-      
+
         if ( !hist_ptr)
             return;
 
@@ -623,14 +623,14 @@ namespace Visualisers
     void PointCloudRendererView::onDraw3D( glv::GLV& g )
     {
         far(500);
-        
+
         // Centering heuristic
         glv::draw::translate( 0, 60, -200 );
 
         PointCloudRenderer::onDraw3D(g);    
 
         //if( this->enabled( glv::Property::Maximized ) )
-            //bounds_renderer->onDraw3D(g);
+        //bounds_renderer->onDraw3D(g);
     }
 
     void PointCloudRendererView::update()
@@ -937,7 +937,7 @@ namespace Visualisers
 
         // Can we handle it?
         boost::shared_ptr< L3::Estimator::IterativeDescent<double> > discrete_algorithm_ptr = boost::dynamic_pointer_cast< L3::Estimator::IterativeDescent<double> >( algorithm_ptr );
-       
+
         if( !discrete_algorithm_ptr )
             return;
 
@@ -1098,11 +1098,11 @@ namespace Visualisers
             ss << it->first;
 
             glv::draw::lineWidth( 1 );
-       
+
             std::list< int > window;
 
             int counter = 0;
-            
+
             // Draw transparent
             glv::draw::enable( glv::draw::Blend );
             while( it < pose_sequence->end() )
@@ -1123,7 +1123,7 @@ namespace Visualisers
                 counter++;
             }
             glv::draw::disable( glv::draw::Blend );
-           
+
             highlighted_position++;
 
             if( highlighted_position > pose_sequence->size()/skip )
@@ -1203,7 +1203,7 @@ namespace Visualisers
         vertices[2]( tag->x +width +margin, tag->y, 20+height+margin  );
         vertices[3]( tag->x +width +margin, tag->y, 20-margin );
 
-        
+
         glv::draw::blendTrans();
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::LineLoop, vertices, colors, 4 );
@@ -1223,7 +1223,7 @@ namespace Visualisers
 
         //glv::draw::rotateZ(180);
         glv::draw::translateZ( -850 );
-        
+
         double x_offset=0, y_offset=0;
 
         boost::shared_ptr< L3::PoseProvider > ptr_provider = provider.lock();
@@ -1232,7 +1232,7 @@ namespace Visualisers
             *current = ptr_provider->operator()();
             animation->onDraw3D(g);
             glv::draw::translate( current->X(), current->Y() );
-      
+
             x_offset = current->X();
             y_offset = current->Y();
         }
@@ -1248,69 +1248,69 @@ namespace Visualisers
         std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
 
         int counter =0;
-        
+
         //glv::draw::pointSize( 3 );
         //while( it != ptr->sections.end() )
         //{
-            //experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
-            //experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
-            //it++;
+        //experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
+        //experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
+        //it++;
         //}
-        
+
         //glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
         //glv::draw::pointSize( 1 );
-           
+
         glv::draw::pop();
     }
 
     /*
      *  Dataset viewer
      */
-   
-     void DatasetOverviewView::onDraw3D( glv::GLV& g )
-     {
-         glv::Point3    vertices[ poses->size() ];
-         glv::Color     colors[ poses->size() ];
-         
-         boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
 
-         if( provider_ptr )
-         {
-             L3::SE3 pose = provider_ptr->operator()();
-             //*current_pose  =  provider_ptr->operator()();
-             //glv::draw::translate( -1*current_pose->X(), -1*current_pose->Y(), 0.0 );
-             //*current_pose  =  pose;
-             glv::draw::translate( -1*pose.X(), -1*pose.Y(), 0.0 );
+    void DatasetOverviewView::onDraw3D( glv::GLV& g )
+    {
+        glv::Point3    vertices[ poses->size() ];
+        glv::Color     colors[ poses->size() ];
 
-             pose.X( -1*pose.X() );
-             pose.Y( -1*pose.Y() );
+        boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
 
-             L3::Visualisers::AnimatedPoseRenderer( pose ).onDraw3D(g);
-         }
+        if( provider_ptr )
+        {
+            L3::SE3 pose = provider_ptr->operator()();
+            //*current_pose  =  provider_ptr->operator()();
+            //glv::draw::translate( -1*current_pose->X(), -1*current_pose->Y(), 0.0 );
+            //*current_pose  =  pose;
+            glv::draw::translate( -1*pose.X(), -1*pose.Y(), 0.0 );
 
-         int counter= 0;
-         for( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = poses->begin();
-                 it != poses->end();
-                 it++ )
-         {
+            pose.X( -1*pose.X() );
+            pose.Y( -1*pose.Y() );
+
+            L3::Visualisers::AnimatedPoseRenderer( pose ).onDraw3D(g);
+        }
+
+        int counter= 0;
+        for( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = poses->begin();
+                it != poses->end();
+                it++ )
+        {
             vertices[counter++]( it->second->X(), it->second->Y(), 0.0 );
-         }
-         
-         far( 1500 );
-            
-         glv::draw::translate(0,0,-550);
-         glv::draw::lineWidth(10.0);
-         glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-     
-         renderer->onDraw3D(g);
-     }
+        }
+
+        far( 1500 );
+
+        glv::draw::translate(0,0,-550);
+        glv::draw::lineWidth(10.0);
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+
+        renderer->onDraw3D(g);
+    }
 
 
-     /*
-      * Statistics
-      */
+    /*
+     * Statistics
+     */
 
-     Statistics::Statistics() : glv::Table( "x," )
+    Statistics::Statistics() : glv::Table( "x," )
     {
         observer_update.reset( new TextRenderer<double>() );
         swathe_generation.reset( new TextRenderer<double>() );
@@ -1320,17 +1320,46 @@ namespace Visualisers
         observer_update->enable( glv::DrawBorder );
 
         (*this) << dynamic_cast< glv::View* >(observer_update.get()) <<
-                   dynamic_cast< glv::View* >(swathe_generation.get()) <<
-                   dynamic_cast< glv::View* >(points_per_second.get()) <<
-                   dynamic_cast< glv::View* >(estimation.get());
+            dynamic_cast< glv::View* >(swathe_generation.get()) <<
+            dynamic_cast< glv::View* >(points_per_second.get()) <<
+            dynamic_cast< glv::View* >(estimation.get());
 
         boost::shared_ptr< glv::Label > observer_label = boost::make_shared< glv::Label >( "Observer update" );
         labels.push_back( observer_label );
-
         observer_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
         (*observer_update) << (*observer_label );
 
-        this->fit();
+        boost::shared_ptr< glv::Label > swathe_label = boost::make_shared< glv::Label >( "Swathe generation" );
+        labels.push_back( swathe_label );
+        swathe_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
+        (*swathe_generation) << (*swathe_label );
+
+        boost::shared_ptr< glv::Label > points_per_second_label = boost::make_shared< glv::Label >( "Point generation" );
+        labels.push_back( points_per_second_label );
+        points_per_second_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
+        (*points_per_second) << (*points_per_second_label );
+
+        boost::shared_ptr< glv::Label > estimation_label = boost::make_shared< glv::Label >( "Estimation" );
+        labels.push_back( estimation_label );
+        estimation_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
+        (*estimation) << (*estimation_label );
+
+        for( int i=0; i<4; i++ )
+        {
+            boost::shared_ptr< StatisticsPlottable > plottable( new StatisticsPlottable() ); 
+            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 300, 120), *plottable ) );
+            plot->disable( glv::Controllable );
+
+            plottables.push_back( plottable );
+            plots.push_back( plot );
+
+            plot->range( 0, 100, 0 );
+            plot->range( -.1, 2, 1 );
+            (*this) << *plot;
+        }
+
+       
+
         this->arrange();
     }
 

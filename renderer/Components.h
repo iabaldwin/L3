@@ -153,8 +153,6 @@ namespace Visualisers
      *  Text
      */
     template <typename T> 
-        struct TextRenderer : glv::View
-    {
         struct variable_lock
         {
             variable_lock( T& t ) : t(t)
@@ -164,16 +162,20 @@ namespace Visualisers
             T& t;
         };
 
+    template <typename T> 
+        struct TextRenderer : glv::View
+    {
+        
         explicit TextRenderer() : glv::View( glv::Rect(150,25 ) )
         {
             this->disable( glv::DrawBorder );
         }
 
-        boost::shared_ptr< variable_lock > lock;
+        boost::shared_ptr< variable_lock<T> > lock;
 
         void setVariable( T& t )
         {
-            lock.reset( new variable_lock( t ) );
+            lock.reset( new variable_lock<T>( t ) );
         }
 
         void onDraw(glv::GLV& g)
@@ -1077,11 +1079,73 @@ namespace Visualisers
     };
 
 
+    /*
+     *  Statistics 
+     */
+    struct StatisticsPlottable : glv::Plottable, Lockable, Updateable
+    {
+        StatisticsPlottable()
+            : glv::Plottable( glv::draw::Points, 1 )
+        {
+            this->stroke(2);
+        }
+  
+        std::deque<double> plot_data;
+        std::deque< boost::shared_ptr< glv::Plottable > > plottables;
+
+        void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
+        {
+                
+            L3::ReadLock locker( this->mutex );
+            while(i()){
+                double x = i[0];
+                double y = d.at<double>(0, i[0]);
+                g.addVertex(x, y);
+            }
+        }
+       
+        boost::shared_ptr< variable_lock<double> > lock;
+
+        void setVariable( double& t )
+        {
+            lock.reset( new variable_lock<double>( t ) );
+        }
+
+        void update()
+        {
+            if (!lock)
+                return;
+
+            L3::WriteLock locker( this->mutex );
+
+            mData.resize( glv::Data::DOUBLE, 1, 100 );
+            
+            plot_data.push_back( lock->t );
+
+            glv::Indexer i(mData.size(1));
+
+            if ( plot_data.size() > 100 )
+                plot_data.pop_front();
+
+            int counter = 0;
+
+            while( i() && counter++< plot_data.size() )
+            {
+                //std::cout << counter << ":" << plot_data[counter] << std::endl;
+                mData.assign( plot_data[counter]*100, i[0], i[1] );
+            }
+
+        }
+    
+    };
+
     struct Statistics : glv::Table
     {
         Statistics();
         
+        std::vector< boost::shared_ptr< glv::Plot > > plots;
         std::vector< boost::shared_ptr< glv::Label > > labels;
+        std::vector< boost::shared_ptr< StatisticsPlottable > > plottables;
 
         boost::shared_ptr< TextRenderer<double> > observer_update;;
         boost::shared_ptr< TextRenderer<double> > swathe_generation;;
@@ -1090,12 +1154,16 @@ namespace Visualisers
 
         void load( L3::DatasetRunner* runner )
         {
-            observer_update->setVariable( runner->timings[0] );
+            observer_update->setVariable(   runner->timings[0] );
             swathe_generation->setVariable( runner->timings[1] );
             points_per_second->setVariable( runner->timings[2] );
-            estimation->setVariable( runner->timings[3] );
+            estimation->setVariable(        runner->timings[3] );
+       
+            plottables[0]->setVariable( runner->timings[0] );
+            plottables[1]->setVariable( runner->timings[1] );
+            plottables[2]->setVariable( runner->timings[2] );
+            plottables[3]->setVariable( runner->timings[3] );
         }
-
 
     };
 
