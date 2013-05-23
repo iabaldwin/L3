@@ -69,6 +69,8 @@ namespace L3
         L3::Timing::ChronoTimer performance_timer;
 
         int performance_index;
+           
+        bool init = false;
 
         while( running )
         {
@@ -85,6 +87,23 @@ namespace L3
             TemporalRunner::update( current_time );
             timings[ performance_index++ ] = performance_timer.elapsed();
 
+            static int counter = 0;
+            
+            if( !init )
+            {
+                *current = oracle->operator()();
+
+                counter++;
+
+                std::cout << counter << std::endl;
+
+                if ( counter > 100 )
+                    init = true;
+
+                //if( !( *current == L3::SE3::ZERO() ) )
+                    //init = true; 
+            }
+
             /*
              *  Recompute swathe
              */
@@ -99,13 +118,13 @@ namespace L3
             point_cloud_lock.unlock();
             timings[ performance_index++ ] = performance_timer.elapsed();
 
+            
             /*
              *  Update everything else
              */
             update( current_time );
             timings[ performance_index++ ] = performance_timer.elapsed();
      
-            *current = oracle->operator()();
         }
 
     }

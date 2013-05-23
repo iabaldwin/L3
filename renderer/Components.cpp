@@ -654,19 +654,19 @@ namespace Visualisers
         glv::Point3 bound_vertices[4];
         glv::Color  bound_colors[4];
 
+        boost::shared_ptr< L3::PointCloud<double> > plot_cloud = cloud.lock();
+
+        if( !plot_cloud )
+            return;
+
         boost::scoped_ptr< L3::PointCloud<double> > tmp( new L3::PointCloud<double>() );
 
-        L3::ReadLock point_cloud_lock( cloud->mutex );
-        L3::copy( cloud.get(), tmp.get() ); 
+        L3::ReadLock point_cloud_lock( plot_cloud->mutex );
+        L3::copy( plot_cloud.get(), tmp.get() ); 
         point_cloud_lock.unlock();
-
-        //std::pair<double, double> lower_left = min( tmp.get() );
-        //std::pair<double, double> upper_right = max( tmp.get() );
 
         boost::tuple<double, double, double> lower_left = min( tmp.get() );
         boost::tuple<double, double, double> upper_right = max( tmp.get() );
-
-
 
         glv::draw::blendTrans();
 

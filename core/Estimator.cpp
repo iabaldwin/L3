@@ -13,6 +13,9 @@
 
 #include "Timing.h"
 
+#include "MI/MutualInformation.h"
+#include "MI/RenyiMutualInformation.h"
+
 template <typename T>
 struct DataWriter : Poco::Runnable
 {
@@ -169,6 +172,17 @@ namespace L3
                 return -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, size);
             }
 
+        template < typename T >
+            double RenyiMICostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
+            {
+                if ( experience.empty() || swathe.empty() )
+                    return std::numeric_limits<T>::infinity();
+
+                int size = experience.hist->nx*experience.hist->ny;
+
+                return -1*calculateRenyiMIDivergence( 0.05, experience.hist->bin, swathe.hist->bin, size);
+            }
+
 
         /*
          *  Hypothesis Builder
@@ -264,7 +278,6 @@ namespace L3
 
                 //}
 
-
                 // Compute cost
                 //*result_iterator = cost_function->operator()( *this->experience, *swathe_histogram );
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
@@ -293,7 +306,7 @@ namespace L3
                 /*
                  *  Speed considerations
                  */
-                L3::sample( swathe, this->sampled_swathe.get(), 4*1000, false );
+                L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false );
                 
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
@@ -360,13 +373,13 @@ namespace L3
             it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
             refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
 
-            discrete_estimators[4]->operator()( swathe, refined );
-            it = std::min_element( discrete_estimators[4]->pose_estimates->costs.begin() , discrete_estimators[4]->pose_estimates->costs.end() );
-            refined = discrete_estimators[4]->pose_estimates->estimates[ std::distance( discrete_estimators[4]->pose_estimates->costs.begin(), it )] ;
+            //discrete_estimators[4]->operator()( swathe, refined );
+            //it = std::min_element( discrete_estimators[4]->pose_estimates->costs.begin() , discrete_estimators[4]->pose_estimates->costs.end() );
+            //refined = discrete_estimators[4]->pose_estimates->estimates[ std::distance( discrete_estimators[4]->pose_estimates->costs.begin(), it )] ;
 
-            discrete_estimators[5]->operator()( swathe, refined );
-            it = std::min_element( discrete_estimators[5]->pose_estimates->costs.begin() , discrete_estimators[5]->pose_estimates->costs.end() );
-            refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
+            //discrete_estimators[5]->operator()( swathe, refined );
+            //it = std::min_element( discrete_estimators[5]->pose_estimates->costs.begin() , discrete_estimators[5]->pose_estimates->costs.end() );
+            //refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
 
             return refined;
             //return L3::SE3::ZERO();
@@ -450,7 +463,7 @@ namespace L3
 // Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template double L3::Estimator::MICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
-
+template double L3::Estimator::RenyiMICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 
 template L3::SE3 L3::Estimator::PassThrough<double>::operator()(L3::PointCloud<double>*, L3::SE3);

@@ -226,36 +226,38 @@ namespace Visualisers
 
             const L3::Dataset*                          dataset;
             const L3::Configuration::Mission*           mission;
-            boost::shared_ptr< DatasetRunner >          runner;
-            boost::shared_ptr< TextRenderer<double> >   time_renderer;
-            boost::shared_ptr< IteratorRenderer<L3::SE3> > iterator_renderer;
+            boost::shared_ptr< EventController >        point_cloud_maximise_controller;
             
-            boost::shared_ptr< EventController > point_cloud_maximise_controller;
+            boost::shared_ptr< DatasetRunner >          runner;
+            
+            boost::shared_ptr< TextRenderer<double> >       time_renderer;
+            boost::shared_ptr< IteratorRenderer<L3::SE3> >  iterator_renderer;
+            
+            boost::shared_ptr< PointCloudRendererLeaf > runtime_cloud_renderer_leaf; 
 
-            boost::shared_ptr< LocaleRenderer >                map_view;
-            boost::shared_ptr< HistogramPyramidRendererView  > pyramid_renderer;
-
+            boost::shared_ptr< LocaleRenderer >         map_view;
             boost::shared_ptr< PoseRenderer >           pose_renderer;
             boost::shared_ptr< LocaleBoundsRenderer >   locale_bounds;
-            boost::shared_ptr< PointCloudRendererView > runtime_cloud_renderer_view; 
- 
+            
+            boost::shared_ptr< HistogramPyramidRendererView  >              pyramid_renderer;
+            boost::shared_ptr< PointCloudRendererView >                     runtime_cloud_renderer_view; 
+            boost::shared_ptr< ScanRenderer2D >                             horizontal_scan_renderer;
+            boost::shared_ptr< ScanRenderer2D >                             vertical_scan_renderer;
+            boost::shared_ptr< ScanMatchingScanRenderer >                   scan_matching_renderer;
+            boost::shared_ptr< ExperienceLocationOverviewView >             experience_location;
+            boost::shared_ptr< DedicatedPoseRenderer>                       oracle_renderer;
+            boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >  point_cloud_bounds_renderer;
+            
+            boost::shared_ptr< Statistics > statistics;
+
             //boost::shared_ptr< DataDumper > dumper;
             boost::shared_ptr< glv::View > ancillary_1;
             boost::shared_ptr< glv::View > ancillary_2;
             
-            boost::shared_ptr< ScanRenderer2D > horizontal_scan_renderer;
-            boost::shared_ptr< ScanRenderer2D > vertical_scan_renderer;
            
-            boost::shared_ptr< ScanMatchingScanRenderer >  scan_matching_renderer;
-    
-            boost::shared_ptr< ExperienceLocationOverviewView > experience_location;
-            
-            boost::shared_ptr< DedicatedPoseRenderer> oracle_renderer;
-            
-            boost::shared_ptr< PointCloudRendererLeaf > runtime_cloud_renderer_leaf; 
+                       
           
-            boost::shared_ptr< Statistics > statistics;
-
+            
             /*
              *  Load/reload function
              */
@@ -280,7 +282,6 @@ namespace Visualisers
             boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> predicted_pose_renderer;
 
             boost::shared_ptr< L3::Visualisers::PredictorRenderer >             predictor_renderer;
-            boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >      point_cloud_bounds_renderer;
             boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
             boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
 

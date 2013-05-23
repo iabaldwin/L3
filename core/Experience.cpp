@@ -25,6 +25,51 @@ bool operator<( std::pair< double, unsigned int > a, std::pair< double, unsigned
 /*
  *  Selection Policies
  */
+bool RetrospectiveWithLookaheadPolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
+{
+    /*
+     *  Initialise distances
+     */
+    std::vector< std::pair< double, unsigned int > > distances;
+
+    /*
+     *  Calculate distances to all sections
+     */
+    for( unsigned int i=0; i<sections->size(); i++ )
+        distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( (*sections)[i].x, (*sections)[i].y)  ), i ) ); 
+ 
+    /*
+     *  Sort the distances
+     */
+    std::sort( distances.begin(), distances.end() );
+
+    required_sections.clear();
+    
+    int window_cpy(window);
+
+    int lookahead = 0;
+
+    int start_val = (distances.front().second + lookahead) % sections->size();
+
+    for( int i=start_val; (window_cpy)-->0; i-- )
+    {
+        int load_val = i >=0 ? i : sections->size()-i;
+        required_sections.push_front( load_val );
+   
+    }
+
+    std::copy( required_sections.begin(),
+                required_sections.end(),
+                std::ostream_iterator<unsigned int>( std::cout, " " ) );
+
+    std::cout << std::endl;
+
+    return true;
+
+}
+
+
+
 
 bool StrictlyRetrospectivePolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
 {
@@ -109,9 +154,18 @@ Experience::Experience( std::deque<experience_section> sections,
 
     // Allocate
     std::vector<double> densities;
+    //densities.push_back( .5 );
+    //densities.push_back( 1 );
+    //densities.push_back( 2.5 );
+
     densities.push_back( .5 );
-    densities.push_back( 1 );
-    densities.push_back( 2.5 );
+    densities.push_back( .75 );
+    densities.push_back( 1.5 );
+
+    //densities.push_back( 1 );
+    //densities.push_back( 2 );
+    //densities.push_back( 10 );
+
 
     experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
     resident_point_cloud.reset( new L3::PointCloud<double>() );

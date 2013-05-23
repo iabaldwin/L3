@@ -14,18 +14,19 @@ namespace L3
     {
         expression.reset( new boost::regex("^_" ) );
 
-        member_function_map.insert( std::make_pair( "_load",            std::make_pair( &CommandInterface::load , "Load a dataset, for viewing" ) ));
-        member_function_map.insert( std::make_pair( "_estimate",        std::make_pair( &CommandInterface::estimate , "Load a dataset, for estimation" ) ) );
-        member_function_map.insert( std::make_pair( "_algo",            std::make_pair( &CommandInterface::algo, "Set current estimation algorithm" ) ) );
-        member_function_map.insert( std::make_pair( "_quit",            std::make_pair( &CommandInterface::quit, "Leave" ) ) );
-        member_function_map.insert( std::make_pair( "_script",          std::make_pair( &CommandInterface::script, "Execute a script" ) ) );
-        member_function_map.insert( std::make_pair( "_?",               std::make_pair( &CommandInterface::print, "Print this" ) ) );
+        member_function_map.insert( std::make_pair( "_load",            std::make_pair( &CommandInterface::load ,               "Load a dataset, for viewing" ) ));
+        member_function_map.insert( std::make_pair( "_estimate",        std::make_pair( &CommandInterface::estimate ,           "Load a dataset, for estimation" ) ) );
+        member_function_map.insert( std::make_pair( "_algo",            std::make_pair( &CommandInterface::algo,                "Set current estimation algorithm" ) ) );
+        member_function_map.insert( std::make_pair( "_quit",            std::make_pair( &CommandInterface::quit,                "Leave" ) ) );
+        member_function_map.insert( std::make_pair( "_script",          std::make_pair( &CommandInterface::script,              "Execute a script" ) ) );
+        member_function_map.insert( std::make_pair( "_?",               std::make_pair( &CommandInterface::print,               "Print this help" ) ) );
         
-        member_function_map.insert( std::make_pair( "_add_traj",        std::make_pair( &CommandInterface::addTrajectory, "Add a visual trajectory" ) ) );
-        member_function_map.insert( std::make_pair( "_add_path",        std::make_pair( &CommandInterface::addPath, "Add a search path") ) );
-        member_function_map.insert( std::make_pair( "_print_path",      std::make_pair( &CommandInterface::printPath, "Print the search path") ) );
-        member_function_map.insert( std::make_pair( "_remove_traj",     std::make_pair( &CommandInterface::removeTrajectory, "Remove a visual trajectory") ) );
-        member_function_map.insert( std::make_pair( "_remove_all_traj", std::make_pair( &CommandInterface::removeTrajectories, "Remove all trajectories") ) );
+        member_function_map.insert( std::make_pair( "_add_traj",        std::make_pair( &CommandInterface::addTrajectory,       "Add a visual trajectory" ) ) );
+        member_function_map.insert( std::make_pair( "_add_path",        std::make_pair( &CommandInterface::addPath,             "Add a search path") ) );
+        member_function_map.insert( std::make_pair( "_print_path",      std::make_pair( &CommandInterface::printPath,           "Print the search path") ) );
+        member_function_map.insert( std::make_pair( "_remove_traj",     std::make_pair( &CommandInterface::removeTrajectory,    "Remove a visual trajectory") ) );
+        member_function_map.insert( std::make_pair( "_remove_all_traj", std::make_pair( &CommandInterface::removeTrajectories,  "Remove all trajectories") ) );
+        member_function_map.insert( std::make_pair( "_clear",           std::make_pair( &CommandInterface::clear,               "Clear current session") ) );
    
         addPath( "/Users/ian/code/L3/scripts/" );
     }
@@ -83,7 +84,6 @@ namespace L3
         if ( command_arguments.first.size() == 0 )
             return std::make_pair( false, "CI::Parse error" );
 
-        //std::map< std::string, command_interpreter >::iterator it = member_function_map.find( command_arguments.first ); 
         std::map< std::string, std::pair< command_interpreter, std::string>  >::iterator it = member_function_map.find( command_arguments.first ); 
         if ( it != member_function_map.end() )
         {
@@ -360,6 +360,21 @@ namespace L3
             return std::make_pair( true, "CI::Trajectories cleared" );
         }
     }
+
+    std::pair< bool, std::string> CommandInterface::clear( const std::string& command )
+    {
+        if( !layout )
+            return std::make_pair( false, "CI::No associated layout" );
+        else
+        {
+            container->mission.reset();
+            container->runner.reset();
+            container->dataset.reset();
+            return std::make_pair( true, "CI::Clear" );
+        }
+    }
+
+
 
     std::string CommandInterface::getState()
     {

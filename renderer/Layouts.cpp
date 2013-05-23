@@ -189,7 +189,7 @@ namespace L3
             /*
              *  Scale
              */
-
+            runner->speedup = 1.0;
             scale_factor->attachVariable( runner->speedup );
 
             /*
@@ -236,10 +236,11 @@ namespace L3
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
 
             /*
-             *Run-time swathe bounds
+             * Run-time swathe bounds
              */
-            //point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( run_time_swathe ) );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( point_cloud_bounds_renderer.get() ) );
+            point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( runtime_cloud_renderer_leaf->plot_cloud ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
 
             /*
              *  Swathe cloud, separate view

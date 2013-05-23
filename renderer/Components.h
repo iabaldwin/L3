@@ -374,13 +374,11 @@ namespace Visualisers
      */
     struct PointCloudBoundsRenderer : Leaf
     {
-        boost::shared_ptr< L3::PointCloud<double> > cloud;
-
-        PointCloudBoundsRenderer( boost::shared_ptr< L3::PointCloud<double> > point_cloud, L3::SE3* estimate = NULL ) : cloud(point_cloud)
+        PointCloudBoundsRenderer( boost::shared_ptr< L3::PointCloud<double> > point_cloud ) : cloud(point_cloud)
         {
         }
-
-        L3::SE3* estimate;
+        
+        boost::weak_ptr< L3::PointCloud<double> > cloud;
 
         void onDraw3D(glv::GLV& g);
 

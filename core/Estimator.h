@@ -10,8 +10,6 @@
 #include "Histogram.h"
 #include "Smoother.h"
 
-#include "MI/MutualInformation.h"
-
 namespace L3
 {
 namespace Estimator
@@ -60,7 +58,7 @@ namespace Estimator
 
     struct RotationEstimates : PoseEstimates
     {
-        RotationEstimates( float lower=1.0, float upper=1.0, float spacing=0.1 ) 
+        RotationEstimates( float lower=.1, float upper=0.1, float spacing=0.01 ) 
             : lower(lower), 
                 upper(upper), 
                 spacing(spacing) 
@@ -146,6 +144,13 @@ namespace Estimator
         {
             double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
         };
+
+    template < typename T >  
+        struct RenyiMICostFunction: CostFunction<T>
+        {
+            double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
+        };
+
 
 
     /*
@@ -242,11 +247,8 @@ namespace Estimator
             IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
             {
 
-                GridEstimates       grid ( 10, 10, 1);
-                RotationEstimates   rotation( .5, .5, .1);
-
-                float range = 10.0;
-                float granularity = 1.0;
+                float range = 2.0;
+                float granularity = 0.2;
 
                 for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
                         it != pyramid->end();
@@ -256,13 +258,12 @@ namespace Estimator
 
                     // Grid 
                     discrete_estimators.push_back( 
-                            //boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< GridEstimates >( new GridEstimates( 10, 10, 1) ) )
-                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< GridEstimates >( new GridEstimates( range, range, granularity) ) )
+                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< GridEstimates >( range, range, granularity) )
                             );
               
                     // Rotation
                     discrete_estimators.push_back( 
-                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< RotationEstimates >( new RotationEstimates( .5 , .5, .1 ) ) )
+                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< RotationEstimates >( ) )
                             );
 
                     range /= 2.0;

@@ -183,6 +183,18 @@ void SE3::updateHomogeneous()
     homogeneous(2,3) = z;
 }
 
+bool operator==( const L3::SE3& lhs,  const L3::SE3& rhs )
+{
+    return ( (lhs.X() == rhs.X()) &&
+            (lhs.Y() == rhs.Y()) &&
+            (lhs.Z() == rhs.Z()) &&
+            (lhs.R() == rhs.R()) &&
+            (lhs.P() == rhs.P()) &&
+            (lhs.Q() == rhs.Q()) );
+
+}
+
+
 
 std::ostream& operator<<( std::ostream& o, const L3::LHLV& lhlv )
 {

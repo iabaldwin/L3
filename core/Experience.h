@@ -55,6 +55,12 @@ struct StrictlyRetrospectivePolicy : SelectionPolicy
     bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window );
 };
 
+struct RetrospectiveWithLookaheadPolicy: SelectionPolicy
+{
+    bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window );
+};
+
+
 
 
 
@@ -137,8 +143,9 @@ struct ExperienceLoader
 
         experience_index.close();
 
-        //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< KNNPolicy >() ), window_sections ) );
-        experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< StrictlyRetrospectivePolicy >() ), window_sections ) );
+        experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< KNNPolicy >() ), window_sections ) );
+        //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< StrictlyRetrospectivePolicy >() ), window_sections ) );
+        //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< RetrospectiveWithLookaheadPolicy>() ), window_sections ) );
     }
         
 };
