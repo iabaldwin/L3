@@ -37,7 +37,8 @@ int main (int argc, char ** argv)
     //Add trajectories
 
     boost::scoped_ptr <L3::IO::BinaryReader< L3::SE3 > > pose_reader( ( new L3::IO::BinaryReader<L3::SE3>() ) ) ;
-    boost::scoped_ptr< L3::Dataset > dataset( new L3::Dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/") );
+    //boost::scoped_ptr< L3::Dataset > dataset( new L3::Dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/") );
+    boost::scoped_ptr< L3::Dataset > dataset( new L3::Dataset( "/Users/ian/code/datasets/2012-04-16-20-05-30NightWoodstock1/" ) );
 
     if (!pose_reader->open( dataset->path() + "/OxTS.ins" ) )
         exit(-1);

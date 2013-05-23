@@ -16,8 +16,8 @@
 #add_executable( plot_experience plot_experience.cpp )
 #target_link_libraries( plot_experience GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
-#add_executable( calibrate_map calibrate_map.cpp )
-#target_link_libraries( calibrate_map GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+add_executable( calibrate_map calibrate_map.cpp )
+target_link_libraries( calibrate_map GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 #add_executable( dataset_overview dataset_overview.cpp )
 #target_link_libraries( dataset_overview GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} readline curses )
