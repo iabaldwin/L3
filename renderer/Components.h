@@ -1085,8 +1085,9 @@ namespace Visualisers
     struct StatisticsPlottable : glv::Plottable, Lockable, Updateable
     {
         StatisticsPlottable()
-            : glv::Plottable( glv::draw::Points, 1 )
+            : glv::Plottable( glv::draw::LineStrip, 1 )
         {
+            this->color( glv::Color( 1, 0, 0, .5 ) );
             this->stroke(2);
         }
   
@@ -1118,8 +1119,6 @@ namespace Visualisers
 
             L3::WriteLock locker( this->mutex );
 
-            mData.resize( glv::Data::DOUBLE, 1, 100 );
-            
             plot_data.push_back( lock->t );
 
             glv::Indexer i(mData.size(1));
@@ -1127,14 +1126,16 @@ namespace Visualisers
             if ( plot_data.size() > 100 )
                 plot_data.pop_front();
 
+            mData.resize( glv::Data::DOUBLE, 1, plot_data.size() );
+            
             int counter = 0;
 
-            while( i() && counter++< plot_data.size() )
+            while( i() && counter< plot_data.size() )
             {
-                //std::cout << counter << ":" << plot_data[counter] << std::endl;
-                mData.assign( plot_data[counter]*100, i[0], i[1] );
+                mData.assign( plot_data[counter]*10, i[0], i[1] );
+                counter++;
             }
-
+                
         }
     
     };

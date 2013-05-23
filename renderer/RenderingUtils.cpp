@@ -21,6 +21,17 @@ namespace Visualisers
         }
     }
 
+    glv::Color ColorInterpolator::operator()( double value )
+    {
+        
+        std::pair< glv::Color, glv::Color > colors = map->getBounds( value );
+
+        double r = ( 1-value)*colors.first.r + value*colors.second.r;
+        double g = ( 1-value)*colors.first.g + value*colors.second.g;
+        double b = ( 1-value)*colors.first.b + value*colors.second.b;
+
+        return glv::Color(r,g,b,value);
+    }
 
 }
 }

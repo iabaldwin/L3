@@ -151,7 +151,9 @@ namespace L3
             (*ancillary_2) << *statistics;
 
 
-
+            /*
+             *  Log capture
+             */
             //std::cout << "HI" << std::endl;
             //log_capture.reset( new LogCapture() );
             //std::cout << "THERE" << std::endl;
@@ -213,8 +215,7 @@ namespace L3
              *  Static map-view
              */
             L3::Configuration::Locale* config = L3::Configuration::LocaleFactory().getLocale( runner->mission->locale );
-
-            //// Remove it, if it is already in the composite list     
+            
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
             map_view = L3::Visualisers::LocaleRendererFactory::buildLocale( *config );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
@@ -276,7 +277,6 @@ namespace L3
              *  Statistics
              */
             statistics->load( runner );
-        
             
             /*
              *  Update view

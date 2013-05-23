@@ -70,26 +70,34 @@ namespace L3
             glv::Point3 vertices[ estimates.size()];
             glv::Color  colors[ estimates.size()];
 
-            // Find min
-            double min_val = *(std::min_element( costs.begin(), costs.end() ) );
-            double max_val = *(std::max_element( costs.begin(), costs.end() ) );
+            /*
+             *  Find Bounds
+             *  Q. Why is this the other way around?
+             *  A. We work with negative costs, by default. Max-value is therefore -1*actual_min 
+             */
+            
+            double max_val = *(std::min_element( costs.begin(), costs.end() ) );
+            double min_val = *(std::max_element( costs.begin(), costs.end() ) );
 
+            glv::Color interpolated;
             for( int i=0; i< estimates.size(); i++ )
             {
-                double z_val = costs[i];
+                double z_val = fabs(costs[i]);
 
-                //z_val -= (min_val-.5);
-
-                z_val *= 1.0/max_val;
+                z_val /= fabs(max_val);
 
                 vertices[i]( estimates[i].X(),
                                 estimates[i].Y(),
                                 z_val );
-                
-                colors[i].set( fabs( z_val ) );
+         
+                interpolated = interpolator( z_val );
+
+                colors[i] = interpolated;
             }
-          
+         
+            glv::draw::enable( glv::draw::Blend );
             glv::draw::paint( glv::draw::Points, vertices, colors, ptr->pose_estimates->estimates.size() );
+            glv::draw::disable( glv::draw::Blend );
 
         }
     

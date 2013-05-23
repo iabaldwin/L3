@@ -5,6 +5,8 @@
 
 #include "L3.h"
 
+#include "RenderingUtils.h"
+
 namespace L3
 {
     namespace Visualisers
@@ -33,9 +35,13 @@ namespace L3
             {
                 DiscreteEstimatorVisualiser( boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator );
 
+
                 boost::weak_ptr< L3::Estimator::DiscreteEstimator<double> > estimator;
-                glv::Label label;
                 
+                glv::Label label;
+
+                ColorInterpolator interpolator;
+
                 virtual void onDraw3D( glv::GLV& g );
             };
 

@@ -164,7 +164,7 @@ namespace Estimator
                 current_histogram.reset( new L3::Histogram<double>() );
                 
                 sampled_swathe.reset( new PointCloud<T>() );
-                L3::allocate( sampled_swathe.get(), 1000 );
+                L3::allocate( sampled_swathe.get(), 4*1000 );
             }
 
             CostFunction<T>*                        cost_function;
@@ -245,6 +245,9 @@ namespace Estimator
                 GridEstimates       grid ( 10, 10, 1);
                 RotationEstimates   rotation( .5, .5, .1);
 
+                float range = 10.0;
+                float granularity = 1.0;
+
                 for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
                         it != pyramid->end();
                         it++ )
@@ -253,7 +256,8 @@ namespace Estimator
 
                     // Grid 
                     discrete_estimators.push_back( 
-                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< GridEstimates >( new GridEstimates( 10, 10, 1) ) )
+                            //boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< GridEstimates >( new GridEstimates( 10, 10, 1) ) )
+                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< GridEstimates >( new GridEstimates( range, range, granularity) ) )
                             );
               
                     // Rotation
@@ -261,6 +265,8 @@ namespace Estimator
                             boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::shared_ptr< RotationEstimates >( new RotationEstimates( .5 , .5, .1 ) ) )
                             );
 
+                    range /= 2.0;
+                    granularity /= 1.5;
                 }
 
             }

@@ -1347,7 +1347,7 @@ namespace Visualisers
         for( int i=0; i<4; i++ )
         {
             boost::shared_ptr< StatisticsPlottable > plottable( new StatisticsPlottable() ); 
-            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 300, 120), *plottable ) );
+            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 550, 80), *plottable ) );
             plot->disable( glv::Controllable );
 
             plottables.push_back( plottable );

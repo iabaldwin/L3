@@ -293,7 +293,7 @@ namespace L3
                 /*
                  *  Speed considerations
                  */
-                L3::sample( swathe, this->sampled_swathe.get(), 1000, false );
+                L3::sample( swathe, this->sampled_swathe.get(), 4*1000, false );
                 
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
@@ -360,13 +360,13 @@ namespace L3
             it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
             refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
 
-            //discrete_estimators[4]->operator()( swathe, refined );
-            //it = std::min_element( discrete_estimators[4]->pose_estimates->costs.begin() , discrete_estimators[4]->pose_estimates->costs.end() );
-            //refined = discrete_estimators[4]->pose_estimates->estimates[ std::distance( discrete_estimators[4]->pose_estimates->costs.begin(), it )] ;
+            discrete_estimators[4]->operator()( swathe, refined );
+            it = std::min_element( discrete_estimators[4]->pose_estimates->costs.begin() , discrete_estimators[4]->pose_estimates->costs.end() );
+            refined = discrete_estimators[4]->pose_estimates->estimates[ std::distance( discrete_estimators[4]->pose_estimates->costs.begin(), it )] ;
 
-            //discrete_estimators[5]->operator()( swathe, refined );
-            //it = std::min_element( discrete_estimators[5]->pose_estimates->costs.begin() , discrete_estimators[5]->pose_estimates->costs.end() );
-            //refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
+            discrete_estimators[5]->operator()( swathe, refined );
+            it = std::min_element( discrete_estimators[5]->pose_estimates->costs.begin() , discrete_estimators[5]->pose_estimates->costs.end() );
+            refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
 
             return refined;
             //return L3::SE3::ZERO();
