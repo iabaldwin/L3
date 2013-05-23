@@ -128,6 +128,7 @@ namespace L3
     bool EstimatorRunner::update( double time )
     {
 
+        bool dbg = true;
         /*
          *  Get the pose from the pose provider
          */
@@ -140,6 +141,12 @@ namespace L3
          */
         //experience->update( predicted.X(), predicted.Y() );
         experience->update( current->X(), current->Y() );
+
+        if( dbg )
+        {
+            //Evaluate the cost function at ground-truth 
+            //algorithm->operator()( projector->cloud, oracle->operator()() );
+        }
 
         /*
          *  Estimate

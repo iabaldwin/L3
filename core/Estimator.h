@@ -124,7 +124,7 @@ namespace Estimator
     template < typename T >
         struct CostFunction
         {
-            virtual double operator()( const Histogram<T>& experience, const Histogram<T>& swathe ) = 0;
+            virtual double operator()( const Histogram<T>& experience, const Histogram<T>& swathe )  = 0;
 
             virtual ~CostFunction()
             {
@@ -210,14 +210,21 @@ namespace Estimator
     template < typename T>
         struct Algorithm
         {
+            Algorithm( CostFunction<T>* cost_function ) : cost_function(cost_function)
+            {
+
+            }
+
+            CostFunction<T>* cost_function;
+
             virtual SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
         };
 
     template < typename T>
-        struct PassThrough : Algorithm<T>
+        struct PassThrough 
         {
-            PassThrough(  CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid )
-                : pyramid(experience_pyramid),cost_function(cost_function)
+            PassThrough(  Algorithm<T>* algorithm, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid )
+                : algorithm( algorithm )
             {
                 sampled_swathe.reset( new PointCloud<T>() );
                 L3::allocate( sampled_swathe.get(), 1000 );
@@ -226,7 +233,7 @@ namespace Estimator
                 data.experience_histogram.reset( new L3::Histogram<double>() );
             }
             
-            CostFunction<T>* cost_function;
+            Algorithm<T>*        algorithm;
             boost::shared_ptr< PointCloud<T> > sampled_swathe;
 
             struct EstimateData : Lockable
@@ -241,14 +248,16 @@ namespace Estimator
             
         };
 
+    
     template < typename T>
         struct IterativeDescent : Algorithm<T>
         {
-            IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
+            IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) 
+                : Algorithm<T>(cost_function), pyramid(experience_pyramid)
             {
 
-                float range = 2.0;
-                float granularity = 0.2;
+                float range = 10.0;
+                float granularity = 2;
 
                 for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
                         it != pyramid->end();
@@ -267,7 +276,8 @@ namespace Estimator
                             );
 
                     range /= 2.0;
-                    granularity /= 1.5;
+                    //granularity /= 1.5;
+                    granularity /= 2;
                 }
 
             }

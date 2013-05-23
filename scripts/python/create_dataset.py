@@ -33,6 +33,10 @@ if __name__=="__main__":
     #limit = float(sys.argv[3])*60
     limit = float(sys.argv[3])
 
+    
+    if( limit  < start ):
+        sys.exit( "%f seconds requested..." % ( limit - start  ) )
+
 
     parsers.append( Parsers.INS( dataset.root, mission ).binary().duration( (start,limit) ).parse() )
     parsers.append( Parsers.LHLV( dataset.root ).binary().duration( (start,limit) ).parse() )

@@ -199,7 +199,7 @@ namespace L3
             Hypothesis( L3::PointCloud<double> const * swathe, 
                     L3::SE3 const* estimate, 
                     L3::Histogram<double> const* experience , 
-                    CostFunction<double>* cost_function, 
+                    CostFunction<double> * cost_function, 
                     __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
                         : swathe(swathe), 
                             estimate(estimate), 
@@ -212,7 +212,7 @@ namespace L3
             L3::PointCloud<double> const *  swathe;
             L3::SE3 const*                  estimate;
             L3::Histogram<double> const*    experience;
-            CostFunction<double> *          cost_function;
+            CostFunction<double>*           cost_function;
             __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator ;
 
             /*
@@ -410,7 +410,7 @@ namespace L3
                 std::vector< double > costs(1);
 
                 //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                Hypothesis h( swathe, &estimate, (*pyramid)[1].get() , this->cost_function, costs.begin() );
+                Hypothesis h( swathe, &estimate, (*pyramid)[1].get() , this->algorithm->cost_function, costs.begin() );
                 h();
 
                 //if( h.swathe_histogram->empty() )

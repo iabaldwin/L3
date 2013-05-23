@@ -187,8 +187,6 @@ struct ExperienceBuilder
         L3::SE3 calibration = L3::SE3::ZERO();
         L3::Configuration::convert( mission.lidars[ mission.declined ], calibration );
 
-        std::cout << calibration << std::endl;
-
         boost::shared_ptr< L3::PointCloud<double> > point_cloud( new L3::PointCloud<double>() );
         boost::shared_ptr< L3::Projector<double> > projector( new L3::Projector<double>( &calibration, point_cloud.get() ) );
 
@@ -235,9 +233,6 @@ struct ExperienceBuilder
   
             swathe.push_back( std::make_pair( matched[0].second, scans[0].second ) );
 
-            //yaw, is 0
-            //std::cout << *matched[0].second << std::endl;
-
             if ( accumulate > threshold )
             {
                 // Reset
@@ -255,7 +250,6 @@ struct ExperienceBuilder
                 // Compute mean
                 boost::tuple<double,double,double> means = mean( point_cloud.get()  );
 
-                //std::cout << means.first << " " << means.second << std::endl;
                 std::cout << means.get<0>() << " " << means.get<1>() << std::endl;
 
                 //  Writing : DATA
