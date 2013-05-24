@@ -4,7 +4,7 @@
 #include "Datatypes.h"
 #include "Definitions.h"
 #include "Core.h"
-#include "PoseProvider.h"
+#include "PoseWindower.h"
 
 namespace L3
 {
@@ -12,9 +12,9 @@ namespace L3
     {
         public:
             SwatheBuilder( L3::PoseWindower* pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
-                pose_windower( pose_it ), 
-                LIDAR_iterator( LIDAR_it ), 
-                window_duration(0.0) 
+                            pose_windower( pose_it ), 
+                            LIDAR_iterator( LIDAR_it ), 
+                            window_duration(0.0) 
             {
             }
                 
