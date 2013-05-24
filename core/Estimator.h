@@ -264,15 +264,15 @@ namespace Estimator
                         it++ )
                 {
                     L3::ReadLock( (*it)->mutex );
+                           
+                    // Rotation
+                    discrete_estimators.push_back( 
+                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< RotationEstimates >( ) )
+                            );
 
                     // Grid 
                     discrete_estimators.push_back( 
                             boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< GridEstimates >( range, range, granularity) )
-                            );
-              
-                    // Rotation
-                    discrete_estimators.push_back( 
-                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< RotationEstimates >( ) )
                             );
 
                     range /= 2.0;

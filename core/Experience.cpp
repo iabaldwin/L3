@@ -25,8 +25,7 @@ namespace L3
     /*
      *  Builder
      */
-
-    ExperienceBuilder::ExperienceBuilder( L3::Dataset& dataset, double start_time, double end_time, double threshold )
+    ExperienceBuilder::ExperienceBuilder( L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold, double scan_spacing_threshold )
     {
         std::cout.precision(15);
 
@@ -71,6 +70,8 @@ namespace L3
         unsigned int stream_position = 0;
 
         double absolute_start_time = 0;
+            
+        double spacing = scan_spacing_threshold;
 
         // Read LIDAR data, element at a time
         while( LIDAR_reader->read() )
@@ -98,15 +99,21 @@ namespace L3
 
             m = std::for_each( scans.begin(), scans.end(),  m );
 
-            accumulate += length_estimator( matched[0] );
+            double increment = length_estimator( matched[0] );
+
+            accumulate += increment;
+            spacing -= increment;
 
             //So, here we have estimated the accumulate. Once we have gone .2 metres, add it back
-            double distance = 0.2; 
-            std::cout << accumulate / distance << "[" << distance << "," << accumulate << "," << threshold << "]" << std::endl;
+            std::cout << accumulate / scan_spacing_threshold << "[" << scan_spacing_threshold << "," << accumulate << "," << experience_section_threshold << "]" << std::endl;
 
-            swathe.push_back( std::make_pair( matched[0].second, scans[0].second ) );
+            if( spacing <= 0.0 )
+            {
+                swathe.push_back( std::make_pair( matched[0].second, scans[0].second ) );
+                spacing = scan_spacing_threshold;
+            }
 
-            if ( accumulate > threshold )
+            if ( accumulate > experience_section_threshold )
             {
                 // Reset
                 accumulate = 0.0;

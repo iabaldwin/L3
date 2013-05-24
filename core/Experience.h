@@ -60,10 +60,6 @@ struct RetrospectiveWithLookaheadPolicy: SelectionPolicy
     bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window );
 };
 
-
-
-
-
 /*
  *Core experience
  */
@@ -155,7 +151,7 @@ struct ExperienceLoader
  */
 struct ExperienceBuilder
 {
-    ExperienceBuilder( L3::Dataset& dataset, double start_time, double end_time, double threshold=10.0 );
+    ExperienceBuilder( L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold=10.0, double scan_spacing_threshold=0.5  );
 
     boost::shared_ptr<L3::IO::BinaryReader< L3::SE3 > >                 pose_reader;
     boost::shared_ptr<L3::IO::SequentialBinaryReader< L3::LMS151 > >    LIDAR_reader;
