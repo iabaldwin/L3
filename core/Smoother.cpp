@@ -5,8 +5,7 @@ namespace L3
     template <typename T>
         void LogisticSmoother<T>::smooth( L3::Histogram<T>* hist ) 
         {
-
-            double tmp = 200;
+            double tmp = 600;
 
             double* bin_ptr = hist->hist->bin;
             for( unsigned int x = 0; x < hist->hist->nx*hist->hist->ny; x++ )

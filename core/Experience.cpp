@@ -154,13 +154,16 @@ Experience::Experience( std::deque<experience_section> sections,
 
     // Allocate
     std::vector<double> densities;
-    //densities.push_back( .5 );
-    //densities.push_back( 1 );
-    //densities.push_back( 2.5 );
 
+    /*
+     *Working
+     */
     densities.push_back( .5 );
     densities.push_back( .75 );
     //densities.push_back( 1.5 );
+    /*
+     *Working
+     */
 
     //densities.push_back( 1 );
     //densities.push_back( 2 );

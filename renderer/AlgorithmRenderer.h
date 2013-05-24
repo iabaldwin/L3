@@ -19,7 +19,6 @@ namespace L3
 	        AlgorithmVisualiser( const char * arrangement="<", glv::space_t padX=3, glv::space_t padY=3, const glv::Rect& r=glv::Rect(0)) 
                 : glv::Table( arrangement, padX, padY, r )
             {
-
             }
 
             std::deque < boost::shared_ptr< glv::View > > views;
@@ -28,11 +27,9 @@ namespace L3
 
         struct IterativeDescentVisualiser : AlgorithmVisualiser
         {
-
             IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) ;
 
             boost::weak_ptr< L3::Estimator::IterativeDescent<double> > algorithm;
-
             std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
             std::deque< boost::shared_ptr< glv::Label >  > labels;
 
@@ -46,9 +43,10 @@ namespace L3
 
                 boost::weak_ptr< L3::Estimator::DiscreteEstimator<double> > estimator;
                 
+                ColorInterpolator interpolator;
+                
                 glv::Label label;
 
-                ColorInterpolator interpolator;
             };
 
             struct DiscreteTranslationVisualiser : DiscreteEstimatorVisualiser, glv::View3D
@@ -60,6 +58,7 @@ namespace L3
                     label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
                     label.setValue( "Translation");
                 }
+                
                 void onDraw3D( glv::GLV& g );
             };
 
@@ -68,9 +67,9 @@ namespace L3
                 DiscreteRotationVisualiser(boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ) : DiscreteEstimatorVisualiser(estimator)
                 {
                 }
+                
                 void onDraw3D( glv::GLV& g );
             };
-
 
         };
 
@@ -84,8 +83,7 @@ namespace L3
 
                 if( ptr )
                     return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< IterativeDescentVisualiser >( ptr ) );
-           
-
+                
                 return boost::shared_ptr<AlgorithmVisualiser>();
 
             }
