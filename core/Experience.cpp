@@ -157,7 +157,7 @@ Experience::Experience( std::deque<experience_section> sections,
      */
     densities.push_back( .5 );
     densities.push_back( .75 );
-    //densities.push_back( 1.5 );
+    densities.push_back( 1 );
     /*
      *Working
      */
