@@ -97,6 +97,36 @@ namespace L3
 
 
         /*
+         *  Weightings
+         */
+
+        void GridWeighting::operator()( PoseEstimates* estimates ) 
+        {
+            if( PoseEstimates* ptr = dynamic_cast< GridEstimates* > (estimates ) )
+            {
+                // Normal
+                L3::WriteLock lock( ptr->mutex );
+        
+                boost::math::normal_distribution<double> normal_weighting(0,10);
+
+                for( std::vector< L3::SE3 >::iterator it = ptr->estimates.begin();
+                        it != ptr->estimates.end();
+                        it++ )
+                {
+                    //std::cout << *(estimates->position) << std::endl;
+                    double dist = sqrt( pow( it->X() - ptr->position->X(), 2 ) +
+                            pow( it->Y() - ptr->position->Y(), 2 ) );
+
+               
+                    double d = boost::math::pdf( normal_weighting , dist); 
+                    
+                    ptr->costs[ std::distance( ptr->estimates.begin(),it) ] *= d;
+                }
+            }
+        }
+
+
+        /*
          *  Cost Functions
          *  1.  KL divergence, smoothed
          *  2.  MI smoothed
@@ -341,7 +371,6 @@ namespace L3
                         stream << *(this->experience_histogram);
                         stream.close();
 
-
                         it++;
                    
                     }
@@ -368,8 +397,14 @@ namespace L3
             discrete_estimators[0]->operator()( swathe, estimate );
             std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
             SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
-
             discrete_estimators[1]->operator()( swathe, refined );
+            
+            /*
+             *  Weight
+             */
+            GridWeighting weighting;
+            weighting( discrete_estimators[1]->pose_estimates.get() );
+            
             it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
             refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
 
@@ -379,6 +414,11 @@ namespace L3
 
             discrete_estimators[3]->operator()( swathe, refined );
             it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
+             
+            /*
+             *  Weight
+             */
+            weighting( discrete_estimators[3]->pose_estimates.get() );
             refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
 
             //discrete_estimators[4]->operator()( swathe, refined );

@@ -6,6 +6,7 @@
 #include <tbb/task_group.h>
 
 #include <boost/bind.hpp>
+#include <boost/math/distributions/normal.hpp>
 
 #include "Histogram.h"
 #include "Smoother.h"
@@ -71,7 +72,16 @@ namespace Estimator
         void operator()( const L3::SE3& pose ) ;
     };
 
+    struct Weighting
+    {
+        virtual void operator()( PoseEstimates* estimates ) = 0;
+    };
 
+
+    struct GridWeighting : Weighting
+    {
+        void operator()( PoseEstimates* estimates ) ;
+    };
 
 
     /*
