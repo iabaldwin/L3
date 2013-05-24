@@ -1076,24 +1076,50 @@ namespace Visualisers
 
     };
 
+    struct BasicPlottable : glv::Plottable, Lockable, Updateable
+    {
+
+        BasicPlottable() : glv::Plottable( glv::draw::LineStrip, 1 )
+        {
+
+        }
+        virtual void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
+        {
+
+        }
+
+        virtual void update()
+        {
+
+        }
+
+        std::deque<double> plot_data;
+
+    };
+
+    struct BasicPlot : glv::Plot
+    {
+
+        BasicPlot( BasicPlottable* plottable )
+        {
+
+
+        }
+
+    };
+
 
     /*
      *  Statistics 
      */
-    struct StatisticsPlottable : glv::Plottable, Lockable, Updateable
+    struct StatisticsPlottable  : BasicPlottable
     {
         StatisticsPlottable()
-            : glv::Plottable( glv::draw::LineStrip, 1 )
         {
             this->color( glv::Color( 1, 0, 0, .5 ) );
             this->stroke(2);
-       
-            
         }
   
-        std::deque<double> plot_data;
-        std::deque< boost::shared_ptr< glv::Plottable > > plottables;
-
         void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
         {
                 

@@ -47,6 +47,7 @@ namespace L3
         std::pair< bool, std::string > removeTrajectory( const std::string& command );
         std::pair< bool, std::string > removeTrajectories( const std::string& command );
         std::pair< bool, std::string > clear( const std::string& command );
+        std::pair< bool, std::string > history( const std::string& command );
 
         std::pair< bool, std::string > addPath( const std::string& command );
         std::pair< bool, std::string > printPath( const std::string& command );

@@ -20,6 +20,7 @@ namespace L3
         member_function_map.insert( std::make_pair( "_quit",            std::make_pair( &CommandInterface::quit,                "Leave" ) ) );
         member_function_map.insert( std::make_pair( "_script",          std::make_pair( &CommandInterface::script,              "Execute a script" ) ) );
         member_function_map.insert( std::make_pair( "_?",               std::make_pair( &CommandInterface::print,               "Print this help" ) ) );
+        member_function_map.insert( std::make_pair( "_history",         std::make_pair( &CommandInterface::print,               "Print (successful) history" ) ) );
         
         member_function_map.insert( std::make_pair( "_add_traj",        std::make_pair( &CommandInterface::addTrajectory,       "Add a visual trajectory" ) ) );
         member_function_map.insert( std::make_pair( "_add_path",        std::make_pair( &CommandInterface::addPath,             "Add a search path") ) );
@@ -209,7 +210,6 @@ namespace L3
             if ( !script.good() )
                 continue;
 
-            
             std::list< std::string > script_history;
 
             std::string line;
@@ -372,6 +372,11 @@ namespace L3
             container->dataset.reset();
             return std::make_pair( true, "CI::Clear" );
         }
+    }
+
+    std::pair< bool, std::string> CommandInterface::history( const std::string& command )
+    {
+        return std::make_pair( true, "CI::Clear" );
     }
 
 

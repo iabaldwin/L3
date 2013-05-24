@@ -7,6 +7,8 @@
 
 #include "RenderingUtils.h"
 
+#include "Components.h"
+
 namespace L3
 {
     namespace Visualisers
@@ -31,34 +33,40 @@ namespace L3
 
             boost::weak_ptr< L3::Estimator::IterativeDescent<double> > algorithm;
 
-            struct DiscreteEstimatorVisualiser : glv::View3D
-            {
-                DiscreteEstimatorVisualiser( boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator );
+            std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
+            std::deque< boost::shared_ptr< glv::Label >  > labels;
 
+            struct DiscreteEstimatorVisualiser 
+            {
+                DiscreteEstimatorVisualiser( boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ) 
+                    : estimator(estimator)
+                {
+                    
+                }
 
                 boost::weak_ptr< L3::Estimator::DiscreteEstimator<double> > estimator;
                 
                 glv::Label label;
 
                 ColorInterpolator interpolator;
-
-                virtual void onDraw3D( glv::GLV& g );
             };
 
-            struct DiscreteTranslationVisualiser : DiscreteEstimatorVisualiser
+            struct DiscreteTranslationVisualiser : DiscreteEstimatorVisualiser, glv::View3D
             {
-                DiscreteTranslationVisualiser(boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ) : DiscreteEstimatorVisualiser(estimator)
+                DiscreteTranslationVisualiser(boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ) 
+                    : DiscreteEstimatorVisualiser(estimator), glv::View3D( glv::Rect(250,250) )
                 {
+                    (*this) << label;
+                    label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
                     label.setValue( "Translation");
                 }
                 void onDraw3D( glv::GLV& g );
             };
 
-            struct DiscreteRotationVisualiser : DiscreteEstimatorVisualiser
+            struct DiscreteRotationVisualiser : DiscreteEstimatorVisualiser, BasicPlottable
             {
                 DiscreteRotationVisualiser(boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ) : DiscreteEstimatorVisualiser(estimator)
                 {
-                    label.setValue( "Rotation");
                 }
                 void onDraw3D( glv::GLV& g );
             };

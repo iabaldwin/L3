@@ -19,12 +19,23 @@ namespace L3
                 this->operator<<( *grid );
 
                 // Rotation
-                boost::shared_ptr< glv::View > rotation = boost::dynamic_pointer_cast< glv::View >( boost::make_shared< DiscreteRotationVisualiser >( algorithm->discrete_estimators[(i*2)+1] ) );
-                rotation->enable( glv::DrawBorder ); 
-                views.push_back( rotation );
+                boost::shared_ptr< glv::Plottable > rotation = boost::dynamic_pointer_cast< glv::Plottable >( boost::make_shared< DiscreteRotationVisualiser >( algorithm->discrete_estimators[(i*2)+1] ) );
+                boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 250,250), *rotation) );
+             
+                plottables.push_back( rotation );
+                views.push_back( plot );
+                
+                plot->enable( glv::DrawBorder ); 
 
-                this->operator<<( *rotation );
+                boost::shared_ptr< glv::Label > rotation_label( new glv::Label() );
 
+                (*plot) << *rotation_label;
+                rotation_label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
+                rotation_label->setValue( "Rotation");
+
+                labels.push_back( rotation_label );
+
+                this->operator<<( *plot );
             }
 
             // Add the label
@@ -36,19 +47,6 @@ namespace L3
             this->arrange();
         }
 
-        IterativeDescentVisualiser::DiscreteEstimatorVisualiser::DiscreteEstimatorVisualiser( boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ) :
-            glv::View3D( glv::Rect(275,250) ), estimator(estimator)
-        {
-            (*this) << label;
-            
-            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
-        }
-
-        void IterativeDescentVisualiser::DiscreteEstimatorVisualiser::onDraw3D( glv::GLV& g )
-        {
-            
-        }
-   
         /*
          *  Translation
          */

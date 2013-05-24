@@ -1359,7 +1359,7 @@ namespace Visualisers
             //plot->showGrid(false);
             
             plot->range( 0, 100, 0 );
-            plot->range( -.1, 2, 1 );
+            plot->range( 0, 1.1, 1 );
             (*this) << *plot;
         }
 
