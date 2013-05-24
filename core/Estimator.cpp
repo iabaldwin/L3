@@ -255,7 +255,8 @@ namespace L3
                  */
                 //L3::GaussianSmoother< double> smoother;
                 //smoother.smooth( swathe_histogram.get() );
-                //smoother.smooth( &swathe_histogram );
+                L3::LogisticSmoother< double> smoother;
+                smoother.smooth( &swathe_histogram );
 
                 //static int counter = 0;
                 //std::cout << counter++ << std::endl;

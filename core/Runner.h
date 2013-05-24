@@ -65,7 +65,6 @@ struct DatasetRunner : ThreadedRunner
 
         if ( thread.isRunning() )
             thread.join();
-
     }
 
     Dataset*        dataset;

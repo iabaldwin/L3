@@ -147,7 +147,7 @@ namespace L3
                     it != statistics->plottables.end();
                     it++)
                 temporal_updater->operator<<( it->get() );
-            
+
             (*ancillary_2) << *statistics;
 
 

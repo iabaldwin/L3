@@ -68,9 +68,6 @@ bool RetrospectiveWithLookaheadPolicy::operator()( std::deque< experience_sectio
 
 }
 
-
-
-
 bool StrictlyRetrospectivePolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
 {
     /*

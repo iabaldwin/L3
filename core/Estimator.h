@@ -58,7 +58,7 @@ namespace Estimator
 
     struct RotationEstimates : PoseEstimates
     {
-        RotationEstimates( float lower=.1, float upper=0.1, float spacing=0.01 ) 
+        RotationEstimates( float lower=1, float upper=1, float spacing=0.01 ) 
             : lower(lower), 
                 upper(upper), 
                 spacing(spacing) 

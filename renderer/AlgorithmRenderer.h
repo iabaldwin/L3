@@ -21,10 +21,14 @@ namespace L3
             {
             }
 
+
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
+        
+            virtual void onDraw( glv::GLV& g ){};
         };
 
+        
         struct IterativeDescentVisualiser : AlgorithmVisualiser
         {
             IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) ;
@@ -32,6 +36,18 @@ namespace L3
             boost::weak_ptr< L3::Estimator::IterativeDescent<double> > algorithm;
             std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
             std::deque< boost::shared_ptr< glv::Label >  > labels;
+
+            void onDraw( glv::GLV& g )
+            {
+                for ( std::deque< boost::shared_ptr< glv::Plottable > >::iterator it = plottables.begin();
+                        it != plottables.end();
+                        it++ )
+                {
+                    if( boost::shared_ptr< Updateable > ptr = boost::dynamic_pointer_cast< Updateable >( *it ) )
+                        ptr->update();
+                }
+
+            }
 
             struct DiscreteEstimatorVisualiser 
             {
@@ -47,6 +63,7 @@ namespace L3
                 
                 glv::Label label;
 
+                
             };
 
             struct DiscreteTranslationVisualiser : DiscreteEstimatorVisualiser, glv::View3D
@@ -68,7 +85,9 @@ namespace L3
                 {
                 }
                 
-                void onDraw3D( glv::GLV& g );
+        
+                void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i);
+                void update();
             };
 
         };

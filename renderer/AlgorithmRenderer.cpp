@@ -21,10 +21,13 @@ namespace L3
                 // Rotation
                 boost::shared_ptr< glv::Plottable > rotation = boost::dynamic_pointer_cast< glv::Plottable >( boost::make_shared< DiscreteRotationVisualiser >( algorithm->discrete_estimators[(i*2)+1] ) );
                 boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 250,250), *rotation) );
-             
+
+                rotation->stroke( 2.0 );
+                rotation->color( glv::Color( 1, 0, 0 ) );
+
+
                 plottables.push_back( rotation );
                 views.push_back( plot );
-                
                 plot->enable( glv::DrawBorder ); 
 
                 boost::shared_ptr< glv::Label > rotation_label( new glv::Label() );
@@ -59,7 +62,6 @@ namespace L3
             
             glv::draw::translate( -1*ptr->pose_estimates->position->X(), -1*ptr->pose_estimates->position->Y(), -55 );
 
-            //L3::ReadLock lock_a( ptr->mutex );
             L3::ReadLock lock( ptr->pose_estimates->mutex );
             std::vector<L3::SE3> estimates( ptr->pose_estimates->estimates.begin(), ptr->pose_estimates->estimates.end() );
             std::vector<double> costs( ptr->pose_estimates->costs.begin(), ptr->pose_estimates->costs.end() );
@@ -103,32 +105,55 @@ namespace L3
         /*
          *  Rotation
          */
-        void IterativeDescentVisualiser::DiscreteRotationVisualiser::onDraw3D( glv::GLV& g )
+        void IterativeDescentVisualiser::DiscreteRotationVisualiser::update()
         {
             boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > ptr = estimator.lock();
 
-            glv::draw::translate( -1*ptr->pose_estimates->position->X(), -1*ptr->pose_estimates->position->Y(), -70 );
-
             if( !ptr )
                 return;
+         
+            L3::ReadLock lock( ptr->pose_estimates->mutex );
+            std::vector<L3::SE3> estimates( ptr->pose_estimates->estimates.begin(), ptr->pose_estimates->estimates.end() );
+            std::vector<double> costs( ptr->pose_estimates->costs.begin(), ptr->pose_estimates->costs.end() );
+            lock.unlock();
+            
+            mData.resize( glv::Data::DOUBLE, 2, costs.size() );
+            glv::Indexer i( mData.size(1));
 
-            L3::ReadLock lock( ptr->mutex );
+            int counter = 0;
 
-            //glv::Point3 vertices[ ptr->pose_estimates->estimates.size()];
-            //glv::Color  colors[ ptr->pose_estimates->estimates.size()];
+            double mean = 0.0;
+            for( int i=0; i<estimates.size(); i++ )
+                mean += estimates[i].Q();
+            mean /= estimates.size();
 
-            //for( int i=0; i<ptr->pose_estimates->estimates.size(); i++ )
-            //{
-                //vertices[i]( ptr->pose_estimates->estimates[i].X(),
-                                //ptr->pose_estimates->estimates[i].Y(),
-                                //ptr->pose_estimates->costs[i] );
-            //}
+            while( i()  )
+            {
+                mData.assign( estimates[counter].Q()-mean, 0, counter );
+                mData.assign( costs[counter], 1, counter); 
+                counter++;
+            }
+        }
 
-            //glv::draw::paint( glv::draw::Points, vertices, colors, ptr->pose_estimates->estimates.size() );
+        void IterativeDescentVisualiser::DiscreteRotationVisualiser::onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
+        {
+            int counter = 0;
+            while(i()){
+                //double x = i[0];
+                //double y = d.at<double>(0, i[0]);
+                //g.addVertex(x, y);
+        
 
+                double x = d.at<double>( 0, counter );
+                double y = d.at<double>( 1, counter );
+                g.addVertex(x, y);
 
+                counter++;
+
+                //std::cout << d.at<double>(0, i[0], i[0] ) << std::endl;
+                //std::cout << d.at<double>(0, i[0], i[1] ) << std::endl;
+            }
         }
 
     }
-
 }

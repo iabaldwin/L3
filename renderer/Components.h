@@ -1122,8 +1122,6 @@ namespace Visualisers
   
         void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
         {
-                
-            L3::ReadLock locker( this->mutex );
             while(i()){
                 double x = i[0];
                 double y = d.at<double>(0, i[0]);
@@ -1142,8 +1140,6 @@ namespace Visualisers
         {
             if (!lock)
                 return;
-
-            L3::WriteLock locker( this->mutex );
 
             plot_data.push_back( lock->t );
 
