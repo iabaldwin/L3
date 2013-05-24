@@ -80,6 +80,11 @@ namespace Estimator
 
     struct GridWeighting : Weighting
     {
+        GridWeighting( L3::SE3 pose ) : pose(pose)
+        {
+
+        }
+        L3::SE3 pose;
         void operator()( PoseEstimates* estimates ) ;
     };
 
@@ -266,8 +271,8 @@ namespace Estimator
                 : Algorithm<T>(cost_function), pyramid(experience_pyramid)
             {
 
-                float range = 10.0;
-                float granularity = 2;
+                float range = 2.0;
+                float granularity = .5;
 
                 for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
                         it != pyramid->end();
@@ -275,14 +280,15 @@ namespace Estimator
                 {
                     L3::ReadLock( (*it)->mutex );
                            
-                    // Rotation
-                    discrete_estimators.push_back( 
-                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< RotationEstimates >( ) )
-                            );
-
+           
                     // Grid 
                     discrete_estimators.push_back( 
                             boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< GridEstimates >( range, range, granularity) )
+                            );
+
+                    // Rotation
+                    discrete_estimators.push_back( 
+                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< RotationEstimates >( ) )
                             );
 
                     range /= 2.0;

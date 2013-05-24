@@ -24,16 +24,16 @@ int main( int argc, char** argv )
     
         case 5:
     
-            experience_builder.reset( new L3::ExperienceBuilder( dataset, atoi( argv[2]), atoi( argv[3]), atoi( argv[4])  ) );
+            experience_builder.reset( new L3::ExperienceBuilder( dataset, atof( argv[2]), atof( argv[3]), atof( argv[4])  ) );
             break;
            
         case 6:
 
-            experience_builder.reset( new L3::ExperienceBuilder( dataset, atoi( argv[2]), atoi( argv[3]), atoi( argv[4]), atoi( argv[5] )  ) );
+            experience_builder.reset( new L3::ExperienceBuilder( dataset, atof( argv[2]), atof( argv[3]), atof( argv[4]), atof( argv[5] )  ) );
             break;
 
         default:
-                experience_builder.reset( new L3::ExperienceBuilder( dataset, atoi( argv[2]), atoi( argv[3]) ) );
+                experience_builder.reset( new L3::ExperienceBuilder( dataset, atof( argv[2]), atof( argv[3]) ) );
                 break;
 
     };
