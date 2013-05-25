@@ -40,7 +40,7 @@ int main (int argc, char ** argv)
     L3::Visualisers::Grid                       grid;
     L3::Visualisers::Composite                  composite;
     L3::Visualisers::IteratorRenderer<L3::SE3>  iterator_renderer( iterator  );
-    L3::Visualisers::BasicPanController         controller(composite.position);
+    L3::Visualisers::CompositeController        controller( &composite, composite.position );
 
     L3::Visualisers::VisualiserRunner runner( dataset->start_time );
     runner << iterator.get();

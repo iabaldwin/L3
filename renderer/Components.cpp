@@ -1347,12 +1347,17 @@ namespace Visualisers
         for( int i=0; i<4; i++ )
         {
             boost::shared_ptr< StatisticsPlottable > plottable( new StatisticsPlottable() ); 
-            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 550, 80), *plottable ) );
+            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottable ) );
             plot->disable( glv::Controllable );
 
             plottables.push_back( plottable );
             plots.push_back( plot );
 
+            boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( "Point generation" );
+            graph_label->pos( glv::Place::TR, -2, -2 ).anchor( glv::Place::TR ); 
+            *plot  << *graph_label;
+            labels.push_back( graph_label );
+            
             //plot->numbering(true,1);
             plot->showNumbering(true);
             plot->numbering(false,0);

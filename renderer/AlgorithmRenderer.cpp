@@ -7,7 +7,6 @@ namespace L3
 
         void MinimisationVisualiser::TraversalVisualiser::onDraw3D( glv::GLV& g )
         {
-       
             boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm_ptr = algorithm.lock();
           
             if( !algorithm_ptr)
@@ -19,7 +18,8 @@ namespace L3
             
             far(150);
 
-            glv::draw::translate( -1*evaluations[0].X(), -1*evaluations[0].Y(), -5 );
+            //glv::draw::translate( -1*evaluations[0].X(), -1*evaluations[0].Y(), -5 );
+            glv::draw::translate( -1*evaluations.back().X(), -1*evaluations.back().Y(), -5 );
 
             glv::Point3 vertices[evaluations.size()];
             glv::Color  colors[evaluations.size()];

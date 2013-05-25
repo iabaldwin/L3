@@ -42,9 +42,9 @@ int main( int argc, char* argv[] )
     L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::MICostFunction<double>();
     //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::RenyiMICostFunction<double>();
     
-    //boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new L3::Estimator::IterativeDescent<double>(cost_function, experience->experience_pyramid ));
+    boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new L3::Estimator::IterativeDescent<double>(cost_function, experience->experience_pyramid ));
     //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::PassThrough<double>(cost_function, experience->experience_pyramid ));
-    boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Minimisation<double>(cost_function, experience->experience_pyramid ));
+    //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Minimisation<double>(cost_function, experience->experience_pyramid ));
     
     // Create runner
     boost::shared_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( dataset, mission, experience.get() ) );

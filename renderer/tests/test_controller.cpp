@@ -32,10 +32,9 @@ int main (int argc, char ** argv)
     // Colors
     top.colors().set(glv::Color(glv::HSV(0.6,0.2,0.6), 0.9), 0.4);
 
-    L3::Visualisers::Composite                  composite;
-    L3::Visualisers::Grid                       grid;
-    
-    L3::Visualisers::CompositeController        composite_controller( &composite, composite.position );
+    L3::Visualisers::Composite              composite;
+    L3::Visualisers::Grid                   grid;
+    L3::Visualisers::CompositeController    composite_controller( &composite, composite.position );
 
     test_leaf leaf;
     
