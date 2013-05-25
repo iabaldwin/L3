@@ -5,6 +5,41 @@ namespace L3
     namespace Visualisers
     {
 
+        void MinimisationVisualiser::TraversalVisualiser::onDraw3D( glv::GLV& g )
+        {
+       
+            boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm_ptr = algorithm.lock();
+          
+            if( !algorithm_ptr)
+                return;
+
+            L3::ReadLock lock( algorithm_ptr->mutex );
+            std::vector< L3::SE3 > evaluations( algorithm_ptr->evaluations );
+            lock.unlock();
+            
+            far(150);
+
+            glv::draw::translate( -1*evaluations[0].X(), -1*evaluations[0].Y(), -5 );
+
+            glv::Point3 vertices[evaluations.size()];
+            glv::Color  colors[evaluations.size()];
+
+            int counter=0;
+            for( std::vector< L3::SE3 >::iterator it = evaluations.begin();
+                    it != evaluations.end();
+                    it++ )
+            {
+                vertices[counter++]( it->X(), it->Y(), 0.0 );
+            }
+            
+            glv::draw::pointSize(3);
+            glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+            glv::draw::pointSize(1);
+            glv::draw::paint( glv::draw::LineStrip, vertices, colors, counter );
+            
+        
+        }
+
         IterativeDescentVisualiser::IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) 
             : AlgorithmVisualiser( "x x,", 2, 2), algorithm(algorithm)
         {

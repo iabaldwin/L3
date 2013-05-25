@@ -223,7 +223,7 @@ namespace Estimator
         };
 
     template < typename T>
-        struct Algorithm
+        struct Algorithm : Lockable
         {
             Algorithm( CostFunction<T>* cost_function ) : cost_function(cost_function)
             {
@@ -307,7 +307,7 @@ namespace Estimator
         };
 
     //Minimisation global 
-    double global_minimisation_function(const gsl_vector * x, void * params);
+    double global_minimisation_function( const gsl_vector * x, void * params);
 
     struct MinimisationParameters
     {
@@ -317,22 +317,21 @@ namespace Estimator
     template <typename T>
         struct Minimisation : Algorithm<T>
         {
-            Minimisation(CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) : pyramid(experience_pyramid)
+            Minimisation(CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) 
+                : Algorithm<T>(cost_function), pyramid(experience_pyramid)
             {
                 const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2;
                 
                 minex_func.n = 3;
                 minex_func.f = L3::Estimator::global_minimisation_function;
-                
-                //minex_func.params = par;
 
                 x = gsl_vector_alloc (3);
-                
                 ss = gsl_vector_alloc (3);
 
                 s = gsl_multimin_fminimizer_alloc (type, 3);
 
                 MinimisationParameters::global_minimiser = this;
+          
             }
                 
             gsl_vector *ss, *x;
@@ -345,9 +344,11 @@ namespace Estimator
         
             PointCloud<T>* current_swathe;
 
+            std::vector< L3::SE3 > evaluations;
+
             SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
       
-            double getHypothesisCost( gsl_vector* hypothesis );
+            double getHypothesisCost( const gsl_vector* hypothesis );
 
         };
 

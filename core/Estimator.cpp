@@ -61,7 +61,7 @@ namespace L3
         void GridEstimates::operator()( const L3::SE3& pose ) 
         {
             L3::WriteLock( this->mutex );
-            
+
             position.reset( new L3::SE3( pose ) );
             estimates.clear();
 
@@ -74,7 +74,7 @@ namespace L3
 
                     estimates.push_back( L3::SE3( res(0,3), res(1,3), res(2,3), pose.R(), pose.P(), pose.Q() ) );
                 }
-       
+
             costs.resize( estimates.size(), std::numeric_limits<double>::infinity() );
         }
 
@@ -85,7 +85,7 @@ namespace L3
         void RotationEstimates::operator()( const L3::SE3& pose )
         {
             L3::WriteLock( this->mutex );
-            
+
             position.reset( new L3::SE3( pose ) );
             estimates.clear();
 
@@ -106,7 +106,7 @@ namespace L3
             {
                 // Normal
                 L3::WriteLock lock( ptr->mutex );
-        
+
                 boost::math::normal_distribution<double> normal_weighting(0,.100);
 
                 for( std::vector< L3::SE3 >::iterator it = ptr->estimates.begin();
@@ -118,7 +118,7 @@ namespace L3
                             pow( it->Y() - pose.Y(), 2 ) );
 
                     double d = boost::math::pdf( normal_weighting , dist); 
-                    
+
                     ptr->costs[ std::distance( ptr->estimates.begin(),it) ] *= d;
                 }
             }
@@ -205,7 +205,7 @@ namespace L3
                 //return mi;
 
                 return -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, size);
-           
+
             }
 
         template < typename T >
@@ -230,11 +230,11 @@ namespace L3
                     L3::Histogram<double> const* experience , 
                     CostFunction<double> * cost_function, 
                     __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
-                        : swathe(swathe), 
-                            estimate(estimate), 
-                            experience(experience), 
-                            cost_function(cost_function),
-                            result_iterator(result_iterator)
+                : swathe(swathe), 
+                estimate(estimate), 
+                experience(experience), 
+                cost_function(cost_function),
+                result_iterator(result_iterator)
             {
             }
 
@@ -282,36 +282,37 @@ namespace L3
                 /*
                  *  Smoothing
                  */
+                //L3::BoxSmoother< double, 3> smoother;
                 //L3::GaussianSmoother< double> smoother;
-                //smoother.smooth( swathe_histogram.get() );
                 //L3::LogisticSmoother< double> smoother;
+                //smoother.smooth( swathe_histogram.get() );
                 //smoother.smooth( &swathe_histogram );
 
                 //static int counter = 0;
                 //std::cout << counter++ << std::endl;
                 //if ( counter++ == 400 )
                 //{
-                    //std::ofstream stream( "swathe.cloud" );
-                    //stream << *hypothesis;
-                    //stream.close();
-                   
-                    //stream.open( "experience.hist" );
-                    //stream << *experience;
-                    //stream.close();
+                //std::ofstream stream( "swathe.cloud" );
+                //stream << *hypothesis;
+                //stream.close();
 
-                    ////stream.open( "experience_smoothed.hist" );
-                    ////std::copy( exp_copy, exp_copy+size, std::ostream_iterator<double>( stream, " " ) );
-                    ////stream.close();
+                //stream.open( "experience.hist" );
+                //stream << *experience;
+                //stream.close();
 
-                    //stream.open( "swathe.hist") ;
-                    //stream << swathe;
-                    //stream.close();
+                ////stream.open( "experience_smoothed.hist" );
+                ////std::copy( exp_copy, exp_copy+size, std::ostream_iterator<double>( stream, " " ) );
+                ////stream.close();
 
-                    ////stream.open( "swathe_smoothed.hist" );
-                    ////std::copy( swathe_copy, swathe_copy+size, std::ostream_iterator<double>( stream, " " ) );
-                    ////stream.close();
+                //stream.open( "swathe.hist") ;
+                //stream << swathe;
+                //stream.close();
 
-                    //exit(-1);
+                ////stream.open( "swathe_smoothed.hist" );
+                ////std::copy( swathe_copy, swathe_copy+size, std::ostream_iterator<double>( stream, " " ) );
+                ////stream.close();
+
+                //exit(-1);
 
                 //}
 
@@ -332,24 +333,24 @@ namespace L3
 
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
-                
+
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
                 L3::ReadLock swathe_lock( swathe->mutex );
 
                 if (swathe->num_points == 0 ) 
                     return false;
-                
+
                 /*
                  *  Speed considerations
                  */
                 L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false );
-                
+
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
 
                 static int counter = 0;
-              
+
                 if ( counter++ == -1 )
                 {
                     int swathe_counter = 0;
@@ -371,7 +372,7 @@ namespace L3
                         stream.close();
 
                         it++;
-                   
+
                     }
                 }
                 else
@@ -388,45 +389,45 @@ namespace L3
                 return true;
             }
 
-    template < typename T>
-        SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
-        {
-            L3::ReadLock swathe_lock( swathe->mutex );
-            
-            GridWeighting weighting(estimate);
-            
-            discrete_estimators[0]->operator()( swathe, estimate );
-            std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
-            SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
-            
-            discrete_estimators[1]->operator()( swathe, refined );
-            //weighting( discrete_estimators[1]->pose_estimates.get() );
-            it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
-            refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
+        template < typename T>
+            SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+            {
+                L3::ReadLock swathe_lock( swathe->mutex );
 
-            discrete_estimators[2]->operator()( swathe, refined );
-            it = std::min_element( discrete_estimators[2]->pose_estimates->costs.begin() , discrete_estimators[2]->pose_estimates->costs.end() );
-            refined = discrete_estimators[2]->pose_estimates->estimates[ std::distance( discrete_estimators[2]->pose_estimates->costs.begin(), it )] ;
+                GridWeighting weighting(estimate);
 
-            discrete_estimators[3]->operator()( swathe, refined );
-            it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
-            //weighting( discrete_estimators[3]->pose_estimates.get() );
-            refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
+                discrete_estimators[0]->operator()( swathe, estimate );
+                std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
+                SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
-            //discrete_estimators[4]->operator()( swathe, refined );
-            //it = std::min_element( discrete_estimators[4]->pose_estimates->costs.begin() , discrete_estimators[4]->pose_estimates->costs.end() );
-            //refined = discrete_estimators[4]->pose_estimates->estimates[ std::distance( discrete_estimators[4]->pose_estimates->costs.begin(), it )] ;
+                discrete_estimators[1]->operator()( swathe, refined );
+                //weighting( discrete_estimators[1]->pose_estimates.get() );
+                it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
+                refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
 
-            //discrete_estimators[5]->operator()( swathe, refined );
-            //it = std::min_element( discrete_estimators[5]->pose_estimates->costs.begin() , discrete_estimators[5]->pose_estimates->costs.end() );
-            //refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
+                discrete_estimators[2]->operator()( swathe, refined );
+                it = std::min_element( discrete_estimators[2]->pose_estimates->costs.begin() , discrete_estimators[2]->pose_estimates->costs.end() );
+                refined = discrete_estimators[2]->pose_estimates->estimates[ std::distance( discrete_estimators[2]->pose_estimates->costs.begin(), it )] ;
 
-            return refined;
-            //return L3::SE3::ZERO();
-        }
+                discrete_estimators[3]->operator()( swathe, refined );
+                it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
+                //weighting( discrete_estimators[3]->pose_estimates.get() );
+                refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
 
-    template < typename T>
-        SE3 PassThrough<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
+                //discrete_estimators[4]->operator()( swathe, refined );
+                //it = std::min_element( discrete_estimators[4]->pose_estimates->costs.begin() , discrete_estimators[4]->pose_estimates->costs.end() );
+                //refined = discrete_estimators[4]->pose_estimates->estimates[ std::distance( discrete_estimators[4]->pose_estimates->costs.begin(), it )] ;
+
+                //discrete_estimators[5]->operator()( swathe, refined );
+                //it = std::min_element( discrete_estimators[5]->pose_estimates->costs.begin() , discrete_estimators[5]->pose_estimates->costs.end() );
+                //refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
+
+                return refined;
+                //return L3::SE3::ZERO();
+            }
+
+        template < typename T>
+            SE3 PassThrough<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
                 // Lock the experience histogram
                 L3::ReadLock histogram_read_lock( (*pyramid)[1]->mutex );
@@ -447,11 +448,11 @@ namespace L3
                 h();
 
                 //if( h.swathe_histogram->empty() )
-                    //return L3::SE3::ZERO(); 
+                //return L3::SE3::ZERO(); 
 
                 //L3::WriteLock ( this->data.swathe_histogram->mutex ); 
                 //L3::clone( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
-              
+
                 //L3::WriteLock ( this->data.experience_histogram->mutex ); 
                 //L3::clone( (*pyramid)[0].get(), this->data.experience_histogram.get() );
 
@@ -460,41 +461,87 @@ namespace L3
 
 
 
-    /*
-     *  Algorithm: Minimisation
-     */
+        /*
+         *  Algorithm: Minimisation
+         */
 
-    double global_minimisation_function( const gsl_vector * x, void * params)
-    {
-
-
-    }
-
-    L3::Estimator::Algorithm<double>* L3::Estimator::MinimisationParameters::global_minimiser = NULL;
-
-    template < typename T >
-        SE3 Minimisation<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+        double global_minimisation_function( const gsl_vector * x, void * params)
         {
-            current_swathe = swathe;
+            Minimisation<double>* minimiser = static_cast< Minimisation<double>* >(MinimisationParameters::global_minimiser);
 
-            gsl_vector_set (x, 0, estimate.X() );
-            gsl_vector_set (x, 1, estimate.Y() );
-            gsl_vector_set (x, 2, estimate.Q() );
-
-            gsl_vector_set_all (ss, 1.0);
-        
+            return minimiser->getHypothesisCost( x );
         }
 
+        L3::Estimator::Algorithm<double>* L3::Estimator::MinimisationParameters::global_minimiser = NULL;
+
+        template < typename T >
+            SE3 Minimisation<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+            {
+                L3::WriteLock   master( this->mutex );
+                L3::ReadLock    swathe_lock( swathe->mutex );               
+                L3::ReadLock    histogram_lock( (*this->pyramid)[1]->mutex );
+
+                current_swathe = swathe;
+
+                gsl_vector_set (x, 0, estimate.X() );
+                gsl_vector_set (x, 1, estimate.Y() );
+                gsl_vector_set (x, 2, estimate.Q() );
+
+                gsl_vector_set_all (ss, 0.5);
+
+                gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
+
+                int status;
+                int iter = 0;
+              
+                evaluations.clear();
+
+                evaluations.reserve(100);
+                double size;            
+                do
+                {
+                    iter++;
+                    status = gsl_multimin_fminimizer_iterate(s);
+
+                    if (status) 
+                        break;
+
+                    size = gsl_multimin_fminimizer_size (s);
+                    status = gsl_multimin_test_size (size, 1e-2);
+
+                    if (status == GSL_SUCCESS)
+                    {
+                        //printf ("converged to minimum at\n");
+                        //printf ("%5d %10.3e %10.3e f() = %7.3f size = %.3f\n", 
+                        //iter,
+                        //gsl_vector_get (s->x, 0), 
+                        //gsl_vector_get (s->x, 1), 
+                        //s->fval, size);
+                    }
+                }
+                while (status == GSL_CONTINUE && iter < 100);
+
+                gsl_vector* res = gsl_multimin_fminimizer_x ( s );
+
+                //L3::SE3 pose( gsl_vector_get(s->x, 0), gsl_vector_get(s->x, 1), 0.0, 0.0, 0.0, gsl_vector_get(s->x, 2) );
+                L3::SE3 pose( gsl_vector_get(res, 0), gsl_vector_get(res, 1), 0.0, 0.0, 0.0, gsl_vector_get(res, 2) );
+              
+                return  pose;
+            }
+
     template <typename T>
-        double Minimisation<T>::getHypothesisCost( gsl_vector* hypothesis )
+        double Minimisation<T>::getHypothesisCost( const gsl_vector* hypothesis )
         {
             std::vector<double> cost( 1 );
 
             //Construct pose from hypothesis
             L3::SE3 pose_estimate( gsl_vector_get( hypothesis, 0 ), gsl_vector_get( hypothesis, 1 ), 0.0, 0.0, 0.0, gsl_vector_get( hypothesis, 2 ) );
 
-            Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[0].get() , this->cost_function, cost.begin() );
+            evaluations.push_back( pose_estimate );
 
+            Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[1].get() , this->cost_function, cost.begin() )();
+
+            return cost[0];
         }
     
     }   // Estimator

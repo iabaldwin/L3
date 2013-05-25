@@ -21,14 +21,44 @@ namespace L3
             {
             }
 
-
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
         
             virtual void onDraw( glv::GLV& g ){};
         };
 
+      
+        struct MinimisationVisualiser : AlgorithmVisualiser
+        {
+
+            MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm )  : algorithm(algorithm)
+            {
+                boost::shared_ptr< glv::View > ptr = boost::dynamic_pointer_cast<glv::View>( boost::make_shared< TraversalVisualiser >( algorithm ) );
+                views.push_back( ptr );
+
+                (*this) << *ptr;
+            }
+
+            std::deque< boost::shared_ptr< glv::View > > views;
+
+            boost::weak_ptr< L3::Estimator::Minimisation<double> > algorithm;
         
+       
+            struct TraversalVisualiser : glv::View3D
+            {
+
+                TraversalVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm  ) : algorithm(algorithm), glv::View3D( glv::Rect( 250,250 ))
+                {
+                    
+                }
+
+                void onDraw3D( glv::GLV& g );
+
+                boost::weak_ptr< L3::Estimator::Minimisation<double> > algorithm;
+
+            };
+        };
+
         struct IterativeDescentVisualiser : AlgorithmVisualiser
         {
             IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) ;
@@ -94,15 +124,16 @@ namespace L3
 
         struct AlgorithmRendererFactory
         {
-
             static boost::shared_ptr< AlgorithmVisualiser > Produce( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
             {
                 // Iterative descent
-                boost::shared_ptr< L3::Estimator::IterativeDescent<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::IterativeDescent<double> >( algorithm );
-
-                if( ptr )
+                if( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::IterativeDescent<double> >( algorithm ) )
                     return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< IterativeDescentVisualiser >( ptr ) );
-                
+               
+                // Optimisation
+                if( boost::shared_ptr< L3::Estimator::Minimisation<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::Minimisation<double> >( algorithm ) )
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< MinimisationVisualiser >( ptr ) );
+
                 return boost::shared_ptr<AlgorithmVisualiser>();
 
             }

@@ -153,6 +153,9 @@ namespace L3
          */
         //*estimated = algorithm->operator()( projector->cloud, predicted );
         //*current = algorithm->operator()( projector->cloud, predicted );
+        //*current = algorithm->operator()( projector->cloud, *current );
+        
+        //*current = provider->operator()();
         *current = algorithm->operator()( projector->cloud, *current );
 
         return true;
