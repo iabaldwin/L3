@@ -107,7 +107,7 @@ namespace L3
             if( !ptr )
                 return;
             
-            glv::draw::translate( -1*ptr->pose_estimates->position->X(), -1*ptr->pose_estimates->position->Y(), -55 );
+            glv::draw::translate( -1*ptr->pose_estimates->position->X(), -1*ptr->pose_estimates->position->Y(), -15 );
 
             L3::ReadLock lock( ptr->pose_estimates->mutex );
             std::vector<L3::SE3> estimates( ptr->pose_estimates->estimates.begin(), ptr->pose_estimates->estimates.end() );
@@ -130,6 +130,8 @@ namespace L3
             for( int i=0; i< estimates.size(); i++ )
             {
                 double z_val = fabs(costs[i]);
+
+                //z_val -= fabs(min_val);
 
                 z_val /= fabs(max_val);
 

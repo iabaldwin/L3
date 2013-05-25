@@ -161,6 +161,13 @@ namespace Estimator
         };
 
     template < typename T >  
+        struct NMICostFunction : CostFunction<T>
+        {
+            double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
+        };
+
+
+    template < typename T >  
         struct RenyiMICostFunction: CostFunction<T>
         {
             double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
@@ -280,28 +287,30 @@ namespace Estimator
                 {
                     L3::ReadLock( (*it)->mutex );
                            
-           
                     // Grid 
                     discrete_estimators.push_back( 
                             boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< GridEstimates >( range, range, granularity) )
                             );
 
+
                     // Rotation
                     discrete_estimators.push_back( 
-                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< RotationEstimates >( ) )
+                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< RotationEstimates >() )
                             );
 
+
                     range /= 2.0;
+                    granularity /= 1.8;
                     //granularity /= 1.5;
-                    granularity /= 2;
+                    //granularity /= 2;
                 }
 
             }
             
-            boost::shared_ptr< HistogramPyramid<T> > pyramid;
-       
             std::deque< boost::shared_ptr< DiscreteEstimator<T> > > discrete_estimators;
             
+            boost::shared_ptr< HistogramPyramid<T> > pyramid;
+       
             SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
         };
