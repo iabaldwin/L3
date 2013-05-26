@@ -28,7 +28,8 @@ namespace L3
             L3::Iterator<L3::LHLV>*      LHLV_iterator;
 
             double previous_update;
-
+    
+            std::deque< double > sink;
     };
 
 
@@ -40,6 +41,7 @@ namespace L3
                 : Predictor(iterator), num_particles(num_particles)
             {
                 particles.resize( num_particles ); 
+            
             }
 
             int num_particles;
@@ -49,6 +51,7 @@ namespace L3
             bool predict( const L3::SE3& current );
 
             bool update( double t );
+
             
     };
 

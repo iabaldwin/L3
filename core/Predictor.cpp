@@ -21,8 +21,8 @@ namespace L3
     {
         // 1. Find the element closest to the last upate
         
-        Comparator< std::pair< double, boost::shared_ptr<L3::LHLV> > > comparator;
         std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > window;
+        Comparator< std::pair< double, boost::shared_ptr<L3::LHLV> > > comparator;
         
         L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( LHLV_iterator->window.begin(), 
                                                                                         LHLV_iterator->window.end(), 
@@ -30,9 +30,14 @@ namespace L3
                                                                                         comparator );
         
         window.resize( std::distance( index, LHLV_iterator->window.end() ) );
+                
+        sink.resize( window.size() );
 
         // 2. Isolate from here to the end of the chain
-        L3::trajectoryAccumulate( index, LHLV_iterator->window.end(), window.begin() );
+        L3::trajectoryAccumulate( index, 
+                                    LHLV_iterator->window.end(), 
+                                    window.begin(), 
+                                    sink.begin() );
 
         previous_update = t;
     }

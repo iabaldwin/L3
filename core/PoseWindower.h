@@ -22,10 +22,9 @@ namespace L3
     struct Inverter
     {
         std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > chain;
-
+        
         template <typename InputIterator >
             bool invert( InputIterator start, InputIterator end );
-
     };
 
 
@@ -75,11 +74,8 @@ namespace L3
                     chain_builder.reset( new L3::ChainBuilder( iterator ) );
 
                     // Reflection
-                    //this->window = &inverter.chain;
                     this->window = &chain_builder->window;
                 }
-
-                Inverter inverter;
 
                 // Iterator base
                 L3::ConstantTimeIterator<L3::LHLV>* constant_time_iterator;
@@ -87,10 +83,13 @@ namespace L3
                 // Chain builder - poses from velocity
                 boost::shared_ptr< L3::ChainBuilder > chain_builder;
 
+                // Trajectory inverter
+                Inverter inverter;
+
                 bool update( double t)
                 {
                     // Update the chain
-                    chain_builder->update(t);
+                    chain_builder->update();
 
                     // Reorient poses
                     return inverter.invert( chain_builder->window.begin(), chain_builder->window.end() );
@@ -105,36 +104,44 @@ namespace L3
     {
         public:
 
-            ConstantDistanceWindower( L3::ConstantTimeIterator<L3::LHLV>* iterator ) 
-                : constant_time_iterator(iterator)
+            ConstantDistanceWindower( L3::ConstantTimeIterator<L3::LHLV>* iterator, double swathe_length = 10.0  ) 
+                : constant_time_iterator(iterator),
+                    swathe_length(swathe_length),
+                    previous_update(0.0)
             {
-                // Poses from velocity
-                chain_builder.reset( new L3::ChainBuilder( iterator ) );
-
                 // Reflection
-                this->window = &chain_builder->window;
+                this->window = &_constant_distance_window;
             }
+
 
             // Iterator base
             L3::ConstantTimeIterator<L3::LHLV>* constant_time_iterator;
 
-            // Chain builder - poses from velocity
-            boost::shared_ptr< L3::ChainBuilder > chain_builder;
+            // Core window
+            std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > _constant_distance_window;
 
+            // Window buffer
+            std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > _window_buffer;
+            
+            // Window buffer::Incremental distances
+            std::deque < double > _window_incremental_distances;
+           
+            // Sink
+            std::deque < double > _sink;
+
+            // Pose inverter
             Inverter inverter;
+        
+            // Search structure
+            Comparator< std::pair< double, boost::shared_ptr<L3::LHLV> > > comparator;
 
-            bool update( double t)
-            {
-                // Update the chain
-                chain_builder->update(t);
+            double swathe_length;
 
-                // Reorient poses
-                return inverter.invert( chain_builder->window.begin(), chain_builder->window.end() );
-            }
+            double previous_update;
 
+            bool update( double time );
+    
     };
-
-
 
 }
 

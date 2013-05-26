@@ -20,21 +20,21 @@ namespace L3
             {
             }
 
-            bool update( double time )
+            bool update()
             {
-                if (!LHLV_iterator->update( time ))
-                    throw std::exception();
-
                 // Reset
                 window.clear();
 
                 // Allocate
                 window.resize( LHLV_iterator->window.size() );
 
+                _incremental_distances.resize( window.size() );
+
                 // Accumulate 
                 L3::trajectoryAccumulate( LHLV_iterator->window.begin(), 
                                             LHLV_iterator->window.end(), 
-                                            window.begin() );
+                                            window.begin(), 
+                                            _incremental_distances.begin() );
 
                 return true;
             }
@@ -42,8 +42,10 @@ namespace L3
             std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > window;
 
         private:
-            
-            L3::Iterator<L3::LHLV>*      LHLV_iterator;
+
+            std::deque < double > _incremental_distances;
+
+            L3::Iterator<L3::LHLV>* LHLV_iterator;
 
     };
 

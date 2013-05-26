@@ -171,10 +171,7 @@ namespace Visualisers
     {
         std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it = pose_windower->window->begin();
 
-        int counter = 0;
-
         while( it != pose_windower->window->end() )
-            //CoordinateSystem( (it++)->second ).onDraw3D(g );
             CoordinateSystem( *(it++)->second ).onDraw3D(g );
     }
 
