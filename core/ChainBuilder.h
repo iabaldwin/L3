@@ -30,11 +30,14 @@ namespace L3
 
                 _incremental_distances.resize( window.size() );
 
+                double distance;
+
                 // Accumulate 
                 L3::trajectoryAccumulate( LHLV_iterator->window.begin(), 
                                             LHLV_iterator->window.end(), 
                                             window.begin(), 
-                                            _incremental_distances.begin() );
+                                            distance, 
+                                            std::numeric_limits<double>::infinity() );
 
                 return true;
             }

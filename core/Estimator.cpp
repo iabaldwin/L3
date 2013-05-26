@@ -507,10 +507,10 @@ namespace L3
 
                 int status;
                 int iter = 0;
-              
+            
                 evaluations.clear();
 
-                evaluations.reserve(100);
+                evaluations.reserve(max_iterations);
                 double size;            
                 do
                 {
@@ -521,7 +521,8 @@ namespace L3
                         break;
 
                     size = gsl_multimin_fminimizer_size (s);
-                    status = gsl_multimin_test_size (size, 1e-2);
+                    //status = gsl_multimin_test_size (size, 1e-2);
+                    status = gsl_multimin_test_size (size, tolerance );
 
                     if (status == GSL_SUCCESS)
                     {
@@ -531,9 +532,11 @@ namespace L3
                         //gsl_vector_get (s->x, 0), 
                         //gsl_vector_get (s->x, 1), 
                         //s->fval, size);
+                   
+                        break;
                     }
                 }
-                while (status == GSL_CONTINUE && iter < 100);
+                while (status == GSL_CONTINUE && iter < max_iterations);
 
                 gsl_vector* res = gsl_multimin_fminimizer_x ( s );
 
@@ -557,6 +560,28 @@ namespace L3
 
             return cost[0];
         }
+
+    template <typename T>
+        SE3 Hybrid<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+
+        {
+            L3::ReadLock swathe_lock( swathe->mutex );
+
+            discrete_estimators[0]->operator()( swathe, estimate );
+            std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
+            SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
+
+            discrete_estimators[1]->operator()( swathe, estimate );
+            it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
+            refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
+
+            swathe_lock.unlock();
+
+            minimisation->max_iterations = 5;
+
+            return this->minimisation->operator()( swathe, refined );
+        
+        }
     
     }   // Estimator
 }       // L3
@@ -572,3 +597,4 @@ template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointClou
 template L3::SE3 L3::Estimator::PassThrough<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::Minimisation<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template L3::SE3 L3::Estimator::Hybrid<double>::operator()(L3::PointCloud<double>*, L3::SE3);

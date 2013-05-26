@@ -37,23 +37,26 @@ namespace Visualisers
 
     control_t& control_t::updateHomogeneous()
     {
+        double _q = L3::Utils::Math::degreesToRadians( q );
         Eigen::Matrix4f Rz = Eigen::Matrix4f::Identity();
-        Rz(0,0) = cos( q );
-        Rz(0,1) = -1*sin( q );
-        Rz(1,0) = sin( q );
-        Rz(1,1) = cos( q );
+        Rz(0,0) = cos( _q );
+        Rz(0,1) = -1*sin( _q );
+        Rz(1,0) = sin( _q );
+        Rz(1,1) = cos( _q );
 
+        double _p = L3::Utils::Math::degreesToRadians( p );
         Eigen::Matrix4f Rx = Eigen::Matrix4f::Identity();
-        Rx(1,1) = cos( p );
-        Rx(1,2) = -1*sin( p );
-        Rx(2,1) = sin( p );
-        Rx(2,2) = cos( p );
+        Rx(1,1) = cos( _p );
+        Rx(1,2) = -1*sin( _p );
+        Rx(2,1) = sin( _p );
+        Rx(2,2) = cos( _p );
 
+        double _r = L3::Utils::Math::degreesToRadians( r );
         Eigen::Matrix4f Ry = Eigen::Matrix4f::Identity();
-        Ry(0,0) = cos( r );
-        Ry(0,2) = sin( r );
-        Ry(2,0) = -1*sin( r );
-        Ry(2,2) = cos( r );
+        Ry(0,0) = cos( _r );
+        Ry(0,2) = sin( _r );
+        Ry(2,0) = -1*sin( _r );
+        Ry(2,2) = cos( _r );
 
         homogeneous = Rz*Ry*Rx;
 
@@ -65,110 +68,42 @@ namespace Visualisers
         return *this;
     }
 
-
-
-/*
- *  Basic pan controller
- */
-bool BasicPanController::onEvent( glv::Event::t type, glv::GLV& g )
-//bool BasicPanController::onEvent(glv::View&, glv::GLV&)
+    bool CompositeController::MouseDragController::onEvent(glv::View&, glv::GLV& g)
     {
-        //switch (type)
-        //{
-            //case (glv::Event::KeyDown):
-                //break;
+        if ( g.keyboard().shift() )
+        {
+            double x = (double)(g.mouse().x() - origin_x) /100;
+            double y = (double)(g.mouse().y() - origin_y) /100;
 
-            //case (glv::Event::KeyRepeat):
-                //break;
+            current.updateHomogeneous();
 
-            //case (glv::Event::MouseDown):
-                //origin_x = g.mouse().x();
-                //origin_y = g.mouse().y();
-                //break;
+            Eigen::Matrix4f mat = current.homogeneous;
 
-            //case (glv::Event::MouseDrag):
-           
-                //if ( g.keyboard().shift() )
-                //{
-                    //double x = (double)(g.mouse().x() - origin_x) /100;
-                    //double y = (double)(g.mouse().y() - origin_y) /100;
-               
-                    ////Eigen::Matrix4f delta = Eigen::Matrix4f::Identity(); 
-          
-                    ////delta( 0,3)= x;
-                    ////delta( 2,3)= y;
+            mat(0,3) = 0.0;
+            mat(1,3) = 0.0;
+            mat(2,3) = 0.0;
 
-                    ////current.homogeneous *= delta;
-               
-                    //current.x += x;
-                    //current.y += y;
-                //}
-                //else
-                //{
-                    //current.q += (double)(g.mouse().x() - origin_x) /1000;
-                   
-                    //double r = (double)(g.mouse().y() - origin_y) /1000;
+            Eigen::Matrix4f trans = Eigen::Matrix4f::Identity();
 
-                    //if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
-                        //current.r += r;
-        
-                //}
-        
-                //break;
+            trans(0,3) = x;
+            trans(1,3) = -1*y;
 
-            //case (glv::Event::MouseUp):
-                //break;
+            Eigen::Matrix4f res = mat.inverse() * trans;
+            
+            current.x += res(0,3);
+            current.y += res(1,3);
 
-            //default:
-                //break;
+        }
+        else
+        {
+            current.q += (double)(g.mouse().x() - origin_x) /100;
 
-        //}
+            double r = (double)(g.mouse().y() - origin_y) /100;
 
-        return true;
+            if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
+                current.r += r;
+        }
     }
-
-/*
- *  FPS controller
- */
-//bool FPSController::onEvent( glv::Event::t type, glv::GLV& g )
-//{
-        //Eigen::Matrix4f homogeneous;
-
-        //control_t delta;
-
-        //switch (type)
-        //{
-            //case (glv::Event::KeyDown):
-            //case (glv::Event::KeyRepeat):
-                //switch ( g.keyboard().key() )
-                //{
-                    //case 'w':
-                        //delta.y += .5;
-                //}
-
-                //break;
-
-            //case (glv::Event::MouseDown):
-                //break;
-
-            //case (glv::Event::MouseDrag):
-                //break;
-
-            //case (glv::Event::MouseUp):
-                //break;
-
-            //case (glv::Event::MouseWheel):
-                //break;
-
-            //default:
-                //break;
-
-        //}
-
-        ////estimate = estimate + t;
-        ////return t;
-        ////return control_t();
-//}
 
 
 }

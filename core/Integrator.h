@@ -35,13 +35,11 @@ namespace L3
         }
     };
 
-    template <typename InputIterator, typename OutputIterator1, typename OutputIterator2 >
-        double trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator1 output, OutputIterator2 distances );
+    template <typename InputIterator, typename OutputIterator >
+        OutputIterator trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double& distance, double required_distance );
 
-    template <typename InputIterator, typename OutputIterator>
-        double swatheLength( InputIterator begin, InputIterator end, OutputIterator output );
-
-
+    template <typename InputIterator, typename OutputIterator >
+        OutputIterator incrementalTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment );
 
 }
 

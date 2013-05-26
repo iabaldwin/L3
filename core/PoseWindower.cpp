@@ -2,6 +2,8 @@
 
 namespace L3
 {
+    typedef std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> SWATHE_ITERATOR;
+
     template <typename InputIterator >
         bool Inverter::invert(InputIterator start, InputIterator end )
         {
@@ -35,61 +37,31 @@ namespace L3
     {
         // Find the new data, between the last update time and now
         L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( constant_time_iterator->window.begin(), 
-                constant_time_iterator->window.end(), 
-                previous_update,
-                comparator );
+                                                                            constant_time_iterator->window.end(), 
+                                                                            previous_update,
+                                                                            comparator );
 
         // Create a delta buffer
-        std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > _pose_delta_buffer;
         std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > _window_delta_buffer;
-       
-        // Allocate
+
+        // Add in the newly-seen data
         _window_delta_buffer.assign( index, constant_time_iterator->window.end() );
-        _pose_delta_buffer.resize( _window_delta_buffer.size() );
 
-        // Create delta incremental distance buffer
-        if ( _window_delta_buffer.empty() )
-            return false;
+        // Append it to the buffer
+        _window_buffer.insert( _window_buffer.end(), _window_delta_buffer.begin(), _window_delta_buffer.end() );
 
-        std::deque < double > _incremental_distances( _window_delta_buffer.size() );
-      
-        // Compute swathe length for the delta
-        double incremental_distance = L3::trajectoryAccumulate( _window_delta_buffer.begin(), 
-                                                                _window_delta_buffer.end(), 
-                                                                _pose_delta_buffer.begin(), 
-                                                                _incremental_distances.begin() );
+        _constant_distance_window.resize( _window_buffer.size()) ;
 
-        double required_distance = swathe_length - incremental_distance;
+        std::cout << _constant_distance_window.size() << std::endl;
 
-        // Find a pointer to the last element, so we can pop it off
-        std::deque < double >::reverse_iterator _window_incremental_distances_iterator  = _window_incremental_distances.rend();
+        double total_distance;
+        SWATHE_ITERATOR iterator = L3::incrementalTrajectoryAccumulate( _window_buffer.begin(),
+                _window_buffer.end(),
+                _constant_distance_window.begin(),
+                .2);
 
-        while( required_distance > 0 && (_window_incremental_distances_iterator != _window_incremental_distances.rbegin() ) )
-        {
-            double tmp_dist = *(--_window_incremental_distances_iterator);
+        _constant_distance_window.erase( _constant_distance_window.begin(), iterator );
 
-            required_distance -= tmp_dist;
-        }
-
-        //unsigned int elements_to_remove = std::distance( _window_incremental_distances.rbegin(), _window_incremental_distances_iterator );
-        unsigned int elements_to_remove = std::distance( _window_incremental_distances.rbegin(), _window_incremental_distances_iterator );
-
-        _window_buffer.erase( _window_buffer.begin(), _window_buffer.begin() + elements_to_remove );
-        _window_incremental_distances.erase( _window_incremental_distances.begin(), _window_incremental_distances.begin() + elements_to_remove );
-
-        // Join  windows
-        _window_buffer.insert( _window_buffer.end(), _window_delta_buffer.begin(), _window_delta_buffer.end() ); 
-        _window_incremental_distances.insert( _window_incremental_distances.end(), _incremental_distances.begin(), _incremental_distances.end() ); 
-
-        // Resize sink
-        _sink.resize( _window_buffer.size() );
-
-        _constant_distance_window.resize( _window_buffer.size() );
-
-        std::cout << L3::trajectoryAccumulate( _window_buffer.begin(),
-                                    _window_buffer.end(),
-                                    _constant_distance_window.begin(),
-                                    _sink.begin() ) << " metres" << std::endl;
         // Update
         previous_update = time;
 

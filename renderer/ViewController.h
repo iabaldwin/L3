@@ -120,28 +120,7 @@ struct CompositeController : Controller
         double& origin_x;
         double& origin_y;
 
-        bool onEvent(glv::View&, glv::GLV& g)
-        {
-            if ( g.keyboard().shift() )
-            {
-                double x = (double)(g.mouse().x() - origin_x) /100;
-                double y = (double)(g.mouse().y() - origin_y) /100;
-
-                current.x += x;
-                current.y += y;
-
-            }
-            else
-            {
-                current.q += (double)(g.mouse().x() - origin_x) /100;
-
-                double r = (double)(g.mouse().y() - origin_y) /100;
-
-                if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
-                    current.r += r;
-            }
-        }
-
+        bool onEvent(glv::View&, glv::GLV& g);
     };
 
     boost::shared_ptr< MouseDownController >    mouse_down_controller;
