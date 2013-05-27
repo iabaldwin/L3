@@ -242,9 +242,12 @@ namespace L3
 
                     this->operator<<( *plot );
                 }
-
-
             }
+
+            boost::shared_ptr< glv::View > minimisation_visualiser = boost::dynamic_pointer_cast< glv::View >( boost::make_shared< TraversalVisualiser >( algorithm->minimisation ) );
+            views.push_back( minimisation_visualiser );
+       
+            this->operator<<( *minimisation_visualiser );
         }
 
 
