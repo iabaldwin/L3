@@ -34,7 +34,7 @@ namespace L3
 {
 namespace ScanMatching
 {
-    bool ICP::match(  const std::pair< double,  boost::shared_ptr< L3::LMS151 > > current_scan ) 
+    bool ICP::match(  const std::pair< double,  boost::shared_ptr< L3::LMS151 > > current_scan, Eigen::Matrix4f& transformation ) 
     {
         if ( !initialised )
         {
@@ -94,7 +94,10 @@ namespace ScanMatching
 
         icp.align(Final);
 
-        Eigen::Matrix4f transformation = icp.getFinalTransformation();
+        //Eigen::Matrix4f transformation = icp.getFinalTransformation();
+        transformation = icp.getFinalTransformation();
+
+        // Add it to the trajectory
 
         // Compute instantaneous velocity
         instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
@@ -117,8 +120,13 @@ namespace ScanMatching
         if ( window.size() > 0 )
         {
             L3::WriteLock( this->mutex );
-            //retval = matcher->match( *(window.back().second ) ); 
-            retval = matcher->match( window.back() ); 
+           
+            Eigen::Matrix4f transformation;
+            retval = matcher->match( window.back(), transformation ); 
+
+            current_transformation *= transformation;
+
+            trajectory.push_back( current_transformation );
         }
   
         return retval;

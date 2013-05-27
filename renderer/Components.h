@@ -677,6 +677,49 @@ namespace Visualisers
         std::list< boost::shared_ptr< ScanRenderer2D > > scan_renderers;
     };
 
+
+    /*
+     *  Scan matching renderers
+     */
+    struct ScanMatchingTrajectoryRenderer : glv::View3D
+    {
+
+        ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : glv::View3D( glv::Rect(150, 150)), engine(engine)
+        {
+
+        }
+
+        boost::weak_ptr< L3::ScanMatching::Engine > engine;
+
+        void onDraw3D( glv::GLV& g )
+        {
+            boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
+           
+            if( engine_ptr )
+            {
+                L3::ReadLock lock( engine_ptr->mutex );
+                std::deque< Eigen::Matrix4f > trajectory( engine_ptr->trajectory.begin(), engine_ptr->trajectory.end() );
+                lock.unlock();
+
+                std::cout << trajectory.size() << std::endl;
+
+                for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
+                        it != trajectory.end();
+                        it++ )
+                {
+                    L3::SE3 pose;
+
+                    pose.setHomogeneous( *it );
+
+                    CoordinateSystem( pose ).onDraw3D(g);
+                    
+                }
+
+            }
+        }
+
+    };
+
     struct ScanMatchingScanRenderer : glv::View3D
     {
         ScanMatchingScanRenderer( const glv::Rect rect, boost::shared_ptr< L3::ScanMatching::Engine > engine )
@@ -689,14 +732,16 @@ namespace Visualisers
 
             (*this) << *label;
 
-            trajectory.reset( new glv::View( glv::Rect(150,150)) );
-      
+            //trajectory.reset( new glv::View3D( glv::Rect(150,150)) );
+    
+            trajectory = boost::dynamic_pointer_cast< glv::View3D >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
+
             // We are not visible by default
             (*this) << *trajectory;
             trajectory->disable( glv::Visible );
         }
 
-        boost::shared_ptr< glv::View > trajectory;
+        boost::shared_ptr< glv::View3D > trajectory;
 
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
 

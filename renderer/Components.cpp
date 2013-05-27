@@ -1080,6 +1080,8 @@ namespace Visualisers
         if (enabled( glv::Maximized ))
         {
             trajectory->enable( glv::Visible );
+            trajectory->enable( glv::DrawBorder );
+            boost::dynamic_pointer_cast< ScanMatchingTrajectoryRenderer >(trajectory)->engine = engine;
         }
         else
             trajectory->disable( glv::Visible );
