@@ -32,10 +32,13 @@ namespace L3
 
 #pragma omp parallel private(sum) shared( hist  )
             for( unsigned int x = 0; x < hist->x_bins; x++ )
+
 #pragma omp for  nowait
                 for( unsigned int y = 0; y < hist->y_bins; y++ )
                 {
-                    hist_value = gsl_histogram2d_get( hist->hist,x,y );
+                    //hist_value = gsl_histogram2d_get( hist->hist,x,y );
+
+                    hist_value = *(hist->hist->bin + (x*hist->x_bins + y ));
 
                     double sum = 0.0;
 

@@ -297,9 +297,9 @@ namespace L3
          *  /Working
          */
 
-        densities.push_back( .4);
-        densities.push_back( .5 );
-        densities.push_back( 1 );
+        densities.push_back( .9 );
+        densities.push_back( 1.1 );
+        //densities.push_back( 1 );
 
         experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
         resident_point_cloud.reset( new L3::PointCloud<double>() );
@@ -409,8 +409,8 @@ namespace L3
                     boost::tuple<double,double,double> means     = L3::mean( &*resident_point_cloud );
 
                     //L3::BoxSmoother< double, 3 > smoother; 
-                    //L3::GaussianSmoother< double > smoother; 
-                    L3::LogisticSmoother< double > smoother; 
+                    L3::GaussianSmoother< double > smoother; 
+                    //L3::LogisticSmoother< double > smoother; 
 
                     for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->experience_pyramid->begin();
                             it != this->experience_pyramid->end();
@@ -431,7 +431,7 @@ namespace L3
 
 
                         current_histogram->operator()( resident_point_cloud.get() );
-                        smoother.smooth( current_histogram.get() );
+                        //smoother.smooth( current_histogram.get() );
 
                         lock.unlock();
 

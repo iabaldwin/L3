@@ -126,6 +126,9 @@ namespace L3
             double max_val = *(std::min_element( costs.begin(), costs.end() ) );
             double min_val = *(std::max_element( costs.begin(), costs.end() ) );
 
+            //std::copy( costs.begin(), costs.end(), std::ostream_iterator< double >( std::cout, " " ) );
+            //std::cout << std::endl;
+
             glv::Color interpolated;
             for( int i=0; i< estimates.size(); i++ )
             {

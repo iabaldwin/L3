@@ -244,11 +244,11 @@ namespace L3
                     L3::Histogram<double> const* experience , 
                     CostFunction<double> * cost_function, 
                     __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
-                : swathe(swathe), 
-                estimate(estimate), 
-                experience(experience), 
-                cost_function(cost_function),
-                result_iterator(result_iterator)
+                    : swathe(swathe), 
+                        estimate(estimate), 
+                        experience(experience), 
+                        cost_function(cost_function),
+                        result_iterator(result_iterator)
             {
             }
 
@@ -267,7 +267,6 @@ namespace L3
             void operator()()
             {
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
-                //hypothesis.reset( new L3::PointCloud<double>() );
 
                 /*
                  *  Copy point cloud
@@ -283,54 +282,22 @@ namespace L3
                  *  Histogram
                  */
                 L3::Histogram<double> swathe_histogram;
-                //swathe_histogram.reset( new L3::Histogram<double>() );
 
-                //if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), swathe_histogram.get() ) )
                 if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram ) )
                     return;
                 
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
-                //(*swathe_histogram)( hypothesis.get() );
 
                 /*
                  *  Smoothing
                  */
                 //L3::BoxSmoother< double, 3> smoother;
-                //L3::GaussianSmoother< double> smoother;
+                L3::GaussianSmoother< double > smoother;
                 //L3::LogisticSmoother< double> smoother;
                 //smoother.smooth( swathe_histogram.get() );
                 //smoother.smooth( &swathe_histogram );
 
-                //static int counter = 0;
-                //std::cout << counter++ << std::endl;
-                //if ( counter++ == 400 )
-                //{
-                //std::ofstream stream( "swathe.cloud" );
-                //stream << *hypothesis;
-                //stream.close();
-
-                //stream.open( "experience.hist" );
-                //stream << *experience;
-                //stream.close();
-
-                ////stream.open( "experience_smoothed.hist" );
-                ////std::copy( exp_copy, exp_copy+size, std::ostream_iterator<double>( stream, " " ) );
-                ////stream.close();
-
-                //stream.open( "swathe.hist") ;
-                //stream << swathe;
-                //stream.close();
-
-                ////stream.open( "swathe_smoothed.hist" );
-                ////std::copy( swathe_copy, swathe_copy+size, std::ostream_iterator<double>( stream, " " ) );
-                ////stream.close();
-
-                //exit(-1);
-
-                //}
-
-                // Compute cost
                 //*result_iterator = cost_function->operator()( *this->experience, *swathe_histogram );
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
@@ -501,7 +468,9 @@ namespace L3
                 gsl_vector_set (x, 1, estimate.Y() );
                 gsl_vector_set (x, 2, estimate.Q() );
 
+                // Construct tolerances
                 gsl_vector_set_all (ss, 0.5);
+                gsl_vector_set( ss, 2, .05 );
 
                 gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
 
@@ -521,7 +490,6 @@ namespace L3
                         break;
 
                     size = gsl_multimin_fminimizer_size (s);
-                    //status = gsl_multimin_test_size (size, 1e-2);
                     status = gsl_multimin_test_size (size, tolerance );
 
                     if (status == GSL_SUCCESS)
@@ -577,7 +545,7 @@ namespace L3
 
             swathe_lock.unlock();
 
-            minimisation->max_iterations = 5;
+            minimisation->max_iterations = 10;
 
             return this->minimisation->operator()( swathe, refined );
         

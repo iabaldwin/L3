@@ -378,7 +378,7 @@ namespace Estimator
 
             // Grid 
             discrete_estimators.push_back( 
-                    boost::make_shared< DiscreteEstimator<T> >( cost_function, (*experience_pyramid)[0], boost::make_shared< GridEstimates >() )
+                    boost::make_shared< DiscreteEstimator<T> >( cost_function, (*experience_pyramid)[0], boost::make_shared< GridEstimates >( 2, 2, .5) )
                     );
 
             // Rotation

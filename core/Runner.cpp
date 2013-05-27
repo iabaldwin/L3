@@ -128,7 +128,6 @@ namespace L3
    
     bool EstimatorRunner::update( double time )
     {
-
         bool dbg = true;
         /*
          *  Get the pose from the pose provider
