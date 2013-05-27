@@ -193,8 +193,8 @@ namespace Visualisers
            
             std::list< boost::shared_ptr< glv::View > >     labels;
 
-            boost::shared_ptr< EventController >            composite_maximise_controller;
-            boost::shared_ptr< Composite>   composite;
+            boost::shared_ptr< Composite>           composite;
+            boost::shared_ptr< EventController >    composite_maximise_controller;
             std::list< boost::shared_ptr< EventController > > window_controllers;
             
             boost::shared_ptr< Grid>            grid;

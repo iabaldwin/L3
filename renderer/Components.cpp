@@ -1009,6 +1009,38 @@ namespace Visualisers
     /*
      *  Scan-matching scan renderer
      */
+
+    /*
+     *  Scan-matching trajectory renderer
+     */
+
+    void ScanMatchingTrajectoryRenderer::onDraw3D( glv::GLV& g )
+    {
+        boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
+
+        if( engine_ptr )
+        {
+            L3::ReadLock lock( engine_ptr->mutex );
+            std::deque< Eigen::Matrix4f > trajectory( engine_ptr->trajectory.begin(), engine_ptr->trajectory.end() );
+            lock.unlock();
+
+            for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
+                    it != trajectory.end();
+                    it++ )
+            {
+                L3::SE3 pose;
+                pose.setHomogeneous( *it );
+                CoordinateSystem( pose, 20 ).onDraw3D(g);
+
+                std::cout << *it << std::endl;
+            }
+
+            glv::draw::translateZ( -150 );
+
+        }
+    }
+
+
     void ScanMatchingScanRenderer::onDraw3D( glv::GLV& g )
     {
         // Are we still valid
@@ -1378,6 +1410,9 @@ namespace Visualisers
 
         this->arrange();
     }
+
+
+
 
     /*
      *  Specific controllers

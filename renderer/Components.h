@@ -431,11 +431,17 @@ namespace Visualisers
 
         {
             bounds_renderer.reset( new PointCloudBoundsRenderer( cloud ) );
+        
+            label.reset( new glv::Label("Run-time swathe" ) );
+            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            (*this) << *label;
         }
 
         boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer > bounds_renderer;
 
         boost::weak_ptr< L3::SE3 > current_estimate;
+        
+        boost::shared_ptr< glv::View > label;
 
         std::pair<double,double> centroid;
 
@@ -686,37 +692,16 @@ namespace Visualisers
 
         ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : glv::View3D( glv::Rect(150, 150)), engine(engine)
         {
-
+            label.reset( new glv::Label("Open-loop trajectory" ) );
+            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            (*this) << *label;
         }
 
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
+        
+        boost::shared_ptr< glv::View > label;
 
-        void onDraw3D( glv::GLV& g )
-        {
-            boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
-           
-            if( engine_ptr )
-            {
-                L3::ReadLock lock( engine_ptr->mutex );
-                std::deque< Eigen::Matrix4f > trajectory( engine_ptr->trajectory.begin(), engine_ptr->trajectory.end() );
-                lock.unlock();
-
-                std::cout << trajectory.size() << std::endl;
-
-                for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
-                        it != trajectory.end();
-                        it++ )
-                {
-                    L3::SE3 pose;
-
-                    pose.setHomogeneous( *it );
-
-                    CoordinateSystem( pose ).onDraw3D(g);
-                    
-                }
-
-            }
-        }
+        void onDraw3D( glv::GLV& g );
 
     };
 
@@ -729,11 +714,8 @@ namespace Visualisers
 
             label.reset( new glv::Label("SM engine" ) );
             label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-
             (*this) << *label;
 
-            //trajectory.reset( new glv::View3D( glv::Rect(150,150)) );
-    
             trajectory = boost::dynamic_pointer_cast< glv::View3D >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
 
             // We are not visible by default
@@ -1082,7 +1064,17 @@ namespace Visualisers
             for( int i=0; i< num_pyramids; i++ )
             {
                 boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
+              
+                std::stringstream ss;
+
+                ss << "Pyramid <" << i << ">";
+
+                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( ss.str() );
+                label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR ); 
+                *renderer << *label;
+
                 renderers.push_back( renderer );
+                labels.push_back( label );
                 (*this) << renderer.get();
             }
 
@@ -1095,6 +1087,8 @@ namespace Visualisers
         int num_pyramids;
         std::deque< boost::shared_ptr< HistogramDensityRenderer > > renderers;
 
+        std::deque < boost::shared_ptr< glv::View > > labels;
+        
         void loadPyramid( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid )
         {
             this->pyramid = histogram_pyramid;

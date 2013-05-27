@@ -23,8 +23,19 @@ int main( int argc, char* argv[] )
     /*
      *  L3
      */
-    L3::Dataset* dataset = new L3::Dataset( dataset_directory );
-   
+    
+    L3::Dataset* dataset;
+       
+    try
+    {
+        dataset = new L3::Dataset( dataset_directory );
+    }
+    catch(...)
+    {
+        std::cerr << "No such dataset <" << dataset_directory  << ">" << std::endl;
+        exit(-1);
+    }
+
     if( !( dataset->validate() && dataset->load() ) )
         exit(-1);
 

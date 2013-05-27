@@ -92,12 +92,10 @@ namespace ScanMatching
         icp.setInputTarget(cloud_out);
         pcl::PointCloud<pcl::PointXYZ> Final;
 
+        // Alignment
         icp.align(Final);
 
-        //Eigen::Matrix4f transformation = icp.getFinalTransformation();
         transformation = icp.getFinalTransformation();
-
-        // Add it to the trajectory
 
         // Compute instantaneous velocity
         instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
@@ -124,9 +122,11 @@ namespace ScanMatching
             Eigen::Matrix4f transformation;
             retval = matcher->match( window.back(), transformation ); 
 
-            current_transformation *= transformation;
+            current_transformation = current_transformation * transformation;
 
-            trajectory.push_back( current_transformation );
+            std::cout << current_transformation << std::endl;
+
+            //trajectory.push_back( Eigen::Matrix4f( current_transformation ) );
         }
   
         return retval;
