@@ -1352,11 +1352,17 @@ namespace Visualisers
         estimation.reset(           new TextRenderer<double>() );
 
         observer_update->enable( glv::DrawBorder );
+        swathe_generation->enable( glv::DrawBorder );
+
+        observer_update->paddingY( 7 );
+        swathe_generation->paddingY( 7 );
+        points_per_second->paddingY( 7 );
+        estimation->paddingY( 7 );
 
         (*this) << dynamic_cast< glv::View* >(observer_update.get()) <<
-            dynamic_cast< glv::View* >(swathe_generation.get()) <<
-            dynamic_cast< glv::View* >(points_per_second.get()) <<
-            dynamic_cast< glv::View* >(estimation.get());
+                    dynamic_cast< glv::View* >(swathe_generation.get()) <<
+                    dynamic_cast< glv::View* >(points_per_second.get()) <<
+                    dynamic_cast< glv::View* >(estimation.get());
 
         boost::shared_ptr< glv::Label > observer_label = boost::make_shared< glv::Label >( "Observer update" );
         labels.push_back( observer_label );

@@ -182,14 +182,13 @@ namespace Visualisers
             boost::shared_ptr< TableToggler > toggler;
             std::deque< boost::shared_ptr< glv::Table > > tables;
           
-            boost::shared_ptr< glv::Label >   scale_factor_label;
             boost::shared_ptr< glv::Slider >  scale_factor;
-            
             boost::shared_ptr< glv::Slider >  window_duration_INS;
             boost::shared_ptr< glv::Slider >  window_duration_LIDAR;
             boost::shared_ptr< glv::Slider >  point_cloud_downsample;
             boost::shared_ptr< glv::Slider >  experience_window;
             
+            std::deque< boost::shared_ptr< glv::Label > > slider_labels;
            
             std::list< boost::shared_ptr< glv::View > >     labels;
 

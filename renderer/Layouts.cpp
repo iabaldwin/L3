@@ -105,32 +105,70 @@ namespace L3
             /*
              * Text & controls
              */
-            ancillary_2.reset( new glv::Table("x , " ) );
+            ancillary_2.reset( new glv::Table("x , ", 3, 10 ) );
             
             // Dataset scaling factor
             scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             scale_factor->interval( 5, 1 );
-            scale_factor_label.reset( new glv::Label() );
-            
+           
+            {
+                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "Time scaling" );
+                label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+                *scale_factor << *label ;
+                slider_labels.push_back( label );
+            }
+
             (*ancillary_2) << *scale_factor;
 
+            // Dataset window duration
             window_duration_LIDAR.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             window_duration_LIDAR->interval( 1, 30);
             
+            {
+                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "LIDAR duration (s)" );
+                label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+                *window_duration_LIDAR << *label ;
+                slider_labels.push_back( label );
+            }
+            
             (*ancillary_2) << *window_duration_LIDAR;
 
+            //Dataset INS duration
             window_duration_INS.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             window_duration_INS->interval( 1, 30 );
+ 
+            {
+                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "LHLV duration (s)" );
+                label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+                *window_duration_INS << *label ;
+                slider_labels.push_back( label );
+            }
             
             (*ancillary_2) << *window_duration_INS;
 
+            //Point-cloud downsample
             point_cloud_downsample.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             point_cloud_downsample->interval( 1, 10 );
             
+            {
+                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "Downsample factor" );
+                label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+                *point_cloud_downsample << *label ;
+                slider_labels.push_back( label );
+            }
+            
             (*ancillary_2) << *point_cloud_downsample;
 
+            // Experience window
             experience_window.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             experience_window->interval( 5, 25 );
+            
+            {
+                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "Experience nodes" );
+                label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+                *experience_window << *label ;
+                slider_labels.push_back( label );
+            }
             
             (*ancillary_2) << *experience_window;
 

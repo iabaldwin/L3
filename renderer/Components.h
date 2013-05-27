@@ -155,7 +155,7 @@ namespace Visualisers
     template <typename T> 
         struct variable_lock
         {
-            variable_lock( T& t ) : t(t)
+            explicit variable_lock( T& t ) : t(t)
             {
             }
 
@@ -163,10 +163,12 @@ namespace Visualisers
         };
 
     template <typename T> 
-        struct TextRenderer : glv::View
+        //struct TextRenderer : glv::View
+        struct TextRenderer : glv::TextView
     {
         
-        explicit TextRenderer() : glv::View( glv::Rect(150,25 ) )
+        //explicit TextRenderer() : glv::View( glv::Rect(150,25 ) )
+        explicit TextRenderer() : glv::TextView( glv::Rect(150,25 ) )
         {
             this->disable( glv::DrawBorder );
         }
@@ -180,17 +182,16 @@ namespace Visualisers
 
         void onDraw(glv::GLV& g)
         {
-            glv::draw::color(1);
-            glv::draw::lineWidth(2);
-
             std::stringstream ss;
             ss.precision( 15 );
 
             if( lock )
-            {
                 ss << lock->t;
-            }
-            glv::draw::text( ss.str().c_str() );
+         
+            mText = ss.str();
+
+            glv::TextView::onDraw(g);
+           
         }
 
     };
@@ -208,8 +209,6 @@ namespace Visualisers
 
         void setText( std::string text );
         void onDraw3D( glv::GLV& g );
-
-
     };
 
     struct label_tag
