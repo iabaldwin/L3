@@ -52,21 +52,23 @@ namespace L3
 
         _constant_distance_window.resize( _window_buffer.size()) ;
 
-        std::cout << _constant_distance_window.size() << std::endl;
-
+        int written;
         double total_distance;
-        SWATHE_ITERATOR iterator = L3::incrementalTrajectoryAccumulate( _window_buffer.begin(),
-                _window_buffer.end(),
+        SWATHE_ITERATOR iterator = L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
+                _window_buffer.rend(),
                 _constant_distance_window.begin(),
-                .2);
+                0.2, 
+                std::numeric_limits<double>::infinity(), 
+                written);
 
-        _constant_distance_window.erase( _constant_distance_window.begin(), iterator );
+        //_window_buffer.erase( _window_buffer.begin(), _window_buffer.end() - written  );
+        _window_buffer.erase( _window_buffer.begin(), _window_buffer.begin() + written );
+        _constant_distance_window.erase( iterator, _constant_distance_window.end() );
 
         // Update
         previous_update = time;
 
-        // Lastly, invert the chain
-        return inverter.invert( _constant_distance_window.begin(), _constant_distance_window.end() );
+        return true;
     }
 
 }

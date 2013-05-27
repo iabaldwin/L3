@@ -1310,12 +1310,12 @@ namespace Visualisers
      * Statistics
      */
 
-    Statistics::Statistics() : glv::Table( "x," )
+    Statistics::Statistics() : glv::Table( "<," )
     {
-        observer_update.reset( new TextRenderer<double>() );
-        swathe_generation.reset( new TextRenderer<double>() );
-        points_per_second.reset( new TextRenderer<double>() );
-        estimation.reset( new TextRenderer<double>() );
+        observer_update.reset(      new TextRenderer<double>() );
+        swathe_generation.reset(    new TextRenderer<double>() );
+        points_per_second.reset(    new TextRenderer<double>() );
+        estimation.reset(           new TextRenderer<double>() );
 
         observer_update->enable( glv::DrawBorder );
 
@@ -1344,6 +1344,12 @@ namespace Visualisers
         estimation_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
         (*estimation) << (*estimation_label );
 
+        std::vector< std::string > history_labels;
+        history_labels.push_back( "Observer (ms)" );
+        history_labels.push_back( "Swathe (ms)" );
+        history_labels.push_back( "Points (ms)");
+        history_labels.push_back( "Estimation (ms)" );
+
         for( int i=0; i<4; i++ )
         {
             boost::shared_ptr< StatisticsPlottable > plottable( new StatisticsPlottable() ); 
@@ -1353,15 +1359,13 @@ namespace Visualisers
             plottables.push_back( plottable );
             plots.push_back( plot );
 
-            boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( "Point generation" );
-            graph_label->pos( glv::Place::TR, -2, -2 ).anchor( glv::Place::TR ); 
+            boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( history_labels[i] );
+            graph_label->pos( glv::Place::TR, 0, 0 ).anchor( glv::Place::TR ); 
             *plot  << *graph_label;
             labels.push_back( graph_label );
             
-            //plot->numbering(true,1);
             plot->showNumbering(true);
             plot->numbering(false,0);
-            //plot->showGrid(false);
             
             plot->range( 0, 100, 0 );
             plot->range( 0, 1.1, 1 );

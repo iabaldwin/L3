@@ -68,7 +68,7 @@ namespace L3
             *output = std::make_pair( current_time, current_pose );
 
             distance += inter_pose_distance;
-          
+        
             if( distance > required_distance )
                 break;
 
@@ -81,87 +81,93 @@ namespace L3
     }
 
     template <typename InputIterator, typename OutputIterator >
-        OutputIterator incrementalTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment )
-    {
-        if( std::distance( begin, end) == 0 )
-            return output;
-
-        // Input copy
-        InputIterator current_in = begin;
-
-        // Compute current time
-        double previous_time = current_in++->first;
-
-        // Distance
-        double incremental_distance = 0.0; 
-
-        // Initialise
-        double dt = 0.0;
-        *output++ = std::make_pair( previous_time, boost::make_shared<L3::SE3>( 0,0,0,0,0,0 ) );
-        boost::shared_ptr< L3::SE3 > previous_pose = (output-1)->second;
-
-        double x=0, y=0, z=0;
-        double r=0, p=0, q=0;
-
-        double w1=0, w2=0, w3=0;
-        double lin_vel=0, x_vel=0, y_vel=0, z_vel=0;
-
-        while ( current_in != end )
+        OutputIterator reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written  )
         {
-            // Compute the update
-            double current_time = current_in->first;
-            dt = current_time - previous_time;
+            if( std::distance( begin, end) == 0 )
+                return output;
 
-            // Compute roll, pitch, yaw
-            w1 = current_in->second->data[5];
-            w2 = current_in->second->data[4];
-            w3 = current_in->second->data[3];
+            // Input copy
+            InputIterator current_in = begin;
 
-            r = previous_pose->R() + w1*dt;
-            p = previous_pose->P() + w2*dt;
-            q = previous_pose->Q() + (-1*w3)*dt;
+            // Compute current time
+            double previous_time = current_in++->first;
 
-            // Compute x_bar, y_bar, z_bar 
-            lin_vel = current_in->second->data[9];
+            // Distance
+            double distance = 0.0; 
+            double incremental_distance = 0.0; 
 
-            x_vel = lin_vel * sin(q);  
-            y_vel = lin_vel * cos(q);  
-            z_vel = lin_vel * sin(p);  
+            // Initialise
+            double dt = 0.0, current_time;
+            boost::shared_ptr< L3::SE3 > previous_pose = boost::make_shared<L3::SE3>( 0,0,0,0,0,0 );
+            *output++ = std::make_pair( previous_time, previous_pose );
 
-            // Compute x y z
-            x = previous_pose->X() + -1*x_vel*dt;
-            y = previous_pose->Y() + y_vel*dt;
-            z = previous_pose->Z() + z_vel*dt;
+            double x=0, y=0, z=0;
+            double r=0, p=0, q=0;
 
-            // Log
-            boost::shared_ptr< L3::SE3 > current_pose =  boost::make_shared<L3::SE3>( x, y, z, r, p, q );
-            
-            incremental_distance += L3::Math::norm(*current_pose, *previous_pose );
-       
-            static int counter = 0;
-            if ( incremental_distance >= required_increment )
+            double w1=0, w2=0, w3=0;
+            double lin_vel=0, x_vel=0, y_vel=0, z_vel=0;
+
+            while ( current_in != end )
             {
+                // Compute the update
+                //dt = current_in->first - current_time;
+                current_time = current_in->first;
 
-                std::cout << "wrote " << counter++ << std::endl;
+                dt = current_time - previous_time;
 
-                // Add in the pose
-                *output++ = std::make_pair( current_time, current_pose );
-                
-                incremental_distance = 0.0;
+                // Compute roll, pitch, yaw
+                w1 = current_in->second->data[5];
+                w2 = current_in->second->data[4];
+                w3 = current_in->second->data[3];
+
+                r = previous_pose->R() + w1*dt;
+                p = previous_pose->P() + w2*dt;
+                q = previous_pose->Q() + (-1*w3)*dt;
+
+                // Compute x_bar, y_bar, z_bar 
+                lin_vel = current_in->second->data[9];
+
+                x_vel = lin_vel * sin(q);  
+                y_vel = lin_vel * cos(q);  
+                z_vel = lin_vel * sin(p);  
+
+                // Compute x y z
+                x = previous_pose->X() + -1*x_vel*dt;
+                y = previous_pose->Y() + y_vel*dt;
+                z = previous_pose->Z() + z_vel*dt;
+
+                // Log
+                boost::shared_ptr< L3::SE3 > current_pose =  boost::make_shared<L3::SE3>( x, y, z, r, p, q );
+
+                double inter_pose_distance = L3::Math::norm(*current_pose, *previous_pose );
+
+                incremental_distance += inter_pose_distance;
+
+                distance += inter_pose_distance;
+
+                if( incremental_distance > required_increment )
+                { 
+                    *output++ = std::make_pair( previous_time, previous_pose);
+                    *output++ = std::make_pair( current_time, current_pose );
+                    incremental_distance = 0.0;
+                }
+
+                if( distance > total_distance )
+                    break;
+
+                previous_pose = current_pose;
+                previous_time = current_time;
+
+                // Continue
+                current_in++;
+                written++;
+            
             }
 
-            previous_pose = current_pose;
-
-            // Continue
-            current_in++;
-            output++;
-        
+            return output;
         }
-
-        return output;
-    }
 
 }
 
 template std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> L3::trajectoryAccumulate<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> >(std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*>, double&, double);
-template std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> L3::incrementalTrajectoryAccumulate<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> >(std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*>, double);
+template std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> L3::reverseTrajectoryAccumulate<std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> >(std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*>, double, double, int& );
