@@ -124,7 +124,7 @@ namespace ScanMatching
 
             current_transformation = current_transformation * transformation;
 
-            std::cout << current_transformation << std::endl;
+            //std::cout << current_transformation << std::endl;
 
             //trajectory.push_back( Eigen::Matrix4f( current_transformation ) );
         }

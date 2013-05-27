@@ -84,9 +84,8 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::SwatheBuilder >      swathe_builder;
     boost::shared_ptr< L3::Predictor >          predictor;
 
-    boost::shared_ptr< L3::ConstantTimeWindower< L3::SE3 > >    oracle;
-    //boost::shared_ptr< L3::ConstantTimeWindower< L3::LHLV > >   pose_windower;
     boost::shared_ptr< L3::PoseWindower > pose_windower;
+    boost::shared_ptr< L3::ConstantTimeWindower< L3::SE3 > >    oracle;
     
     boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > >    pose_iterator;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > >   LHLV_iterator;

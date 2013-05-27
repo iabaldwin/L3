@@ -24,6 +24,8 @@
 #include "Smoother.h"           // Histogram smoothing
 #include "Integrator.h"         // Chain integration
 #include "Predictor.h"          // Pose predcition
+#include "Estimator.h"          // Pose predcition
+#include "Filter.h"             // Pose predcition
 #include "Simulator.h"          // Artificial data provider
 #include "Misc.h"               // Everything else...
 

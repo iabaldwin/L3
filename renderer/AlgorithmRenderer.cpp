@@ -253,6 +253,51 @@ namespace L3
             this->operator<<( *minimisation_visualiser );
         }
 
+        struct ParticleVisualiser : glv::View3D
+        {
+
+            ParticleVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm ) : glv::View3D( glv::Rect(400,400)), algorithm(algorithm)
+            {
+
+            }
+
+
+            boost::weak_ptr< L3::Estimator::ParticleFilter<double> > algorithm;
+
+            void onDraw3D( glv::GLV& g) 
+            {
+
+                boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm_ptr = algorithm.lock();
+
+                if( !algorithm_ptr )
+                    return;
+
+                L3::SE3 first_particle = algorithm_ptr->hypotheses.front();
+                glv::draw::translate( -1*first_particle.X(), -1*first_particle.Y(), -30.0 );
+
+                std::cout << first_particle << std::endl;
+
+                for( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = algorithm_ptr->hypotheses.begin();
+                        it != algorithm_ptr->hypotheses.end();
+                        it++ )
+                    CoordinateSystem( *it, .1 ).onDraw3D(g);
+
+            }
+
+        };
+
+        /*
+         *  Particle Filte
+         */
+        ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm )  
+        {
+
+            boost::shared_ptr< ParticleVisualiser > visualiser = boost::make_shared< ParticleVisualiser >( algorithm );
+
+            views.push_back( boost::dynamic_pointer_cast< glv::View >( visualiser ) );
+
+            *this << *visualiser;
+        }
 
     }
 }

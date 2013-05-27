@@ -133,6 +133,7 @@ namespace Estimator
         }
     };
 
+    
     /*
      *  Cost function
      */
@@ -172,6 +173,41 @@ namespace Estimator
         {
             double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
         };
+
+    /*
+     *Discrete hypothesis
+     */
+
+    struct Hypothesis
+    {
+        Hypothesis( L3::PointCloud<double> const * swathe, 
+                L3::SE3 const* estimate, 
+                L3::Histogram<double> const* experience , 
+                CostFunction<double> * cost_function, 
+                __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
+            : swathe(swathe), 
+            estimate(estimate), 
+            experience(experience), 
+            cost_function(cost_function),
+            result_iterator(result_iterator)
+        {
+        }
+
+        L3::PointCloud<double> const *  swathe;
+        L3::SE3 const*                  estimate;
+        L3::Histogram<double> const*    experience;
+        CostFunction<double>*           cost_function;
+        __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator ;
+
+        /*
+         *Changes
+         */
+        boost::shared_ptr< L3::Histogram<double> > swathe_histogram;
+        boost::shared_ptr< L3::PointCloud<double> > hypothesis;
+
+        void operator()();
+
+    };
 
 
 

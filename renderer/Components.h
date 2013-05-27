@@ -163,11 +163,8 @@ namespace Visualisers
         };
 
     template <typename T> 
-        //struct TextRenderer : glv::View
         struct TextRenderer : glv::TextView
     {
-        
-        //explicit TextRenderer() : glv::View( glv::Rect(150,25 ) )
         explicit TextRenderer() : glv::TextView( glv::Rect(150,25 ) )
         {
             this->disable( glv::DrawBorder );
@@ -1212,6 +1209,7 @@ namespace Visualisers
         boost::shared_ptr< TextRenderer<double> > swathe_generation;;
         boost::shared_ptr< TextRenderer<double> > points_per_second;
         boost::shared_ptr< TextRenderer<double> > estimation;
+        boost::shared_ptr< glv::TextView > memory_statistics;
 
         void load( L3::DatasetRunner* runner )
         {

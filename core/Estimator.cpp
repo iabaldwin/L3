@@ -237,34 +237,7 @@ namespace L3
         /*
          *  Hypothesis Builder
          */
-        struct Hypothesis
-        {
-            Hypothesis( L3::PointCloud<double> const * swathe, 
-                    L3::SE3 const* estimate, 
-                    L3::Histogram<double> const* experience , 
-                    CostFunction<double> * cost_function, 
-                    __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
-                    : swathe(swathe), 
-                        estimate(estimate), 
-                        experience(experience), 
-                        cost_function(cost_function),
-                        result_iterator(result_iterator)
-            {
-            }
-
-            L3::PointCloud<double> const *  swathe;
-            L3::SE3 const*                  estimate;
-            L3::Histogram<double> const*    experience;
-            CostFunction<double>*           cost_function;
-            __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator ;
-
-            /*
-             *Changes
-             */
-            boost::shared_ptr< L3::Histogram<double> > swathe_histogram;
-            boost::shared_ptr< L3::PointCloud<double> > hypothesis;
-
-            void operator()()
+            void Hypothesis::operator()()
             {
                 boost::scoped_ptr< L3::PointCloud<double> > hypothesis( new L3::PointCloud<double>() );
 
@@ -285,7 +258,7 @@ namespace L3
 
                 if( !L3::copy( const_cast<L3::Histogram<double>*>(experience), &swathe_histogram ) )
                     return;
-                
+
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
 
@@ -298,11 +271,8 @@ namespace L3
                 //smoother.smooth( swathe_histogram.get() );
                 //smoother.smooth( &swathe_histogram );
 
-                //*result_iterator = cost_function->operator()( *this->experience, *swathe_histogram );
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
-
-        };
 
         /*
          *  Discrete Estimator
@@ -550,6 +520,8 @@ namespace L3
             return this->minimisation->operator()( swathe, refined );
         
         }
+
+        
     
     }   // Estimator
 }       // L3

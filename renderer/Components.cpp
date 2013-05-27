@@ -1344,12 +1344,85 @@ namespace Visualisers
      * Statistics
      */
 
+    struct MemoryStatistics : glv::TextView
+    {
+        
+        explicit MemoryStatistics() : glv::TextView( glv::Rect(150,25 ) )
+        {
+            this->disable( glv::DrawBorder );
+        }
+        
+        vm_size_t page_size;
+        mach_port_t mach_port;
+        mach_msg_type_number_t count;
+        vm_statistics_data_t vm_stats;
+
+        std::pair< int64_t, int64_t > getSystemMemoryUsage()
+        {
+            mach_port = mach_host_self();
+            count = sizeof(vm_stats) / sizeof(natural_t);
+            if (KERN_SUCCESS == host_page_size(mach_port, &page_size) &&
+                    KERN_SUCCESS == host_statistics(mach_port, HOST_VM_INFO, 
+                        (host_info_t)&vm_stats, &count))
+            {
+                int64_t myFreeMemory = (int64_t)vm_stats.free_count * (int64_t)page_size;
+
+                int64_t used_memory = ((int64_t)vm_stats.active_count + 
+                        (int64_t)vm_stats.inactive_count + 
+                        (int64_t)vm_stats.wire_count) *  (int64_t)page_size;
+
+
+                return std::make_pair( used_memory, myFreeMemory );
+            }
+                
+            return std::make_pair( 0, 0);
+        }
+
+
+        std::pair< int64_t, int64_t > getApplicationMemoryUsage()
+        {
+            struct task_basic_info t_info;
+            mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+            
+            if (KERN_SUCCESS != task_info(mach_task_self(),
+                        TASK_BASIC_INFO, (task_info_t)&t_info, 
+                        &t_info_count))
+            {
+                return std::make_pair( 0, 0 ) ;
+            }
+            else
+                 return std::make_pair( t_info.resident_size, t_info.virtual_size ) ;
+
+        }
+
+
+        void onDraw(glv::GLV& g)
+        {
+            std::stringstream ss;
+            ss.precision( 8 );
+     
+            std::pair< int64_t, int64_t > memory_stats = getApplicationMemoryUsage();
+
+            ss << memory_stats.first/(1024) << " kB (" << memory_stats.first/(1024*1024) << " MB)" << std::endl;
+            ss << memory_stats.second/(1024) << " kB (" << memory_stats.second/(1024*1024) << " MB)" << std::endl;
+
+            mText = ss.str();
+
+            glv::TextView::onDraw(g);
+           
+        }
+
+    };
+
+
     Statistics::Statistics() : glv::Table( "<," )
     {
         observer_update.reset(      new TextRenderer<double>() );
         swathe_generation.reset(    new TextRenderer<double>() );
         points_per_second.reset(    new TextRenderer<double>() );
         estimation.reset(           new TextRenderer<double>() );
+
+        memory_statistics.reset(    new MemoryStatistics() );
 
         observer_update->enable( glv::DrawBorder );
         swathe_generation->enable( glv::DrawBorder );
@@ -1362,7 +1435,8 @@ namespace Visualisers
         (*this) << dynamic_cast< glv::View* >(observer_update.get()) <<
                     dynamic_cast< glv::View* >(swathe_generation.get()) <<
                     dynamic_cast< glv::View* >(points_per_second.get()) <<
-                    dynamic_cast< glv::View* >(estimation.get());
+                    dynamic_cast< glv::View* >(estimation.get()) <<
+                    dynamic_cast< glv::View* >(memory_statistics.get());
 
         boost::shared_ptr< glv::Label > observer_label = boost::make_shared< glv::Label >( "Observer update" );
         labels.push_back( observer_label );
@@ -1392,27 +1466,31 @@ namespace Visualisers
 
         for( int i=0; i<4; i++ )
         {
+            // Create the plottable
             boost::shared_ptr< StatisticsPlottable > plottable( new StatisticsPlottable() ); 
+            // Create the plot
             boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottable ) );
-            plot->disable( glv::Controllable );
-
-            plottables.push_back( plottable );
-            plots.push_back( plot );
-
+           
+            // Label
             boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( history_labels[i] );
             graph_label->pos( glv::Place::TR, 0, 0 ).anchor( glv::Place::TR ); 
             *plot  << *graph_label;
             labels.push_back( graph_label );
-            
+
+            // Disable control (dragging)
+            plot->disable( glv::Controllable );
             plot->showNumbering(true);
             plot->numbering(false,0);
-            
             plot->range( 0, 100, 0 );
             plot->range( 0, 1.1, 1 );
+            
+            
             (*this) << *plot;
+           
+            plottables.push_back( plottable );
+            plots.push_back( plot );
+                        
         }
-
-       
 
         this->arrange();
     }

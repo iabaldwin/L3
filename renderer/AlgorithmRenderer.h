@@ -143,6 +143,19 @@ namespace L3
 
         };
 
+
+        struct ParticleFilterVisualiser : AlgorithmVisualiser
+        {
+            ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm ) ;
+            
+
+            std::deque < boost::shared_ptr< glv::View > > views;
+            std::deque < boost::shared_ptr< glv::Label > > labels;
+            std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
+        };
+
+
+
         /*
          *  Factory
          */
@@ -161,6 +174,12 @@ namespace L3
                 // Hybrid
                 if( boost::shared_ptr< L3::Estimator::Hybrid<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::Hybrid<double> >( algorithm ) )
                     return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< HybridVisualiser>( ptr ) );
+
+                // PF
+                if( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::ParticleFilter<double> >( algorithm ) )
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< ParticleFilterVisualiser>( ptr ) );
+
+
 
 
                 return boost::shared_ptr<AlgorithmVisualiser>();

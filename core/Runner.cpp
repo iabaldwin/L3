@@ -134,8 +134,6 @@ namespace L3
          */
         //L3::SE3 predicted = provider->operator()();
 
-        //*current = predicted;
-
         /*
          *  Update the experience
          */
@@ -155,9 +153,11 @@ namespace L3
         //*current = algorithm->operator()( projector->cloud, predicted );
         //*current = algorithm->operator()( projector->cloud, *current );
         
-        //*current = provider->operator()();
         *current = algorithm->operator()( projector->cloud, *current );
-
+        if( dbg )
+        {
+        *current = provider->operator()();
+        }
         return true;
     }
 }

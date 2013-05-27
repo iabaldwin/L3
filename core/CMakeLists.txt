@@ -13,6 +13,7 @@ add_library( L3
     Projector.cpp 
     Configuration.cpp 
     Estimator.cpp 
+    Filter.cpp 
     Runner.cpp 
     Histogram.cpp
     Smoother.cpp 
