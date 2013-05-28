@@ -46,7 +46,7 @@ namespace Estimator
 
         }
             
-        boost::shared_ptr< PointCloud<T> >      sampled_swathe;
+        boost::shared_ptr< PointCloud<T> > sampled_swathe;
         
         bool initialised;
 

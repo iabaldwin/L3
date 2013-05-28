@@ -48,6 +48,12 @@ struct ThreadedRunner : TemporalRunner, Poco::Runnable
     bool            running;
     double          start_time, current_time;
 
+
+    void stop()
+    {
+        running = false;
+    }
+
     void start()
     {
         thread.start( *this );

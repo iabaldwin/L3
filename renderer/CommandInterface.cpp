@@ -22,6 +22,9 @@ namespace L3
         member_function_map.insert( std::make_pair( "_?",               std::make_pair( &CommandInterface::print,               "Print this help" ) ) );
         member_function_map.insert( std::make_pair( "_history",         std::make_pair( &CommandInterface::print,               "Print (successful) history" ) ) );
         
+        member_function_map.insert( std::make_pair( "_stop",            std::make_pair( &CommandInterface::stop,                "Stop running" ) ) );
+        member_function_map.insert( std::make_pair( "_start",           std::make_pair( &CommandInterface::start,               "Start running" ) ) );
+        
         member_function_map.insert( std::make_pair( "_add_traj",        std::make_pair( &CommandInterface::addTrajectory,       "Add a visual trajectory" ) ) );
         member_function_map.insert( std::make_pair( "_add_path",        std::make_pair( &CommandInterface::addPath,             "Add a search path") ) );
         member_function_map.insert( std::make_pair( "_print_path",      std::make_pair( &CommandInterface::printPath,           "Print the search path") ) );
@@ -143,9 +146,10 @@ namespace L3
             return std::make_pair( false, "CI::No such directory: " + load_copy ); 
         }
 
-        //L3::Estimator::Algorithm<double>* algorithm = dynamic_cast<L3::EstimatorRunner*>(container->runner.get())->algorithm;
+        // Reseat algorithm
         boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm = dynamic_cast<L3::EstimatorRunner*>(container->runner.get())->algorithm;
 
+        // Reset
         container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
         container->runner.reset( new L3::EstimatorRunner( container->dataset.get(), container->mission.get(), container->experience.get() ) );
         dynamic_cast< L3::EstimatorRunner* >(container->runner.get())->setAlgorithm ( algorithm );
@@ -161,7 +165,10 @@ namespace L3
         if (!container)
             return std::make_pair( false, "CI::No associated container: " + load_command); 
 
-        //container->cost_function.reset( new L3::Estimator::KLCostFunction<double>() );
+        //container->cost_function.reset( new L3::Estimator::MICostFunction<double>() );
+      
+        //boost::shared_ptr< L3::Estimator::CostFunction<double > = runner->algorithm->cost_function;
+
         //container->algorithm.reset( new L3::Estimator::IterativeDescent<double>( container->cost_function.get(), container->experience->experience_pyramid ) );
 
         return std::make_pair( true, "CI::Loaded< Algorithm >" );
@@ -379,6 +386,18 @@ namespace L3
         return std::make_pair( true, "CI::Clear" );
     }
 
+        
+    std::pair< bool, std::string > CommandInterface::stop( const std::string& command )
+    {
+        container->runner->stop();
+        return std::make_pair( true, "CI::Stopped" );
+    }
+
+    std::pair< bool, std::string > CommandInterface::start( const std::string& command )
+    {
+        container->runner->start();
+        return std::make_pair( true, "CI::Started" );
+    }
 
 
     std::string CommandInterface::getState()

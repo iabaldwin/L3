@@ -49,14 +49,14 @@ namespace L3
  
         // This, should be TMP
         this->provider = oracle;
-   
+  
+        // Timing statistics
         timings.resize(5);
     }
     
     /*
      *  Dataset runner
      */
-
     void DatasetRunner::run()
     {
         L3::Timing::ChronoTimer t;
@@ -128,36 +128,17 @@ namespace L3
    
     bool EstimatorRunner::update( double time )
     {
-        bool dbg = true;
-        /*
-         *  Get the pose from the pose provider
-         */
-        //L3::SE3 predicted = provider->operator()();
-
         /*
          *  Update the experience
          */
         //experience->update( predicted.X(), predicted.Y() );
         experience->update( current->X(), current->Y() );
 
-        if( dbg )
-        {
-            //Evaluate the cost function at ground-truth 
-            //algorithm->operator()( projector->cloud, oracle->operator()() );
-        }
-
         /*
          *  Estimate
          */
-        //*estimated = algorithm->operator()( projector->cloud, predicted );
-        //*current = algorithm->operator()( projector->cloud, predicted );
-        //*current = algorithm->operator()( projector->cloud, *current );
-        
         *current = algorithm->operator()( projector->cloud, *current );
-        if( dbg )
-        {
-        *current = provider->operator()();
-        }
+
         return true;
     }
 }

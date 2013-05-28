@@ -32,8 +32,6 @@ namespace L3
                         it++ )
                     *it = L3::SE3( x_generator()+estimate.X(), y_generator()+estimate.Y(), 0, 0, 0, theta_generator()+estimate.Q() );
 
-                // But do not evaluate their cost
-
                 initialised = true;
                 return estimate;
             }
@@ -70,11 +68,18 @@ namespace L3
             std::vector<double> results( this->num_particles ); 
             std::vector<double>::iterator result_iterator = results.begin();
 
-            L3::ReadLock histogram_lock( (*this->pyramid)[0]->mutex );
+            L3::ReadLock histogram_lock( (*this->pyramid)[1]->mutex );
             L3::ReadLock swathe_lock( swathe->mutex );
 
             if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )
                 return estimate;
+           
+            double q, x_vel, y_vel, velocity_delta, x, y;
+            
+            boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .2 );
+            boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .05 );
+            boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
+            boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
             
             // Apply the constant average velocities to the particles
             for( PARTICLE_ITERATOR it = hypotheses.begin();
@@ -82,16 +87,19 @@ namespace L3
                         it++ )
             {
 
-                double q = it->Q() + (-1*mean_rotational_velocity)*dt;
-                double x_vel = mean_linear_velocity * sin(q);  
-                double y_vel = mean_linear_velocity * cos(q);  
+                q = it->Q() + ((-1*mean_rotational_velocity) + rotational_velocity_uncertainty_generator())*dt;
+              
+                velocity_delta = mean_linear_velocity + linear_velocity_uncertainty_generator() ;
+
+                x_vel = (velocity_delta * sin(q));  
+                y_vel = (velocity_delta * cos(q));
          
-                double x = it->X() + -1*x_vel*dt;
-                double y = it->Y() + y_vel*dt;
+                x = it->X() + -1*x_vel*dt;
+                y = it->Y() + y_vel*dt;
 
                 *it = L3::SE3( x, y, 0, 0, 0, q );
 
-                group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[0].get(), this->cost_function, result_iterator++ ) );
+                group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[1].get(), this->cost_function, result_iterator++ ) );
             }
 
             group.wait();
@@ -109,9 +117,27 @@ namespace L3
             // Normalize
             std::transform( weights.begin(), weights.end(), weights.begin(), std::bind2nd( std::divides<double>(), sum ) );
 
+            // Build CDF 
+            std::vector< double > cdf( weights.size() );
+            std::partial_sum( weights.begin(), weights.end(), cdf.begin() );
+
+            boost::uniform_01<> uniform;
+
+            std::vector< L3::SE3 > resampled;
+            resampled.reserve( hypotheses.size() );
+
+            // Sample
+            for( int i=0; i<num_particles; i++ )
+            {
+                double d = uniform( rng );
+                
+                resampled.push_back( hypotheses[ std::distance( cdf.begin(), std::lower_bound( cdf.begin(), cdf.end(), d ) )] ); 
+            }
+
+            hypotheses.assign( resampled.begin(), resampled.end() );
+
             return estimate;
         }
-
     }
 }
 
