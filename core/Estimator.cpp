@@ -198,12 +198,6 @@ namespace L3
 
                 int size = experience.hist->nx*experience.hist->ny;
 
-                //L3::Timing::ChronoTimer t; t.begin();
-                //double mi = -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, size);
-                //std::cout << "time: " << t.elapsed() << std::endl;;
-                //std::cout.flush();
-                //return mi;
-
                 return -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, size);
 
             }
@@ -373,7 +367,6 @@ namespace L3
                 //refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
 
                 return refined;
-                //return L3::SE3::ZERO();
             }
 
         template < typename T>
@@ -462,16 +455,8 @@ namespace L3
                     status = gsl_multimin_test_size (size, tolerance );
 
                     if (status == GSL_SUCCESS)
-                    {
-                        //printf ("converged to minimum at\n");
-                        //printf ("%5d %10.3e %10.3e f() = %7.3f size = %.3f\n", 
-                        //iter,
-                        //gsl_vector_get (s->x, 0), 
-                        //gsl_vector_get (s->x, 1), 
-                        //s->fval, size);
-                   
                         break;
-                    }
+                
                 }
                 while (status == GSL_CONTINUE && iter < max_iterations);
 

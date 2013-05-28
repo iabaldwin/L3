@@ -1404,7 +1404,7 @@ namespace Visualisers
             std::pair< int64_t, int64_t > memory_stats = getApplicationMemoryUsage();
 
             ss << memory_stats.first/(1024) << " kB (" << memory_stats.first/(1024*1024) << " MB)" << std::endl;
-            ss << memory_stats.second/(1024) << " kB (" << memory_stats.second/(1024*1024) << " MB)" << std::endl;
+            //ss << memory_stats.second/(1024) << " kB (" << memory_stats.second/(1024*1024) << " MB)" << std::endl;
 
             mText = ss.str();
 
@@ -1421,7 +1421,6 @@ namespace Visualisers
         swathe_generation.reset(    new TextRenderer<double>() );
         points_per_second.reset(    new TextRenderer<double>() );
         estimation.reset(           new TextRenderer<double>() );
-
         memory_statistics.reset(    new MemoryStatistics() );
 
         observer_update->enable( glv::DrawBorder );
@@ -1457,6 +1456,12 @@ namespace Visualisers
         labels.push_back( estimation_label );
         estimation_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
         (*estimation) << (*estimation_label );
+
+        boost::shared_ptr< glv::Label > memory_label = boost::make_shared< glv::Label >( "Resource Usage" );
+        labels.push_back( memory_label );
+        memory_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
+        (*memory_statistics) << (*memory_label );
+
 
         std::vector< std::string > history_labels;
         history_labels.push_back( "Observer (ms)" );

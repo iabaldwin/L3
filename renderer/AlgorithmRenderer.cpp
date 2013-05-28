@@ -126,17 +126,12 @@ namespace L3
             double max_val = *(std::min_element( costs.begin(), costs.end() ) );
             double min_val = *(std::max_element( costs.begin(), costs.end() ) );
 
-            //std::copy( costs.begin(), costs.end(), std::ostream_iterator< double >( std::cout, " " ) );
-            //std::cout << std::endl;
-
             glv::Color interpolated;
             for( int i=0; i< estimates.size(); i++ )
             {
                 double z_val = fabs(costs[i]);
 
-                //z_val -= fabs(min_val);
-
-                z_val /= fabs(max_val);
+                z_val = (z_val - fabs(min_val))/(fabs(max_val) - fabs(min_val));
 
                 vertices[i]( estimates[i].X(),
                                 estimates[i].Y(),
@@ -147,9 +142,9 @@ namespace L3
                 colors[i] = interpolated;
             }
          
-            glv::draw::enable( glv::draw::Blend );
+            //glv::draw::enable( glv::draw::Blend );
             glv::draw::paint( glv::draw::Points, vertices, colors, ptr->pose_estimates->estimates.size() );
-            glv::draw::disable( glv::draw::Blend );
+            //glv::draw::disable( glv::draw::Blend );
 
         }
     
@@ -168,7 +163,8 @@ namespace L3
             std::vector<L3::SE3> estimates( ptr->pose_estimates->estimates.begin(), ptr->pose_estimates->estimates.end() );
             std::vector<double> costs( ptr->pose_estimates->costs.begin(), ptr->pose_estimates->costs.end() );
             lock.unlock();
-            
+           
+            L3::WriteLock writer( this->mutex );
             mData.resize( glv::Data::DOUBLE, 2, costs.size() );
             glv::Indexer i( mData.size(1));
 
@@ -189,6 +185,7 @@ namespace L3
 
         void DiscreteRotationVisualiser::onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
         {
+            L3::WriteLock reader( this->mutex );
             int counter = 0;
             while(i()){
                 double x = d.at<double>( 0, counter );
@@ -278,8 +275,6 @@ namespace L3
 
                 L3::SE3 first_particle = hypotheses.front();
                 glv::draw::translate( -1*first_particle.X(), -1*first_particle.Y(), -30.0 );
-
-                std::cout << first_particle << std::endl;
 
                 for( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();
                         it != hypotheses.end();
