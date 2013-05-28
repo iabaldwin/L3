@@ -99,11 +99,17 @@ namespace L3
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( scan_matching_renderer.get() ) ) );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( scan_matching_renderer->trajectory.get() ) ) );
             *ancillary_1 << *scan_matching_renderer;
-           
+       
+            /*
+             *  Second page table
+             */
+
+            ancillary_2.reset( new glv::Table("x ,") );
+
             /*
              * Text & controls
              */
-            text_and_controls.reset( new glv::Table("< x ,") );
+            text_and_controls.reset( new glv::Table("x x ,") );
             
             L3_controls.reset( new glv::Table("x , ") );
             
@@ -177,10 +183,9 @@ namespace L3
 
             (*L3_controls) << *time_renderer;
             
+            L3_controls->enable( glv::DrawBorder );
             dynamic_cast< glv::Table* >(L3_controls.get())->arrange();
             dynamic_cast< glv::Table* >(L3_controls.get())->fit();
-          
-            L3_controls->enable( glv::DrawBorder );
 
             *text_and_controls << *L3_controls;
 
@@ -188,22 +193,30 @@ namespace L3
              *  Visualisation controls
              */
             visualisation_controls.reset( new glv::Table( "x ,") );
-            boost::shared_ptr< glv::Button > bt1 = boost::make_shared< glv::Button >( glv::Rect(100, 20), true);
-            boost::shared_ptr< glv::Button > bt2 = boost::make_shared< glv::Button >( glv::Rect(100, 20), true);
-            boost::shared_ptr< glv::Button > bt3 = boost::make_shared< glv::Button >( glv::Rect(100, 20), true);
+            //boost::shared_ptr< glv::Button > bt1 = boost::make_shared< glv::Button >( glv::Rect(20, 20));
+            boost::shared_ptr< CompositeLeafViewToggle > bt1 = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), glv::Rect(20, 20));
+            boost::shared_ptr< glv::Button > bt2 = boost::make_shared< glv::Button >( glv::Rect(20, 20));
+            boost::shared_ptr< glv::Button > bt3 = boost::make_shared< glv::Button >( glv::Rect(20, 20));
+            boost::shared_ptr< glv::Button > bt4 = boost::make_shared< glv::Button >( glv::Rect(20, 20));
 
-            *visualisation_controls << *bt1 << *bt2 << *bt3;
+            *visualisation_controls << *bt1 << *bt2 << *bt3 << *bt4;
+            visualisation_controls->enable( glv::DrawBorder );
 
             widgets.push_back( bt1 );
             widgets.push_back( bt2 );
             widgets.push_back( bt3 );
+            widgets.push_back( bt4 );
 
-            dynamic_cast< glv::Table* >(visualisation_controls.get())->arrange();
             dynamic_cast< glv::Table* >(visualisation_controls.get())->fit();
+            dynamic_cast< glv::Table* >(visualisation_controls.get())->arrange();
 
             *text_and_controls << *visualisation_controls;
 
-            visualisation_controls->enable( glv::DrawBorder );
+            dynamic_cast< glv::Table* >(text_and_controls.get())->fit();
+            dynamic_cast< glv::Table* >(text_and_controls.get())->arrange();
+
+            *ancillary_2 << *text_and_controls;
+
 
             /*
              *  Statistics
@@ -215,21 +228,21 @@ namespace L3
                     it++)
                 temporal_updater->operator<<( it->get() );
 
-            (*text_and_controls) << *statistics;
+            (*ancillary_2) << *statistics;
 
-            text_and_controls->enable( glv::DrawBorder );
+            ancillary_2->enable( glv::DrawBorder );
 
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->fit();
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
             
-            dynamic_cast< glv::Table* >(text_and_controls.get())->fit();
-            dynamic_cast< glv::Table* >(text_and_controls.get())->arrange();
+            dynamic_cast< glv::Table* >(ancillary_2.get())->fit();
+            dynamic_cast< glv::Table* >(ancillary_2.get())->arrange();
 
             (*tables[0]  ) << ancillary_1.get();
        
             boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
-            (*table) << text_and_controls.get();
+            (*table) << ancillary_2.get();
             tables.push_back( table );
             
             top << *table;

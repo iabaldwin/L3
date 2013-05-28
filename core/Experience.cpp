@@ -104,7 +104,7 @@ namespace L3
             accumulate += increment;
             spacing -= increment;
 
-            //So, here we have estimated the accumulate. Once we have gone .2 metres, add it back
+            //So, here we have estimated the accumulate. Once we have gone X metres, add it back
             std::cout << accumulate / scan_spacing_threshold << "[" << scan_spacing_threshold << "," << accumulate << "," << experience_section_threshold << "]" << std::endl;
 
             if( spacing <= 0.0 )

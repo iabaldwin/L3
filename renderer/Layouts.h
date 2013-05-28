@@ -249,6 +249,7 @@ namespace Visualisers
             boost::shared_ptr< Statistics > statistics;
 
             boost::shared_ptr< glv::View > ancillary_1;
+            boost::shared_ptr< glv::View > ancillary_2;
             boost::shared_ptr< glv::View > text_and_controls;
             boost::shared_ptr< glv::View > L3_controls;
             boost::shared_ptr< glv::View > visualisation_controls;

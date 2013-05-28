@@ -126,7 +126,7 @@ struct matcher
 {
 
     matcher( std::vector< std::pair< double, boost::shared_ptr<T1> > >* ELEMENTS,
-            std::vector< std::pair< double, boost::shared_ptr<T1> > >* MATCHED ) 
+                std::vector< std::pair< double, boost::shared_ptr<T1> > >* MATCHED ) 
                 : elements( ELEMENTS ), matched(MATCHED)
     {
 
@@ -142,9 +142,6 @@ struct matcher
                                                                                                                 data.first,
                                                                                                                 comparator );
 
-        // TODO:
-        // Is this ok? Check the time here, don't assume
-        
         matched->push_back( *index );
     }
 

@@ -19,20 +19,36 @@ namespace L3
         {
 
             public:
-                virtual ~Writer();
+                virtual bool open( const std::string& f ) = 0;
 
-                bool open( const std::string& f );
+                virtual ~Writer()
+                {
+                    if (stream.is_open())
+                        stream.close();
+                }
 
-
+ 
             protected:
 
                 std::ofstream stream;
-
-            private:
-
-                friend L3::IO::Writer& operator<<( L3::IO::Writer& o, const std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > poses );
-        
         };
+
+
+        template <typename T>
+            class BinaryWriter : Writer
+            {
+                public:
+
+                    virtual bool open( const std::string& f )
+                    {
+                        this->stream.open( f.c_str(), std::ios::out | std::ios::binary );
+                       
+                        return this->stream.good();
+                    }
+
+                    virtual size_t write( std::vector< std::pair< double, boost::shared_ptr<T> > >& data ) ;
+
+            };
     }
 }
 

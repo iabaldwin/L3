@@ -340,6 +340,25 @@ struct WASDManager : SelectionManager
 
 };
 
+struct CompositeLeafViewToggle : glv::Buttons
+{
+
+    CompositeLeafViewToggle( boost::shared_ptr< L3::Visualisers::Leaf > leaf, const glv::Rect& r= glv::Rect(), int nx=1, int ny=1,bool momentary=false, bool mutExc=false )
+        : glv::Buttons( r, nx, ny, momentary, mutExc ), leaf(leaf)
+    {
+
+    }
+
+    boost::weak_ptr< L3::Visualisers::Leaf > leaf;
+
+    bool onEvent( glv::Event::t e, glv::GLV& g )
+    {
+        glv::Buttons::onEvent(e,g);
+
+        std::cout << getValue() << std::endl;
+    }
+
+};
 
 
 //struct DataDumper : EventController

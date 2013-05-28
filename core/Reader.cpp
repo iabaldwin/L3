@@ -23,3 +23,4 @@ namespace IO
 
 template void L3::IO::BinaryExtractor<L3::SE3>::operator()(double);
 template void L3::IO::BinaryExtractor<L3::LMS151>::operator()(double);
+template void L3::IO::BinaryExtractor<L3::LHLV>::operator()(double);
