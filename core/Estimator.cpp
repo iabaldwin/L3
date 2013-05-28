@@ -114,7 +114,6 @@ namespace L3
                         it != ptr->estimates.end();
                         it++ )
                 {
-                    //std::cout << *(estimates->position) << std::endl;
                     double dist = sqrt( pow( it->X() - pose.X(), 2 ) +
                             pow( it->Y() - pose.Y(), 2 ) );
 

@@ -35,10 +35,18 @@ namespace Estimator
             Algorithm<T>(cost_function), 
             previous_update(0.0), 
             pyramid( experience_pyramid ),
-            initialised(false)
+            initialised(false),
+            num_particles(num_particles)
+
         {
             hypotheses.resize( num_particles );
+        
+            sampled_swathe.reset( new PointCloud<T>() );
+            L3::allocate( sampled_swathe.get(), 4*1000 );
+
         }
+            
+        boost::shared_ptr< PointCloud<T> >      sampled_swathe;
         
         bool initialised;
 
@@ -46,12 +54,14 @@ namespace Estimator
 
         double previous_update;
 
+        tbb::task_group group;
 
         // Generator
         boost::mt19937 rng;
 
         boost::shared_ptr< HistogramPyramid<T> > pyramid;
 
+        std::vector< double > weights;
         std::vector< L3::SE3 > hypotheses;
 
         typedef std::vector< L3::SE3 >::iterator PARTICLE_ITERATOR; 

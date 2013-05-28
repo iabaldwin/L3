@@ -16,9 +16,8 @@ namespace L3
             if( !constant_time_iterator  )
                 exit(-1);
 
-            if ( !initialised )
+            if ( !initialised && !(estimate == L3::SE3::ZERO() ) )
             {
-
                 // Generate the initial spread of particles
                 boost::normal_distribution<> normal_x(0.0, 1.0 );
                 boost::normal_distribution<> normal_y(0.0, 1.0 );
@@ -31,9 +30,7 @@ namespace L3
                 for( PARTICLE_ITERATOR it = hypotheses.begin();
                         it != hypotheses.end();
                         it++ )
-                {
                     *it = L3::SE3( x_generator()+estimate.X(), y_generator()+estimate.Y(), 0, 0, 0, theta_generator()+estimate.Q() );
-                }
 
                 // But do not evaluate their cost
 
@@ -68,8 +65,49 @@ namespace L3
             mean_linear_velocity /= _window_delta_buffer.size();
             mean_rotational_velocity /= _window_delta_buffer.size();
 
-            // Apply the constant average velocities to the particles
+            double dt = 0.1;
 
+            std::vector<double> results( this->num_particles ); 
+            std::vector<double>::iterator result_iterator = results.begin();
+
+            L3::ReadLock histogram_lock( (*this->pyramid)[0]->mutex );
+            L3::ReadLock swathe_lock( swathe->mutex );
+
+            if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )
+                return estimate;
+            
+            // Apply the constant average velocities to the particles
+            for( PARTICLE_ITERATOR it = hypotheses.begin();
+                        it != hypotheses.end();
+                        it++ )
+            {
+
+                double q = it->Q() + (-1*mean_rotational_velocity)*dt;
+                double x_vel = mean_linear_velocity * sin(q);  
+                double y_vel = mean_linear_velocity * cos(q);  
+         
+                double x = it->X() + -1*x_vel*dt;
+                double y = it->Y() + y_vel*dt;
+
+                *it = L3::SE3( x, y, 0, 0, 0, q );
+
+                group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[0].get(), this->cost_function, result_iterator++ ) );
+            }
+
+            group.wait();
+
+            histogram_lock.unlock();
+            swathe_lock.unlock();
+
+            weights.assign( results.begin(), results.end() );
+            
+            double sum = std::accumulate( results.begin(), results.end(), 0.0 );
+
+            if ( std::isnan(sum) )
+                return estimate;
+
+            // Normalize
+            std::transform( weights.begin(), weights.end(), weights.begin(), std::bind2nd( std::divides<double>(), sum ) );
 
             return estimate;
         }

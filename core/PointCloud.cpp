@@ -130,12 +130,16 @@ namespace L3
     template <typename T>
         bool sample( PointCloud<T>* input,  PointCloud<T>* output, int size, bool allocate )
         {
+            if( input->num_points == 0 )
+                return false;
+
             // Generate random indices
             std::vector<int> random_indices( size );
             randomate r( input->num_points );
             std::generate( random_indices.begin(),  random_indices.end(), r );
 
             output->num_points = size;
+            
             if (allocate)
                 output->points = new L3::Point<T>[ output->num_points ];
 

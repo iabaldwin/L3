@@ -272,13 +272,17 @@ namespace L3
                 if( !algorithm_ptr )
                     return;
 
-                L3::SE3 first_particle = algorithm_ptr->hypotheses.front();
+                L3::ReadLock lock(algorithm_ptr->mutex);
+                std::vector< L3::SE3 > hypotheses( algorithm_ptr->hypotheses.begin(), algorithm_ptr->hypotheses.end() );
+                lock.unlock();
+
+                L3::SE3 first_particle = hypotheses.front();
                 glv::draw::translate( -1*first_particle.X(), -1*first_particle.Y(), -30.0 );
 
                 std::cout << first_particle << std::endl;
 
-                for( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = algorithm_ptr->hypotheses.begin();
-                        it != algorithm_ptr->hypotheses.end();
+                for( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();
+                        it != hypotheses.end();
                         it++ )
                     CoordinateSystem( *it, .1 ).onDraw3D(g);
 
