@@ -18,7 +18,6 @@ namespace L3
             
             far(150);
 
-            //glv::draw::translate( -1*evaluations[0].X(), -1*evaluations[0].Y(), -5 );
             glv::draw::translate( -1*evaluations.back().X(), -1*evaluations.back().Y(), -5 );
 
             glv::Point3 vertices[evaluations.size()];
@@ -141,7 +140,8 @@ namespace L3
 
                 colors[i] = interpolated;
             }
-         
+                
+
             //glv::draw::enable( glv::draw::Blend );
             glv::draw::paint( glv::draw::Points, vertices, colors, ptr->pose_estimates->estimates.size() );
             //glv::draw::disable( glv::draw::Blend );
@@ -175,12 +175,23 @@ namespace L3
                 mean += estimates[i].Q();
             mean /= estimates.size();
 
+            double max_val = *(std::min_element( costs.begin(), costs.end() ) );
+            double min_val = *(std::max_element( costs.begin(), costs.end() ) );
+
             while( i()  )
             {
+                double z_val = fabs(costs[counter]);
+
+                z_val = (z_val - fabs(min_val))/(fabs(max_val) - fabs(min_val));
+
+
                 mData.assign( estimates[counter].Q()-mean, 0, counter );
-                mData.assign( costs[counter], 1, counter); 
+                //mData.assign( costs[counter], 1, counter); 
+                mData.assign( z_val, 1, counter); 
+               
                 counter++;
             }
+                
         }
 
         void DiscreteRotationVisualiser::onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)

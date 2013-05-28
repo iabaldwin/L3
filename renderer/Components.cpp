@@ -1430,6 +1430,7 @@ namespace Visualisers
         swathe_generation->paddingY( 7 );
         points_per_second->paddingY( 7 );
         estimation->paddingY( 7 );
+        memory_statistics->paddingY( 10 );
 
         (*this) << dynamic_cast< glv::View* >(observer_update.get()) <<
                     dynamic_cast< glv::View* >(swathe_generation.get()) <<
