@@ -297,7 +297,7 @@ namespace L3
         };
 
         /*
-         *  Particle Filte
+         *  Particle Filter
          */
         ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm )  
         {

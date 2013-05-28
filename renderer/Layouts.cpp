@@ -49,8 +49,6 @@ namespace L3
             this->renderables.push_front( spatial_updater.get() );
 
             // Tables
-            //display_table.reset( new CustomTable( "x,", 0, 0 ) );
-            //boost::shared_ptr< CustomTable > table = boost::make_shared< CustomTable >( "x,", 0, 0 );
             boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
             top << *table;
             tables.push_back( table );
@@ -105,7 +103,9 @@ namespace L3
             /*
              * Text & controls
              */
-            ancillary_2.reset( new glv::Table("x , ", 3, 10 ) );
+            text_and_controls.reset( new glv::Table("< x ,") );
+            
+            L3_controls.reset( new glv::Table("x , ") );
             
             // Dataset scaling factor
             scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
@@ -118,7 +118,7 @@ namespace L3
                 slider_labels.push_back( label );
             }
 
-            (*ancillary_2) << *scale_factor;
+            (*L3_controls) << *scale_factor;
 
             // Dataset window duration
             window_duration_LIDAR.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
@@ -131,7 +131,7 @@ namespace L3
                 slider_labels.push_back( label );
             }
             
-            (*ancillary_2) << *window_duration_LIDAR;
+            (*L3_controls) << *window_duration_LIDAR;
 
             //Dataset INS duration
             window_duration_INS.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
@@ -144,7 +144,7 @@ namespace L3
                 slider_labels.push_back( label );
             }
             
-            (*ancillary_2) << *window_duration_INS;
+            (*L3_controls) << *window_duration_INS;
 
             //Point-cloud downsample
             point_cloud_downsample.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
@@ -157,7 +157,7 @@ namespace L3
                 slider_labels.push_back( label );
             }
             
-            (*ancillary_2) << *point_cloud_downsample;
+            (*L3_controls) << *point_cloud_downsample;
 
             // Experience window
             experience_window.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
@@ -170,12 +170,40 @@ namespace L3
                 slider_labels.push_back( label );
             }
             
-            (*ancillary_2) << *experience_window;
+            (*L3_controls) << *experience_window;
 
             time_renderer.reset( new TextRenderer<double>() );
             time_renderer->pos(window.width()-155, window.height()-50 );
 
-            (*ancillary_2) << *time_renderer;
+            (*L3_controls) << *time_renderer;
+            
+            dynamic_cast< glv::Table* >(L3_controls.get())->arrange();
+            dynamic_cast< glv::Table* >(L3_controls.get())->fit();
+          
+            L3_controls->enable( glv::DrawBorder );
+
+            *text_and_controls << *L3_controls;
+
+            /*
+             *  Visualisation controls
+             */
+            visualisation_controls.reset( new glv::Table( "x ,") );
+            boost::shared_ptr< glv::Button > bt1 = boost::make_shared< glv::Button >( glv::Rect(100, 20), true);
+            boost::shared_ptr< glv::Button > bt2 = boost::make_shared< glv::Button >( glv::Rect(100, 20), true);
+            boost::shared_ptr< glv::Button > bt3 = boost::make_shared< glv::Button >( glv::Rect(100, 20), true);
+
+            *visualisation_controls << *bt1 << *bt2 << *bt3;
+
+            widgets.push_back( bt1 );
+            widgets.push_back( bt2 );
+            widgets.push_back( bt3 );
+
+            dynamic_cast< glv::Table* >(visualisation_controls.get())->arrange();
+            dynamic_cast< glv::Table* >(visualisation_controls.get())->fit();
+
+            *text_and_controls << *visualisation_controls;
+
+            visualisation_controls->enable( glv::DrawBorder );
 
             /*
              *  Statistics
@@ -187,31 +215,21 @@ namespace L3
                     it++)
                 temporal_updater->operator<<( it->get() );
 
-            (*ancillary_2) << *statistics;
+            (*text_and_controls) << *statistics;
 
-
-            /*
-             *  Log capture
-             */
-            //std::cout << "HI" << std::endl;
-            //log_capture.reset( new LogCapture() );
-            //std::cout << "THERE" << std::endl;
-            //log_capture->bringToFront();
-            //(*ancillary_2) << *log_capture;
+            text_and_controls->enable( glv::DrawBorder );
 
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->fit();
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
-            dynamic_cast< glv::Table* >(ancillary_2.get())->fit();
-            dynamic_cast< glv::Table* >(ancillary_2.get())->arrange();
-
-            ancillary_1->enable( glv::Property::DrawBorder );
-            ancillary_2->enable( glv::Property::DrawBorder );
+            
+            dynamic_cast< glv::Table* >(text_and_controls.get())->fit();
+            dynamic_cast< glv::Table* >(text_and_controls.get())->arrange();
 
             (*tables[0]  ) << ancillary_1.get();
        
             boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
-            (*table) << ancillary_2.get();
+            (*table) << text_and_controls.get();
             tables.push_back( table );
             
             top << *table;

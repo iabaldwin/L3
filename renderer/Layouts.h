@@ -225,8 +225,6 @@ namespace Visualisers
 
             const L3::Dataset*                          dataset;
             const L3::Configuration::Mission*           mission;
-            boost::shared_ptr< EventController >        point_cloud_maximise_controller;
-            
             boost::shared_ptr< DatasetRunner >          runner;
             
             boost::shared_ptr< TextRenderer<double> >       time_renderer;
@@ -246,17 +244,17 @@ namespace Visualisers
             boost::shared_ptr< ExperienceLocationOverviewView >             experience_location;
             boost::shared_ptr< DedicatedPoseRenderer>                       oracle_renderer;
             boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >  point_cloud_bounds_renderer;
+            boost::shared_ptr< EventController >                            point_cloud_maximise_controller;
             
             boost::shared_ptr< Statistics > statistics;
 
-            //boost::shared_ptr< DataDumper > dumper;
             boost::shared_ptr< glv::View > ancillary_1;
-            boost::shared_ptr< glv::View > ancillary_2;
-            
-           
-                       
+            boost::shared_ptr< glv::View > text_and_controls;
+            boost::shared_ptr< glv::View > L3_controls;
+            boost::shared_ptr< glv::View > visualisation_controls;
           
-            
+            std::deque< boost::shared_ptr< glv::Widget > > widgets;
+
             /*
              *  Load/reload function
              */
