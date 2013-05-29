@@ -343,19 +343,31 @@ struct WASDManager : SelectionManager
 struct CompositeLeafViewToggle : glv::Buttons
 {
 
-    CompositeLeafViewToggle( boost::shared_ptr< L3::Visualisers::Leaf > leaf, const glv::Rect& r= glv::Rect(), int nx=1, int ny=1,bool momentary=false, bool mutExc=false )
+    CompositeLeafViewToggle( boost::shared_ptr< L3::Visualisers::Leaf > leaf, std::string name, const glv::Rect& r= glv::Rect(), int nx=1, int ny=1,bool momentary=false, bool mutExc=false )
         : glv::Buttons( r, nx, ny, momentary, mutExc ), leaf(leaf)
     {
 
+        label = boost::make_shared< glv::Label >( name );
+        label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+
+        *this << *label;
     }
+        
+    boost::shared_ptr< glv::Label > label;
 
     boost::weak_ptr< L3::Visualisers::Leaf > leaf;
+
+    bool toggle_val;
 
     bool onEvent( glv::Event::t e, glv::GLV& g )
     {
         glv::Buttons::onEvent(e,g);
 
-        std::cout << getValue() << std::endl;
+        boost::shared_ptr< L3::Visualisers::Leaf > leaf_ptr = leaf.lock();
+
+        if ( leaf_ptr )
+            leaf_ptr->visible = getValue();
+
     }
 
 };

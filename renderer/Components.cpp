@@ -37,11 +37,15 @@ namespace Visualisers
 
         while( leaf_iterator != components.end() )
         {
-            (*leaf_iterator)->onDraw3D( g );
+            if( (*leaf_iterator)->visible )
+            {
+                (*leaf_iterator)->onDraw3D( g );
 
-            if( ( *leaf_iterator )->draw_bounds )
-                ( *leaf_iterator )->drawBounds();
+                if( ( *leaf_iterator )->draw_bounds )
+                    ( *leaf_iterator )->drawBounds();
 
+            }
+                
             leaf_iterator++;
         }
     }

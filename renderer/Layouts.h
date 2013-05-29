@@ -253,8 +253,16 @@ namespace Visualisers
             boost::shared_ptr< glv::View > text_and_controls;
             boost::shared_ptr< glv::View > L3_controls;
             boost::shared_ptr< glv::View > visualisation_controls;
+            
+            boost::shared_ptr< glv::View > holder_1, holder_2;
           
             std::deque< boost::shared_ptr< glv::Widget > > widgets;
+            
+            boost::shared_ptr< CompositeLeafViewToggle > point_cloud_visualiser_toggle;
+            boost::shared_ptr< CompositeLeafViewToggle > point_cloud_bounds_toggle;
+            boost::shared_ptr< CompositeLeafViewToggle > iterator_renderer_toggle;
+            boost::shared_ptr< CompositeLeafViewToggle > experience_voxel_toggle;
+            boost::shared_ptr< CompositeLeafViewToggle > experience_bounds_toggle;
 
             /*
              *  Load/reload function
@@ -297,6 +305,7 @@ namespace Visualisers
             boost::shared_ptr< L3::Visualisers::DebugAlgorithmRenderer >    debug_algorithm_renderer;
 
             boost::shared_ptr< AlgorithmVisualiser > algorithm_renderer;
+    
     };
 
 } 

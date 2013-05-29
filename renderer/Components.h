@@ -125,7 +125,8 @@ namespace Visualisers
     struct Leaf 
     {
         Leaf() 
-            : draw_bounds(false)
+            : draw_bounds(false),
+                visible(true)
         {
             bound_vertices.reset( new glv::Point3[24] ); 
             bound_colors.reset( new glv::Color[24] ); 
@@ -135,7 +136,7 @@ namespace Visualisers
             float x,y,z;
         };
 
-        bool draw_bounds;
+        bool draw_bounds, visible;
 
         bounds lower,upper;
 

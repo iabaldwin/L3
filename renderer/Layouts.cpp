@@ -106,10 +106,13 @@ namespace L3
             /*
              * Text & controls
              */
-            text_and_controls.reset( new glv::Table("x x ,") );
+            text_and_controls.reset( new glv::Table("x x,") );
             
-            L3_controls.reset( new glv::Table("x , ") );
-            
+            holder_1.reset( new glv::View( glv::Rect( 350, 100) ) );
+            holder_2.reset( new glv::View( glv::Rect( 175, 100) ) );
+
+            L3_controls.reset( new glv::Table("<,") );
+          
             // Dataset scaling factor
             scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
             scale_factor->interval( 5, 1 );
@@ -179,35 +182,39 @@ namespace L3
             time_renderer->pos(window.width()-155, window.height()-50 );
 
             (*L3_controls) << *time_renderer;
-            
-            L3_controls->enable( glv::DrawBorder );
+          
+            //L3_controls->enable( glv::DrawBorder );
             dynamic_cast< glv::Table* >(L3_controls.get())->arrange();
             dynamic_cast< glv::Table* >(L3_controls.get())->fit();
 
-            *text_and_controls << *L3_controls;
+            *text_and_controls << (*holder_1 << *L3_controls );
 
             /*
              *  Visualisation controls
              */
             visualisation_controls.reset( new glv::Table( "x ,") );
-            //boost::shared_ptr< glv::Button > bt1 = boost::make_shared< glv::Button >( glv::Rect(20, 20));
-            boost::shared_ptr< CompositeLeafViewToggle > bt1 = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), glv::Rect(20, 20));
-            boost::shared_ptr< glv::Button > bt2 = boost::make_shared< glv::Button >( glv::Rect(20, 20));
-            boost::shared_ptr< glv::Button > bt3 = boost::make_shared< glv::Button >( glv::Rect(20, 20));
-            boost::shared_ptr< glv::Button > bt4 = boost::make_shared< glv::Button >( glv::Rect(20, 20));
 
-            *visualisation_controls << *bt1 << *bt2 << *bt3 << *bt4;
+            //Point cloud visualisation
+            int width=15,height=15;
+            point_cloud_visualiser_toggle   = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), "Runtime cloud", glv::Rect(width, height));
+            point_cloud_bounds_toggle       = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), "Runtime bounds", glv::Rect(width, height));
+            iterator_renderer_toggle        = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), "Window poses",  glv::Rect(width, height));
+            experience_voxel_toggle         = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), "Experience voxel",  glv::Rect(width, height));
+            experience_bounds_toggle        = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), "Experience bounds",  glv::Rect(width, height));
+
+            *visualisation_controls << *point_cloud_visualiser_toggle << *point_cloud_bounds_toggle << *iterator_renderer_toggle << *experience_voxel_toggle << *experience_bounds_toggle;
             visualisation_controls->enable( glv::DrawBorder );
-
-            widgets.push_back( bt1 );
-            widgets.push_back( bt2 );
-            widgets.push_back( bt3 );
-            widgets.push_back( bt4 );
+            
+            widgets.push_back( point_cloud_visualiser_toggle );
+            widgets.push_back( point_cloud_bounds_toggle);
+            widgets.push_back( iterator_renderer_toggle );
+            widgets.push_back( experience_voxel_toggle );
+            widgets.push_back( experience_bounds_toggle );
 
             dynamic_cast< glv::Table* >(visualisation_controls.get())->fit();
             dynamic_cast< glv::Table* >(visualisation_controls.get())->arrange();
 
-            *text_and_controls << *visualisation_controls;
+            *text_and_controls << ( *holder_2 << *visualisation_controls);
 
             dynamic_cast< glv::Table* >(text_and_controls.get())->fit();
             dynamic_cast< glv::Table* >(text_and_controls.get())->arrange();
@@ -277,6 +284,7 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
             iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
             *composite << (*iterator_renderer);
+            iterator_renderer_toggle->leaf = iterator_renderer;
 
             /*
              *  Static map-view
@@ -301,6 +309,8 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( runtime_cloud_renderer_leaf.get() ) );
             runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->point_cloud, runner->provider ));
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
+            // Toggle
+            point_cloud_visualiser_toggle->leaf = runtime_cloud_renderer_leaf;
 
             /*
              * Run-time swathe bounds
@@ -308,6 +318,7 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( point_cloud_bounds_renderer.get() ) );
             point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( runtime_cloud_renderer_leaf->plot_cloud ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
+            point_cloud_bounds_toggle->leaf = point_cloud_bounds_renderer;
 
             /*
              *  Swathe cloud, separate view
@@ -434,14 +445,15 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) );
             histogram_bounds_renderer->hist = (*experience->experience_pyramid)[0];
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
-
+            experience_bounds_toggle->leaf = histogram_bounds_renderer;
+            
             /*
              *  Histogram voxel
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf .get() ) );
             histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
-
+            experience_voxel_toggle->leaf = histogram_voxel_renderer_experience_leaf; 
             /*
              *  Predicted estimates
              */
