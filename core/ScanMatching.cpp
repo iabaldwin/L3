@@ -101,8 +101,8 @@ namespace ScanMatching
         instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
 
         // Do swap
-        scan.swap( putative );
-        scan_points = putative_points;
+        //scan.swap( putative );
+        //scan_points = putative_points;
  
         previous_time = current_scan.first;
 
