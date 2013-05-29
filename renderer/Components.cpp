@@ -1268,11 +1268,8 @@ namespace Visualisers
         if( ptr_provider )
         {
             *current = ptr_provider->operator()();
+            glv::draw::translate( -1*current->X(), -1*current->Y() );
             animation->onDraw3D(g);
-            glv::draw::translate( current->X(), current->Y() );
-
-            x_offset = current->X();
-            y_offset = current->Y();
         }
 
         boost::shared_ptr< L3::Experience > ptr = experience.lock();
@@ -1287,16 +1284,18 @@ namespace Visualisers
 
         int counter =0;
 
-        //glv::draw::pointSize( 3 );
-        //while( it != ptr->sections.end() )
-        //{
-        //experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
-        //experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
-        //it++;
-        //}
+        glv::draw::pointSize( 3 );
+        while( it != ptr->sections.end() )
+        {
+        experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
+        experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
+        it++;
+        }
 
+        glv::draw::pointSize( 1 );
         //glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
-        //glv::draw::pointSize( 1 );
+        glv::draw::lineWidth( 1 );
+        glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
 
         glv::draw::pop();
     }
