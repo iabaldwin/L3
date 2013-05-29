@@ -30,9 +30,6 @@ namespace L3
             
             // Basic controller
             controller.reset( new L3::Visualisers::CompositeController( composite.get(), composite->position ) );
-            // Chase camera
-            //controller.reset( new L3::Visualisers::ChaseController( composite.get(), composite->position, *runner->current ) );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(controller.get() ) ) );
             
             // 3D Query - has to be after controller?
             mouse_query.reset( new L3::Visualisers::MouseQuerySelect( composite.get() ) );
