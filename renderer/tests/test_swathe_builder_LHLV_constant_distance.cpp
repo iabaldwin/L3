@@ -21,7 +21,7 @@ int main (int argc, char ** argv)
     /*
      *  L3
      */
-    boost::scoped_ptr< L3::Dataset > dataset( new L3::Dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" ) );
+    boost::scoped_ptr< L3::Dataset > dataset( new L3::Dataset( "/Users/ian/code/datasets/2012-08-23-14-58-19_woodstock_dgps/" ) );
     if( !( dataset->validate() && dataset->load() ) )
         throw std::exception();
     

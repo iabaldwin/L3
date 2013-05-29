@@ -110,9 +110,7 @@ namespace L3
             while ( current_in != end )
             {
                 // Compute the update
-                //dt = current_in->first - current_time;
                 current_time = current_in->first;
-
                 dt = current_time - previous_time;
 
                 // Compute roll, pitch, yaw
@@ -147,7 +145,6 @@ namespace L3
 
                 if( incremental_distance > required_increment )
                 { 
-                    *output++ = std::make_pair( previous_time, previous_pose);
                     *output++ = std::make_pair( current_time, current_pose );
                     incremental_distance = 0.0;
                 }

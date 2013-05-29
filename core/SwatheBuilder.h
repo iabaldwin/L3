@@ -11,9 +11,9 @@ namespace L3
     class SwatheBuilder : public TemporalObserver
     {
         public:
-            SwatheBuilder( L3::PoseWindower* pose_it, L3::Iterator<L3::LMS151>* LIDAR_it ) :
-                            pose_windower( pose_it ), 
-                            LIDAR_iterator( LIDAR_it ), 
+            SwatheBuilder( L3::PoseWindower* windower, L3::Iterator<L3::LMS151>* iterator ) :
+                            pose_windower( windower ), 
+                            LIDAR_iterator( iterator ), 
                             window_duration(0.0) 
             {
             }

@@ -28,8 +28,8 @@ namespace L3
         projector.reset( new L3::Projector<double>( projection.get(), point_cloud.get() ) );
        
         // Pose Provider
-        pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV>( LHLV_iterator.get() ) );
-        //pose_windower.reset( new L3::ConstantDistanceWindower( LHLV_iterator.get(), 40 ) );
+        //pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV>( LHLV_iterator.get() ) );
+        pose_windower.reset( new L3::ConstantDistanceWindower( LHLV_iterator.get(), 30 ) );
        
         // Swathe generator
         swathe_builder.reset( new L3::SwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
@@ -82,6 +82,7 @@ namespace L3
                 
             real_time_elapsed = t.elapsed(); 
 
+            std::cout << current_time << std::endl;
             /*
              *  Update all watchers
              */

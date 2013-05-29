@@ -37,14 +37,15 @@ namespace L3
     {
         // Find the new data, between the last update time and now
         L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( constant_time_iterator->window.begin(), 
-                                                                            constant_time_iterator->window.end(), 
-                                                                            previous_update,
-                                                                            comparator );
+                constant_time_iterator->window.end(), 
+                previous_update,
+                comparator );
+
+        if ( index == constant_time_iterator->window.end() )
+            return false;
 
         // Create a delta buffer
         std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > _window_delta_buffer;
-
-        // Add in the newly-seen data
         _window_delta_buffer.assign( index, constant_time_iterator->window.end() );
 
         // Append it to the buffer
@@ -57,16 +58,19 @@ namespace L3
         SWATHE_ITERATOR iterator = L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
                 _window_buffer.rend(),
                 _constant_distance_window.begin(),
-                0.2, 
-                std::numeric_limits<double>::infinity(), 
+                1.0, 
+                swathe_length,
                 written);
 
-        //_window_buffer.erase( _window_buffer.begin(), _window_buffer.end() - written  );
-        _window_buffer.erase( _window_buffer.begin(), _window_buffer.begin() + written );
+        _window_buffer.erase( _window_buffer.begin(), _window_buffer.end() - written  );
         _constant_distance_window.erase( iterator, _constant_distance_window.end() );
+
+        std::reverse( _constant_distance_window.begin(), _constant_distance_window.end() );
 
         // Update
         previous_update = time;
+
+        std::cout << _constant_distance_window.size() << std::endl;
 
         return true;
     }
