@@ -19,9 +19,6 @@ namespace Visualisers
 
         void onDraw3D( glv::GLV& g )
         {
-            // Update 
-            //this->update( time += .5 );
-       
             L3::TemporalRunner::update( time += .5 );
         }
 

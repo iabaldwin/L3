@@ -109,6 +109,8 @@ class SE3 : public Pose
 };
 
 bool operator==( const L3::SE3& lhs,  const L3::SE3& rhs );
+L3::SE3 operator+( const L3::SE3& lhs,  const L3::SE3& rhs );
+L3::SE3 operator/( const L3::SE3& lhs,  const double divisor );
 
 struct LHLV  
 {

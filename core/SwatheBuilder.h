@@ -18,7 +18,10 @@ namespace L3
             {
             }
                 
-            Comparator< std::pair< double, boost::shared_ptr<L3::SE3> > > comparator;
+            Comparator< std::pair< double, boost::shared_ptr<L3::SE3> > >       pose_comparator;
+            Comparator< std::pair< double, boost::shared_ptr<L3::LMS151> > >    LIDAR_comparator;
+        
+            L3::Timing::ChronoTimer t;
 
             SWATHE swathe;
 

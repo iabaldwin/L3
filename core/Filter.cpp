@@ -136,7 +136,13 @@ namespace L3
 
             hypotheses.assign( resampled.begin(), resampled.end() );
 
-            return estimate;
+            L3::SE3 predicted = std::accumulate( resampled.begin(), resampled.end(), L3::SE3::ZERO() );
+
+            predicted = predicted/(resampled.size());
+
+            std::cout << predicted << std::endl;
+
+            return predicted;
         }
     }
 }

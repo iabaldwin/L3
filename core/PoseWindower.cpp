@@ -41,16 +41,15 @@ namespace L3
                 previous_update,
                 comparator );
 
-        if ( index == constant_time_iterator->window.end() )
-            return false;
-
         // Create a delta buffer
         std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > _window_delta_buffer;
         _window_delta_buffer.assign( index, constant_time_iterator->window.end() );
 
+        if (_window_delta_buffer.empty() )
+            return true;
+
         // Append it to the buffer
         _window_buffer.insert( _window_buffer.end(), _window_delta_buffer.begin(), _window_delta_buffer.end() );
-
         _constant_distance_window.resize( _window_buffer.size()) ;
 
         int written;
@@ -58,7 +57,7 @@ namespace L3
         SWATHE_ITERATOR iterator = L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
                 _window_buffer.rend(),
                 _constant_distance_window.begin(),
-                0.2, 
+                0.1, 
                 swathe_length,
                 written);
 
@@ -70,7 +69,7 @@ namespace L3
         // Update
         previous_update = time;
 
-        std::cout << _constant_distance_window.size() << std::endl;
+        //std::cout << _constant_distance_window.size() << std::endl;
 
         return true;
     }

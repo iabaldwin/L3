@@ -21,7 +21,7 @@ int main (int argc, char ** argv)
     /*
      *  L3
      */
-    boost::scoped_ptr< L3::Dataset > dataset( new L3::Dataset( "/Users/ian/code/datasets/2012-08-23-14-58-19_woodstock_dgps/" ) );
+    boost::scoped_ptr< L3::Dataset > dataset( new L3::Dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" ) );
     if( !( dataset->validate() && dataset->load() ) )
         throw std::exception();
     
@@ -33,7 +33,7 @@ int main (int argc, char ** argv)
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset->LIDAR_readers[ mission.declined ] );
 
-    L3::ConstantDistanceWindower pose_windower( &LHLV_iterator, 40 );
+    L3::ConstantDistanceWindower pose_windower( &LHLV_iterator, 60 );
 
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 

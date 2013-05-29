@@ -194,6 +194,33 @@ bool operator==( const L3::SE3& lhs,  const L3::SE3& rhs )
 
 }
 
+L3::SE3 operator+( const L3::SE3& lhs,  const L3::SE3& rhs )
+{
+    L3::SE3 retval;
+    retval.X( lhs.X() + rhs.X() );
+    retval.Y( lhs.Y() + rhs.Y() );
+    retval.Z( lhs.Z() + rhs.Z() );
+    retval.R( lhs.R() + rhs.R() );
+    retval.P( lhs.P() + rhs.P() );
+    retval.Q( lhs.Q() + rhs.Q() );
+ 
+    return retval;
+}
+
+L3::SE3 operator/( const L3::SE3& lhs,  const double divisor )
+{
+    L3::SE3 retval( lhs );
+
+    retval.X( lhs.X()/divisor );
+    retval.Y( lhs.Y()/divisor );
+    retval.Z( lhs.Z()/divisor );
+    retval.R( lhs.R()/divisor );
+    retval.P( lhs.P()/divisor );
+    retval.Q( lhs.Q()/divisor );
+    
+    return retval;
+}
+
 
 
 std::ostream& operator<<( std::ostream& o, const L3::LHLV& lhlv )

@@ -8,39 +8,58 @@ namespace L3
         // Rebuild swathe completely
         swathe.clear();
 
-        /*
-         *  For each LIDAR scan, find the time
-         *  and associated pose
-         */
-        if ( LIDAR_iterator->window.empty() )
-            return false;
+        t.begin();
 
-        L3::Iterator<L3::LMS151>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
-
-        // For each lidar scan, find the nearest pose
-        while( it != LIDAR_iterator->window.end() )
+        if( LIDAR_iterator->window.size() < pose_windower->window->size() )
         {
-            // Nearest time
-            L3::Iterator<L3::SE3>::WINDOW_ITERATOR index = std::lower_bound( pose_windower->window->begin(), 
-                    pose_windower->window->end(), 
-                    it->first, 
-                    comparator );
-             
-            if ( index == pose_windower->window->end() ) 
-                break;
+            L3::Iterator<L3::LMS151>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
 
-            if ((index->first - it->first) == 0)
-                swathe.push_back( std::make_pair( index->second, it->second ) );
+            /*
+             *For each lidar scan, find the nearest pose
+             */
+            while( it != LIDAR_iterator->window.end() )
+            {
+                // Nearest time
+                L3::Iterator<L3::SE3>::WINDOW_ITERATOR index = std::lower_bound( pose_windower->window->begin(), 
+                        pose_windower->window->end(), 
+                        it->first, 
+                        pose_comparator );
 
-            it++;
+                if ( index == pose_windower->window->end() ) 
+                    break;
+
+                if ((index->first - it->first) == 0)
+                    swathe.push_back( std::make_pair( index->second, it->second ) );
+
+                it++;
+            }
         }
+        else
+        {
+            L3::Iterator<L3::SE3>::WINDOW_ITERATOR it = pose_windower->window->begin() ;
 
-        window_duration = LIDAR_iterator->window.back().first - LIDAR_iterator->window.front().first;
+            // For each lidar pose, find the nearest scan
+            while( it != pose_windower->window->end() )
+            {
+                // Nearest time
+                L3::Iterator<L3::LMS151>::WINDOW_ITERATOR index = std::lower_bound( LIDAR_iterator->window.begin(), 
+                        LIDAR_iterator->window.end(), 
+                        it->first, 
+                        LIDAR_comparator );
+
+                if ((index->first - it->first) == 0)
+                    //swathe.push_back( std::make_pair( index->second, it->second ) );
+                    swathe.push_back( std::make_pair( it->second, index->second ) );
+
+                it++;
+            }
+
+            //window_duration = LIDAR_iterator->window.back().first - LIDAR_iterator->window.front().first;
+
+        }
 
         return true;
 
     }
-
-
 
 }
