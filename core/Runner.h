@@ -73,10 +73,11 @@ struct DatasetRunner : ThreadedRunner
             thread.join();
     }
 
-    Dataset*        dataset;
-    Configuration::Mission*        mission;
+    bool            print_timings;
     float           speedup;
     double          current_time, start_time;  
+    Dataset*        dataset;
+    Configuration::Mission*     mission;
    
     std::list < Dumpable* > dumps;
     

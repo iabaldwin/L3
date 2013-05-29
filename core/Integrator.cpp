@@ -144,7 +144,7 @@ namespace L3
                 /*
                  *  Do we log it
                  */
-                if (lin_vel > 150)
+                if (lin_vel > total_distance )
                     distance += inter_pose_distance;
 
                 if( incremental_distance > required_increment )
@@ -164,8 +164,6 @@ namespace L3
                 written++;
             
             }
-
-            std::cout << distance << std::endl;
 
             return output;
         }

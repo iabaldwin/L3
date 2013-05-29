@@ -8,7 +8,8 @@ namespace L3
             mission(mission),
             speedup(speedup),
             current_time(0.0),
-            start_time(dataset->start_time)
+            start_time(dataset->start_time),
+            print_timings(false)
     {
         // Constant time iterator over poses
         pose_iterator.reset( new L3::ConstantTimeIterator<L3::SE3>( dataset->pose_reader ) );
@@ -121,7 +122,16 @@ namespace L3
              */
             update( current_time );
             timings[ performance_index++ ] = performance_timer.elapsed();
-     
+    
+            if( print_timings )
+            {
+                std::stringstream ss;
+                ss << "Observer update:"  << "\t" << timings[0] << std::endl;
+                ss << "Swathe update:"    << "\t\t" << timings[1] << std::endl;
+                ss << "Point generation:" << "\t" << timings[2] << std::endl;
+                ss << "Estimation:"       << "\t\t" << timings[3] << std::endl;
+                std::cout << ss.str() << "------------" << std::endl;
+            }
         }
 
     }

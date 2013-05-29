@@ -19,7 +19,7 @@ int main( int argc, char* argv[] )
      *  L3
      */
     char* dataset_directory = argv[1];
-        
+
     boost::shared_ptr< L3::Dataset > experience_dataset;
     experience_dataset.reset( new L3::Dataset( "/Users/ian/code/datasets/2012-02-08-09-36-42-WOODSTOCK-SLOW/" ) );
 
@@ -28,55 +28,29 @@ int main( int argc, char* argv[] )
 
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
 
-    for( int i=0; i<1000; i++ )
-    { 
-        L3::Dataset dataset( dataset_directory );
+    L3::Dataset dataset( dataset_directory );
 
-        if( !( dataset.validate() && dataset.load() ) )
-            exit(-1);
+    if( !( dataset.validate() && dataset.load() ) )
+        exit(-1);
 
-        /*
-         *  Configuration
-         */
-        L3::Configuration::Mission mission( dataset );
+    /*
+     *  Configuration
+     */
+    L3::Configuration::Mission mission( dataset );
 
-        L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::MICostFunction<double>();
-        boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new  L3::Estimator::IterativeDescent<double>(cost_function, experience->experience_pyramid ));
- 
-        // Create runner
-        boost::scoped_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( &dataset, &mission, experience.get() ) );
+    L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::MICostFunction<double>();
+    boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new  L3::Estimator::IterativeDescent<double>(cost_function, experience->experience_pyramid ));
 
-        runner->setAlgorithm( algo );
-        runner->start();
+    // Create runner
+    boost::scoped_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( &dataset, &mission, experience.get() ) );
 
-        std::stringstream ss;
-        ss.precision( 16 );
+    runner->setAlgorithm( algo );
+    runner->start();
 
-        int target = 100000000;
+    runner->print_timings = true;
 
-            
-        int counter = 0;
-        while( true )
-        {
-            ss << runner->current_time;
-
-            char* res = readline( (ss.str() + " >> ").c_str() ); 
-
-
-
-            if ( !res )
-                break;
-
-            if( std::string(res) == "stop" )
-                break;
-            ss.str( std::string("") );
-
-            //if ( counter++ > target )
-            //{
-                //std::cout << counter-1 << " of " << target<< std::endl;
-                //break;
-            //}
-        }
-
+    while( true )
+    {
+        usleep( 0.2 * 1e6 );
     }
 }
