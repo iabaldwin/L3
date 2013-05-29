@@ -332,7 +332,6 @@ namespace Visualisers
         void onDraw3D( glv::GLV& g );
     };
 
-    //struct PoseSequenceRenderer : LabelledLeaf
     struct PoseSequenceRenderer : Leaf
     { 
 

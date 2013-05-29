@@ -232,9 +232,9 @@ namespace Visualisers
             
             boost::shared_ptr< PointCloudRendererLeaf > runtime_cloud_renderer_leaf; 
 
-            boost::shared_ptr< LocaleRenderer >         map_view;
-            boost::shared_ptr< PoseRenderer >           pose_renderer;
-            boost::shared_ptr< LocaleBoundsRenderer >   locale_bounds;
+            boost::shared_ptr< LocaleRenderer >             map_view;
+            boost::shared_ptr< LocaleBoundsRenderer >       locale_bounds;
+            std::deque< boost::shared_ptr< PoseRenderer > > pose_renderers;
             
             boost::shared_ptr< HistogramPyramidRendererView  >              pyramid_renderer;
             boost::shared_ptr< PointCloudRendererView >                     runtime_cloud_renderer_view; 

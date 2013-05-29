@@ -298,10 +298,23 @@ namespace L3
             /*
              *  Current pose estimate
              */
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( pose_renderer.get() ) );
-            //pose_renderer.reset( new L3::Visualisers::PoseRenderer( *runner->current ) );
-            pose_renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) );
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(pose_renderer.get() ))); 
+            for( std::deque< boost::shared_ptr< PoseRenderer > >::iterator it = pose_renderers.begin();
+                    it != pose_renderers.end();
+                    it++)
+            {
+                composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( it->get() ) );
+            }
+
+            pose_renderers.push_back( boost::shared_ptr< L3::Visualisers::PoseRenderer>( new L3::Visualisers::PoseRenderer( *runner->current ) ) );
+            pose_renderers.push_back( boost::shared_ptr< L3::Visualisers::AnimatedPoseRenderer> ( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) ) );
+
+            for( std::deque< boost::shared_ptr< PoseRenderer > >::iterator it = pose_renderers.begin();
+                    it != pose_renderers.end();
+                    it++)
+            {
+                this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(it->get() ))); 
+            }
+
 
             /*
              *  Run-time swathe
