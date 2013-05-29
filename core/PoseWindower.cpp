@@ -58,7 +58,7 @@ namespace L3
         SWATHE_ITERATOR iterator = L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
                 _window_buffer.rend(),
                 _constant_distance_window.begin(),
-                1.0, 
+                0.2, 
                 swathe_length,
                 written);
 

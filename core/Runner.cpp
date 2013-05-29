@@ -82,7 +82,6 @@ namespace L3
                 
             real_time_elapsed = t.elapsed(); 
 
-            std::cout << current_time << std::endl;
             /*
              *  Update all watchers
              */

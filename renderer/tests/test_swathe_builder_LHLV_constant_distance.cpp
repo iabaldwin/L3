@@ -33,7 +33,7 @@ int main (int argc, char ** argv)
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset->LIDAR_readers[ mission.declined ] );
 
-    L3::ConstantDistanceWindower pose_windower( &LHLV_iterator, 20 );
+    L3::ConstantDistanceWindower pose_windower( &LHLV_iterator, 40 );
 
     L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
