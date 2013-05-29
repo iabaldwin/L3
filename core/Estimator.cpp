@@ -227,6 +227,33 @@ namespace L3
             }
 
 
+        template < typename T >
+            double SSDCostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
+            {
+                if ( experience.empty() || swathe.empty() )
+                    return std::numeric_limits<T>::infinity();
+
+                int size = experience.hist->nx*experience.hist->ny;
+
+                // Compute differences
+                double diff[size];
+
+                std::copy( diff, diff+size, std::ostream_iterator<double>( std::cout, " " ) );
+                std::cout << std::endl;
+
+                std::transform( experience.hist->bin, experience.hist->bin+size, swathe.hist->bin, diff, std::minus<double>() );
+                //std::generate( diff, diff+size, std::bind2nd( std::ptr_fun( pow ), 2 ) );
+                std::for_each( diff, diff+size, std::bind2nd( std::ptr_fun( pow ), 2 ) );
+                double retval = std::accumulate( diff, diff+size, 0.0  );
+
+                return retval;
+
+                //return -1*calculateRenyiMIDivergence( 0.05, experience.hist->bin, swathe.hist->bin, size);
+            }
+
+
+
+
         /*
          *  Hypothesis Builder
          */
@@ -516,7 +543,7 @@ template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<
 template double L3::Estimator::RenyiMICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template double L3::Estimator::NMICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template double L3::Estimator::MICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
-
+template double L3::Estimator::SSDCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 
 template L3::SE3 L3::Estimator::PassThrough<double>::operator()(L3::PointCloud<double>*, L3::SE3);

@@ -1062,6 +1062,9 @@ namespace Visualisers
         int scan_points = ptr->matcher->scan_points;
         int putative_points = ptr->matcher->putative_points;
 
+        if( scan_points == 0 || putative_points == 0 )
+            return;
+
         scan.reset( new double[scan_points*3] );
         std::copy( ptr->matcher->scan.get(), 
                 ptr->matcher->scan.get()+ scan_points*3, 

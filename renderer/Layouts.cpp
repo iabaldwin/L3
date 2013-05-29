@@ -416,17 +416,17 @@ namespace L3
             /*
              *  Debug algorithm renderer
              */
-            debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
+            //debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
            
-            for( int i=0; i<2; i++ )
-            {
-                //temporal_updater->operator<<( it->get() );
-                //temporal_updater->operator<<( dynamic_cast< L3::Updateable* >( debug_algorithm_renderer->vertex_renderers[i].get() ) );
-                temporal_updater->operator<<( dynamic_cast< Updateable* >( debug_algorithm_renderer->density_renderers[i].get() ) );
-            }
+            //for( int i=0; i<2; i++ )
+            //{
+                ////temporal_updater->operator<<( it->get() );
+                ////temporal_updater->operator<<( dynamic_cast< L3::Updateable* >( debug_algorithm_renderer->vertex_renderers[i].get() ) );
+                //temporal_updater->operator<<( dynamic_cast< Updateable* >( debug_algorithm_renderer->density_renderers[i].get() ) );
+            //}
 
-            top << *debug_algorithm_renderer;
-            tables.push_back( debug_algorithm_renderer );
+            //top << *debug_algorithm_renderer;
+            //tables.push_back( debug_algorithm_renderer );
        
             /*
              *  Current algorithm renderer
@@ -506,13 +506,13 @@ namespace L3
             /*
              *  Debug algorithm renderer - render costs,etc at INS pose
              */
-            if (!debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )))
-            {
-                std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), debug_algorithm_renderer );
+            //if (!debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )))
+            //{
+                //std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), debug_algorithm_renderer );
           
-                if ( it != tables.end() )
-                    tables.erase( it );
-            }
+                //if ( it != tables.end() )
+                    //tables.erase( it );
+            //}
 
         }
     }

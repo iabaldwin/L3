@@ -66,7 +66,6 @@ namespace ScanMatching
             cloud_in->points[i].z = *cloud_ptr++;
         }
 
-
         /*
          *  Putative
          */
@@ -88,6 +87,17 @@ namespace ScanMatching
             cloud_out->points[i].z = *cloud_ptr++;
         }
 
+            
+        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+
+        icp.setMaxCorrespondenceDistance (0.05);
+        // Set the maximum number of iterations (criterion 1)
+        icp.setMaximumIterations (50);
+        // Set the transformation epsilon (criterion 2)
+        icp.setTransformationEpsilon (1e-8);
+        // Set the euclidean distance difference epsilon (criterion 3)
+        icp.setEuclideanFitnessEpsilon (1);
+
         icp.setInputCloud(cloud_in);
         icp.setInputTarget(cloud_out);
         pcl::PointCloud<pcl::PointXYZ> Final;
@@ -97,39 +107,41 @@ namespace ScanMatching
 
         transformation = icp.getFinalTransformation();
 
-        // Compute instantaneous velocity
-        instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
+        //// Compute instantaneous velocity
+        //instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
 
         // Do swap
-        //scan.swap( putative );
-        //scan_points = putative_points;
- 
+        scan.swap( putative );
+        scan_points = putative_points;
+        
         previous_time = current_scan.first;
 
         return true;
     }
     
-    bool Engine::update( double time )
+    void Engine::run()
     {
-        this->windower->getWindow( window );
-
-        bool retval = false;
-
-        if ( window.size() > 0 )
+        while(running)
         {
-            L3::WriteLock( this->mutex );
-           
-            Eigen::Matrix4f transformation;
-            retval = matcher->match( window.back(), transformation ); 
+            // Get the current data
+            L3::WriteLock lock( this->mutex );
+            this->windower->getWindow( window );
+            lock.unlock();
 
-            current_transformation = current_transformation * transformation;
+            if ( window.size() > 0 )
+            {
+                L3::WriteLock( this->mutex );
 
-            //trajectory.push_back( Eigen::Matrix4f( current_transformation ) );
+                Eigen::Matrix4f transformation;
+
+                matcher->match( window.back(), transformation ); 
+                current_transformation = current_transformation * transformation;
+
+                //trajectory.push_back( Eigen::Matrix4f( current_transformation ) );
+            }
+
         }
-  
-        return retval;
     }
-
 
 }
 }

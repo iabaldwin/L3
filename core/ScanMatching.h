@@ -6,6 +6,8 @@
 #include "Datatypes.h"
 #include "Iterator.h"
 
+#include "Poco/Thread.h"
+
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
@@ -38,9 +40,6 @@ namespace ScanMatching
 
         protected:
 
-              
-            pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in;
         
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out;
@@ -58,16 +57,30 @@ namespace ScanMatching
             bool match(  const std::pair< double,  boost::shared_ptr< L3::LMS151 > > current_scan, Eigen::Matrix4f& transformation ) ;
     };
 
-    struct Engine : L3::TemporalObserver, Lockable
+    struct Engine : Lockable, Poco::Runnable
     { 
         Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
-            windower(windower)
+            windower(windower),
+            running(true)
         {
             matcher.reset( new ICP() );
        
             current_transformation = Eigen::Matrix4f::Identity();
+       
+            thread.start( *this );
         }
-        
+    
+        virtual ~Engine()
+        {
+            running = false;;
+            if ( thread.isRunning() )
+                thread.join();
+        }
+
+        Poco::Thread thread;
+
+        bool running;
+
         Eigen::Matrix4f current_transformation;
 
         std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
@@ -80,6 +93,7 @@ namespace ScanMatching
 
         bool update( double t );
 
+        void run();
     };
 
 }
