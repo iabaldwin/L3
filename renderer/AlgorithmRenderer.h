@@ -34,7 +34,7 @@ namespace L3
 
         struct DiscreteEstimatorVisualiser 
         {
-            DiscreteEstimatorVisualiser( boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ) 
+            DiscreteEstimatorVisualiser( boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator, Updater* updater = NULL ) 
                 : estimator(estimator)
             {
 
@@ -95,7 +95,7 @@ namespace L3
         struct MinimisationVisualiser : AlgorithmVisualiser
         {
 
-            MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm )  : algorithm(algorithm)
+            MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm, Updater* updater = NULL )  : algorithm(algorithm)
             {
                 boost::shared_ptr< glv::View > ptr = boost::dynamic_pointer_cast<glv::View>( boost::make_shared< TraversalVisualiser >( algorithm ) );
                 views.push_back( ptr );
@@ -111,7 +111,7 @@ namespace L3
 
         struct IterativeDescentVisualiser : AlgorithmVisualiser
         {
-            IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) ;
+            IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm, Updater* updater = NULL ) ;
 
             boost::weak_ptr< L3::Estimator::IterativeDescent<double> > algorithm;
             std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
@@ -133,7 +133,7 @@ namespace L3
 
         struct HybridVisualiser : AlgorithmVisualiser
         {
-            HybridVisualiser( boost::shared_ptr< L3::Estimator::Hybrid<double> > algorithm ) ;
+            HybridVisualiser( boost::shared_ptr< L3::Estimator::Hybrid<double> > algorithm, Updater* updater=NULL ) ;
             
             boost::weak_ptr< L3::Estimator::Hybrid<double> > algorithm;
 
@@ -146,41 +146,35 @@ namespace L3
 
         struct ParticleFilterVisualiser : AlgorithmVisualiser
         {
-            ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm ) ;
+            ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater = NULL ) ;
             
-
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
-            std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
+       
         };
-
-
 
         /*
          *  Factory
          */
         struct AlgorithmRendererFactory
         {
-            static boost::shared_ptr< AlgorithmVisualiser > Produce( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
+            static boost::shared_ptr< AlgorithmVisualiser > Produce( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm, Updater* updater = NULL )
             {
                 // Iterative descent
                 if( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::IterativeDescent<double> >( algorithm ) )
-                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< IterativeDescentVisualiser >( ptr ) );
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< IterativeDescentVisualiser >( ptr, updater ) );
 
                 // Optimisation
                 if( boost::shared_ptr< L3::Estimator::Minimisation<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::Minimisation<double> >( algorithm ) )
-                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< MinimisationVisualiser >( ptr ) );
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< MinimisationVisualiser >( ptr, updater ) );
 
                 // Hybrid
                 if( boost::shared_ptr< L3::Estimator::Hybrid<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::Hybrid<double> >( algorithm ) )
-                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< HybridVisualiser>( ptr ) );
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< HybridVisualiser>( ptr, updater ) );
 
                 // PF
                 if( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::ParticleFilter<double> >( algorithm ) )
-                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< ParticleFilterVisualiser>( ptr ) );
-
-
-
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< ParticleFilterVisualiser>( ptr, updater ) );
 
                 return boost::shared_ptr<AlgorithmVisualiser>();
 

@@ -39,7 +39,7 @@ namespace L3
         
         }
 
-        IterativeDescentVisualiser::IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm ) 
+        IterativeDescentVisualiser::IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm, Updater* updater ) 
             : AlgorithmVisualiser( "x x,", 2, 2), algorithm(algorithm)
         {
             
@@ -211,7 +211,7 @@ namespace L3
         /*
          *  Hybrid
          */
-        HybridVisualiser::HybridVisualiser( boost::shared_ptr< L3::Estimator::Hybrid<double> > algorithm ) : algorithm(algorithm)
+        HybridVisualiser::HybridVisualiser( boost::shared_ptr< L3::Estimator::Hybrid<double> > algorithm, Updater* updater  ) : algorithm(algorithm)
         {
 
             for( int i=0; i< algorithm->discrete_estimators.size(); i++ )
@@ -266,15 +266,12 @@ namespace L3
 
             ParticleVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm ) : glv::View3D( glv::Rect(400,400)), algorithm(algorithm)
             {
-
             }
-
 
             boost::weak_ptr< L3::Estimator::ParticleFilter<double> > algorithm;
 
             void onDraw3D( glv::GLV& g) 
             {
-
                 boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm_ptr = algorithm.lock();
 
                 if( !algorithm_ptr )
@@ -296,17 +293,83 @@ namespace L3
 
         };
 
+        struct ParticleWeightVisualiser : BasicPlottable
+        {
+            ParticleWeightVisualiser( Updater* updater = NULL )
+            {
+
+            }
+
+
+            void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
+            {
+                while(i()){
+                    double x = i[0];
+                    double y = d.at<double>(0, i[0]);
+                    g.addVertex(x, y);
+                }
+
+            }
+
+            void update()
+            {
+                mData.resize( glv::Data::DOUBLE, 1, 100 );
+
+                glv::Indexer i(mData.size(1));
+
+                while( i() )
+                {
+                    mData.assign( double(rand()%10)/10.0, i[0], i[1] ); 
+                }
+
+            }
+
+        };
+
+        struct ParticleWeightOverview : glv::Table
+        {
+            ParticleWeightOverview( Updater* updater = NULL ) : glv::Table( "x," )
+            {
+                plottables.push_back( boost::make_shared< ParticleWeightVisualiser >() );
+                boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottables[0]) );
+                
+                plot->disable( glv::Controllable );
+                plot->showNumbering(true);
+                plot->numbering(false,0);
+                plot->range( 0, 100, 0 );
+                plot->range( 0, 1.1, 1 );
+
+                *this << *plot;
+                plots.push_back( plot );
+   
+                plottables.push_back( boost::make_shared< ParticleWeightVisualiser >() );
+                plottables.push_back( boost::make_shared< ParticleWeightVisualiser >() );
+                
+                this->fit();
+                this->arrange();
+            }
+
+            std::vector< boost::shared_ptr< glv::Plot > > plots;
+            std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
+        };
+
         /*
          *  Particle Filter
          */
-        ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm )  
+        ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater  )  
         {
+      
+            // Weight visualiser
+            boost::shared_ptr< glv::View > weight_visualiser = boost::make_shared< ParticleWeightOverview >( updater );
+            *this << *weight_visualiser;
 
+            // Overhead visualiser
             boost::shared_ptr< ParticleVisualiser > visualiser = boost::make_shared< ParticleVisualiser >( algorithm );
-
             views.push_back( boost::dynamic_pointer_cast< glv::View >( visualiser ) );
-
             *this << *visualiser;
+ 
+            this->fit();
+            this->arrange();
         }
 
     }

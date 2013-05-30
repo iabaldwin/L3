@@ -1132,18 +1132,6 @@ namespace Visualisers
 
     };
 
-    struct BasicPlot : glv::Plot
-    {
-
-        BasicPlot( BasicPlottable* plottable )
-        {
-
-
-        }
-
-    };
-
-
     /*
      *  Statistics 
      */
@@ -1178,12 +1166,12 @@ namespace Visualisers
 
             plot_data.push_back( lock->t );
 
-            glv::Indexer i(mData.size(1));
-
             if ( plot_data.size() > 100 )
                 plot_data.pop_front();
 
             mData.resize( glv::Data::DOUBLE, 1, plot_data.size() );
+            
+            glv::Indexer i(mData.size(1));
             
             int counter = 0;
 

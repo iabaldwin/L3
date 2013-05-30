@@ -487,7 +487,7 @@ namespace L3
              *  Table based algorithm renderer
              */
 
-            algorithm_renderer = AlgorithmRendererFactory::Produce( runner->algorithm );
+            algorithm_renderer = AlgorithmRendererFactory::Produce( runner->algorithm, temporal_updater.get() );
 
             if (algorithm_renderer)
             {
@@ -495,11 +495,7 @@ namespace L3
                 std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), algorithm_renderer );
 
                 if ( it != tables.end() )
-                {
-                    //(*it)->remove();
                     tables.erase( it );
-                }
-
                 else
                 {
                     tables.push_back( algorithm_renderer );
@@ -521,6 +517,8 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
             particle_filter_renderer.reset( new ParticleFilterRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
+
+        
         }
     }
 }
