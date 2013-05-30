@@ -36,18 +36,16 @@ struct PoseChainRenderer : Leaf
  *  Iterator renderer
  */
 template <typename T>
-//struct IteratorRenderer : LabelledLeaf
-//struct IteratorRenderer : Leaf
 struct IteratorRenderer : SelectableLeaf
 {
     IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator ) 
         : SelectableLeaf( 10,10,10 ),
-            iterator(iterator )
+        iterator(iterator )
     {
     }
 
     boost::weak_ptr< L3::Iterator<T> > iterator;
-   
+
     void onDraw3D( glv::GLV& g );
 };
 

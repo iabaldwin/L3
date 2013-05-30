@@ -30,7 +30,7 @@ namespace Estimator
         struct ParticleFilter : Filter<T>, Algorithm<T>, L3::TemporalObserver
     {
 
-        ParticleFilter(  CostFunction<T>* cost_function,  boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, int num_particles = 400 ) 
+        ParticleFilter(  CostFunction<T>* cost_function,  boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, int num_particles = 500 ) 
             : Filter<T>(iterator), 
             Algorithm<T>(cost_function), 
             previous_time(0.0), 

@@ -1285,20 +1285,43 @@ namespace Visualisers
 
         std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
 
+        GLfloat ctrlpoints[ptr->sections.size()][3];
+        
         int counter =0;
 
         glv::draw::pointSize( 3 );
         while( it != ptr->sections.end() )
         {
-        experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
-        experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
-        it++;
-        }
+            experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
+            experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
+            
+            ctrlpoints[counter][0]= it->x-x_offset;
+            ctrlpoints[counter][1]= it->y-y_offset;
+            ctrlpoints[counter][2]= 0.0;
 
-        glv::draw::pointSize( 1 );
-        //glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
-        glv::draw::lineWidth( 1 );
-        glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
+            it++;
+        }
+       
+        
+        glv::draw::push();
+        glv::draw::pointSize( 3 );
+        
+        glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, ptr->sections.size(), &ctrlpoints[0][0]);
+        
+        glEnable(GL_MAP1_VERTEX_3);
+        glBegin(GL_LINE_STRIP);
+        glColor3f(1.0, 0.0, 0.0);
+        for (int i = 0; i <= 100; i++) 
+            glEvalCoord1f((GLfloat) i/100 );
+        glEnd();
+        glDisable(GL_MAP2_VERTEX_3);
+        
+        glv::draw::pop();
+
+        //glv::draw::pointSize( 1 );
+        ////glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
+        //glv::draw::lineWidth( 1 );
+        //glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
 
         glv::draw::pop();
     }

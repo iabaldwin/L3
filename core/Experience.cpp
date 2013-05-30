@@ -300,14 +300,14 @@ namespace L3
         /*
          *Minimization
          */
-        //densities.push_back( .9 );
-        //densities.push_back( 1.1 );
-        //densities.push_back( 1.5 );
-
-
-        densities.push_back( .5 );
-        densities.push_back( 1 );
+        densities.push_back( .9 );
+        densities.push_back( 1.1 );
         densities.push_back( 1.5 );
+
+
+        //densities.push_back( .5 );
+        //densities.push_back( 1 );
+        //densities.push_back( 1.5 );
 
 
 
