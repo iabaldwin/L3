@@ -31,7 +31,8 @@ find_package( GSL REQUIRED )                                    # Math,statistic
 include_directories( ${GSL_INCLUDE_DIRS} )
 
 #PCL
-include_directories( "/Users/ian/code/build/include/pcl-1.5/" )
+#include_directories( "/Users/ian/code/build/include/pcl-1.5/" )
+include_directories( "/Users/ian/code/build/include/pcl-1.6/" )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )

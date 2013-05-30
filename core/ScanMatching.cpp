@@ -1,5 +1,7 @@
 #include "ScanMatching.h"
 
+#include "ICP/icpPointToPlane.h"
+
 int do_projection( const L3::LMS151& current_scan, double* matrix, double threshold = 5.0 )
 {
     double* matrix_ptr = matrix;
@@ -51,20 +53,20 @@ namespace ScanMatching
         /*
          *  Scan
          */
-        cloud_in->width    = scan_points;
-        cloud_in->height   = 1;
-        cloud_in->is_dense = false;
+        //cloud_in->width    = scan_points;
+        //cloud_in->height   = 1;
+        //cloud_in->is_dense = false;
 
-        cloud_in->points.resize (cloud_in->width * cloud_in->height);
+        //cloud_in->points.resize (cloud_in->width * cloud_in->height);
 
-        double* cloud_ptr = scan.get();
+        //double* cloud_ptr = scan.get();
 
-        for( int i=0; i< scan_points; i++ )
-        {
-            cloud_in->points[i].x = *cloud_ptr++;
-            cloud_in->points[i].y = *cloud_ptr++;
-            cloud_in->points[i].z = *cloud_ptr++;
-        }
+        //for( int i=0; i< scan_points; i++ )
+        //{
+            //cloud_in->points[i].x = *cloud_ptr++;
+            //cloud_in->points[i].y = *cloud_ptr++;
+            //cloud_in->points[i].z = *cloud_ptr++;
+        //}
 
         /*
          *  Putative
@@ -72,48 +74,58 @@ namespace ScanMatching
         putative.reset( new double[541*3] );
         putative_points  = do_projection( (*current_scan.second), putative.get() );
 
-        cloud_out->width    = putative_points;
-        cloud_out->height   = 1;
-        cloud_out->is_dense = false;
+        //cloud_out->width    = putative_points;
+        //cloud_out->height   = 1;
+        //cloud_out->is_dense = false;
 
-        cloud_out->points.resize (cloud_out->width * cloud_out->height);
+        //cloud_out->points.resize (cloud_out->width * cloud_out->height);
 
-        cloud_ptr = putative.get();
+        //cloud_ptr = putative.get();
 
-        for( int i=0; i< putative_points; i++ )
-        {
-            cloud_out->points[i].x = *cloud_ptr++;
-            cloud_out->points[i].y = *cloud_ptr++;
-            cloud_out->points[i].z = *cloud_ptr++;
-        }
+        //for( int i=0; i< putative_points; i++ )
+        //{
+            //cloud_out->points[i].x = *cloud_ptr++;
+            //cloud_out->points[i].y = *cloud_ptr++;
+            //cloud_out->points[i].z = *cloud_ptr++;
+        //}
 
-            
-        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+        //pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ>* icp = new pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ>();
 
-        icp.setMaxCorrespondenceDistance (0.05);
-        // Set the maximum number of iterations (criterion 1)
-        icp.setMaximumIterations (50);
-        // Set the transformation epsilon (criterion 2)
-        icp.setTransformationEpsilon (1e-8);
-        // Set the euclidean distance difference epsilon (criterion 3)
-        icp.setEuclideanFitnessEpsilon (1);
+        //icp->setMaxCorrespondenceDistance (0.05);
+        //// Set the maximum number of iterations (criterion 1)
+        //icp->setMaximumIterations (50);
+        //// Set the transformation epsilon (criterion 2)
+        //icp->setTransformationEpsilon (1e-8);
+        //// Set the euclidean distance difference epsilon (criterion 3)
+        //icp->setEuclideanFitnessEpsilon (1);
 
-        icp.setInputCloud(cloud_in);
-        icp.setInputTarget(cloud_out);
-        pcl::PointCloud<pcl::PointXYZ> Final;
+        //icp->setInputCloud(cloud_in);
+        //icp->setInputTarget(cloud_out);
 
-        // Alignment
-        icp.align(Final);
+        //// Alignment
+        //pcl::PointCloud<pcl::PointXYZ>* final = new pcl::PointCloud<pcl::PointXYZ>();
+         
+        //icp->align(*final);
 
-        transformation = icp.getFinalTransformation();
+        //delete final;
+        //delete icp;
 
         //// Compute instantaneous velocity
         //instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
 
+
+        //Matrix R = Matrix::eye(3);
+        //Matrix t(3,1);
+
+        //// run point-to-plane ICP (-1 = no outlier threshold)
+        //IcpPointToPlane icp( scan.get(),scan_points,3);
+        //icp.fit(putative.get(),putative_points,R,t,-1);
+
+ 
         // Do swap
         scan.swap( putative );
         scan_points = putative_points;
-        
+       
         previous_time = current_scan.first;
 
         return true;
