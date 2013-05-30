@@ -1111,7 +1111,7 @@ namespace Visualisers
 
     };
 
-    struct BasicPlottable : glv::Plottable, Lockable, Updateable
+    struct BasicPlottable :  Updateable, glv::Plottable, Lockable
     {
 
         BasicPlottable() : glv::Plottable( glv::draw::LineStrip, 1 )

@@ -295,11 +295,6 @@ namespace L3
 
         struct ParticleWeightVisualiser : BasicPlottable
         {
-            ParticleWeightVisualiser( Updater* updater = NULL )
-            {
-
-            }
-
 
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {
@@ -314,6 +309,8 @@ namespace L3
             void update()
             {
                 mData.resize( glv::Data::DOUBLE, 1, 100 );
+
+                std::cout << "HI" << std::endl;
 
                 glv::Indexer i(mData.size(1));
 
@@ -330,8 +327,12 @@ namespace L3
         {
             ParticleWeightOverview( Updater* updater = NULL ) : glv::Table( "x," )
             {
-                plottables.push_back( boost::make_shared< ParticleWeightVisualiser >() );
+                boost::shared_ptr< ParticleWeightVisualiser > plottable = boost::make_shared< ParticleWeightVisualiser >();
+                plottables.push_back( plottable );
+                
                 boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottables[0]) );
+                *this << *plot;
+                plots.push_back( plot );
                 
                 plot->disable( glv::Controllable );
                 plot->showNumbering(true);
@@ -339,11 +340,8 @@ namespace L3
                 plot->range( 0, 100, 0 );
                 plot->range( 0, 1.1, 1 );
 
-                *this << *plot;
-                plots.push_back( plot );
-   
-                plottables.push_back( boost::make_shared< ParticleWeightVisualiser >() );
-                plottables.push_back( boost::make_shared< ParticleWeightVisualiser >() );
+                //if( updater )
+                    //updater->operator<<( plottable.get() );
                 
                 this->fit();
                 this->arrange();
@@ -358,15 +356,14 @@ namespace L3
          */
         ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater  )  
         {
-      
             // Weight visualiser
             boost::shared_ptr< glv::View > weight_visualiser = boost::make_shared< ParticleWeightOverview >( updater );
             *this << *weight_visualiser;
 
             // Overhead visualiser
-            boost::shared_ptr< ParticleVisualiser > visualiser = boost::make_shared< ParticleVisualiser >( algorithm );
-            views.push_back( boost::dynamic_pointer_cast< glv::View >( visualiser ) );
-            *this << *visualiser;
+            //boost::shared_ptr< ParticleVisualiser > visualiser = boost::make_shared< ParticleVisualiser >( algorithm );
+            //views.push_back( boost::dynamic_pointer_cast< glv::View >( visualiser ) );
+            //*this << *visualiser;
  
             this->fit();
             this->arrange();
