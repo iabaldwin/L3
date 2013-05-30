@@ -1226,6 +1226,18 @@ namespace Visualisers
 
     };
 
+    struct ParticleFilterRendererLeaf : Leaf
+    {
+
+        ParticleFilterRendererLeaf( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter ) : filter(filter)
+        {
+        }
+        
+        boost::weak_ptr< L3::Estimator::ParticleFilter<double> > filter;
+   
+        void onDraw3D( glv::GLV& g );
+    };
+
     /*
      *  Chase
      */

@@ -204,7 +204,10 @@ namespace L3
 
             *visualisation_controls << *point_cloud_visualiser_toggle << *point_cloud_bounds_toggle << *iterator_renderer_toggle << *experience_voxel_toggle << *experience_bounds_toggle;
             visualisation_controls->enable( glv::DrawBorder );
-            
+          
+            // Default values
+            iterator_renderer_toggle->setValue( true ); 
+
             widgets.push_back( point_cloud_visualiser_toggle );
             widgets.push_back( point_cloud_bounds_toggle);
             widgets.push_back( iterator_renderer_toggle );
@@ -431,6 +434,7 @@ namespace L3
             /*
              *  Current algorithm renderer
              */
+
         }
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -514,6 +518,9 @@ namespace L3
                     //tables.erase( it );
             //}
 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
+            particle_filter_renderer.reset( new ParticleFilterRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
         }
     }
 }

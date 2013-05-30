@@ -27,13 +27,13 @@ namespace Estimator
 
 
     template <typename T>
-        struct ParticleFilter : Filter<T>, Algorithm<T>
+        struct ParticleFilter : Filter<T>, Algorithm<T>, L3::TemporalObserver
     {
 
-        ParticleFilter(  CostFunction<T>* cost_function,  boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, int num_particles = 1000 ) 
+        ParticleFilter(  CostFunction<T>* cost_function,  boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, int num_particles = 400 ) 
             : Filter<T>(iterator), 
             Algorithm<T>(cost_function), 
-            previous_update(0.0), 
+            previous_time(0.0), 
             pyramid( experience_pyramid ),
             initialised(false),
             num_particles(num_particles)
@@ -52,7 +52,7 @@ namespace Estimator
 
         int num_particles;
 
-        double previous_update;
+        double previous_time, current_time;
 
         tbb::task_group group;
 
@@ -71,6 +71,7 @@ namespace Estimator
 
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
+        bool update( double time);
     };
 
 

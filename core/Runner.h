@@ -171,6 +171,12 @@ struct EstimatorRunner : DatasetRunner
     EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
     {
         this->algorithm = algorithm;
+       
+        // Is it updateable
+      
+        if( L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) )
+            (*this) << observer;
+
         return *this;
     }
 };

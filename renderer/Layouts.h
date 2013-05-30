@@ -306,6 +306,7 @@ namespace Visualisers
 
             boost::shared_ptr< AlgorithmVisualiser > algorithm_renderer;
     
+            boost::shared_ptr< ParticleFilterRendererLeaf> particle_filter_renderer; 
     };
 
 } 

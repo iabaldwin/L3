@@ -39,7 +39,7 @@ namespace L3
         oracle.reset( new L3::ConstantTimeWindower< L3::SE3 >( pose_iterator.get() ) );
 
         // Scan matching engine
-        engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
+        //engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
        
         // Predictor
         predictor.reset( new L3::Predictor( LHLV_iterator.get() ) );

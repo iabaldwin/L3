@@ -36,20 +36,26 @@ namespace L3
                 return estimate;
             }
 
+            L3::WriteLock master( this->mutex );
+
             // Find the new data, between the last update time and now
+            // Do we need to lock this?
             L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( constant_time_iterator->window.begin(), 
                     constant_time_iterator->window.end(), 
-                    previous_update,
+                    previous_time,
                     comparator );
-        
+     
             VELOCITY_WINDOW _window_delta_buffer;
 
             // Add in the newly-seen data
             _window_delta_buffer.assign( index, constant_time_iterator->window.end() );
 
+            if ( _window_delta_buffer.empty() )
+                return estimate;
+            
             double mean_linear_velocity = 0.0;
             double mean_rotational_velocity = 0.0;
-
+            
             // Calculate average rotational and linear velocity
             for( VELOCITY_WINDOW_ITERATOR it = _window_delta_buffer.begin();
                     it!= _window_delta_buffer.end();
@@ -63,8 +69,6 @@ namespace L3
             mean_linear_velocity /= _window_delta_buffer.size();
             mean_rotational_velocity /= _window_delta_buffer.size();
 
-            double dt = 0.1;
-
             std::vector<double> results( this->num_particles ); 
             std::vector<double>::iterator result_iterator = results.begin();
 
@@ -76,19 +80,27 @@ namespace L3
            
             double q, x_vel, y_vel, velocity_delta, x, y;
             
-            boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .2 );
+            boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .5 );
             boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .05 );
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
+           
+            double dt = current_time - previous_time;
+                
+            previous_time = current_time;
+
+            if ( dt > 1 )
+                return estimate;
             
+            std::vector< L3::SE3 > delta;
+
             // Apply the constant average velocities to the particles
             for( PARTICLE_ITERATOR it = hypotheses.begin();
                         it != hypotheses.end();
                         it++ )
             {
-
                 q = it->Q() + ((-1*mean_rotational_velocity) + rotational_velocity_uncertainty_generator())*dt;
-              
+            
                 velocity_delta = mean_linear_velocity + linear_velocity_uncertainty_generator() ;
 
                 x_vel = (velocity_delta * sin(q));  
@@ -97,11 +109,13 @@ namespace L3
                 x = it->X() + -1*x_vel*dt;
                 y = it->Y() + y_vel*dt;
 
-                *it = L3::SE3( x, y, 0, 0, 0, q );
+                delta.push_back( L3::SE3( x, y, 0, 0, 0, q ) );
 
                 group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[1].get(), this->cost_function, result_iterator++ ) );
             }
 
+            hypotheses.swap( delta );
+            
             group.wait();
 
             histogram_lock.unlock();
@@ -140,11 +154,19 @@ namespace L3
 
             predicted = predicted/(resampled.size());
 
-            std::cout << predicted << std::endl;
-
             return predicted;
         }
+
+    template <typename T>
+        bool ParticleFilter<T>::update( double time )
+        {
+            current_time = time;
+        }
+     
+
+
     }
 }
 
 template L3::SE3 L3::Estimator::ParticleFilter<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template bool L3::Estimator::ParticleFilter<double>::update(double);
