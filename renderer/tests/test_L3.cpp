@@ -50,8 +50,8 @@ int main( int argc, char* argv[] )
 
     // Estimator
     //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::KLCostFunction<double>();
-    //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::MICostFunction<double>();
-    L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::NMICostFunction<double>();
+    L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::MICostFunction<double>();
+    //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::NMICostFunction<double>();
     //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::RenyiMICostFunction<double>();
     //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::SSDCostFunction<double>();
     

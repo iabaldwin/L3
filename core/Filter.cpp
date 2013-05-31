@@ -3,19 +3,13 @@
 typedef std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > VELOCITY_WINDOW;
 typedef std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > >::iterator VELOCITY_WINDOW_ITERATOR;
 
+
+
 namespace L3
 {
     namespace Estimator
     {
 
-        struct WeightAccumulator : std::binary_function<double,double,double>
-        {
-
-            double operator()( double weight_val, double val )
-            {
-            }
-
-        };
 
     template <typename T>
         SE3 ParticleFilter<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
@@ -175,9 +169,9 @@ namespace L3
 
             // Have to use inner product
             //L3::SE3 predicted = std::accumulate( resampled.begin(), resampled.end(), L3::SE3::ZERO() );
-            //L3::SE3 predicted = std::inner_product( resampled.begin(), resampled.end(), L3::SE3::ZERO() );
-
-            this->current_prediction = predicted/(resampled.size());
+            //this->current_prediction = predicted/(resampled.size()); 
+            
+            this->current_prediction = std::inner_product( resampled.begin(), resampled.end(), weights.begin(), L3::SE3::ZERO() );
 
             return this->current_prediction;
         }
@@ -191,6 +185,49 @@ namespace L3
 
 
     }
+
+    L3::SE3 operator+( const L3::SE3& lhs,  const L3::SE3& rhs )
+    {
+        L3::SE3 retval;
+        retval.X( lhs.X() + rhs.X() );
+        retval.Y( lhs.Y() + rhs.Y() );
+        retval.Z( lhs.Z() + rhs.Z() );
+        retval.R( lhs.R() + rhs.R() );
+        retval.P( lhs.P() + rhs.P() );
+        retval.Q( lhs.Q() + rhs.Q() );
+
+        return retval;
+    }
+
+    L3::SE3 operator/( const L3::SE3& lhs,  const double divisor )
+    {
+        L3::SE3 retval( lhs );
+
+        retval.X( lhs.X()/divisor );
+        retval.Y( lhs.Y()/divisor );
+        retval.Z( lhs.Z()/divisor );
+        retval.R( lhs.R()/divisor );
+        retval.P( lhs.P()/divisor );
+        retval.Q( lhs.Q()/divisor );
+
+        return retval;
+    }
+
+    L3::SE3 operator*( const L3::SE3& lhs,  const double multiplicand )
+    {
+        L3::SE3 retval( lhs );
+
+        retval.X( lhs.X()*multiplicand );
+        retval.Y( lhs.Y()*multiplicand );
+        retval.Z( lhs.Z()*multiplicand );
+        retval.R( lhs.R()*multiplicand );
+        retval.P( lhs.P()*multiplicand );
+        retval.Q( lhs.Q()*multiplicand );
+
+        return retval;
+    }
+
+
 }
 
 template L3::SE3 L3::Estimator::ParticleFilter<double>::operator()(L3::PointCloud<double>*, L3::SE3);

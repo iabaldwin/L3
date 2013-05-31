@@ -7,6 +7,11 @@
 
 namespace L3
 {
+
+L3::SE3 operator/( const L3::SE3& lhs,  const double divisor );
+L3::SE3 operator+( const L3::SE3& lhs,  const L3::SE3& rhs );
+L3::SE3 operator*( const L3::SE3& lhs,  const double divisor );    
+    
 namespace Estimator
 {
 
@@ -27,7 +32,10 @@ namespace Estimator
     template <typename T>
         struct ParticleFilter : Filter<T>, Algorithm<T>, L3::TemporalObserver
     {
-        ParticleFilter( boost::shared_ptr<CostFunction<T> > cost_function,  boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, int num_particles = 100 ) 
+        ParticleFilter( boost::shared_ptr<CostFunction<T> > cost_function,  
+                        boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
+                        boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, 
+                        int num_particles = 300 ) 
             : Filter<T>(iterator), 
                 Algorithm<T>(cost_function), 
                 previous_time(0.0), 
