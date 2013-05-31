@@ -65,20 +65,25 @@ namespace Visualisers
                 rotational_velocity_plotter.reset( new RotationalVelocityPlotter() );
                 rotational_velocity_plotter->stroke( 2.0 );
 
-                boost::shared_ptr< glv::Plot > plot_region( new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *rotational_velocity_plotter ) );
+                boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 0, 650+5, .6*window.width(), 150-5), *rotational_velocity_plotter ) );
 
                 // Scaling
-                plot_region->disable( glv::Controllable );
-                plot_region->range( 0, 1000, 0 );
-                plot_region->range( -1, 1, 1 );
+                plot->disable( glv::Controllable );
+                plot->range( 0, 1000, 0 );
+                plot->range( -1, 1, 1 );
 
-                //plot_region->numbering(true);
-                plot_region->showNumbering(true);
+                
+                plot->showNumbering(true);
+                plot->numbering(true,0);
+                plot->numbering(true,1);
 
-                plots.push_front( plot_region );
+                plot->minor( .05 );
+                plot->major( .1 );
+
+                plots.push_front( plot );
 
                 // Add rendererable
-                this->renderables.push_front( plot_region.get() );
+                this->renderables.push_front( plot.get() );
                 
                 // Mark as updateable
                 temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter.get()) );
@@ -87,7 +92,7 @@ namespace Visualisers
                 velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
                 this->labels.push_front( velocity_label );
 
-                *plot_region << *velocity_label;
+                *plot << *velocity_label;
             }
 
 

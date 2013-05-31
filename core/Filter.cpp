@@ -7,7 +7,16 @@ namespace L3
 {
     namespace Estimator
     {
- 
+
+        struct WeightAccumulator : std::binary_function<double,double,double>
+        {
+
+            double operator()( double weight_val, double val )
+            {
+            }
+
+        };
+
     template <typename T>
         SE3 ParticleFilter<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
         {
@@ -75,7 +84,9 @@ namespace L3
             std::vector<double> results( this->num_particles ); 
             std::vector<double>::iterator result_iterator = results.begin();
 
-            L3::ReadLock histogram_lock( (*this->pyramid)[1]->mutex );
+            int pyramid_index = 0;
+
+            L3::ReadLock histogram_lock( (*this->pyramid)[pyramid_index]->mutex );
             L3::ReadLock swathe_lock( swathe->mutex );
 
             if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
@@ -118,8 +129,7 @@ namespace L3
 
                 delta.push_back( L3::SE3( x, y, 0, 0, 0, q ) );
 
-                //group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[1].get(), this->cost_function, result_iterator++ ) );
-                group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[1].get(), this->cost_function.get(), result_iterator++ ) );
+                group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[pyramid_index].get(), this->cost_function.get(), result_iterator++ ) );
             }
 
             group.wait();
@@ -163,7 +173,9 @@ namespace L3
 
             hypotheses.assign( resampled.begin(), resampled.end() );
 
-            L3::SE3 predicted = std::accumulate( resampled.begin(), resampled.end(), L3::SE3::ZERO() );
+            // Have to use inner product
+            //L3::SE3 predicted = std::accumulate( resampled.begin(), resampled.end(), L3::SE3::ZERO() );
+            //L3::SE3 predicted = std::inner_product( resampled.begin(), resampled.end(), L3::SE3::ZERO() );
 
             this->current_prediction = predicted/(resampled.size());
 
