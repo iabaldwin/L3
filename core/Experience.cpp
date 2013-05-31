@@ -300,14 +300,14 @@ namespace L3
         /*
          *Minimization
          */
-        densities.push_back( .9 );
-        densities.push_back( 1.1 );
-        densities.push_back( 1.5 );
-
-
-        //densities.push_back( .5 );
-        //densities.push_back( 1 );
+        //densities.push_back( .9 );
+        //densities.push_back( 1.1 );
         //densities.push_back( 1.5 );
+
+
+        densities.push_back( .75 );
+        densities.push_back( 1 );
+        densities.push_back( 1.1 );
 
 
 
@@ -338,7 +338,10 @@ namespace L3
 
             std::list<unsigned int> required_sections;
             if ( !policy->operator()( &sections, _x, _y, required_sections, window ) )  // Catastrophe
+            {
+                std::cerr << "Unable to apply selection policy, cannot continue..." << std::endl;
                 exit(-1);
+            }
 
             /*
              *  Mark everything as *NOT* required

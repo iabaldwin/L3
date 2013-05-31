@@ -14,7 +14,10 @@ namespace L3
             boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > constant_time_iterator = this->iterator.lock();
 
             if( !constant_time_iterator  )
+            {
+                std::cerr << "No velocity window, cannot continue..." << std::endl;
                 exit(-1);
+            }
 
             if ( !initialised && !(estimate == L3::SE3::ZERO() ) )
             {
@@ -75,16 +78,16 @@ namespace L3
             L3::ReadLock histogram_lock( (*this->pyramid)[1]->mutex );
             L3::ReadLock swathe_lock( swathe->mutex );
 
-            if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )
-                return estimate;
-           
+            if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
+                return estimate;    // Point cloud is empty
+
             double q, x_vel, y_vel, velocity_delta, x, y;
             
             //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .5 );
             //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .05 );
             
-            boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
-            boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .1 );
+            boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .5 );
+            boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .05 );
             
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
@@ -115,25 +118,31 @@ namespace L3
 
                 delta.push_back( L3::SE3( x, y, 0, 0, 0, q ) );
 
-                group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[1].get(), this->cost_function, result_iterator++ ) );
+                //group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[1].get(), this->cost_function, result_iterator++ ) );
+                group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[1].get(), this->cost_function.get(), result_iterator++ ) );
             }
 
-            hypotheses.swap( delta );
-            
             group.wait();
-
+            
             histogram_lock.unlock();
             swathe_lock.unlock();
-
-            weights.assign( results.begin(), results.end() );
+            
+            hypotheses.swap( delta );
+        
+            std::vector< double > _weights;
+            _weights.assign( results.begin(), results.end() );
             
             double sum = std::accumulate( results.begin(), results.end(), 0.0 );
 
             if ( std::isnan(sum) )
-                return estimate;
+            {
+                std::cerr << "NAN" << std::endl;
+                exit(-1);
+            }
 
             // Normalize
-            std::transform( weights.begin(), weights.end(), weights.begin(), std::bind2nd( std::divides<double>(), sum ) );
+            weights.resize( _weights.size() );
+            std::transform( _weights.begin(), _weights.end(), weights.begin(), std::bind2nd( std::divides<double>(), sum ) );
 
             // Build CDF 
             std::vector< double > cdf( weights.size() );
@@ -156,9 +165,9 @@ namespace L3
 
             L3::SE3 predicted = std::accumulate( resampled.begin(), resampled.end(), L3::SE3::ZERO() );
 
-            predicted = predicted/(resampled.size());
+            this->current_prediction = predicted/(resampled.size());
 
-            return predicted;
+            return this->current_prediction;
         }
 
     template <typename T>

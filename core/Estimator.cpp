@@ -248,11 +248,7 @@ namespace L3
 
                 return retval;
 
-                //return -1*calculateRenyiMIDivergence( 0.05, experience.hist->bin, swathe.hist->bin, size);
             }
-
-
-
 
         /*
          *  Hypothesis Builder
@@ -282,15 +278,6 @@ namespace L3
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
 
-                /*
-                 *  Smoothing
-                 */
-                //L3::BoxSmoother< double, 3> smoother;
-                L3::GaussianSmoother< double > smoother;
-                //L3::LogisticSmoother< double> smoother;
-                //smoother.smooth( swathe_histogram.get() );
-                //smoother.smooth( &swathe_histogram );
-
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
 
@@ -312,51 +299,22 @@ namespace L3
                 if (swathe->num_points == 0 ) 
                     return false;
 
-                /*
-                 *  Speed considerations
-                 */
+                //  Speed considerations
                 L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false );
 
+                // Allocate results
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
+                // Pointer to beginning
                 std::vector< L3::SE3 >::iterator it = this->pose_estimates->estimates.begin();
 
-                static int counter = 0;
-
-                if ( counter++ == -1 )
+                while( it != this->pose_estimates->estimates.end() )
                 {
-                    int swathe_counter = 0;
-                    while( it != this->pose_estimates->estimates.end() )
-                    {
-                        Hypothesis h( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ );
-                        h();
-
-                        std::stringstream ss;
-
-                        ss << "clouds/cloud_" << swathe_counter++ << ".dat";
-
-                        std::ofstream stream( ss.str().c_str() );
-                        stream << *(h.hypothesis );
-                        stream.close();
-
-                        stream.open( "experience.hist" );
-                        stream << *(this->experience_histogram);
-                        stream.close();
-
-                        it++;
-
-                    }
+                    group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
+                    it++;
                 }
-                else
-                {
-                    while( it != this->pose_estimates->estimates.end() )
-                    {
-                        group.run( Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                        it++;
-                    }
 
-                    // Synch
-                    group.wait();
-                }
+                // Synch
+                group.wait();
                 return true;
             }
 
@@ -367,21 +325,24 @@ namespace L3
 
                 GridWeighting weighting(estimate);
 
+                discrete_estimators[0]->cost_function = this->cost_function.get();
                 discrete_estimators[0]->operator()( swathe, estimate );
                 std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
                 SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
+                discrete_estimators[1]->cost_function = this->cost_function.get();
                 discrete_estimators[1]->operator()( swathe, refined );
                 it = std::min_element( discrete_estimators[1]->pose_estimates->costs.begin() , discrete_estimators[1]->pose_estimates->costs.end() );
                 refined = discrete_estimators[1]->pose_estimates->estimates[ std::distance( discrete_estimators[1]->pose_estimates->costs.begin(), it )] ;
 
+                discrete_estimators[2]->cost_function = this->cost_function.get();
                 discrete_estimators[2]->operator()( swathe, refined );
                 it = std::min_element( discrete_estimators[2]->pose_estimates->costs.begin() , discrete_estimators[2]->pose_estimates->costs.end() );
                 refined = discrete_estimators[2]->pose_estimates->estimates[ std::distance( discrete_estimators[2]->pose_estimates->costs.begin(), it )] ;
 
+                discrete_estimators[3]->cost_function = this->cost_function.get();
                 discrete_estimators[3]->operator()( swathe, refined );
                 it = std::min_element( discrete_estimators[3]->pose_estimates->costs.begin() , discrete_estimators[3]->pose_estimates->costs.end() );
-                //weighting( discrete_estimators[3]->pose_estimates.get() );
                 refined = discrete_estimators[3]->pose_estimates->estimates[ std::distance( discrete_estimators[3]->pose_estimates->costs.begin(), it )] ;
 
                 //discrete_estimators[4]->operator()( swathe, refined );
@@ -414,8 +375,7 @@ namespace L3
 
                 std::vector< double > costs(1);
 
-                //Hypothesis( this->sampled_swathe.get(), &*it, this->experience_histogram.get() , this->cost_function, result_iterator++ ) );
-                Hypothesis h( swathe, &estimate, (*pyramid)[1].get() , this->algorithm->cost_function, costs.begin() );
+                Hypothesis h( swathe, &estimate, (*pyramid)[1].get() , this->algorithm->cost_function.get(), costs.begin() );
                 h();
 
                 //if( h.swathe_histogram->empty() )
@@ -451,6 +411,8 @@ namespace L3
                 L3::WriteLock   master( this->mutex );
                 L3::ReadLock    swathe_lock( swathe->mutex );               
                 L3::ReadLock    histogram_lock( (*this->pyramid)[1]->mutex );
+
+                _cost_function = this->cost_function.get();
 
                 current_swathe = swathe;
 
@@ -506,7 +468,8 @@ namespace L3
 
             evaluations.push_back( pose_estimate );
 
-            Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[1].get() , this->cost_function, cost.begin() )();
+            //Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[1].get() , this->cost_function.get(), cost.begin() )();
+            Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[1].get() , this->_cost_function, cost.begin() )();
 
             return cost[0];
         }

@@ -6,8 +6,6 @@
 #include <sstream>
 #include <iterator>
 
-#include <boost/shared_ptr.hpp>
-
 #include "Datatypes.h"
 #include "AbstractFactory.h"
 

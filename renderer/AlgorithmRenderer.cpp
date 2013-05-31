@@ -142,12 +142,11 @@ namespace L3
             }
                 
 
-            //glv::draw::enable( glv::draw::Blend );
+            glv::draw::enable( glv::draw::Blend );
             glv::draw::paint( glv::draw::Points, vertices, colors, ptr->pose_estimates->estimates.size() );
-            //glv::draw::disable( glv::draw::Blend );
+            glv::draw::disable( glv::draw::Blend );
 
         }
-    
     
         /*
          *  Rotation
@@ -186,7 +185,6 @@ namespace L3
 
 
                 mData.assign( estimates[counter].Q()-mean, 0, counter );
-                //mData.assign( costs[counter], 1, counter); 
                 mData.assign( z_val, 1, counter); 
                
                 counter++;
@@ -281,23 +279,31 @@ namespace L3
                 std::vector< L3::SE3 > hypotheses( algorithm_ptr->hypotheses.begin(), algorithm_ptr->hypotheses.end() );
                 lock.unlock();
 
-                L3::SE3 first_particle = hypotheses.front();
-                glv::draw::translate( -1*first_particle.X(), -1*first_particle.Y(), -30.0 );
+                //L3::SE3 first_particle = hypotheses.front();
+                L3::SE3 translation = algorithm_ptr->current_prediction;;
+                glv::draw::translate( -1*translation.X(), -1*translation.Y(), -10.0 );
+
+                int counter = 0;
+                glv::Point3 vertices[ hypotheses.size() ];
+                glv::Color  colors[ hypotheses.size() ];
 
                 for( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();
                         it != hypotheses.end();
                         it++ )
-                    CoordinateSystem( *it, .1 ).onDraw3D(g);
-
+                {
+                    vertices[counter++]( it->X(), it->Y(), 0.0 );
+                }
+           
+                glv::draw::paint( glv::draw::Points, vertices, colors, counter );
             }
 
         };
 
         struct ParticleWeightVisualiser : BasicPlottable
         {
-
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {
+                L3::ReadLock lock(this->mutex);
                 while(i()){
                     double x = i[0];
                     double y = d.at<double>(0, i[0]);
@@ -306,49 +312,143 @@ namespace L3
 
             }
 
+            std::vector< double > weights;
+            std::vector< double > hypotheses;
+
             void update()
             {
-                mData.resize( glv::Data::DOUBLE, 1, 100 );
-
-                std::cout << "HI" << std::endl;
+                std::vector< double >  _weights( weights.begin(), weights.end() );
+                std::vector< double > _hypotheses( hypotheses.begin(), hypotheses.end() );
+                
+                L3::WriteLock lock(this->mutex);
+              
+                mData.resize( glv::Data::DOUBLE, 2, _weights.size() );
 
                 glv::Indexer i(mData.size(1));
 
+                int counter = 0;
+
                 while( i() )
                 {
-                    mData.assign( double(rand()%10)/10.0, i[0], i[1] ); 
+                    mData.assign( _hypotheses[counter], 0, counter );
+                    mData.assign( _weights[counter], 1, counter );
+                    counter++;
                 }
-
             }
-
         };
 
-        struct ParticleWeightOverview : glv::Table
+        struct ParticleWeightOverview : Updateable, glv::Table
         {
-            ParticleWeightOverview( Updater* updater = NULL ) : glv::Table( "x," )
+            ParticleWeightOverview( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater = NULL ) : glv::Table( "x," ), algorithm(algorithm)
             {
-                boost::shared_ptr< ParticleWeightVisualiser > plottable = boost::make_shared< ParticleWeightVisualiser >();
-                plottables.push_back( plottable );
-                
-                boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottables[0]) );
-                *this << *plot;
-                plots.push_back( plot );
-                
-                plot->disable( glv::Controllable );
-                plot->showNumbering(true);
-                plot->numbering(false,0);
-                plot->range( 0, 100, 0 );
-                plot->range( 0, 1.1, 1 );
+                {
+                    // X
+                    x_weight = boost::make_shared< ParticleWeightVisualiser >();
 
-                //if( updater )
-                    //updater->operator<<( plottable.get() );
-                
+                    boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *x_weight ) );
+                    *this << *plot;
+                    
+                    plots.push_back( plot );
+                    
+                    plot->disable( glv::Controllable );
+                    //plot->showNumbering(true);
+                    //plot->numbering(false,1);
+                    
+                    plot->range( -5, 5, 0 );
+                    
+                    //plot->range( 0, 100, 0 );
+                    //plot->range( 0, 2, 1 );
+            
+
+                }
+
+                {
+                    // Y
+                    y_weight = boost::make_shared< ParticleWeightVisualiser >( );
+
+                    boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *y_weight ) );
+                    *this << *plot;
+                    
+                    plots.push_back( plot );
+                    
+                    plot->disable( glv::Controllable );
+                    plot->showNumbering(true);
+                    plot->numbering(false,1);
+
+                    plot->range( -5, 5, 0 );
+                    //plot->range( 0, 100, 0 );
+                    //plot->range( 0, 2, 0 );
+            
+
+                }
+
+                {
+                    // Z
+                    theta_weight = boost::make_shared< ParticleWeightVisualiser >();
+
+                    boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *theta_weight ) );
+                    *this << *plot;
+                    
+                    plots.push_back( plot );
+
+                    plot->disable( glv::Controllable );
+                    plot->showNumbering(true);
+                    plot->numbering(false,1);
+ 
+                    plot->range( -5, 5, 0 );
+                    //plot->range( 0, 100, 0 );
+                    //plot->range( 0, .5, 0 );
+                              
+                }
+
                 this->fit();
                 this->arrange();
             }
 
+
             std::vector< boost::shared_ptr< glv::Plot > > plots;
-            std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
+            boost::shared_ptr< ParticleWeightVisualiser > x_weight, y_weight, theta_weight;
+            boost::weak_ptr< L3::Estimator::ParticleFilter<double> > algorithm;
+       
+            void update()
+            {
+                boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm_ptr = algorithm.lock();
+
+                if( !algorithm_ptr )
+                    return;
+
+                L3::ReadLock master( algorithm_ptr->mutex );
+                std::vector<double> weights( algorithm_ptr->weights.begin(), algorithm_ptr->weights.end() );
+                std::vector<L3::SE3> hypotheses( algorithm_ptr->hypotheses.begin(), algorithm_ptr->hypotheses.end() );
+                L3::SE3 current_prediction = algorithm_ptr->current_prediction;
+                master.unlock();
+           
+                x_weight->weights = weights;
+                x_weight->hypotheses.resize( weights.size() ); 
+                
+                y_weight->weights = weights;
+                y_weight->hypotheses.resize( weights.size() ); 
+               
+                theta_weight->weights = weights;
+                theta_weight->hypotheses.resize( weights.size() ); 
+
+                int counter = 0;
+                for( std::vector<L3::SE3>::iterator it = hypotheses.begin();
+                        it != hypotheses.end();
+                        it++) 
+                {
+                    x_weight->hypotheses[counter]=it->X()-current_prediction.X();
+                    y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
+                    theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
+               
+                    counter++;
+                }
+                x_weight->update();
+                y_weight->update();
+                theta_weight->update();
+
+            }
+        
         };
 
         /*
@@ -357,8 +457,13 @@ namespace L3
         ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater  )  
         {
             // Weight visualiser
-            boost::shared_ptr< glv::View > weight_visualiser = boost::make_shared< ParticleWeightOverview >( updater );
+            boost::shared_ptr< glv::View > weight_visualiser = boost::make_shared< ParticleWeightOverview >( algorithm, updater );
             *this << *weight_visualiser;
+
+            if( updater )
+                updater->operator<<( (boost::dynamic_pointer_cast< Updateable >(weight_visualiser)).get() );
+
+            views.push_back( weight_visualiser );
 
             // Overhead visualiser
             //boost::shared_ptr< ParticleVisualiser > visualiser = boost::make_shared< ParticleVisualiser >( algorithm );

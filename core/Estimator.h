@@ -189,7 +189,7 @@ namespace Estimator
         Hypothesis( L3::PointCloud<double> const * swathe, 
                 L3::SE3 const* estimate, 
                 L3::Histogram<double> const* experience , 
-                CostFunction<double> * cost_function, 
+                CostFunction<double>* cost_function, 
                 __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
             : swathe(swathe), 
             estimate(estimate), 
@@ -223,21 +223,22 @@ namespace Estimator
     template < typename T >
         struct Estimator : Lockable
         {
-            Estimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<double> > experience ) 
-                : cost_function(f), 
-                     experience_histogram(experience)
+            Estimator( boost::shared_ptr< L3::Histogram<double> > experience ) 
+                : experience_histogram(experience)
             {
                 // Allocations
                 swathe_histogram.reset( new L3::HistogramUniformDistance<double>() );
                 current_swathe.reset( new L3::PointCloud<double>() );
                 current_histogram.reset( new L3::Histogram<double>() );
-                
+               
+                // Allocate space for a sampled swathe
                 sampled_swathe.reset( new PointCloud<T>() );
                 L3::allocate( sampled_swathe.get(), 4*1000 );
             }
+            
+            CostFunction<T> *    cost_function;
 
-            CostFunction<T>*                        cost_function;
-            boost::shared_ptr<PoseEstimates>        pose_estimates;
+            boost::shared_ptr< PoseEstimates >      pose_estimates;
             boost::shared_ptr<L3::Histogram<T> >    swathe_histogram;
             boost::shared_ptr<L3::Histogram<T> >    current_histogram;
             boost::shared_ptr<L3::Histogram<T> >    experience_histogram;
@@ -257,16 +258,14 @@ namespace Estimator
     template < typename T >
         struct DiscreteEstimator : Estimator<T>
         {
-            DiscreteEstimator( CostFunction<T>* f, boost::shared_ptr< L3::Histogram<T> > experience, boost::shared_ptr< PoseEstimates > estimates )
-                : Estimator<T>(f, experience)
+            DiscreteEstimator( boost::shared_ptr< L3::Histogram<T> > experience, boost::shared_ptr< PoseEstimates > estimates )
+                : Estimator<T>(experience)
             {
                 this->pose_estimates = estimates;
             }
             
             tbb::task_group group;
             
-            void dump(){};
-
             bool operator()( PointCloud<T>* swathe, SE3 estimate );
 
         };
@@ -274,12 +273,12 @@ namespace Estimator
     template < typename T>
         struct Algorithm : Lockable
         {
-            Algorithm( CostFunction<T>* cost_function ) : cost_function(cost_function)
+            Algorithm( boost::shared_ptr< CostFunction<T> > cost_function ) : cost_function(cost_function)
             {
 
             }
 
-            CostFunction<T>* cost_function;
+            boost::shared_ptr< CostFunction<T> > cost_function;
 
             virtual SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
         };
@@ -316,7 +315,7 @@ namespace Estimator
     template < typename T>
         struct IterativeDescent : Algorithm<T>
         {
-            IterativeDescent( CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) 
+            IterativeDescent( boost::shared_ptr< CostFunction<T> > cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) 
                 : Algorithm<T>(cost_function), pyramid(experience_pyramid)
             {
 
@@ -331,13 +330,13 @@ namespace Estimator
                            
                     // Grid 
                     discrete_estimators.push_back( 
-                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< GridEstimates >( range, range, granularity) )
+                            boost::make_shared< DiscreteEstimator<T> >( *it, boost::make_shared< GridEstimates >( range, range, granularity) )
                             );
 
 
                     // Rotation
                     discrete_estimators.push_back( 
-                            boost::make_shared< DiscreteEstimator<T> >( cost_function, *it, boost::make_shared< RotationEstimates >() )
+                            boost::make_shared< DiscreteEstimator<T> >( *it, boost::make_shared< RotationEstimates >() )
                             );
 
 
@@ -368,7 +367,7 @@ namespace Estimator
     template <typename T>
         struct Minimisation : Algorithm<T>
         {
-            Minimisation(CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, int max_iterations = 100, double tolerance = 0.1 ) 
+            Minimisation( boost::shared_ptr< CostFunction<T> > cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, int max_iterations = 100, double tolerance = 0.1 ) 
                 : Algorithm<T>(cost_function), 
                     pyramid(experience_pyramid),
                     max_iterations(max_iterations),
@@ -408,13 +407,14 @@ namespace Estimator
       
             double getHypothesisCost( const gsl_vector* hypothesis );
 
+            CostFunction<T>* _cost_function;
         };
 
     template <typename T>
         struct Hybrid : Algorithm<T>
     {
 
-        Hybrid(CostFunction<T>* cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) 
+        Hybrid( boost::shared_ptr< CostFunction<T> > cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) 
             : Algorithm<T>(cost_function)
         {
 

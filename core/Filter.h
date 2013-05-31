@@ -11,39 +11,36 @@ namespace Estimator
 {
 
     template <typename T>
-        struct Filter 
+        struct Filter
     {
         Filter( boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator ) : iterator(iterator)
         {
 
 
         }
-        
+
+        L3::SE3 current_prediction;
         boost::weak_ptr < L3::ConstantTimeIterator<L3::LHLV> >  iterator ;
 
     };
 
-
-
-
     template <typename T>
         struct ParticleFilter : Filter<T>, Algorithm<T>, L3::TemporalObserver
     {
-
-        ParticleFilter(  CostFunction<T>* cost_function,  boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, int num_particles = 500 ) 
+        ParticleFilter( boost::shared_ptr<CostFunction<T> > cost_function,  boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, int num_particles = 100 ) 
             : Filter<T>(iterator), 
-            Algorithm<T>(cost_function), 
-            previous_time(0.0), 
-            pyramid( experience_pyramid ),
-            initialised(false),
-            num_particles(num_particles)
+                Algorithm<T>(cost_function), 
+                previous_time(0.0), 
+                pyramid( experience_pyramid ),
+                initialised(false),
+                num_particles(num_particles)
 
         {
             hypotheses.resize( num_particles );
         
             sampled_swathe.reset( new PointCloud<T>() );
+            
             L3::allocate( sampled_swathe.get(), 4*1000 );
-
         }
             
         boost::shared_ptr< PointCloud<T> > sampled_swathe;

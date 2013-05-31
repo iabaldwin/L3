@@ -128,12 +128,10 @@ struct DatasetRunner : ThreadedRunner
 
 };
 
-
-
 /*
  *  Implementation specific
  */
-struct EstimatorRunner : DatasetRunner
+struct EstimatorRunner : DatasetRunner, Lockable
 {
     EstimatorRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, L3::Experience* experience, float speedup=5.0 ) 
         : DatasetRunner( dataset, mission, speedup ),
@@ -170,10 +168,16 @@ struct EstimatorRunner : DatasetRunner
 
     EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
     {
+        L3::WriteLock algo_lock( this->mutex ); 
+        
         this->algorithm = algorithm;
-       
+     
+        // Remove it if it exista
+        std::list< TemporalObserver* >::iterator it = std::find( observers.begin(), observers.end(), dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) ); 
+        if(  it != observers.end() )
+            observers.erase( it );
+
         // Is it updateable
-      
         if( L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) )
             (*this) << observer;
 

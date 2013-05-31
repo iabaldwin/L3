@@ -103,7 +103,6 @@ namespace L3
         //std::cout << cloud->num_points << std::endl;
         //std::ofstream output( "output.dat" );
         //output << *cloud << std::endl;
-        //exit(-1);
         //}
 
     }

@@ -419,22 +419,8 @@ namespace L3
             /*
              *  Debug algorithm renderer
              */
-            //debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
+            debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
            
-            //for( int i=0; i<2; i++ )
-            //{
-                ////temporal_updater->operator<<( it->get() );
-                ////temporal_updater->operator<<( dynamic_cast< L3::Updateable* >( debug_algorithm_renderer->vertex_renderers[i].get() ) );
-                //temporal_updater->operator<<( dynamic_cast< Updateable* >( debug_algorithm_renderer->density_renderers[i].get() ) );
-            //}
-
-            //top << *debug_algorithm_renderer;
-            //tables.push_back( debug_algorithm_renderer );
-       
-            /*
-             *  Current algorithm renderer
-             */
-
         }
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -474,9 +460,9 @@ namespace L3
             /*
              *  Predicted estimates
              */
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            algorithm_costs_renderer->algorithm = runner->algorithm;
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
+            //algorithm_costs_renderer->algorithm = runner->algorithm;
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
             
             /*
              *  Experience overview
@@ -517,8 +503,6 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
             particle_filter_renderer.reset( new ParticleFilterRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
-
-        
         }
     }
 }

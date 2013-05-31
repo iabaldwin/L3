@@ -1007,7 +1007,6 @@ namespace Visualisers
         this->upper.x = max_x;
         this->upper.y = max_y;
         this->upper.z = max_z;
-
     }
 
     /*
