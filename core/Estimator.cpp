@@ -427,7 +427,7 @@ namespace L3
                 gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
 
                 int status;
-                int iter = 0;
+                algorithm_iterations = 0;
             
                 evaluations.clear();
 
@@ -435,7 +435,7 @@ namespace L3
                 double size;            
                 do
                 {
-                    iter++;
+                    algorithm_iterations++;
                     status = gsl_multimin_fminimizer_iterate(s);
 
                     if (status) 
@@ -448,7 +448,7 @@ namespace L3
                         break;
                 
                 }
-                while (status == GSL_CONTINUE && iter < max_iterations);
+                while (status == GSL_CONTINUE && algorithm_iterations < max_iterations);
 
                 gsl_vector* res = gsl_multimin_fminimizer_x ( s );
 
@@ -490,7 +490,7 @@ namespace L3
 
             swathe_lock.unlock();
 
-            minimisation->max_iterations = 10;
+            minimisation->max_iterations = 50;
 
             return this->minimisation->operator()( swathe, refined );
         

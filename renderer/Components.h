@@ -1111,7 +1111,8 @@ namespace Visualisers
 
     };
 
-    struct BasicPlottable :  Updateable, glv::Plottable, Lockable
+    template <typename T>
+        struct BasicPlottable :  Updateable, glv::Plottable, Lockable
     {
 
         BasicPlottable() : glv::Plottable( glv::draw::LineStrip, 1 )
@@ -1128,21 +1129,22 @@ namespace Visualisers
 
         }
 
-        std::deque<double> plot_data;
+        std::deque<T> plot_data;
 
     };
 
     /*
      *  Statistics 
      */
-    struct StatisticsPlottable  : BasicPlottable
+    template <typename T>
+        struct StatisticsPlottable  : BasicPlottable<T>
     {
-        StatisticsPlottable()
+        StatisticsPlottable() : print(false)
         {
             this->color( glv::Color( 1, 0, 0, .5 ) );
             this->stroke(2);
         }
-  
+
         void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
         {
             while(i()){
@@ -1151,12 +1153,13 @@ namespace Visualisers
                 g.addVertex(x, y);
             }
         }
-       
-        boost::shared_ptr< variable_lock<double> > lock;
 
-        void setVariable( double& t )
+        bool print;
+        boost::shared_ptr< variable_lock<T> > lock;
+
+        void setVariable( T& t )
         {
-            lock.reset( new variable_lock<double>( t ) );
+            lock.reset( new variable_lock<T>( t ) );
         }
 
         void update()
@@ -1164,25 +1167,28 @@ namespace Visualisers
             if (!lock)
                 return;
 
-            plot_data.push_back( lock->t );
+            this->plot_data.push_back( lock->t );
 
-            if ( plot_data.size() > 100 )
-                plot_data.pop_front();
+            if( print )
+                std::cout << this->plot_data.back() << std::endl;
 
-            mData.resize( glv::Data::DOUBLE, 1, plot_data.size() );
-            
-            glv::Indexer i(mData.size(1));
-            
+            if ( this->plot_data.size() > 100 )
+                this->plot_data.pop_front();
+
+            this->mData.resize( glv::Data::DOUBLE, 1, this->plot_data.size() );
+
+            glv::Indexer i( this->mData.size(1));
+
             int counter = 0;
 
-            while( i() && counter< plot_data.size() )
+            while( i() && counter< this->plot_data.size() )
             {
-                mData.assign( plot_data[counter]*10, i[0], i[1] );
+                this->mData.assign( this->plot_data[counter]*10, i[0], i[1] );
                 counter++;
             }
-                
+
         }
-    
+
     };
 
     struct Statistics : glv::Table
@@ -1191,7 +1197,7 @@ namespace Visualisers
         
         std::vector< boost::shared_ptr< glv::Plot > > plots;
         std::vector< boost::shared_ptr< glv::Label > > labels;
-        std::vector< boost::shared_ptr< StatisticsPlottable > > plottables;
+        std::vector< boost::shared_ptr< StatisticsPlottable<double> > > plottables;
 
         boost::shared_ptr< TextRenderer<double> > observer_update;;
         boost::shared_ptr< TextRenderer<double> > swathe_generation;;

@@ -1288,12 +1288,15 @@ namespace Visualisers
         
         int counter =0;
 
+        ColorInterpolator interpolator;
+
         glv::draw::pointSize( 3 );
         while( it != ptr->sections.end() )
         {
             experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
-            experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
-            
+            //experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
+            experience_nodes_colors[ counter++ ].set( interpolator( double(counter)/ptr->sections.size() ) ); 
+
             ctrlpoints[counter][0]= it->x-x_offset;
             ctrlpoints[counter][1]= it->y-y_offset;
             ctrlpoints[counter][2]= 0.0;
@@ -1302,25 +1305,28 @@ namespace Visualisers
         }
        
         
-        glv::draw::push();
-        glv::draw::pointSize( 3 );
+        //glv::draw::push();
+        //glv::draw::pointSize( 3 );
         
-        glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, ptr->sections.size(), &ctrlpoints[0][0]);
+        //glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, ptr->sections.size(), &ctrlpoints[0][0]);
         
-        glEnable(GL_MAP1_VERTEX_3);
-        glBegin(GL_LINE_STRIP);
-        glColor3f(1.0, 0.0, 0.0);
-        for (int i = 0; i <= 100; i++) 
-            glEvalCoord1f((GLfloat) i/100 );
-        glEnd();
-        glDisable(GL_MAP2_VERTEX_3);
+        //glEnable(GL_MAP1_VERTEX_3);
+        //glBegin(GL_LINE_STRIP);
+        //glColor3f(1.0, 0.0, 0.0);
+        //for (int i = 0; i <= 100; i++) 
+            //glEvalCoord1f((GLfloat) i/100 );
+        //glEnd();
+        //glDisable(GL_MAP2_VERTEX_3);
         
-        glv::draw::pop();
+        //glv::draw::pop();
 
-        //glv::draw::pointSize( 1 );
-        ////glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
-        //glv::draw::lineWidth( 1 );
-        //glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
+        float point_size = enabled( glv::Maximized ) ? 5 : 1;
+
+        glv::draw::pointSize( point_size );
+        glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
+        glv::draw::lineWidth( .05 );
+        std::fill( experience_nodes_colors.get(), experience_nodes_colors.get()+ptr->sections.size(), glv::Color( .7, .7, .7 ) );
+        glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
 
         glv::draw::pop();
     }
@@ -1501,7 +1507,7 @@ namespace Visualisers
         for( int i=0; i<4; i++ )
         {
             // Create the plottable
-            boost::shared_ptr< StatisticsPlottable > plottable( new StatisticsPlottable() ); 
+            boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
             // Create the plot
             boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottable ) );
            

@@ -230,7 +230,7 @@ namespace L3
              */
             statistics.reset( new Statistics() );
             
-            for( std::vector< boost::shared_ptr< StatisticsPlottable > >::iterator it = statistics-> plottables.begin();
+            for( std::vector< boost::shared_ptr< StatisticsPlottable<double> > >::iterator it = statistics-> plottables.begin();
                     it != statistics->plottables.end();
                     it++)
                 temporal_updater->operator<<( it->get() );

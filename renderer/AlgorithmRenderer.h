@@ -62,7 +62,7 @@ namespace L3
             void onDraw3D( glv::GLV& g );
         };
 
-        struct DiscreteRotationVisualiser : DiscreteEstimatorVisualiser, BasicPlottable
+        struct DiscreteRotationVisualiser : DiscreteEstimatorVisualiser, BasicPlottable<double>
         {
             DiscreteRotationVisualiser(boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator ) : DiscreteEstimatorVisualiser(estimator)
             {
@@ -91,19 +91,41 @@ namespace L3
         /*
          *  Algorithm Visualisation types
          */
-
         struct MinimisationVisualiser : AlgorithmVisualiser
         {
 
             MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm, Updater* updater = NULL )  : algorithm(algorithm)
             {
+                // Estimation traversals
                 boost::shared_ptr< glv::View > ptr = boost::dynamic_pointer_cast<glv::View>( boost::make_shared< TraversalVisualiser >( algorithm ) );
                 views.push_back( ptr );
 
                 (*this) << *ptr;
+
+                // Number of iterations of the algorithm
+                boost::shared_ptr< StatisticsPlottable<int> > plottable( new StatisticsPlottable<int>() ); 
+                plottable->setVariable( algorithm->algorithm_iterations );
+
+                plottables.push_back( plottable );
+
+                if( updater )
+                    updater->operator<<( plottable.get() );
+
+                boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottable ) );
+       
+                plot->disable( glv::Controllable );
+
+                plot->range(0,100,0);
+                plot->range(0,50*10,1);
+                
+                (*this) << *plot;
+
+                views.push_back( plot );
             }
 
+                
             std::deque< boost::shared_ptr< glv::View > > views;
+            std::deque< boost::shared_ptr< glv::Plottable > > plottables;
 
             boost::weak_ptr< L3::Estimator::Minimisation<double> > algorithm;
 

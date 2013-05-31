@@ -35,7 +35,7 @@ namespace Estimator
         ParticleFilter( boost::shared_ptr<CostFunction<T> > cost_function,  
                         boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
                         boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > iterator, 
-                        int num_particles = 300 ) 
+                        int num_particles = 450 ) 
             : Filter<T>(iterator), 
                 Algorithm<T>(cost_function), 
                 previous_time(0.0), 

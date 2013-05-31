@@ -387,7 +387,7 @@ namespace Estimator
           
             }
             
-            int max_iterations;
+            int max_iterations, algorithm_iterations;
 
             double tolerance;
 

@@ -88,12 +88,14 @@ namespace L3
 
             double q, x_vel, y_vel, velocity_delta, x, y;
             
-            //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .5 );
-            //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .05 );
-            
+            //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
+            //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .1 );
+           
             boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .5 );
-            boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .05 );
-            
+            boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .075 );
+           
+
+
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
            
@@ -138,22 +140,17 @@ namespace L3
             
             double sum = std::accumulate( results.begin(), results.end(), 0.0 );
 
-            if ( std::isnan(sum) )
-            {
-                std::cerr << "NAN" << std::endl;
-                exit(-1);
-            }
-
             // Normalize
             weights.resize( _weights.size() );
             std::transform( _weights.begin(), _weights.end(), weights.begin(), std::bind2nd( std::divides<double>(), sum ) );
+            
+            this->current_prediction = std::inner_product( hypotheses.begin(), hypotheses.end(), weights.begin(), L3::SE3::ZERO() );
 
             // Build CDF 
             std::vector< double > cdf( weights.size() );
             std::partial_sum( weights.begin(), weights.end(), cdf.begin() );
 
             boost::uniform_01<> uniform;
-
             std::vector< L3::SE3 > resampled;
             resampled.reserve( hypotheses.size() );
 
@@ -166,13 +163,7 @@ namespace L3
             }
 
             hypotheses.assign( resampled.begin(), resampled.end() );
-
-            // Have to use inner product
-            //L3::SE3 predicted = std::accumulate( resampled.begin(), resampled.end(), L3::SE3::ZERO() );
-            //this->current_prediction = predicted/(resampled.size()); 
             
-            this->current_prediction = std::inner_product( resampled.begin(), resampled.end(), weights.begin(), L3::SE3::ZERO() );
-
             return this->current_prediction;
         }
 

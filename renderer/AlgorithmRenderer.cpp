@@ -1,5 +1,7 @@
 #include "AlgorithmRenderer.h"
 
+#include "RenderingUtils.h"
+
 namespace L3
 {
     namespace Visualisers
@@ -11,6 +13,8 @@ namespace L3
           
             if( !algorithm_ptr)
                 return;
+
+            ColorInterpolator interpolator;
 
             L3::ReadLock lock( algorithm_ptr->mutex );
             std::vector< L3::SE3 > evaluations( algorithm_ptr->evaluations );
@@ -28,12 +32,15 @@ namespace L3
                     it != evaluations.end();
                     it++ )
             {
-                vertices[counter++]( it->X(), it->Y(), 0.0 );
+                vertices[counter](it->X(), it->Y(), 0.0 );
+                colors[counter].set( interpolator( double(counter)/evaluations.size() ) );
+                counter++;
             }
             
             glv::draw::pointSize(3);
             glv::draw::paint( glv::draw::Points, vertices, colors, counter );
             glv::draw::pointSize(1);
+            glv::draw::lineWidth(.1);
             glv::draw::paint( glv::draw::LineStrip, vertices, colors, counter );
             
         
@@ -183,7 +190,6 @@ namespace L3
 
                 z_val = (z_val - fabs(min_val))/(fabs(max_val) - fabs(min_val));
 
-
                 mData.assign( estimates[counter].Q()-mean, 0, counter );
                 mData.assign( z_val, 1, counter); 
                
@@ -299,15 +305,25 @@ namespace L3
 
         };
 
-        struct ParticleWeightVisualiser : BasicPlottable
+        struct ParticleWeightVisualiser : BasicPlottable<double>
         {
+
+            ParticleWeightVisualiser()
+            {
+                this->mPrim = glv::draw::Points;
+            }
+
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {
                 L3::ReadLock lock(this->mutex);
+            
+                int counter = 0;
                 while(i()){
-                    double x = i[0];
-                    double y = d.at<double>(0, i[0]);
-                    g.addVertex(x, y);
+                
+                    double x = d.at<double>( 0, counter );
+                    double y = d.at<double>(1, counter );
+                    g.addVertex(x, y*100);
+                    counter++;
                 }
 
             }
