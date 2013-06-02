@@ -1318,31 +1318,32 @@ namespace Visualisers
         std::fill( experience_nodes_colors.get(), experience_nodes_colors.get()+ptr->sections.size(), glv::Color( .7, .7, .7 ) );
         glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
 
+        static int draw_counter = 0;
+        glv::draw::text( "Is this the real world", draw_counter++, 40, 20 );
    
         if( enabled( glv::Maximized ) )
         {
 
-            glv::Point3 vertices[2];
-            glv::Color  colors[2];
-            std::fill( colors, colors+2, glv::Color( .7, .7, .7, .75  ) );
+            //glv::Point3 vertices[2];
+            //glv::Color  colors[2];
+            //std::fill( colors, colors+2, glv::Color( .7, .7, .7, .75  ) );
 
 
-            // X index
-            vertices[0]( 0, 0, 0 ); 
-            vertices[1]( current->X(), 0, 0 ); 
+            //// X index
+            //vertices[0]( 0, 0, 0 ); 
+            //vertices[1]( current->X(), 0, 0 ); 
 
-            glv::draw::enable( glv::draw::Blend );
-            glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
+            //glv::draw::enable( glv::draw::Blend );
+            //glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
 
-            // Y index
-            vertices[0]( current->X(), 0, 0 ); 
-            vertices[1]( current->X(), current->Y(), 0 ); 
+            //// Y index
+            //vertices[0]( current->X(), 0, 0 ); 
+            //vertices[1]( current->X(), current->Y(), 0 ); 
 
-            glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
-            glv::draw::disable( glv::draw::Blend );
+            //glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
+            //glv::draw::disable( glv::draw::Blend );
 
         }
-
         glv::draw::pop();
     
     }
