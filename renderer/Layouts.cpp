@@ -39,7 +39,6 @@ namespace L3
 
             // Add synched temporal updater
             temporal_updater.reset( new Updater() );
-            this->renderables.push_front( temporal_updater.get() );
 
             // Add synched spatial updater
             spatial_updater.reset( new SpatialUpdater( boost::shared_ptr< L3::PoseProvider>() ) );
@@ -64,7 +63,7 @@ namespace L3
 
             // Runtime cloud renderer
             runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( 360, 360 ), boost::shared_ptr< L3::PointCloud<double> >(), boost::shared_ptr<L3::SE3>() ) );
-            temporal_updater->operator<<(  dynamic_cast<L3::Visualisers::Updateable*>(runtime_cloud_renderer_view.get() ) );
+            temporal_updater->operator<<(  dynamic_cast<L3::Updateable*>(runtime_cloud_renderer_view.get() ) );
             *ancillary_1 << *runtime_cloud_renderer_view;
 
             point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
@@ -257,6 +256,12 @@ namespace L3
 
         bool DatasetLayout::load( L3::DatasetRunner* runner )
         {
+
+            /*
+             *  Add the updater to the runenr
+             */
+            (*runner) << temporal_updater.get();
+
             /*
              *  Velocity plots
              */
@@ -382,7 +387,6 @@ namespace L3
             composite->position.x = -1*start_pose.X();
             composite->position.y = -1*start_pose.Y();
         
-        
         }
 
         /*
@@ -441,7 +445,6 @@ namespace L3
              */
             pyramid_renderer->loadPyramid( experience->experience_pyramid );
 
-
             /*
              *  Histogram Bounds
              */
@@ -457,6 +460,7 @@ namespace L3
             histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
             experience_voxel_toggle->leaf = histogram_voxel_renderer_experience_leaf; 
+            
             /*
              *  Predicted estimates
              */
@@ -472,7 +476,6 @@ namespace L3
             /*
              *  Table based algorithm renderer
              */
-
             algorithm_renderer = AlgorithmRendererFactory::Produce( runner->algorithm, temporal_updater.get() );
 
             if (algorithm_renderer)

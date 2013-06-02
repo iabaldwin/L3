@@ -166,15 +166,19 @@ namespace L3
             return std::make_pair( false, "CI::No associated container: " + load_command); 
 
         //container->cost_function.reset( new L3::Estimator::MICostFunction<double>() );
-    
-        if( boost::shared_ptr< EstimatorRunner > runner = boost::dynamic_pointer_cast< EstimatorRunner >( container->runner) )
-        {
-            //boost::shared_ptr< L3::Estimator::CostFunction<double > > cost_function = runner->algorithm->cost_function; 
-           
-            boost::shared_ptr< L3::Estimator::CostFunction<double> > fn( new L3::Estimator::KLCostFunction<double>() );
+  
+        container->runner->stop();
 
-            //runner->
-        }
+        container->runner->start();
+
+        //if( boost::shared_ptr< EstimatorRunner > runner = boost::dynamic_pointer_cast< EstimatorRunner >( container->runner) )
+        //{
+            ////boost::shared_ptr< L3::Estimator::CostFunction<double > > cost_function = runner->algorithm->cost_function; 
+           
+            //boost::shared_ptr< L3::Estimator::CostFunction<double> > fn( new L3::Estimator::KLCostFunction<double>() );
+
+            ////runner->
+        //}
 
         //container->algorithm.reset( new L3::Estimator::IterativeDescent<double>( container->cost_function.get(), container->experience->experience_pyramid ) );
 

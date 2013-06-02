@@ -8,9 +8,9 @@
 
 #include "Poco/Thread.h"
 
-//#include <pcl/io/pcd_io.h>
-//#include <pcl/point_types.h>
-//#include <pcl/registration/icp.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
 
 #include <boost/shared_array.hpp>
 
@@ -24,8 +24,8 @@ namespace ScanMatching
           
             ScanMatcher() : initialised(false)
             {
-                //cloud_in.reset(new pcl::PointCloud<pcl::PointXYZ>);
-                //cloud_out.reset(new pcl::PointCloud<pcl::PointXYZ>);
+                cloud_in.reset(new pcl::PointCloud<pcl::PointXYZ>);
+                cloud_out.reset(new pcl::PointCloud<pcl::PointXYZ>);
             }
 
             virtual bool match(  const std::pair< double,  boost::shared_ptr< L3::LMS151 > > current_scan, Eigen::Matrix4f& transformation ) =0 ;
@@ -40,9 +40,9 @@ namespace ScanMatching
 
         protected:
 
-            //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in;
-            //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out;
-            //pcl::PointCloud<pcl::PointXYZ>::Ptr final;
+            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in;
+            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out;
+            pcl::PointCloud<pcl::PointXYZ>::Ptr final;
            
             bool initialised;
 

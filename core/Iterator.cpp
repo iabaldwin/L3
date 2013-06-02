@@ -7,17 +7,18 @@ namespace L3
 template <typename T>
 void Iterator<T>::getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window)  
 {
-    mutex.lock();
-    
+    this->mutex.lock();
+
     window.resize( this->window.size() );
     std::copy( this->window.begin(), this->window.end(), window.begin() );
     
-    mutex.unlock();
+    this->mutex.unlock();
 }
 
 template <typename T>
 bool ConstantTimeIterator<T>::update( double time )
 {
+
     // Update the watcher with the new time
     boost::shared_ptr< L3::SlidingWindow<T> > windower_ptr = this->windower.lock();
 

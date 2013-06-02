@@ -46,7 +46,7 @@ namespace L3
         _window_delta_buffer.assign( index, constant_time_iterator->window.end() );
 
         if (_window_delta_buffer.empty() )
-            return true;
+            return false;
 
         // Append it to the buffer
         _window_buffer.insert( _window_buffer.end(), _window_delta_buffer.begin(), _window_delta_buffer.end() );
@@ -54,6 +54,7 @@ namespace L3
 
         int written;
         double total_distance;
+
         SWATHE_ITERATOR iterator = L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
                 _window_buffer.rend(),
                 _constant_distance_window.begin(),
@@ -68,8 +69,6 @@ namespace L3
 
         // Update
         previous_update = time;
-
-        //std::cout << _constant_distance_window.size() << std::endl;
 
         return true;
     }

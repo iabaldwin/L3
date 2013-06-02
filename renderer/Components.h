@@ -22,27 +22,14 @@ namespace L3
 {
 namespace Visualisers
 {
-    struct Updateable
+    
+    struct VisualUpdater : glv::View, L3::Updater
     {
-        virtual void update() = 0;
-    };
-
-    struct Updater : glv::View
-    {
-        std::list < Updateable* > updateables;
-
         void onDraw(glv::GLV& g)
         {
-            for( std::list< Updateable* >::iterator it = updateables.begin(); it != updateables.end(); it++ )
-                (*it)->update();
+            Updater::update();
         }
 
-        Updater& operator<<( Updateable* updateable )
-        {
-            updateables.push_front( updateable );
-
-            return *this;
-        }
     };
 
     struct SpatialUpdater : glv::View
@@ -1203,6 +1190,8 @@ namespace Visualisers
         boost::shared_ptr< TextRenderer<double> > swathe_generation;;
         boost::shared_ptr< TextRenderer<double> > points_per_second;
         boost::shared_ptr< TextRenderer<double> > estimation;
+        boost::shared_ptr< TextRenderer<double> > total;
+
         boost::shared_ptr< glv::TextView > memory_statistics;
 
         void load( L3::DatasetRunner* runner )

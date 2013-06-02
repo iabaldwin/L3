@@ -73,12 +73,13 @@ struct DatasetRunner : ThreadedRunner
             thread.join();
     }
 
-    bool            print_timings;
+    bool            stand_alone;
     float           speedup;
     double          current_time, start_time;  
     Dataset*        dataset;
     Configuration::Mission*     mission;
    
+    std::list < Updater* > updaters;
     std::list < Dumpable* > dumps;
     
     boost::shared_ptr< L3::SE3 > current;
@@ -93,15 +94,12 @@ struct DatasetRunner : ThreadedRunner
 
     boost::shared_ptr< L3::PoseWindower > pose_windower;
     boost::shared_ptr< L3::ConstantTimeWindower< L3::SE3 > >    oracle;
-    
     boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > >    pose_iterator;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > >   LHLV_iterator;
-
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > vertical_LIDAR;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > horizontal_LIDAR;
      
     boost::shared_ptr< L3::ScanMatching::Engine > engine;
-    boost::shared_ptr< L3::ScanMatching::ScanMatcher > scan_matcher;
         
     std::vector<double> timings;
         
@@ -125,6 +123,14 @@ struct DatasetRunner : ThreadedRunner
             dumps.push_front( dumpable ); 
         return *this;
     }
+
+    DatasetRunner& operator<<( L3::Updater* updater )
+    {
+        if( updater )
+            updaters.push_front( updater );
+        return *this;
+    }
+
 
 };
 

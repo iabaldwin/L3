@@ -238,9 +238,6 @@ namespace L3
                 // Compute differences
                 double diff[size];
 
-                std::copy( diff, diff+size, std::ostream_iterator<double>( std::cout, " " ) );
-                std::cout << std::endl;
-
                 std::transform( experience.hist->bin, experience.hist->bin+size, swathe.hist->bin, diff, std::minus<double>() );
                 //std::generate( diff, diff+size, std::bind2nd( std::ptr_fun( pow ), 2 ) );
                 std::for_each( diff, diff+size, std::bind2nd( std::ptr_fun( pow ), 2 ) );
@@ -277,6 +274,9 @@ namespace L3
 
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
+
+                L3::LogisticSmoother<double> smoother;
+                smoother.smooth( &swathe_histogram );
 
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
@@ -480,17 +480,19 @@ namespace L3
         {
             L3::ReadLock swathe_lock( swathe->mutex );
 
+            discrete_estimators[0]->cost_function = this->cost_function.get();
             discrete_estimators[0]->operator()( swathe, estimate );
             std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
             SE3 refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
+            discrete_estimators[1]->cost_function = this->cost_function.get();
             discrete_estimators[1]->operator()( swathe, estimate );
             it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
             refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
 
             swathe_lock.unlock();
 
-            minimisation->max_iterations = 50;
+            minimisation->max_iterations = 20;
 
             return this->minimisation->operator()( swathe, refined );
         

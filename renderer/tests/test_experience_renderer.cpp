@@ -54,14 +54,14 @@ int main (int argc, char ** argv)
 
     pyramid_renderer.pos( win.width()- (180*3), 0 );
 
-    L3::Visualisers::Updater updater;
-    updater << &pyramid_renderer;
+    //L3::Visualisers::VisualUpdater updater;
+    //updater << dynamic_cast< L3::Updateable*>(&pyramid_renderer);
 
     // Associate pose provider
-    experience_renderer.addPoseProvider( pose_provider.get() );
+    //experience_renderer.addPoseProvider( pose_provider.get() );
 
-    // Combine
-    top << (composite << grid << experience_renderer << pose_provider_renderer ) << pyramid_renderer << updater << experience_view;
+    //// Combine
+    //top << (composite << grid << experience_renderer << pose_provider_renderer ) << pyramid_renderer << updater << experience_view;
 
     // Run
     win.setGLV(top);

@@ -9,7 +9,7 @@ namespace L3
             speedup(speedup),
             current_time(0.0),
             start_time(dataset->start_time),
-            print_timings(false)
+            stand_alone(false)
     {
         // Constant time iterator over poses
         pose_iterator.reset( new L3::ConstantTimeIterator<L3::SE3>( dataset->pose_reader ) );
@@ -30,21 +30,23 @@ namespace L3
        
         // Pose Provider
         //pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV>( LHLV_iterator.get() ) );
-        pose_windower.reset( new L3::ConstantDistanceWindower( LHLV_iterator.get(), 60 ) );
+        //pose_windower.reset( new L3::ConstantDistanceWindower( LHLV_iterator.get(), 60 ) );
+        pose_windower.reset( new L3::ConstantDistanceWindower( LHLV_iterator.get(), 40 ) );
        
         // Swathe generator
-        swathe_builder.reset( new L3::SwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
+        //swathe_builder.reset( new L3::RawSwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
+        swathe_builder.reset( new L3::BufferedSwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
    
         // INS pose
         oracle.reset( new L3::ConstantTimeWindower< L3::SE3 >( pose_iterator.get() ) );
 
         // Scan matching engine
-        //engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
+        engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
        
         // Predictor
-        predictor.reset( new L3::Predictor( LHLV_iterator.get() ) );
+        //predictor.reset( new L3::Predictor( LHLV_iterator.get() ) );
         
-        (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << pose_windower.get() << swathe_builder.get() << predictor.get();
+        (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << pose_windower.get() << swathe_builder.get();
 
         current.reset( new L3::SE3( L3::SE3::ZERO() ) );
  
@@ -53,6 +55,7 @@ namespace L3
   
         // Timing statistics
         timings.resize(5);
+   
     }
     
     /*
@@ -122,8 +125,8 @@ namespace L3
              */
             update( current_time );
             timings[ performance_index++ ] = performance_timer.elapsed();
-    
-            if( print_timings )
+
+            if( stand_alone )
             {
                 std::stringstream ss;
                 ss << "Observer update:"  << "\t" << timings[0] << std::endl;
@@ -132,9 +135,15 @@ namespace L3
                 ss << "Estimation:"       << "\t\t" << timings[3] << std::endl;
                 std::cout << ss.str() << "------------" << std::endl;
             }
-        }
 
-        std::cout << "Run loop done" << std::endl;
+            /*
+             *Perform post-update
+             */
+            std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
+
+        }
+   
+        thread.join();
     }
    
     bool EstimatorRunner::update( double time )
@@ -142,7 +151,6 @@ namespace L3
         /*
          *  Update the experience
          */
-        //experience->update( predicted.X(), predicted.Y() );
         experience->update( current->X(), current->Y() );
 
         /*

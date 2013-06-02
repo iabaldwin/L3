@@ -47,7 +47,7 @@ int main( int argc, char* argv[] )
     runner->setAlgorithm( algo );
     runner->start();
 
-    runner->print_timings = true;
+    runner->stand_alone = true;
 
     while( true )
     {

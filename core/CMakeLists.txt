@@ -25,7 +25,7 @@ add_library( L3
     Misc.cpp
     )
 
-target_link_libraries( L3 config++ gsl PocoFoundation tbb ICP pcl_common pcl_kdtree MIToolBox )
+target_link_libraries( L3 config++ gsl PocoFoundation tbb ICP pcl_common pcl_kdtree pcl_search MIToolBox )
 
 add_subdirectory( tests )
 add_subdirectory( apps )

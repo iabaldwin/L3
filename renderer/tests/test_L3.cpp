@@ -58,7 +58,7 @@ int main( int argc, char* argv[] )
     //boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new L3::Estimator::IterativeDescent<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >( cost_function), experience->experience_pyramid ));
     boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Minimisation<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid ));
     //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::PassThrough<double>(cost_function, experience->experience_pyramid ));
-    //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Hybrid<double>(cost_function, experience->experience_pyramid ));
+    //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Hybrid<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid ));
     
     
     // Create runner

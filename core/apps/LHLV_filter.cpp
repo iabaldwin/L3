@@ -65,10 +65,10 @@ int main( int argc, char** argv )
 
     L3::IO::BinaryWriter< L3::LHLV > writer;
 
-    if( !writer.open( "/Users/ian/code/test.dat" ) )
+    //if( !writer.open( "/Users/ian/code/test.dat" ) )
+    if( !writer.open( dataset.path() + "/OxTS.lhlv" ) )
         std::cerr << "Could not open!" << std::endl;
 
     std::cout << writer.write( matched_velocities ) << std::endl;
-
 
 }

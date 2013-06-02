@@ -68,7 +68,9 @@ namespace L3
             *output = std::make_pair( current_time, current_pose );
 
             distance += inter_pose_distance;
-        
+      
+            std::cout << distance << ":" << required_distance << std::endl;
+
             if( distance > required_distance )
                 break;
 
@@ -95,6 +97,7 @@ namespace L3
             // Distance
             double distance = 0.0; 
             double incremental_distance = 0.0; 
+            written = 0;
 
             // Initialise
             double dt = 0.0, current_time;
@@ -140,12 +143,7 @@ namespace L3
                 double inter_pose_distance = L3::Math::norm(*current_pose, *previous_pose );
 
                 incremental_distance += inter_pose_distance;
-
-                /*
-                 *  Do we log it
-                 */
-                if (lin_vel > total_distance )
-                    distance += inter_pose_distance;
+                distance += inter_pose_distance;
 
                 if( incremental_distance > required_increment )
                 { 

@@ -24,8 +24,6 @@ namespace Visualisers
         glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
 
-        //glMultMatrixf( position.homogeneous.data() );
-
         glGetDoublev(GL_PROJECTION_MATRIX, projection );
         glGetDoublev(GL_MODELVIEW_MATRIX, model );
         glGetIntegerv(GL_VIEWPORT,viewport);
@@ -644,10 +642,15 @@ namespace Visualisers
         if( !cloud_ptr )
             return;
 
+        boost::scoped_ptr< L3::PointCloud<double> > tmp_cloud( new L3::PointCloud<double>() );
+
         L3::ReadLock lock( cloud_ptr->mutex );
-        if( cloud_ptr->num_points > 0 ) 
-            L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        L3::copy( cloud_ptr.get(), tmp_cloud.get() );
         lock.unlock();
+
+        if( cloud_ptr->num_points > 0 ) 
+            //L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
+            L3::sample( tmp_cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
     }
 
     /*
@@ -1261,10 +1264,7 @@ namespace Visualisers
     {
         far(1000); 
 
-        //glv::draw::rotateZ(180);
         glv::draw::translateZ( -850 );
-
-        double x_offset=0, y_offset=0;
 
         boost::shared_ptr< L3::PoseProvider > ptr_provider = provider.lock();
         if( ptr_provider )
@@ -1293,12 +1293,12 @@ namespace Visualisers
         glv::draw::pointSize( 3 );
         while( it != ptr->sections.end() )
         {
-            experience_nodes_vertices[ counter ]( it->x-x_offset, it->y-y_offset, 0 );
+            experience_nodes_vertices[ counter ]( it->x, it->y, 0 );
             //experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
             experience_nodes_colors[ counter++ ].set( interpolator( double(counter)/ptr->sections.size() ) ); 
 
-            ctrlpoints[counter][0]= it->x-x_offset;
-            ctrlpoints[counter][1]= it->y-y_offset;
+            ctrlpoints[counter][0]= it->x;
+            ctrlpoints[counter][1]= it->y;
             ctrlpoints[counter][2]= 0.0;
 
             it++;
@@ -1328,7 +1328,33 @@ namespace Visualisers
         std::fill( experience_nodes_colors.get(), experience_nodes_colors.get()+ptr->sections.size(), glv::Color( .7, .7, .7 ) );
         glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
 
+   
+        if( enabled( glv::Maximized ) )
+        {
+
+            glv::Point3 vertices[2];
+            glv::Color  colors[2];
+            std::fill( colors, colors+2, glv::Color( .7, .7, .7, .75  ) );
+
+
+            // X index
+            vertices[0]( 0, 0, 0 ); 
+            vertices[1]( current->X(), 0, 0 ); 
+
+            glv::draw::enable( glv::draw::Blend );
+            glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
+
+            // Y index
+            vertices[0]( current->X(), 0, 0 ); 
+            vertices[1]( current->X(), current->Y(), 0 ); 
+
+            glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
+            glv::draw::disable( glv::draw::Blend );
+
+        }
+
         glv::draw::pop();
+    
     }
 
     /*
@@ -1496,7 +1522,6 @@ namespace Visualisers
         labels.push_back( memory_label );
         memory_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
         (*memory_statistics) << (*memory_label );
-
 
         std::vector< std::string > history_labels;
         history_labels.push_back( "Observer (ms)" );

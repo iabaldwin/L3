@@ -1,6 +1,8 @@
 #ifndef L3_CORE_H
 #define L3_CORE_H
 
+#include <list>
+
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/exception/all.hpp>
@@ -19,6 +21,28 @@ struct Observer
 
 };
 
+struct Updateable
+{
+    virtual void update() = 0;
+};
+
+struct Updater
+{
+    std::list < Updateable* > updateables;
+
+    void update()
+    {
+        std::for_each( updateables.begin(), updateables.end(), std::mem_fun( &Updateable::update ) );
+    }
+
+    Updater& operator<<( Updateable* updateable )
+    {
+        updateables.push_front( updateable );
+
+        return *this;
+    }
+
+};
 
 struct TemporalObserver : Observer
 {
@@ -50,17 +74,18 @@ struct no_such_folder : virtual exception_base { };
 template <typename T>
 struct Comparator
 {
-    bool operator()( T t, const double f )
+    bool operator()( const T t, const double f ) const
     {
         return ( t.first < f);
     }
 
-    bool operator()( const double f, T t )
+    bool operator()( const double f, const T t ) const
     {
         return ( t.first < f);
     }
 
 };
+
 
 //typedef boost::shared_mutex Mutex;
 typedef boost::shared_lock<boost::shared_mutex> ReadLock;

@@ -35,7 +35,7 @@ int main (int argc, char ** argv)
 
     L3::ConstantTimeWindower<L3::LHLV> pose_windower( &LHLV_iterator );
 
-    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
+    L3::RawSwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
     /*
      *  Visualisation

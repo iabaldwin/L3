@@ -25,7 +25,7 @@ int main()
 
     L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
     
-    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
+    L3::RawSwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
 
     L3::Timing::SysTimer t;
 

@@ -16,8 +16,9 @@ namespace L3
 
             ColorInterpolator interpolator;
 
+            // Note : this is going to be an issue
             L3::ReadLock lock( algorithm_ptr->mutex );
-            std::vector< L3::SE3 > evaluations( algorithm_ptr->evaluations );
+            std::vector< L3::SE3 > evaluations( algorithm_ptr->evaluations.begin(), algorithm_ptr->evaluations.end() );
             lock.unlock();
             
             far(150);
