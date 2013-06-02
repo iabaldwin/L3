@@ -350,24 +350,29 @@ namespace Visualisers
         if( hist_ptr->empty() )
             return;
 
-        L3::Histogram<double> tmp;
-        L3::ReadLock lock( hist_ptr->mutex );
-        L3::clone( hist_ptr.get(), &tmp );
-        lock.unlock();   
+        //L3::ReadLock lock( hist_ptr->mutex );
+        //L3::clone( hist_ptr.get(), &tmp );
+        L3::clone( hist_ptr.get(), render_histogram.get() );
+        //lock.unlock();   
+
+    }
+
+    void HistogramDensityRenderer::onDraw( glv::GLV& g)
+    {
 
         mTex.magFilter(GL_NEAREST);
         mTex.dealloc();
-        mTex.alloc( tmp.x_bins, tmp.y_bins );
+        mTex.alloc( render_histogram->x_bins, render_histogram->y_bins );
 
-        double normalizer = tmp.max();
+        double normalizer = render_histogram->max();
 
         unsigned char * pixs = mTex.buffer<unsigned char>();
 
-        for(int j=0; j< tmp.y_bins; j++ )
+        for(int j=0; j< render_histogram->y_bins; j++ )
         {
-            for(int i=0; i<tmp.x_bins; i++ )
+            for(int i=0; i<render_histogram->x_bins; i++ )
             {
-                int data = (int)(((tmp.bin(i,j))));
+                int data = (int)(((render_histogram->bin(i,j))));
                 data  = data*20;
 
                 *pixs++ = (unsigned char)(data);
@@ -378,10 +383,7 @@ namespace Visualisers
             }
 
         }
-    }
 
-    void HistogramDensityRenderer::onDraw( glv::GLV& g)
-    {
         mTex.recreate();				            // Recreate texture on GPU
         mTex.send();					            // Send over texel data
 
@@ -642,15 +644,8 @@ namespace Visualisers
         if( !cloud_ptr )
             return;
 
-        boost::scoped_ptr< L3::PointCloud<double> > tmp_cloud( new L3::PointCloud<double>() );
-
-        L3::ReadLock lock( cloud_ptr->mutex );
-        L3::copy( cloud_ptr.get(), tmp_cloud.get() );
-        lock.unlock();
-
-        if( cloud_ptr->num_points > 0 ) 
+        //if( cloud_ptr->num_points > 0 ) 
             //L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
-            L3::sample( tmp_cloud.get(), plot_cloud.get(), plot_cloud->num_points, false );
     }
 
     /*

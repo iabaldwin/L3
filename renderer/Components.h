@@ -915,9 +915,12 @@ namespace Visualisers
             HistogramRenderer(histogram),
             mTex(0,0,GL_RGBA,GL_UNSIGNED_BYTE)
         {
+            render_histogram.reset( new L3::Histogram<double> () );
         }
 
         glv::Texture2 mTex;
+        
+        boost::shared_ptr< L3::Histogram<double> > render_histogram;
 
         void update();
         void onDraw( glv::GLV& g );
