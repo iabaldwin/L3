@@ -39,7 +39,7 @@ namespace L3
         OutputIterator trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double& distance, double required_distance );
 
     template <typename InputIterator, typename OutputIterator >
-        OutputIterator reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written );
+        void reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written );
 
 }
 

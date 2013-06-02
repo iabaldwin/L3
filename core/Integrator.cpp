@@ -1,5 +1,6 @@
 #include "Integrator.h"
 #include <deque>
+#include <iterator>
 
 namespace L3
 {
@@ -83,10 +84,12 @@ namespace L3
     }
 
     template <typename InputIterator, typename OutputIterator >
-        OutputIterator reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written  )
+        void reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written  )
         {
             if( std::distance( begin, end) == 0 )
-                return output;
+                return;
+
+            OutputIterator writer = output;
 
             // Input copy
             InputIterator current_in = begin;
@@ -99,10 +102,12 @@ namespace L3
             double incremental_distance = 0.0; 
             written = 0;
 
+
             // Initialise
             double dt = 0.0, current_time;
             boost::shared_ptr< L3::SE3 > previous_pose = boost::make_shared<L3::SE3>( 0,0,0,0,0,0 );
-            *output++ = std::make_pair( previous_time, previous_pose );
+            *writer++ = std::make_pair( previous_time, previous_pose );
+            written++;
 
             double x=0, y=0, z=0;
             double r=0, p=0, q=0;
@@ -146,12 +151,12 @@ namespace L3
                 distance += inter_pose_distance;
 
                 if( incremental_distance > required_increment )
-                { 
-                    *output++ = std::make_pair( current_time, current_pose );
+                {
+                    *writer++ = std::make_pair( current_time, current_pose );
                     incremental_distance = 0.0;
                 }
 
-                if( distance > total_distance )
+                if( distance >= total_distance )
                     break;
 
                 previous_pose = current_pose;
@@ -162,11 +167,8 @@ namespace L3
                 written++;
             
             }
-
-            return output;
         }
-
 }
 
 template std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> L3::trajectoryAccumulate<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> >(std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*>, double&, double);
-template std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> L3::reverseTrajectoryAccumulate<std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> >(std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*>, double, double, int& );
+template void L3::reverseTrajectoryAccumulate<std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::back_insert_iterator<std::deque<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > > > >(std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::reverse_iterator<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*> >, std::back_insert_iterator<std::deque<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > > >, double, double, int&);

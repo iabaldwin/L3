@@ -1,9 +1,9 @@
 #include "PoseWindower.h"
+#include <iterator> 
+#include <deque> 
 
 namespace L3
 {
-    typedef std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> SWATHE_ITERATOR;
-
     template <typename InputIterator >
         bool Inverter::invert(InputIterator start, InputIterator end )
         {
@@ -44,28 +44,28 @@ namespace L3
         // Create a delta buffer
         std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > _window_delta_buffer;
         _window_delta_buffer.assign( index, constant_time_iterator->window.end() );
-
+        
         if (_window_delta_buffer.empty() )
             return false;
 
         // Append it to the buffer
         _window_buffer.insert( _window_buffer.end(), _window_delta_buffer.begin(), _window_delta_buffer.end() );
-        _constant_distance_window.resize( _window_buffer.size()) ;
+        _constant_distance_window.clear();
 
         int written;
         double total_distance;
 
-        SWATHE_ITERATOR iterator = L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
+        L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
                 _window_buffer.rend(),
-                _constant_distance_window.begin(),
+                std::back_inserter( _constant_distance_window ),
                 0.1, 
                 swathe_length,
                 written);
 
-        _window_buffer.erase( _window_buffer.begin(), _window_buffer.end() - written  );
-        _constant_distance_window.erase( iterator, _constant_distance_window.end() );
 
         std::reverse( _constant_distance_window.begin(), _constant_distance_window.end() );
+    
+        _window_buffer.erase( _window_buffer.begin(), _window_buffer.begin() + ( _window_buffer.size() - written ) );
 
         // Update
         previous_update = time;

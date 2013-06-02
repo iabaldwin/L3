@@ -76,13 +76,8 @@ namespace L3
 
         _window_buffer.insert( _window_buffer.end(), index, LIDAR_iterator->window.end() );
 
-        //std::cout << "Inserting: " << std::distance( index, LIDAR_iterator->window.end() ) << std::endl;
-        //std::cout << _window_buffer.size() << std::endl;
-
         L3::Iterator<L3::SE3>::WINDOW_ITERATOR it = pose_windower->window->begin() ;
    
-        double least_required_time = it->first;
-        
         int skip = 0;
 
         // For each lidar pose, find the nearest scan
@@ -121,8 +116,8 @@ namespace L3
                 swathe.push_back( std::make_pair( it->second, index->second ) );
             else
             {
-                std::cerr << "NO match" << std::endl;
-                exit(-1);
+                //std::cerr << "NO match" << std::endl;
+                //exit(-1);
             }
             
             it++;
@@ -130,16 +125,10 @@ namespace L3
 
         previous_update = _window_buffer.back().first;
 
-        //std::cout << _window_buffer.back().first << ":" << pose_windower->window->back().first << std::endl;
-        //std::cout << _window_buffer.front().first << ":" << pose_windower->window->front().first << std::endl;
-
-
         index = std::lower_bound( _window_buffer.begin(),
                 _window_buffer.end(), 
                 pose_windower->window->front().first,
                 LIDAR_comparator );
-
-        //std::cout << "Erasing..." << std::distance( _window_buffer.begin(), index ) << std::endl;
 
         _window_buffer.erase( _window_buffer.begin(), index );
 
