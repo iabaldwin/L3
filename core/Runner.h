@@ -73,6 +73,8 @@ struct DatasetRunner : ThreadedRunner
             thread.join();
     }
 
+    std::ofstream   output;
+
     bool            stand_alone;
     float           speedup;
     double          current_time, start_time;  

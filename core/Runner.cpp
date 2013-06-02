@@ -102,7 +102,6 @@ namespace L3
 
                 if ( counter == 60 )
                     init = true;
-
             }
 
             /*
@@ -128,19 +127,24 @@ namespace L3
 
             if( stand_alone )
             {
+
+                if( !output.is_open() )
+                    output.open( "poses.dat", std::ios::out );
+
                 std::stringstream ss;
                 ss << "Observer update:"  << "\t" << timings[0] << std::endl;
                 ss << "Swathe update:"    << "\t\t" << timings[1] << std::endl;
                 ss << "Point generation:" << "\t" << timings[2] << std::endl;
                 ss << "Estimation:"       << "\t\t" << timings[3] << std::endl;
                 std::cout << ss.str() << "------------" << std::endl;
+           
+                output << *current << '\n';
             }
 
             /*
-             *Perform post-update
+             * Perform post-update, don't care about how long this takes
              */
             std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
-
         }
    
         thread.join();

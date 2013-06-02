@@ -21,16 +21,16 @@ namespace L3
             {
             }
 
-            void setParent( boost::shared_ptr< glv::Plot > plotter )
-            {
-                plot_parent = plotter;
-            }
-
             int index;
             double current;
             boost::weak_ptr< glv::Plot > plot_parent; 
             boost::weak_ptr< L3::ConstantTimeIterator< L3::LHLV> > iterator; 
- 
+
+            void setParent( boost::shared_ptr< glv::Plot > plotter )
+            {
+                plot_parent = plotter;
+            }
+             
             void assignIterator( boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > LHLV_iterator )
             {
                 this->iterator = LHLV_iterator;
@@ -113,7 +113,7 @@ namespace L3
             }
         };
 
-    } // Visualisers
-} // L3
+    }   // Visualisers
+}       // L3
 
 #endif

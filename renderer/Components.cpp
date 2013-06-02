@@ -350,29 +350,37 @@ namespace Visualisers
         if( hist_ptr->empty() )
             return;
 
-        //L3::ReadLock lock( hist_ptr->mutex );
-        //L3::clone( hist_ptr.get(), &tmp );
-        L3::clone( hist_ptr.get(), render_histogram.get() );
-        //lock.unlock();   
+        L3::ReadLock lock( hist_ptr->mutex );
+        if( !hist_ptr->empty() ) 
+            L3::clone( hist_ptr.get(), render_histogram.get() );
+        lock.unlock();   
 
     }
 
     void HistogramDensityRenderer::onDraw( glv::GLV& g)
     {
+        L3::Histogram<double> tmp;
+
+        if( render_histogram->empty() ) 
+            return;
+        
+        L3::ReadLock lock( render_histogram->mutex );
+        L3::clone( render_histogram.get(), &tmp ); 
+        lock.unlock();
 
         mTex.magFilter(GL_NEAREST);
         mTex.dealloc();
         mTex.alloc( render_histogram->x_bins, render_histogram->y_bins );
 
-        double normalizer = render_histogram->max();
+        double normalizer = tmp.max();
 
         unsigned char * pixs = mTex.buffer<unsigned char>();
 
-        for(int j=0; j< render_histogram->y_bins; j++ )
+        for(int j=0; j< tmp.y_bins; j++ )
         {
-            for(int i=0; i<render_histogram->x_bins; i++ )
+            for(int i=0; i<tmp.x_bins; i++ )
             {
-                int data = (int)(((render_histogram->bin(i,j))));
+                int data = (int)(((tmp.bin(i,j))));
                 data  = data*20;
 
                 *pixs++ = (unsigned char)(data);
@@ -1059,7 +1067,7 @@ namespace Visualisers
         int scan_points = ptr->matcher->scan_points;
         int putative_points = ptr->matcher->putative_points;
 
-        if( scan_points == 0 || putative_points == 0 )
+        if( (scan_points == 0 || scan_points > 541 )|| (putative_points == 0  || putative_points > 541 ) )
             return;
 
         scan.reset( new double[scan_points*3] );
