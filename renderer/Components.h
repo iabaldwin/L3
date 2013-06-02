@@ -957,27 +957,26 @@ namespace Visualisers
             glv::draw::translateZ( -50 );
 
             // Obtain the pointer
-            boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
+            //boost::shared_ptr<L3::Histogram<double> > hist_ptr = hist.lock();
 
-            if ( !hist_ptr)
-                return;
+            //if ( !hist_ptr)
+                //return;
 
+            //if( hist_ptr->empty() )
+                //return;
 
-            if( hist_ptr->empty() )
-                return;
+            //L3::ReadLock lock( hist_ptr->mutex );
+            //L3::clone( hist_ptr.get(), plot_histogram.get() );
 
-            L3::ReadLock lock( hist_ptr->mutex );
-            L3::clone( hist_ptr.get(), plot_histogram.get() );
+            //std::pair<float, float> lower_left = hist_ptr->coords(0,0);
+            //std::pair<float, float> upper_right = hist_ptr->coords( hist_ptr->x_bins, hist_ptr->y_bins );
 
-            std::pair<float, float> lower_left = hist_ptr->coords(0,0);
-            std::pair<float, float> upper_right = hist_ptr->coords( hist_ptr->x_bins, hist_ptr->y_bins );
+            //float x_delta = (upper_right.first +lower_left.first)/2.0;
+            //float y_delta = (upper_right.second +lower_left.second)/2.0;
 
-            float x_delta = (upper_right.first +lower_left.first)/2.0;
-            float y_delta = (upper_right.second +lower_left.second)/2.0;
+            //glv::draw::translate( -1*x_delta, -1*y_delta, 0.0  );
 
-            glv::draw::translate( -1*x_delta, -1*y_delta, 0.0  );
-
-            HistogramVoxelRenderer::onDraw3D(g);    
+            //HistogramVoxelRenderer::onDraw3D(g);    
 
         }
 
@@ -998,13 +997,13 @@ namespace Visualisers
             if ( !hist_ptr)
                 return;
 
-            L3::ReadLock lock( hist_ptr->mutex );
+            //L3::ReadLock lock( hist_ptr->mutex );
 
-            if ( !hist_ptr->empty() ) 
-                L3::clone( hist_ptr.get(), plot_histogram.get() );
-            lock.unlock();
+            //if ( !hist_ptr->empty() ) 
+                //L3::clone( hist_ptr.get(), plot_histogram.get() );
+            //lock.unlock();
 
-            HistogramVoxelRenderer::onDraw3D(g);    
+            //HistogramVoxelRenderer::onDraw3D(g);    
         }
 
     };

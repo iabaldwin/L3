@@ -449,7 +449,7 @@ namespace L3
              *  Histogram Bounds
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) );
-            //histogram_bounds_renderer->hist = (*experience->experience_pyramid)[0];
+            histogram_bounds_renderer->hist = (*experience->experience_pyramid)[0];
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
             experience_bounds_toggle->leaf = histogram_bounds_renderer;
             

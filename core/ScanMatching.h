@@ -57,29 +57,19 @@ namespace ScanMatching
             bool match(  const std::pair< double,  boost::shared_ptr< L3::LMS151 > > current_scan, Eigen::Matrix4f& transformation ) ;
     };
 
-    struct Engine : Lockable, Poco::Runnable
+    struct Engine : L3::TemporalObserver, Lockable
     { 
         Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
-            windower(windower),
-            running(true)
+            windower(windower)
         {
             matcher.reset( new ICP() );
        
             current_transformation = Eigen::Matrix4f::Identity();
-       
-            thread.start( *this );
         }
     
         virtual ~Engine()
         {
-            running = false;;
-            if ( thread.isRunning() )
-                thread.join();
         }
-
-        Poco::Thread thread;
-
-        bool running;
 
         Eigen::Matrix4f current_transformation;
 
@@ -91,9 +81,7 @@ namespace ScanMatching
 
         std::deque< Eigen::Matrix4f > trajectory;
 
-        bool update( double t );
-
-        void run();
+        bool update( double time );
     };
 
 }

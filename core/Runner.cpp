@@ -30,7 +30,6 @@ namespace L3
        
         // Pose Provider
         //pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV>( LHLV_iterator.get() ) );
-        //pose_windower.reset( new L3::ConstantDistanceWindower( LHLV_iterator.get(), 60 ) );
         pose_windower.reset( new L3::ConstantDistanceWindower( LHLV_iterator.get(), 40 ) );
        
         // Swathe generator
@@ -44,9 +43,9 @@ namespace L3
         engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
        
         // Predictor
-        //predictor.reset( new L3::Predictor( LHLV_iterator.get() ) );
+        predictor.reset( new L3::Predictor( LHLV_iterator.get() ) );
         
-        (*this)<< pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << pose_windower.get() << swathe_builder.get();
+        (*this) << pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << pose_windower.get() << swathe_builder.get() << engine.get() << predictor.get() ;
 
         current.reset( new L3::SE3( L3::SE3::ZERO() ) );
  
@@ -160,9 +159,9 @@ namespace L3
         /*
          *  Estimate
          */
-        L3::ReadLock algo_lock( this->mutex ); 
+        //L3::ReadLock algo_lock( this->mutex ); 
         *current = algorithm->operator()( projector->cloud, *current );
-        algo_lock.unlock();
+        //algo_lock.unlock();
 
         return true;
     }

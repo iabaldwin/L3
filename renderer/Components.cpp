@@ -612,9 +612,7 @@ namespace Visualisers
         if( cloud_ptr->num_points == 0 ) 
             return;
 
-        //L3::ReadLock lock( cloud_ptr->mutex );
         L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
-        //lock.unlock();
 
         boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
 
@@ -641,8 +639,6 @@ namespace Visualisers
 
         PointCloudRenderer::onDraw3D(g);    
 
-        //if( this->enabled( glv::Property::Maximized ) )
-        //bounds_renderer->onDraw3D(g);
     }
 
     void PointCloudRendererView::update()
@@ -820,13 +816,11 @@ namespace Visualisers
     {
         boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >  scan_ptr = windower.lock();
 
-        if ( !scan_ptr )
+        if ( !scan_ptr || scan_ptr->window.empty() )
             return;
 
-        scan_ptr->getWindow( window );
+        scan = scan_ptr->window.back().second;
 
-        if (window.size() > 0)
-            scan = window.back().second;
     }
 
     /*
@@ -880,7 +874,6 @@ namespace Visualisers
         //vertices[i]( ((rand()%50)-25)+x_offset, ((rand()%50)-25)+y_offset, 0 );
 
         //glv::draw::paint( glv::draw::Points, vertices, colors, 100 );
-
 
         glv::draw::translate( -1*estimates.position->X(), -1*estimates.position->Y(), -30);
 
@@ -966,10 +959,8 @@ namespace Visualisers
             std::vector< L3::SE3 > current_estimates;
             std::vector< double >  current_costs;
 
-            //L3::ReadLock lock( (*it)->pose_estimates->mutex );
             current_estimates.assign( (*it)->pose_estimates->estimates.begin(), (*it)->pose_estimates->estimates.end() );
             current_costs.assign(  (*it)->pose_estimates->costs.begin(), (*it)->pose_estimates->costs.end() );
-            //lock.unlock();
 
             glv::Point3 vertices[ current_estimates.size() ];
             glv::Color  colors[ current_estimates.size() ];
@@ -1014,10 +1005,6 @@ namespace Visualisers
         this->upper.y = max_y;
         this->upper.z = max_z;
     }
-
-    /*
-     *  Scan-matching scan renderer
-     */
 
     /*
      *  Scan-matching trajectory renderer

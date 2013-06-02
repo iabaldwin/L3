@@ -122,30 +122,19 @@ namespace ScanMatching
         return true;
     }
     
-    void Engine::run()
+    bool Engine::update( double )
     {
-        while(running)
-        {
-            // Get the current data
-            L3::WriteLock lock( this->mutex );
-            this->windower->getWindow( window );
-            lock.unlock();
+        Eigen::Matrix4f transformation;
 
-            if ( window.size() > 0 )
-            {
-                L3::WriteLock lock( this->mutex );
+        if( this->windower->window.empty() )
+            return false;
 
-                Eigen::Matrix4f transformation;
+        std::pair< double, boost::shared_ptr< L3::LMS151 > > scan = this->windower->window.back();
 
-                matcher->match( window.back(), transformation ); 
-                current_transformation = current_transformation * transformation;
+        matcher->match( scan, transformation ); 
+        current_transformation = current_transformation * transformation;
 
-                //trajectory.push_back( Eigen::Matrix4f( current_transformation ) );
-           
-                lock.unlock();
-            }
-
-        }
+        //trajectory.push_back( Eigen::Matrix4f( current_transformation ) );
     }
 
 }
