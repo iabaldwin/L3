@@ -612,9 +612,9 @@ namespace Visualisers
         if( cloud_ptr->num_points == 0 ) 
             return;
 
-        L3::ReadLock lock( cloud_ptr->mutex );
+        //L3::ReadLock lock( cloud_ptr->mutex );
         L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
-        lock.unlock();
+        //lock.unlock();
 
         boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
 
@@ -652,8 +652,8 @@ namespace Visualisers
         if( !cloud_ptr )
             return;
 
-        //if( cloud_ptr->num_points > 0 ) 
-            //L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        if( cloud_ptr->num_points > 0 ) 
+            L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
     }
 
     /*
@@ -884,7 +884,7 @@ namespace Visualisers
 
         glv::draw::translate( -1*estimates.position->X(), -1*estimates.position->Y(), -30);
 
-        L3::ReadLock lock( estimates.mutex );
+        //L3::ReadLock lock( estimates.mutex );
         CostRenderer::onDraw3D( g );     
 
     }
@@ -966,10 +966,10 @@ namespace Visualisers
             std::vector< L3::SE3 > current_estimates;
             std::vector< double >  current_costs;
 
-            L3::ReadLock lock( (*it)->pose_estimates->mutex );
+            //L3::ReadLock lock( (*it)->pose_estimates->mutex );
             current_estimates.assign( (*it)->pose_estimates->estimates.begin(), (*it)->pose_estimates->estimates.end() );
             current_costs.assign(  (*it)->pose_estimates->costs.begin(), (*it)->pose_estimates->costs.end() );
-            lock.unlock();
+            //lock.unlock();
 
             glv::Point3 vertices[ current_estimates.size() ];
             glv::Color  colors[ current_estimates.size() ];

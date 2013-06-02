@@ -116,10 +116,10 @@ namespace L3
             
             glv::draw::translate( -1*ptr->pose_estimates->position->X(), -1*ptr->pose_estimates->position->Y(), -15 );
 
-            L3::ReadLock lock( ptr->pose_estimates->mutex );
+            //L3::ReadLock lock( ptr->pose_estimates->mutex );
             std::vector<L3::SE3> estimates( ptr->pose_estimates->estimates.begin(), ptr->pose_estimates->estimates.end() );
             std::vector<double> costs( ptr->pose_estimates->costs.begin(), ptr->pose_estimates->costs.end() );
-            lock.unlock();
+            //lock.unlock();
 
             glv::Point3 vertices[ estimates.size()];
             glv::Color  colors[ estimates.size()];
@@ -166,10 +166,10 @@ namespace L3
             if( !ptr )
                 return;
          
-            L3::ReadLock lock( ptr->pose_estimates->mutex );
+            //L3::ReadLock lock( ptr->pose_estimates->mutex );
             std::vector<L3::SE3> estimates( ptr->pose_estimates->estimates.begin(), ptr->pose_estimates->estimates.end() );
             std::vector<double> costs( ptr->pose_estimates->costs.begin(), ptr->pose_estimates->costs.end() );
-            lock.unlock();
+            //lock.unlock();
            
             L3::WriteLock writer( this->mutex );
             mData.resize( glv::Data::DOUBLE, 2, costs.size() );

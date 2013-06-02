@@ -61,8 +61,6 @@ namespace L3
          */
         void GridEstimates::operator()( const L3::SE3& pose ) 
         {
-            L3::WriteLock( this->mutex );
-
             position.reset( new L3::SE3( pose ) );
             estimates.clear();
 
@@ -85,8 +83,6 @@ namespace L3
          */
         void RotationEstimates::operator()( const L3::SE3& pose )
         {
-            L3::WriteLock( this->mutex );
-
             position.reset( new L3::SE3( pose ) );
             estimates.clear();
 
@@ -105,9 +101,6 @@ namespace L3
         {
             if( PoseEstimates* ptr = dynamic_cast< GridEstimates* > (estimates ) )
             {
-                // Normal
-                L3::WriteLock lock( ptr->mutex );
-
                 boost::math::normal_distribution<double> normal_weighting(0,.100);
 
                 for( std::vector< L3::SE3 >::iterator it = ptr->estimates.begin();
@@ -287,8 +280,6 @@ namespace L3
         template < typename T >
             bool DiscreteEstimator<T>::operator()( PointCloud<T>* swathe, SE3 estimate ) 
             {
-                L3::WriteLock master( this->mutex );
-
                 // Rebuild pose estimates
                 this->pose_estimates->operator()( estimate );
 
@@ -315,14 +306,13 @@ namespace L3
 
                 // Synch
                 group.wait();
+                
                 return true;
             }
 
         template < typename T>
             SE3 IterativeDescent<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
-                L3::ReadLock swathe_lock( swathe->mutex );
-
                 GridWeighting weighting(estimate);
 
                 discrete_estimators[0]->cost_function = this->cost_function.get();
@@ -363,7 +353,6 @@ namespace L3
             {
                 // Lock the experience histogram
                 L3::ReadLock histogram_read_lock( (*pyramid)[1]->mutex );
-                L3::ReadLock swathe_lock( swathe->mutex );
 
                 if (swathe->num_points == 0 ) 
                     return L3::SE3::ZERO();

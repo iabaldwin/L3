@@ -265,8 +265,8 @@ namespace L3
             /*
              *  Velocity plots
              */
-            //linear_velocity_plotter->assignIterator( runner->LHLV_iterator );
-            //rotational_velocity_plotter->assignIterator( runner->LHLV_iterator );
+            linear_velocity_plotter->assignIterator( runner->LHLV_iterator );
+            rotational_velocity_plotter->assignIterator( runner->LHLV_iterator );
 
             /*
              *  Scale
@@ -289,10 +289,10 @@ namespace L3
             /*
              *  Pose Iterator
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
-            //iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
-            //*composite << (*iterator_renderer);
-            //iterator_renderer_toggle->leaf = iterator_renderer;
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
+            iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
+            *composite << (*iterator_renderer);
+            iterator_renderer_toggle->leaf = iterator_renderer;
 
             /*
              *  Static map-view
@@ -327,36 +327,36 @@ namespace L3
             /*
              *  Run-time swathe
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( runtime_cloud_renderer_leaf.get() ) );
-            //runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->point_cloud, runner->provider ));
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
-            // Toggle
-            //point_cloud_visualiser_toggle->leaf = runtime_cloud_renderer_leaf;
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( runtime_cloud_renderer_leaf.get() ) );
+            runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->point_cloud, runner->provider ));
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
+            //  Toggle
+            point_cloud_visualiser_toggle->leaf = runtime_cloud_renderer_leaf;
 
             /*
              * Run-time swathe bounds
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( point_cloud_bounds_renderer.get() ) );
-            //point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( runtime_cloud_renderer_leaf->plot_cloud ) );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
-            //point_cloud_bounds_toggle->leaf = point_cloud_bounds_renderer;
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( point_cloud_bounds_renderer.get() ) );
+            point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( runtime_cloud_renderer_leaf->plot_cloud ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
+            point_cloud_bounds_toggle->leaf = point_cloud_bounds_renderer;
 
             /*
              *  Swathe cloud, separate view
              */
-            //runtime_cloud_renderer_view->cloud = runner->point_cloud;
-            //runtime_cloud_renderer_view->current_estimate = runner->current;
+            runtime_cloud_renderer_view->cloud = runner->point_cloud;
+            runtime_cloud_renderer_view->current_estimate = runner->current;
 
             /*
              *  Scan renderers
              */
-            //horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
-            //vertical_scan_renderer->windower = runner->vertical_LIDAR;
+            horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
+            vertical_scan_renderer->windower = runner->vertical_LIDAR;
 
             /*
              *  Scan matcher
              */
-            //scan_matching_renderer->engine = runner->engine;
+            scan_matching_renderer->engine = runner->engine;
 
             /*
              *  Oracle
@@ -437,36 +437,36 @@ namespace L3
             /*
              *  Experience & location
              */
-            //experience_location->experience = experience;
-            //experience_location->provider = runner->provider;
+            experience_location->experience = experience;
+            experience_location->provider = runner->provider;
 
             /*
              *  Stand-alone pyramid renderer
              */
-            //pyramid_renderer->loadPyramid( experience->experience_pyramid );
+            pyramid_renderer->loadPyramid( experience->experience_pyramid );
 
             /*
              *  Histogram Bounds
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) );
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) );
             //histogram_bounds_renderer->hist = (*experience->experience_pyramid)[0];
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
-            //experience_bounds_toggle->leaf = histogram_bounds_renderer;
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
+            experience_bounds_toggle->leaf = histogram_bounds_renderer;
             
             /*
              *  Histogram voxel
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf .get() ) );
-            //histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
-            //experience_voxel_toggle->leaf = histogram_voxel_renderer_experience_leaf; 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf .get() ) );
+            histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
+            experience_voxel_toggle->leaf = histogram_voxel_renderer_experience_leaf; 
             
             /*
              *  Predicted estimates
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            //algorithm_costs_renderer->algorithm = runner->algorithm;
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
+            algorithm_costs_renderer->algorithm = runner->algorithm;
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
             
             /*
              *  Experience overview
@@ -476,36 +476,36 @@ namespace L3
             /*
              *  Table based algorithm renderer
              */
-            //algorithm_renderer = AlgorithmRendererFactory::Produce( runner->algorithm, temporal_updater.get() );
+            algorithm_renderer = AlgorithmRendererFactory::Produce( runner->algorithm, temporal_updater.get() );
 
-            //if (algorithm_renderer)
-            //{
-                //// Already there?
-                //std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), algorithm_renderer );
+            if (algorithm_renderer)
+            {
+                // Already there?
+                std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), algorithm_renderer );
 
-                //if ( it != tables.end() )
-                    //tables.erase( it );
-                //else
-                //{
-                    //tables.push_back( algorithm_renderer );
-                    //top << *algorithm_renderer;
-                //}
-            //}
+                if ( it != tables.end() )
+                    tables.erase( it );
+                else
+                {
+                    tables.push_back( algorithm_renderer );
+                    top << *algorithm_renderer;
+                }
+            }
 
             /*
              *  Debug algorithm renderer - render costs,etc at INS pose
              */
-            //if (!debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )))
-            //{
-                //std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), debug_algorithm_renderer );
+            if (!debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )))
+            {
+                std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), debug_algorithm_renderer );
           
-                //if ( it != tables.end() )
-                    //tables.erase( it );
-            //}
+                if ( it != tables.end() )
+                    tables.erase( it );
+            }
 
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
-            //particle_filter_renderer.reset( new ParticleFilterRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) ) );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
+            particle_filter_renderer.reset( new ParticleFilterRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
         }
     }
 }

@@ -204,7 +204,7 @@ namespace Visualisers
      */
     void PredictorRenderer::onDraw3D( glv::GLV& g )
     {
-        L3::ReadLock( estimator->mutex );
+        //L3::ReadLock( estimator->mutex );
 
         for ( std::vector< L3::SE3 >::iterator it = estimator->estimates.begin();
                 it != estimator->estimates.end(); 

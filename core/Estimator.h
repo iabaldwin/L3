@@ -16,7 +16,8 @@ namespace L3
 namespace Estimator
 {
 
-    struct PoseEstimates : Lockable
+    //struct PoseEstimates : Lockable
+    struct PoseEstimates 
     {
 
         PoseEstimates() : position( new L3::SE3( L3::SE3::ZERO() ) )
