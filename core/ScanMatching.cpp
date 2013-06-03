@@ -131,10 +131,9 @@ namespace ScanMatching
 
         std::pair< double, boost::shared_ptr< L3::LMS151 > > scan = this->windower->window.back();
 
+        L3::WriteLock write_lock( this->mutex );
         matcher->match( scan, transformation ); 
         current_transformation = current_transformation * transformation;
-
-        //trajectory.push_back( Eigen::Matrix4f( current_transformation ) );
     }
 
 }

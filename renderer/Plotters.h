@@ -36,16 +36,16 @@ namespace L3
                 this->iterator = LHLV_iterator;
             }
 
-            //void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
-            //{
-                //L3::ReadLock( this->mutex );
+            void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
+            {
+                L3::ReadLock( this->mutex );
 
-                ////while(i()){
-                    ////double x = i[0];
-                    ////double y = d.at<double>(0, i[0]);
-                    ////g.addVertex(x, y);
-                ////}
-            //}
+                while(i()){
+                    double x = i[0];
+                    double y = d.at<double>(0, i[0]);
+                    g.addVertex(x, y);
+                }
+            }
 
             void update()
             {

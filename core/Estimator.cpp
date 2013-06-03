@@ -192,7 +192,6 @@ namespace L3
                 int size = experience.hist->nx*experience.hist->ny;
 
                 return -1*calculateMutualInformation( experience.hist->bin, swathe.hist->bin, size);
-
             }
 
         template < typename T >
@@ -344,8 +343,6 @@ namespace L3
                 //refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
 
                 return refined;
-            
-                return estimate;
             }
 
         template < typename T>
@@ -441,7 +438,6 @@ namespace L3
 
                 gsl_vector* res = gsl_multimin_fminimizer_x ( s );
 
-                //L3::SE3 pose( gsl_vector_get(s->x, 0), gsl_vector_get(s->x, 1), 0.0, 0.0, 0.0, gsl_vector_get(s->x, 2) );
                 L3::SE3 pose( gsl_vector_get(res, 0), gsl_vector_get(res, 1), 0.0, 0.0, 0.0, gsl_vector_get(res, 2) );
               
                 return  pose;

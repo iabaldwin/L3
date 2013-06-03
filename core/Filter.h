@@ -46,8 +46,8 @@ namespace Estimator
         {
             hypotheses.resize( num_particles );
         
-            sampled_swathe.reset( new PointCloud<T>() );
-            
+            sampled_swathe = boost::make_shared< PointCloud<T> >();
+
             L3::allocate( sampled_swathe.get(), 4*1000 );
         }
             

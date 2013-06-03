@@ -1,5 +1,7 @@
 #include "Runner.h"
 
+#include <boost/make_shared.hpp>
+
 namespace L3
 {
 
@@ -12,42 +14,42 @@ namespace L3
             stand_alone(false)
     {
         // Constant time iterator over poses
-        pose_iterator.reset( new L3::ConstantTimeIterator<L3::SE3>( dataset->pose_reader ) );
-        LHLV_iterator.reset( new L3::ConstantTimeIterator<L3::LHLV> ( dataset->LHLV_reader ) );  
+        pose_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::SE3> >( dataset->pose_reader );
+        LHLV_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::LHLV> >( dataset->LHLV_reader );  
        
         // LIDAR iterators
-        horizontal_LIDAR.reset( new L3::ConstantTimeIterator<L3::LMS151>( dataset->LIDAR_readers[ mission->horizontal] ));
-        vertical_LIDAR.reset( new L3::ConstantTimeIterator<L3::LMS151>( dataset->LIDAR_readers[ mission->declined] ));
+        horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->horizontal] );
+        vertical_LIDAR   = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->declined] );
 
         // Point-clouds
-        point_cloud.reset( new L3::PointCloud<double>() );
-        projection.reset( new L3::SE3( L3::SE3::ZERO() ) );
+        point_cloud = boost::make_shared< L3::PointCloud<double> >();
+        projection = boost::make_shared< L3::SE3 >();
 
         // Get the calibratoin
         L3::Configuration::convert( mission->lidars[mission->declined], *projection );
 
-        projector.reset( new L3::Projector<double>( projection.get(), point_cloud.get() ) );
+        projector = boost::make_shared< L3::Projector<double> >( projection.get(), point_cloud.get() );
        
         // Pose Provider
-        //pose_windower.reset( new L3::ConstantTimeWindower< L3::LHLV>( LHLV_iterator.get() ) );
-        pose_windower.reset( new L3::ConstantDistanceWindower( LHLV_iterator.get(), 40 ) );
+        //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 40 );
        
         // Swathe generator
-        //swathe_builder.reset( new L3::RawSwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
-        swathe_builder.reset( new L3::BufferedSwatheBuilder( pose_windower.get(), vertical_LIDAR.get() ) );
+        //swathe_builder = boost::make_shared< L3::RawSwatheBuilder > ( pose_windower.get(), vertical_LIDAR.get() );
+        swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
    
         // INS pose
-        oracle.reset( new L3::ConstantTimeWindower< L3::SE3 >( pose_iterator.get() ) );
+        oracle = boost::make_shared< L3::ConstantTimeWindower< L3::SE3 > > ( pose_iterator.get() );
 
         // Scan matching engine
-        engine.reset( new L3::ScanMatching::Engine( horizontal_LIDAR.get() ) );
+        engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
        
         // Predictor
-        predictor.reset( new L3::Predictor( LHLV_iterator.get() ) );
+        predictor = boost::make_shared< L3::Predictor >( LHLV_iterator.get() );
         
         (*this) << pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << pose_windower.get() << swathe_builder.get() << engine.get() << predictor.get() ;
 
-        current.reset( new L3::SE3( L3::SE3::ZERO() ) );
+        current = boost::make_shared< L3::SE3 >( L3::SE3::ZERO() );
  
         // This, should be TMP
         this->provider = oracle;
