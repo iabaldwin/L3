@@ -1013,6 +1013,17 @@ namespace Visualisers
     void ScanMatchingTrajectoryRenderer::onDraw3D( glv::GLV& g )
     {
         boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
+         
+        if( enabled( glv::Maximized ) )
+        {
+            far(300);
+            glv::draw::translateZ( -250 );
+        }
+        else
+            glv::draw::translateZ( -25 );
+
+        L3::SE3 zero;
+        CoordinateSystem( zero ).onDraw3D(g);
 
         if( engine_ptr )
         {
@@ -1020,19 +1031,18 @@ namespace Visualisers
             std::deque< Eigen::Matrix4f > trajectory( engine_ptr->trajectory.begin(), engine_ptr->trajectory.end() );
             lock.unlock();
 
+            Eigen::Matrix4f first = trajectory.back();
+
+            glv::draw::translate( -1*first(0,3), -1*first(1,3), 0.0 );
+
             for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
                     it != trajectory.end();
                     it++ )
             {
                 L3::SE3 pose;
                 pose.setHomogeneous( *it );
-                CoordinateSystem( pose, 20 ).onDraw3D(g);
-
-                std::cout << *it << std::endl;
+                CoordinateSystem( pose, 2 ).onDraw3D(g);
             }
-
-            glv::draw::translateZ( -150 );
-
         }
     }
 

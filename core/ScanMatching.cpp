@@ -1,6 +1,6 @@
 #include "ScanMatching.h"
 
-#include "ICP/icpPointToPlane.h"
+#define TRAJECTORY_LIMIT 200 
 
 int do_projection( const L3::LMS151& current_scan, double* matrix, double threshold = 5.0 )
 {
@@ -89,29 +89,31 @@ namespace ScanMatching
             cloud_out->points[i].z = *cloud_ptr++;
         }
 
-        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ>* icp = new pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ>();
+        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
 
-        icp->setMaxCorrespondenceDistance (0.05);
+        //icp.setMaxCorrespondenceDistance (0.05);
         // Set the maximum number of iterations (criterion 1)
-        icp->setMaximumIterations (50);
+        icp.setMaximumIterations (20);
         // Set the transformation epsilon (criterion 2)
-        icp->setTransformationEpsilon (1e-8);
+        //icp.setTransformationEpsilon (1e-8);
         // Set the euclidean distance difference epsilon (criterion 3)
-        icp->setEuclideanFitnessEpsilon (1);
+        //icp.setEuclideanFitnessEpsilon (1);
 
-        icp->setInputCloud(cloud_in);
-        icp->setInputTarget(cloud_out);
+        //icp.setInputSource(cloud_in);
+        //icp.setInputTarget(cloud_out);
+
+        icp.setInputSource(cloud_out);
+        icp.setInputTarget(cloud_in);
 
         // Alignment
         pcl::PointCloud<pcl::PointXYZ>* final = new pcl::PointCloud<pcl::PointXYZ>();
-         
-        //icp->align(*final);
-
+        icp.align(*final);
         delete final;
-        delete icp;
 
-        //// Compute instantaneous velocity
-        //instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
+        transformation = icp.getFinalTransformation();
+
+        // Compute instantaneous velocity
+        instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
 
         // Do swap
         scan.swap( putative );
@@ -119,7 +121,7 @@ namespace ScanMatching
        
         previous_time = current_scan.first;
 
-        return true;
+        return icp.hasConverged();
     }
     
     bool Engine::update( double )
@@ -132,9 +134,15 @@ namespace ScanMatching
         std::pair< double, boost::shared_ptr< L3::LMS151 > > scan = this->windower->window.back();
 
         L3::WriteLock write_lock( this->mutex );
-        matcher->match( scan, transformation ); 
-        current_transformation = current_transformation * transformation;
-    }
 
+        if( matcher->match( scan, transformation ) ) 
+        {
+            current_transformation *= transformation;
+            
+            if( trajectory.size() > TRAJECTORY_LIMIT)
+                trajectory.pop_front();
+            trajectory.push_back( current_transformation );
+        }
+    }
 }
 }

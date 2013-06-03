@@ -38,13 +38,14 @@ namespace L3
 
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {
-                L3::ReadLock( this->mutex );
-
+                L3::ReadLock reader( this->mutex );
                 while(i()){
                     double x = i[0];
                     double y = d.at<double>(0, i[0]);
                     g.addVertex(x, y);
                 }
+                reader.unlock();
+
             }
 
             void update()
@@ -62,7 +63,7 @@ namespace L3
 
                 if ( window.size() > 0 )
                 {
-                    L3::WriteLock( this->mutex );
+                    L3::WriteLock writer( this->mutex );
                    
                     mData.resize( glv::Data::DOUBLE, 1, window.size() );
 
@@ -80,6 +81,7 @@ namespace L3
                         mData.assign( d, i[0], i[1] );
                     }
 
+                    writer.unlock();
                 }
 
                 boost::shared_ptr< glv::View > parent = plot_parent.lock();
