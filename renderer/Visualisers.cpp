@@ -12,7 +12,7 @@ namespace Visualisers
     PoseChainRenderer::PoseChainRenderer( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >* poses ) 
     {
         for( std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it=poses->begin(); it < poses->end(); it+= 100 )
-            coords.push_back( boost::shared_ptr<L3::Visualisers::CoordinateSystem>( new L3::Visualisers::CoordinateSystem( *(it->second) ) ) );
+            coords.push_back( boost::make_shared<L3::Visualisers::CoordinateSystem>( boost::ref( *(it->second) ) ) );
     }
 
     void PoseChainRenderer::onDraw3D(glv::GLV& g)
@@ -63,19 +63,18 @@ namespace Visualisers
         // Projector  
         L3::SE3 calibration( 0, 0, 0, 0, -1.57, 0 ); 
        
-        point_cloud.reset( new L3::PointCloud<double>() );
-        projector.reset( new L3::Projector<double>( &calibration, point_cloud.get() ) );
+        point_cloud = boost::make_shared< L3::PointCloud<double> >();
+        projector = boost::make_shared< L3::Projector<double> >( &calibration, point_cloud.get() );
   
-        //TODO : FIX
-        point_colors.reset( new glv::Color[10*100000] );
-        point_vertices.reset( new glv::Point3[10*100000] );
+        point_colors = boost::make_shared< glv::Color[]>( 10*100000 );
+        point_vertices = boost::make_shared< glv::Point3[] >( 10*100000 );
  
     }
     
     void SwatheRenderer::realloc( int size )
     {
-        pose_colors.reset( new glv::Color[size] );
-        pose_vertices.reset( new glv::Point3[size] );
+        pose_colors = boost::make_shared< glv::Color[] >( size );
+        pose_vertices = boost::make_shared< glv::Point3[] >( size );
 
         current_alloc = size;
     }
@@ -110,11 +109,11 @@ namespace Visualisers
     {
         pt_limit = 10*10000;
 
-        point_vertices.reset( new glv::Point3[pt_limit] );
-        point_colors.reset( new glv::Color[pt_limit] );
+        point_vertices = boost::make_shared< glv::Point3[] >(pt_limit);;
+        point_colors   = boost::make_shared< glv::Color[] >( pt_limit);
   
-        experience_nodes_vertices.reset( new glv::Point3[experience->sections.size()] );
-        experience_nodes_colors.reset( new glv::Color[experience->sections.size()] );
+        experience_nodes_vertices = boost::make_shared< glv::Point3[] >( experience->sections.size() );
+        experience_nodes_colors   = boost::make_shared< glv::Color[] >( experience->sections.size() );
     }
 
     void ExperienceRenderer::addPoseProvider( L3::PoseProvider* provider )
@@ -149,8 +148,8 @@ namespace Visualisers
     {
         positions.resize( history );
    
-        vertices.reset( new glv::Point3[history] );
-        colors.reset( new glv::Color[history] );
+        vertices = boost::make_shared< glv::Point3[] >( history );
+        colors   = boost::make_shared< glv::Color[] >( history );
     }
 
 

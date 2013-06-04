@@ -372,7 +372,8 @@ namespace Estimator
                 : Algorithm<T>(cost_function), 
                     pyramid(experience_pyramid),
                     max_iterations(max_iterations),
-                    tolerance(tolerance)
+                    tolerance(tolerance),
+                    pyramid_index(2)
             {
                 //const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2;
                 const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2rand;
@@ -388,8 +389,8 @@ namespace Estimator
                 MinimisationParameters::global_minimiser = this;
           
             }
-            
-            int max_iterations, algorithm_iterations;
+                
+            int max_iterations, algorithm_iterations, pyramid_index;
 
             double tolerance;
 

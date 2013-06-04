@@ -1064,7 +1064,7 @@ namespace Visualisers
         int scan_points = ptr->matcher->scan_points;
         int putative_points = ptr->matcher->putative_points;
 
-        if( (scan_points == 0 || scan_points > 541 )|| (putative_points == 0  || putative_points > 541 ) )
+        if( (scan_points <= 0 || scan_points > 541 )|| (putative_points <= 0  || putative_points > 541 ) )
             return;
 
         scan.reset( new double[scan_points*3] );
@@ -1475,7 +1475,7 @@ namespace Visualisers
     };
 
 
-    Statistics::Statistics() : glv::Table( "<," )
+    Statistics::Statistics() : glv::Table( "<,", 0, 0 )
     {
         observer_update.reset(      new TextRenderer<double>() );
         swathe_generation.reset(    new TextRenderer<double>() );
@@ -1483,8 +1483,11 @@ namespace Visualisers
         estimation.reset(           new TextRenderer<double>() );
         memory_statistics.reset(    new MemoryStatistics() );
 
-        observer_update->enable( glv::DrawBorder );
-        swathe_generation->enable( glv::DrawBorder );
+        /*
+         *DBG
+         */
+        //observer_update->enable( glv::DrawBorder );
+        //swathe_generation->enable( glv::DrawBorder );
 
         observer_update->paddingY( 7 );
         swathe_generation->paddingY( 7 );
@@ -1534,7 +1537,7 @@ namespace Visualisers
             // Create the plottable
             boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
             // Create the plot
-            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottable ) );
+            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 540, 80), *plottable ) );
            
             // Label
             boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( history_labels[i] );
@@ -1548,7 +1551,6 @@ namespace Visualisers
             plot->numbering(false,0);
             plot->range( 0, 100, 0 );
             plot->range( 0, 1.1, 1 );
-            
             
             (*this) << *plot;
            

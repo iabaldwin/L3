@@ -99,16 +99,12 @@ namespace ScanMatching
         // Set the euclidean distance difference epsilon (criterion 3)
         //icp.setEuclideanFitnessEpsilon (1);
 
-        //icp.setInputSource(cloud_in);
-        //icp.setInputTarget(cloud_out);
-
         icp.setInputSource(cloud_out);
         icp.setInputTarget(cloud_in);
 
         // Alignment
-        pcl::PointCloud<pcl::PointXYZ>* final = new pcl::PointCloud<pcl::PointXYZ>();
-        //icp.align(*final);
-        delete final;
+        pcl::PointCloud<pcl::PointXYZ> final;
+        icp.align(final);
 
         transformation = icp.getFinalTransformation();
 
@@ -139,9 +135,9 @@ namespace ScanMatching
         {
             current_transformation *= transformation;
             
-            //if( trajectory.size() > TRAJECTORY_LIMIT)
-                //trajectory.pop_front();
-            //trajectory.push_back( current_transformation );
+            if( trajectory.size() > TRAJECTORY_LIMIT)
+                trajectory.pop_front();
+            trajectory.push_back( current_transformation );
         }
     }
 }

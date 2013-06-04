@@ -38,7 +38,6 @@ enum CUSTOM_EVENT_TYPES
 
                 switch (k.key())
                 {
-                    //case 96:
                     case '`':
                         this->broadcastEvent( static_cast< glv::Event::t>( OVERLAY_TOGGLE ) );
 

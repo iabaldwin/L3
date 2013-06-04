@@ -60,14 +60,14 @@ struct SwatheRenderer : Leaf
     unsigned int        current_alloc;
     L3::SwatheBuilder*  swathe_builder;
         
-    boost::shared_array< glv::Color >   pose_colors;
-    boost::shared_array< glv::Point3 >  pose_vertices;
-    boost::shared_array< glv::Color >   point_colors  ;
-    boost::shared_array< glv::Point3 >  point_vertices;
+    boost::shared_ptr< glv::Color[] >   pose_colors;
+    boost::shared_ptr< glv::Point3[] >  pose_vertices;
+    boost::shared_ptr< glv::Color[] >   point_colors  ;
+    boost::shared_ptr< glv::Point3[] >  point_vertices;
 
     double                                      x,y;
     boost::shared_ptr<L3::PointCloud<double> >  point_cloud;
-    std::auto_ptr<L3::Projector<double> >       projector;
+    boost::shared_ptr<L3::Projector<double> >   projector;
 
     void realloc( int size );
 
@@ -84,11 +84,11 @@ struct ExperienceRenderer : Leaf
 
     int                                 pt_limit, pt_counter, sample_counter; 
     boost::shared_ptr<L3::Experience>   experience;
-    boost::shared_array< glv::Point3 >  point_vertices;
-    boost::shared_array< glv::Color >   point_colors;
+    boost::shared_ptr< glv::Point3[] >  point_vertices;
+    boost::shared_ptr< glv::Color[] >   point_colors;
     
-    boost::shared_array< glv::Point3 >  experience_nodes_vertices;
-    boost::shared_array< glv::Color >   experience_nodes_colors;
+    boost::shared_ptr< glv::Point3[] >  experience_nodes_vertices;
+    boost::shared_ptr< glv::Color[] >   experience_nodes_colors;
     
     L3::PoseProvider*                   pose_provider;
 
@@ -126,8 +126,8 @@ struct PoseProviderRenderer : Leaf
 {
     PoseProviderRenderer( L3::PoseProvider* provider ) ;
 
-    boost::shared_array< glv::Color >       colors;
-    boost::shared_array< glv::Point3 >      vertices;
+    boost::shared_ptr< glv::Color[] >       colors;
+    boost::shared_ptr< glv::Point3[] >      vertices;
 
     int                                     counter, history;
     L3::PoseProvider*                       pose_provider;
@@ -146,18 +146,18 @@ struct ScanRenderer : Leaf
     ScanRenderer( L3::SwatheBuilder* builder ) : swathe_builder(builder)
     {
     
-        point_colors.reset( new glv::Color[541] );
-        point_vertices.reset( new glv::Point3[541] );
+        point_colors   = boost::make_shared< glv::Color[]>(541);
+        point_vertices = boost::make_shared< glv::Point3[] >( 541 );
   
-        calibration.reset( new L3::SE3( 0, 0, -1.57, 0, 0, 0 ) );
+        calibration = boost::make_shared< L3::SE3 >( 0, 0, -1.57, 0, 0, 0 );
 
-        cloud.reset( new L3::PointCloud<double>() );
+        cloud = boost::make_shared< L3::PointCloud<double> >();
 
-        projector.reset( new L3::Projector<double>( calibration.get(), cloud.get() ) );
+        projector = boost::make_shared< L3::Projector<double> >( calibration.get(), cloud.get() );
     }
 
-    boost::shared_array< glv::Color >   point_colors;
-    boost::shared_array< glv::Point3 >  point_vertices;
+    boost::shared_ptr< glv::Color[] >   point_colors;
+    boost::shared_ptr< glv::Point3[] >  point_vertices;
     
     L3::SwatheBuilder*  swathe_builder;
     boost::shared_ptr< L3::Projector<double> > projector;

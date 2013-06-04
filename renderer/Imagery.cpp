@@ -40,8 +40,6 @@ namespace Visualisers
             b.upper_x = size*scale*multiplier-x_offset;
             b.upper_y = size*scale*multiplier-y_offset;
 
-
-
             return boost::make_shared<LocaleRenderer>( data, b  );
         }
 
@@ -66,7 +64,6 @@ namespace Visualisers
 
             b.upper_x = 100.0-x_offset;
             b.upper_y = 100.0-y_offset;
-
 
             return boost::make_shared<LocaleRenderer>( data, b  );
         }

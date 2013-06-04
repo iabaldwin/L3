@@ -1,5 +1,7 @@
 #include "RenderCore.h"
 
+#include <boost/make_shared.hpp>
+
 namespace L3
 {
 namespace Visualisers
@@ -28,7 +30,7 @@ namespace Visualisers
 
         num_tables = tables->size();
 
-        page_pointer.reset( new glv::Buttons( rect, num_tables, 1 ,false, true));
+        page_pointer = boost::make_shared< glv::Buttons >( rect, num_tables, 1 ,false, true);
         this->operator<<( *page_pointer );
 
         page_pointer->maximize();

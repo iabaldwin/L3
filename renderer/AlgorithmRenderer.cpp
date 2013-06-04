@@ -99,7 +99,6 @@ namespace L3
             labels.push_back( algorithm_label ); 
 
             this->operator<<( *algorithm_label );
-
             this->arrange();
         }
 

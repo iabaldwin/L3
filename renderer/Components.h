@@ -997,13 +997,13 @@ namespace Visualisers
             if ( !hist_ptr)
                 return;
 
-            //L3::ReadLock lock( hist_ptr->mutex );
+            L3::ReadLock lock( hist_ptr->mutex );
 
-            //if ( !hist_ptr->empty() ) 
-                //L3::clone( hist_ptr.get(), plot_histogram.get() );
-            //lock.unlock();
+            if ( !hist_ptr->empty() ) 
+                L3::clone( hist_ptr.get(), plot_histogram.get() );
+            lock.unlock();
 
-            //HistogramVoxelRenderer::onDraw3D(g);    
+            HistogramVoxelRenderer::onDraw3D(g);    
         }
 
     };

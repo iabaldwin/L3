@@ -14,8 +14,9 @@ namespace L3
     {
         expression.reset( new boost::regex("^_" ) );
 
-        member_function_map.insert( std::make_pair( "_load",            std::make_pair( &CommandInterface::load ,               "Load a dataset, for viewing" ) ));
-        member_function_map.insert( std::make_pair( "_estimate",        std::make_pair( &CommandInterface::estimate ,           "Load a dataset, for estimation" ) ) );
+        member_function_map.insert( std::make_pair( "_load",            std::make_pair( &CommandInterface::load,                "Load a dataset, for viewing" ) ));
+        member_function_map.insert( std::make_pair( "_exp",             std::make_pair( &CommandInterface::experience,          "Load an experience" ) ));
+        member_function_map.insert( std::make_pair( "_estimate",        std::make_pair( &CommandInterface::estimate,            "Load a dataset, for estimation" ) ) );
         member_function_map.insert( std::make_pair( "_algo",            std::make_pair( &CommandInterface::algo,                "Set current estimation algorithm" ) ) );
         member_function_map.insert( std::make_pair( "_quit",            std::make_pair( &CommandInterface::quit,                "Leave" ) ) );
         member_function_map.insert( std::make_pair( "_script",          std::make_pair( &CommandInterface::script,              "Execute a script" ) ) );
@@ -120,7 +121,6 @@ namespace L3
 
         container->mission.reset( new L3::Configuration::Mission( *container->dataset ) );
         container->runner.reset( new L3::DatasetRunner( container->dataset.get(), container->mission.get() ) );
-        container->runner->start();
         layout->load( container->runner.get() );
 
         return std::make_pair( true, "CI::Loaded dataset \t\t<" + load_copy + ">" );
@@ -159,6 +159,31 @@ namespace L3
         return std::make_pair( true, "CI::Loaded dataset \t\t<" + load_copy + ">" );
     
     }
+    
+    std::pair< bool, std::string> CommandInterface::experience( const std::string& load_command )
+    {
+        if (!container)
+            return std::make_pair( false, "CI::No associated container: " + load_command); 
+
+        try
+        {
+            std::string load_copy( load_command );
+            ltrim(load_copy);
+        
+            L3::Dataset experience_dataset( load_copy );
+            L3::ExperienceLoader experience_loader( experience_dataset );
+           //boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
+
+            container->experience = experience_loader.experience;
+            
+            return std::make_pair( true, "CI::Experience <: " + load_command + "> loaded" ); 
+
+        }
+        catch ( ... )
+        {
+            return std::make_pair( false, "CI::Failed to load experience <: " + load_command + "> loaded" ); 
+        }
+    }
 
     std::pair< bool, std::string> CommandInterface::algo( const std::string& load_command )
     {
@@ -188,7 +213,9 @@ namespace L3
     {
         std::stringstream help;
 
-        help << std::endl << "--------HELP-----------" << std::endl;;
+        help << std::setfill(' ') << std::setw(20);
+
+        help << "\n--------HELP-----------\n";
       
         for( std::map<std::string, std::pair< command_interpreter, std::string > >::iterator it = member_function_map.begin();
                 it != member_function_map.end();
@@ -399,13 +426,13 @@ namespace L3
         
     std::pair< bool, std::string > CommandInterface::stop( const std::string& command )
     {
-        container->runner->stop();
+        container->runner->paused = true;
         return std::make_pair( true, "CI::Stopped" );
     }
 
     std::pair< bool, std::string > CommandInterface::start( const std::string& command )
     {
-        container->runner->start();
+        container->runner->paused = false;
         return std::make_pair( true, "CI::Started" );
     }
 

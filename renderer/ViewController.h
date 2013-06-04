@@ -128,8 +128,8 @@ struct CompositeController : Controller
 
     CompositeController( glv::View3D* view, control_t& position ) : Controller(position)
     {
-        mouse_down_controller.reset( new MouseDownController( origin_x, origin_y ) );
-        mouse_drag_controller.reset( new MouseDragController( current, origin_x, origin_y ) );
+        mouse_down_controller = boost::make_shared< MouseDownController >( boost::ref( origin_x), boost::ref( origin_y ));
+        mouse_drag_controller = boost::make_shared< MouseDragController >( boost::ref( current), boost::ref( origin_x ), boost::ref( origin_y ) );
 
         view->addHandler( glv::Event::MouseDown, *mouse_down_controller );
         view->addHandler( glv::Event::MouseDrag, *mouse_drag_controller );

@@ -231,7 +231,6 @@ namespace L3
                 double diff[size];
 
                 std::transform( experience.hist->bin, experience.hist->bin+size, swathe.hist->bin, diff, std::minus<double>() );
-                //std::generate( diff, diff+size, std::bind2nd( std::ptr_fun( pow ), 2 ) );
                 std::for_each( diff, diff+size, std::bind2nd( std::ptr_fun( pow ), 2 ) );
                 double retval = std::accumulate( diff, diff+size, 0.0  );
 
@@ -396,7 +395,7 @@ namespace L3
             {
                 L3::WriteLock   master( this->mutex );
                 L3::ReadLock    swathe_lock( swathe->mutex );               
-                L3::ReadLock    histogram_lock( (*this->pyramid)[1]->mutex );
+                L3::ReadLock    histogram_lock( (*this->pyramid)[this->pyramid_index]->mutex );
 
                 _cost_function = this->cost_function.get();
 
@@ -453,8 +452,7 @@ namespace L3
 
             evaluations.push_back( pose_estimate );
 
-            //Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[1].get() , this->cost_function.get(), cost.begin() )();
-            Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[1].get() , this->_cost_function, cost.begin() )();
+            Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[this->pyramid_index].get() , this->_cost_function, cost.begin() )();
 
             return cost[0];
         }

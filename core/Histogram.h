@@ -160,7 +160,10 @@ namespace L3
             ~HistogramUniformDistance()
             {
                 if( this->hist )
+                {
                     gsl_histogram2d_free( this->hist );
+                    this->hist=NULL; 
+                }
             }
 
             float bins_per_metre;

@@ -37,6 +37,7 @@ namespace L3
          *  Command functions
          */
         std::pair< bool, std::string > load( const std::string& command );
+        std::pair< bool, std::string > experience( const std::string& command );
         std::pair< bool, std::string > estimate( const std::string& command );
         std::pair< bool, std::string > algo( const std::string& command );
         std::pair< bool, std::string > print( const std::string& command );

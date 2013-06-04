@@ -130,7 +130,7 @@ namespace Visualisers
                                                                             
         LocaleRendererMovable( ImageData data, image_bounds b ) 
         {
-            image_renderer.reset( new ImageRenderer( data, b ) );
+            image_renderer = boost::make_shared< ImageRenderer >( boost::ref( data ), b );
         }
 
         boost::shared_ptr< ImageRenderer > image_renderer;
@@ -149,7 +149,7 @@ namespace Visualisers
     {
         LocaleRenderer( ImageData data, image_bounds b ) 
         {
-            image_renderer.reset( new ImageRenderer( data, b ) );
+            image_renderer = boost::make_shared< ImageRenderer >( boost::ref( data ), b );
         }
 
         boost::shared_ptr< ImageRenderer > image_renderer;

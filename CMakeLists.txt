@@ -1,17 +1,17 @@
 #set(CMAKE_CXX_COMPILER "/Users/ian/code/thirdparty/checker-274/libexec/c++-analyzer" )
 #set(CMAKE_C_COMPILER "/Users/ian/code/thirdparty/checker-274/libexec/ccc-analyzer" )
 
-set(CMAKE_CXX_COMPILER "/usr/bin/icpc" )
-set(CMAKE_C_COMPILER "/usr/bin/icc" )
+#set(CMAKE_CXX_COMPILER "/usr/bin/icpc" )
+#set(CMAKE_C_COMPILER "/usr/bin/icc" )
 
 cmake_minimum_required(VERSION 2.6.4)
 
 project(L3)
 
-#if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    #set(CMAKE_C_COMPILER "/usr/bin/llvm-gcc" )
-    #set(CMAKE_CXX_COMPILER "/usr/bin/llvm-g++-4.2" )
-#endif()
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_C_COMPILER "/usr/bin/llvm-gcc" )
+    set(CMAKE_CXX_COMPILER "/usr/bin/llvm-g++-4.2" )
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 

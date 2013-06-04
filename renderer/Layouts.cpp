@@ -12,36 +12,36 @@ namespace L3
             /*
              *  Lua interface
              */
-            scripting_interface.reset( new L3::Visualisers::GLVInterface( glv::Rect(1200,800,200,150) ) ) ;
+            scripting_interface = boost::make_shared< L3::Visualisers::GLVInterface >( glv::Rect(1200,800,200,150) );
             this->renderables.push_front( scripting_interface.get() );
 
             // Create the main view
-            main_view = new glv::View( glv::Rect(0,0, .6*window.width(),500));
-            this->renderables.push_front( main_view );
+            main_view = boost::make_shared< glv::View >( glv::Rect(0,0, .6*window.width(),500) );
+            this->renderables.push_front( main_view.get() );
 
             // Composite view holder
-            composite.reset( new L3::Visualisers::Composite( glv::Rect(.6*window.width(), 500 )) );
+            composite = boost::make_shared< L3::Visualisers::Composite >( glv::Rect(.6*window.width(), 500 ));
             composite->maximize();  // Maximise within the view
             main_view->maximize();  // Maximise the view, to begin
-            composite_maximise_controller.reset( new L3::Visualisers::DoubleClickMaximiseToggle( main_view ) );
+            composite_maximise_controller = boost::make_shared< L3::Visualisers::DoubleClickMaximiseToggle >( main_view.get() );
 
             // 3D grid 
-            grid.reset( new L3::Visualisers::Grid() );
+            grid = boost::make_shared< L3::Visualisers::Grid >();
             
             // Basic controller
-            controller.reset( new L3::Visualisers::CompositeController( composite.get(), composite->position ) );
+            controller = boost::make_shared< L3::Visualisers::CompositeController >( boost::dynamic_pointer_cast< glv::View3D >(composite).get(), boost::ref( composite->position ) );
             
             // 3D Query - has to be after controller?
-            mouse_query.reset( new L3::Visualisers::MouseQuerySelect( composite.get() ) );
+            mouse_query = boost::make_shared< L3::Visualisers::MouseQuerySelect >( composite.get() );
 
             // Accumulate views
             (*main_view) << ( *composite << *grid );
 
             // Add synched temporal updater
-            temporal_updater.reset( new Updater() );
+            temporal_updater = boost::make_shared< Updater >();
 
             // Add synched spatial updater
-            spatial_updater.reset( new SpatialUpdater( boost::shared_ptr< L3::PoseProvider>() ) );
+            spatial_updater = boost::make_shared< SpatialUpdater >( boost::shared_ptr< L3::PoseProvider>() );
             this->renderables.push_front( spatial_updater.get() );
 
             // Tables
@@ -59,39 +59,39 @@ namespace L3
             addRotationalVelocityPlot();
 
             // Box 1
-            ancillary_1.reset( new glv::Table("x - x , | | x, x x x, ") );
-
+            ancillary_1 = boost::make_shared< glv::Table >("x - x , | | x, x x x, ");
+            
             // Runtime cloud renderer
-            runtime_cloud_renderer_view.reset( new L3::Visualisers::PointCloudRendererView( glv::Rect( 360, 360 ), boost::shared_ptr< L3::PointCloud<double> >(), boost::shared_ptr<L3::SE3>() ) );
+            runtime_cloud_renderer_view = boost::make_shared< L3::Visualisers::PointCloudRendererView >( glv::Rect( 360, 360 ), boost::shared_ptr< L3::PointCloud<double> >(), boost::shared_ptr<L3::SE3>() );
             temporal_updater->operator<<(  dynamic_cast<L3::Updateable*>(runtime_cloud_renderer_view.get() ) );
             *ancillary_1 << *runtime_cloud_renderer_view;
 
-            point_cloud_maximise_controller.reset( new DoubleClickMaximiseToggle( runtime_cloud_renderer_view.get() ) );
+            point_cloud_maximise_controller = boost::make_shared< DoubleClickMaximiseToggle >( runtime_cloud_renderer_view.get() );
 
             // Stand-alone scan renderer : Horizontal
-            horizontal_scan_renderer.reset( new L3::Visualisers::HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 180,180 ) ) );
+            horizontal_scan_renderer = boost::make_shared< L3::Visualisers::HorizontalScanRenderer2DView >( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >() , glv::Rect( 180,180 ) );
             temporal_updater->operator<<( horizontal_scan_renderer.get() );
             (*ancillary_1) << dynamic_cast<glv::View*>(horizontal_scan_renderer.get());
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* > (horizontal_scan_renderer.get() )) );
 
             // Stand-alone scan renderer : Vertical
-            vertical_scan_renderer.reset( new L3::Visualisers::VerticalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(), glv::Rect( 180,180 ) ) );
+            vertical_scan_renderer = boost::make_shared< L3::Visualisers::VerticalScanRenderer2DView > ( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(), glv::Rect( 180,180 ) );
             temporal_updater->operator<<( vertical_scan_renderer.get() );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >(vertical_scan_renderer.get() ) ) );
             (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
 
             // Stand-alone pose renderer
-            oracle_renderer.reset( new L3::Visualisers::DedicatedPoseRenderer( boost::shared_ptr<L3::PoseProvider>(), glv::Rect( 180,180 ), std::string("Estimate::INS" ) ) );
+            oracle_renderer = boost::make_shared< L3::Visualisers::DedicatedPoseRenderer >( boost::shared_ptr<L3::PoseProvider>(), glv::Rect( 180,180 ), std::string("Estimate::INS" ) );
             temporal_updater->operator<<( oracle_renderer.get() );
             *ancillary_1 << *oracle_renderer;
 
             // Experience renderer
-            experience_location.reset( new ExperienceLocationOverviewView( glv::Rect(180,180), boost::shared_ptr<L3::Experience>()  ) ); 
+            experience_location = boost::make_shared< ExperienceLocationOverviewView >( glv::Rect(180,180), boost::shared_ptr<L3::Experience>() );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( experience_location.get() ) );
             *ancillary_1 << *experience_location;
 
             // Scan-matching scan renderer
-            scan_matching_renderer.reset( new L3::Visualisers::ScanMatchingScanRenderer( glv::Rect( 180,180 ),boost::shared_ptr< L3::ScanMatching::Engine >() ) );
+            scan_matching_renderer = boost::make_shared< L3::Visualisers::ScanMatchingScanRenderer >( glv::Rect( 180,180 ),boost::shared_ptr< L3::ScanMatching::Engine >() );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( scan_matching_renderer.get() ) ) );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( scan_matching_renderer->trajectory.get() ) ) );
             *ancillary_1 << *scan_matching_renderer;
@@ -99,21 +99,20 @@ namespace L3
             /*
              *  Second page table
              */
-
-            ancillary_2.reset( new glv::Table("x ,") );
+            ancillary_2 = boost::make_shared< glv::Table >("x ,");
 
             /*
              * Text & controls
              */
-            text_and_controls.reset( new glv::Table("x x,") );
+            text_and_controls = boost::make_shared< glv::Table> ("x x,");
             
-            holder_1.reset( new glv::View( glv::Rect( 350, 100) ) );
-            holder_2.reset( new glv::View( glv::Rect( 175, 100) ) );
+            holder_1 = boost::make_shared< glv::View >( glv::Rect( 350, 100) );
+            holder_2 = boost::make_shared< glv::View >( glv::Rect( 175, 100) );
 
-            L3_controls.reset( new glv::Table("<,") );
+            L3_controls = boost::make_shared< glv::Table >("<,", 2, 4 );
           
             // Dataset scaling factor
-            scale_factor.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            scale_factor = boost::make_shared< glv::Slider > (glv::Rect(window.width()-155,window.height()-20,150, 10) );
             scale_factor->interval( 5, 1 );
            
             {
@@ -126,7 +125,7 @@ namespace L3
             (*L3_controls) << *scale_factor;
 
             // Dataset window duration
-            window_duration_LIDAR.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            window_duration_LIDAR = boost::make_shared < glv::Slider >(glv::Rect(window.width()-155,window.height()-20,150, 10) );
             window_duration_LIDAR->interval( 1, 30);
             
             {
@@ -139,7 +138,7 @@ namespace L3
             (*L3_controls) << *window_duration_LIDAR;
 
             //Dataset INS duration
-            window_duration_INS.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            window_duration_INS = boost::make_shared< glv::Slider >(glv::Rect(window.width()-155,window.height()-20,150, 10) );
             window_duration_INS->interval( 1, 30 );
  
             {
@@ -152,7 +151,7 @@ namespace L3
             (*L3_controls) << *window_duration_INS;
 
             //Point-cloud downsample
-            point_cloud_downsample.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            point_cloud_downsample = boost::make_shared< glv::Slider >(glv::Rect(window.width()-155,window.height()-20,150, 10) );
             point_cloud_downsample->interval( 1, 10 );
             
             {
@@ -165,7 +164,7 @@ namespace L3
             (*L3_controls) << *point_cloud_downsample;
 
             // Experience window
-            experience_window.reset( new glv::Slider(glv::Rect(window.width()-155,window.height()-20,150, 10) ) );
+            experience_window = boost::make_shared< glv::Slider >(glv::Rect(window.width()-155,window.height()-20,150, 10) );
             experience_window->interval( 5, 25 );
             
             {
@@ -177,12 +176,11 @@ namespace L3
             
             (*L3_controls) << *experience_window;
 
-            time_renderer.reset( new TextRenderer<double>() );
+            time_renderer = boost::make_shared<TextRenderer<double> >();
             time_renderer->pos(window.width()-155, window.height()-50 );
 
             (*L3_controls) << *time_renderer;
           
-            //L3_controls->enable( glv::DrawBorder );
             dynamic_cast< glv::Table* >(L3_controls.get())->arrange();
             dynamic_cast< glv::Table* >(L3_controls.get())->fit();
 
@@ -191,7 +189,7 @@ namespace L3
             /*
              *  Visualisation controls
              */
-            visualisation_controls.reset( new glv::Table( "x ,") );
+            visualisation_controls = boost::make_shared< glv::Table >( "x ,");
 
             //Point cloud visualisation
             int width=15,height=15;
@@ -227,7 +225,7 @@ namespace L3
             /*
              *  Statistics
              */
-            statistics.reset( new Statistics() );
+            statistics = boost::make_shared< Statistics >();
             
             for( std::vector< boost::shared_ptr< StatisticsPlottable<double> > >::iterator it = statistics-> plottables.begin();
                     it != statistics->plottables.end();
@@ -313,8 +311,8 @@ namespace L3
                 composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( it->get() ) );
             }
 
-            pose_renderers.push_back( boost::shared_ptr< L3::Visualisers::PoseRenderer>( new L3::Visualisers::PoseRenderer( *runner->current ) ) );
-            pose_renderers.push_back( boost::shared_ptr< L3::Visualisers::AnimatedPoseRenderer> ( new L3::Visualisers::AnimatedPoseRenderer( *runner->current ) ) );
+            pose_renderers.push_back( boost::make_shared< L3::Visualisers::PoseRenderer>( boost::ref( *runner->current ) ) );
+            pose_renderers.push_back( boost::make_shared< L3::Visualisers::AnimatedPoseRenderer> ( boost::ref( *runner->current ) ) );
 
             for( std::deque< boost::shared_ptr< PoseRenderer > >::iterator it = pose_renderers.begin();
                     it != pose_renderers.end();
@@ -328,7 +326,7 @@ namespace L3
              *  Run-time swathe
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( runtime_cloud_renderer_leaf.get() ) );
-            runtime_cloud_renderer_leaf.reset( new L3::Visualisers::PointCloudRendererLeaf( runner->point_cloud, runner->provider ));
+            runtime_cloud_renderer_leaf = boost::make_shared< L3::Visualisers::PointCloudRendererLeaf >( runner->point_cloud, runner->provider );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
             //  Toggle
             point_cloud_visualiser_toggle->leaf = runtime_cloud_renderer_leaf;
@@ -337,7 +335,7 @@ namespace L3
              * Run-time swathe bounds
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( point_cloud_bounds_renderer.get() ) );
-            point_cloud_bounds_renderer.reset( new L3::Visualisers::PointCloudBoundsRenderer ( runtime_cloud_renderer_leaf->plot_cloud ) );
+            point_cloud_bounds_renderer = boost::make_shared< L3::Visualisers::PointCloudBoundsRenderer >( runtime_cloud_renderer_leaf->plot_cloud );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
             point_cloud_bounds_toggle->leaf = point_cloud_bounds_renderer;
 
@@ -369,7 +367,7 @@ namespace L3
             spatial_updater->provider = runner->provider;
             spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( grid.get() ) ) );
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) );
-            grid.reset( new DynamicGrid() );
+            grid = boost::make_shared< DynamicGrid> ();
             composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) ) );
             spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( grid.get() ) );
   
@@ -386,7 +384,6 @@ namespace L3
 
             composite->position.x = -1*start_pose.X();
             composite->position.y = -1*start_pose.Y();
-        
         }
 
         /*
@@ -398,7 +395,7 @@ namespace L3
             /*
              *  Histogram pyramid
              */
-            pyramid_renderer.reset( new L3::Visualisers::HistogramPyramidRendererView( boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 ) );
+            pyramid_renderer = boost::make_shared< L3::Visualisers::HistogramPyramidRendererView >( boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 );
 
             for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
                     it != pyramid_renderer->renderers.end();
@@ -407,23 +404,23 @@ namespace L3
 
             (*tables[0]) << *pyramid_renderer;
 
-            histogram_bounds_renderer.reset( new L3::Visualisers::HistogramBoundsRenderer( boost::shared_ptr<L3::Histogram<double> >() ) );
+            histogram_bounds_renderer = boost::make_shared< L3::Visualisers::HistogramBoundsRenderer >( boost::shared_ptr<L3::Histogram<double> >() );
             histogram_bounds_renderer->depth = -2.0 ;
 
             /*
              *  Cost visualisation
              */
-            algorithm_costs_renderer.reset( new L3::Visualisers::AlgorithmCostRendererLeaf( boost::shared_ptr< L3::Estimator::Algorithm<double> >() ) );
+            algorithm_costs_renderer = boost::make_shared< L3::Visualisers::AlgorithmCostRendererLeaf >( boost::shared_ptr< L3::Estimator::Algorithm<double> >() );
 
             /*
              *  Experience histogram voxel
              */
-            histogram_voxel_renderer_experience_leaf.reset( new L3::Visualisers::HistogramVoxelRendererLeaf( boost::shared_ptr<L3::Histogram<double> >() ) );
+            histogram_voxel_renderer_experience_leaf = boost::make_shared< L3::Visualisers::HistogramVoxelRendererLeaf >( boost::shared_ptr<L3::Histogram<double> >() );
 
             /*
              *  Debug algorithm renderer
              */
-            debug_algorithm_renderer.reset( new DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) );
+            debug_algorithm_renderer = boost::make_shared< DebugAlgorithmRenderer >( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) ;
            
         }
 
@@ -490,7 +487,7 @@ namespace L3
             }
 
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
-            particle_filter_renderer.reset( new ParticleFilterRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) ) );
+            particle_filter_renderer = boost::make_shared< ParticleFilterRendererLeaf >( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
         }
 
