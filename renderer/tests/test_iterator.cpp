@@ -47,7 +47,7 @@ int main (int argc, char ** argv)
 
     composite.stretch(1,1);
     
-    top << ( composite << grid << iterator_renderer << runner  );
+    //top << ( composite << grid << iterator_renderer << runner  );
 
     win.setGLV(top);
     glv::Application::run();

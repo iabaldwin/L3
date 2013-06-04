@@ -8,8 +8,6 @@
 #include "L3.h"
 #include "L3Vis.h"
 
-#include <readline/readline.h>
-
 int main( int argc, char* argv[] )
 {
     if ( argc != 2 ) 
@@ -55,8 +53,8 @@ int main( int argc, char* argv[] )
     //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::RenyiMICostFunction<double>();
     //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::SSDCostFunction<double>();
     
-    //boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new L3::Estimator::IterativeDescent<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >( cost_function), experience->experience_pyramid ));
-    boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Minimisation<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid ));
+    boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new L3::Estimator::IterativeDescent<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >( cost_function), experience->experience_pyramid ));
+    //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Minimisation<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid ));
     //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::PassThrough<double>(cost_function, experience->experience_pyramid ));
     //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Hybrid<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid ));
     

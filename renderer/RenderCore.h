@@ -58,6 +58,8 @@ enum CUSTOM_EVENT_TYPES
                 
                 }
             }
+       
+            return false;
         }
     };
 

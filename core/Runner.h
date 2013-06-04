@@ -28,6 +28,8 @@ struct TemporalRunner
     virtual bool update( double time )
     {
         std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), time ) );
+   
+        return true;
     }
 
 };
@@ -40,12 +42,13 @@ struct ThreadedRunner : TemporalRunner, Poco::Runnable
 {
     ThreadedRunner() 
         : running( true ),
-            current_time(0.0)
+        paused(false),
+        current_time(0.0)
     {
     }
 
     Poco::Thread    thread;
-    bool            running;
+    bool            running, paused;
     double          start_time, current_time;
 
 

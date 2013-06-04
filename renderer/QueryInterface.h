@@ -6,10 +6,10 @@
 /*
  *Used for ray-query
  */
-#include "btBulletDynamicsCommon.h"
-#include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
-#include "Components.h"
-#include "/Users/ian/code/thirdparty/bullet/Demos/OpenGL/GLDebugDrawer.h"
+//#include "btBulletDynamicsCommon.h"
+//#include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
+//#include "Components.h"
+//#include "/Users/ian/code/thirdparty/bullet/Demos/OpenGL/GLDebugDrawer.h"
 
 
 static GLDebugDrawer sDebugDraw;
@@ -21,15 +21,15 @@ namespace Visualisers
 
     struct Box
     {
-        Box( btCollisionShape* box_shape, btRigidBody* box_body ) 
-            : box_shape(box_shape),
-                box_body(box_body)
+        //Box( btCollisionShape* box_shape, btRigidBody* box_body ) 
+            //: box_shape(box_shape),
+                //box_body(box_body)
         {
-            bounds = new glv::Point3[2*8];
+            //bounds = new glv::Point3[2*8];
         }
   
-        btRigidBody* box_body;
-        btCollisionShape* box_shape;
+        //btRigidBody* box_body;
+        //btCollisionShape* box_shape;
         
         glv::Point3* bounds;
 

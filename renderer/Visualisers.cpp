@@ -33,7 +33,7 @@ namespace Visualisers
         if( !iterator_ptr )
             return;
         
-        SelectableLeaf::onDraw3D(g);
+        //SelectableLeaf::onDraw3D(g);
 
         std::deque< std::pair< double, boost::shared_ptr<T> > > window;
         iterator_ptr->getWindow( window );
@@ -50,9 +50,9 @@ namespace Visualisers
             it+=10;
         }
 
-        current_x = window.back().second->X();
-        current_y = window.back().second->Y();
-        current_z = window.back().second->Z();
+        //current_x = window.back().second->X();
+        //current_y = window.back().second->Y();
+        //current_z = window.back().second->Z();
     }
 
     /*

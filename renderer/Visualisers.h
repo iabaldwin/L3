@@ -9,7 +9,7 @@
 
 #include "L3.h"
 #include "Components.h"
-#include "QueryInterface.h"
+//#include "QueryInterface.h"
 
 namespace L3
 {
@@ -36,11 +36,12 @@ struct PoseChainRenderer : Leaf
  *  Iterator renderer
  */
 template <typename T>
-struct IteratorRenderer : SelectableLeaf
+//struct IteratorRenderer : SelectableLeaf
+struct IteratorRenderer 
 {
-    IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator ) 
-        : SelectableLeaf( 10,10,10 ),
+    IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator )  : 
         iterator(iterator )
+        //: SelectableLeaf( 10,10,10 ),
     {
     }
 

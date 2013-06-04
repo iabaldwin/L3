@@ -11,7 +11,7 @@
 #include "Plotters.h"
 #include "Imagery.h"
 #include "GLVInterface.h"
-#include "QueryInterface.h"
+//#include "QueryInterface.h"
 #include "LogCapture.h"
 #include "DebugAlgorithmRenderer.h"
 #include "AlgorithmRenderer.h"

@@ -4,7 +4,7 @@
 #include "Common/Imagery.h"
 #include "Visualisers.h"
 #include "Components.h"
-#include "QueryInterface.h"
+//#include "QueryInterface.h"
 #include "L3.h"
 
 #include "boost/multi_array.hpp"
@@ -122,11 +122,15 @@ namespace Visualisers
     };
 
 
-    struct LocaleRendererMovable : SelectableLeaf, Controllable 
+    //struct LocaleRendererMovable : SelectableLeaf, Controllable 
+    struct LocaleRendererMovable : Controllable 
     {
-        LocaleRendererMovable( ImageData data, image_bounds b ) : SelectableLeaf( (b.upper_x - b.lower_x), 
-                                                                           (b.upper_y - b.lower_y), 
-                                                                            b.z_bound )
+        //LocaleRendererMovable( ImageData data, image_bounds b ) : SelectableLeaf( (b.upper_x - b.lower_x), 
+                                                                           //(b.upper_y - b.lower_y), 
+                                                                            //b.z_bound )
+        
+                                                                            
+        LocaleRendererMovable( ImageData data, image_bounds b ) 
         {
             image_renderer.reset( new ImageRenderer( data, b ) );
         }

@@ -58,7 +58,7 @@ namespace L3
         L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
                 _window_buffer.rend(),
                 std::back_inserter( _constant_distance_window ),
-                0.2, 
+                0.1, 
                 swathe_length,
                 written);
 

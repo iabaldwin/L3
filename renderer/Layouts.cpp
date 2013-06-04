@@ -289,10 +289,10 @@ namespace L3
             /*
              *  Pose Iterator
              */
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
-            iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
-            *composite << (*iterator_renderer);
-            iterator_renderer_toggle->leaf = iterator_renderer;
+            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( iterator_renderer.get() ) );
+            //iterator_renderer.reset( new L3::Visualisers::IteratorRenderer<SE3>( runner->pose_iterator ) );
+            //*composite << (*iterator_renderer);
+            //iterator_renderer_toggle->leaf = iterator_renderer;
 
             /*
              *  Static map-view

@@ -9,7 +9,7 @@
 #include "Components.h"
 #include "Imagery.h"
 #include "Controls.h"
-#include "QueryInterface.h"
+//#include "QueryInterface.h"
 
 int main (int argc, char ** argv)
 {

@@ -11,6 +11,7 @@ namespace Visualisers
         if ( (int)e == TABLE_TOGGLE ) 
             this->toggle( glv::Property::Visible );
 
+        return false;
     }
 
 
@@ -65,6 +66,7 @@ namespace Visualisers
 
         }
 
+        return false;
     }
 
 }

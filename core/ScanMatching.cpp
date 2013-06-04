@@ -107,7 +107,7 @@ namespace ScanMatching
 
         // Alignment
         pcl::PointCloud<pcl::PointXYZ>* final = new pcl::PointCloud<pcl::PointXYZ>();
-        icp.align(*final);
+        //icp.align(*final);
         delete final;
 
         transformation = icp.getFinalTransformation();
@@ -139,9 +139,9 @@ namespace ScanMatching
         {
             current_transformation *= transformation;
             
-            if( trajectory.size() > TRAJECTORY_LIMIT)
-                trajectory.pop_front();
-            trajectory.push_back( current_transformation );
+            //if( trajectory.size() > TRAJECTORY_LIMIT)
+                //trajectory.pop_front();
+            //trajectory.push_back( current_transformation );
         }
     }
 }

@@ -1177,11 +1177,11 @@ namespace Visualisers
 
     Text3D::Text3D() : scale(4)
     {
-        glfInit();
+        //glfInit();
 
-        font_descriptor = glfLoadFont( (char*)"/Users/ian/code/thirdparty/glf_distr/fonts/courier1.glf" );
+        //font_descriptor = glfLoadFont( (char*)"/Users/ian/code/thirdparty/glf_distr/fonts/courier1.glf" );
 
-        glfSetCurrentFont(font_descriptor);
+        //glfSetCurrentFont(font_descriptor);
     }
 
     void Text3D::setText( std::string text )
@@ -1197,14 +1197,13 @@ namespace Visualisers
         //glColor3f(1.0,0.2,0.3);
         //glEnable(GL_BLEND);
         //glColor4f( .5, .5, .5, .85 );
-        glPushMatrix();
-        glTranslatef( scale/2, scale/2, 0 );
-        glScalef(scale,scale,1.0);
-        glfGetStringBounds( const_cast<char*>(text.c_str()), &xmin, &ymin, &xmax, &ymax);
-
-        glfDrawSolidString( const_cast<char*>(text.c_str() ) );
+        //glPushMatrix();
+        //glTranslatef( scale/2, scale/2, 0 );
+        //glScalef(scale,scale,1.0);
+        //glfGetStringBounds( const_cast<char*>(text.c_str()), &xmin, &ymin, &xmax, &ymax);
+        //glfDrawSolidString( const_cast<char*>(text.c_str() ) );
         //glDisable(GL_BLEND);
-        glPopMatrix();
+        //glPopMatrix();
 
         //glColor4f( currentColor[0], currentColor[1], currentColor[2], currentColor[3] );
 

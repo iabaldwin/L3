@@ -33,6 +33,7 @@ namespace L3
         // Pose Provider
         //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
         pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 40 );
+        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 80 );
        
         // Swathe generator
         //swathe_builder = boost::make_shared< L3::RawSwatheBuilder > ( pose_windower.get(), vertical_LIDAR.get() );
@@ -80,6 +81,8 @@ namespace L3
 
         while( running )
         {
+            if( !paused )
+            {
             performance_index = 0;
             performance_timer.begin();
 
@@ -105,24 +108,24 @@ namespace L3
                     init = true;
             }
 
-            /*
-             *  Recompute swathe
-             */
+              /*
+               *Recompute swathe
+               */
             swathe_builder->update( current_time );
             timings[ performance_index++ ] = performance_timer.elapsed();
 
-            /*
-             *  Point cloud generation, projection
-             */
+              /*
+               *Point cloud generation, projection
+               */
             L3::WriteLock point_cloud_lock( projector->cloud->mutex );
             projector->project( swathe_builder->swathe );
             point_cloud_lock.unlock();
             timings[ performance_index++ ] = performance_timer.elapsed();
 
             
-            /*
-             *  Update everything else
-             */
+              /*
+               *Update everything else
+               */
             update( current_time );
             timings[ performance_index++ ] = performance_timer.elapsed();
 
@@ -146,8 +149,12 @@ namespace L3
              * Perform post-update, don't care about how long this takes
              */
             std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
+        
+            }
+            else
+                usleep( .5*1e6 );
+  
         }
-   
         thread.join();
     }
    
