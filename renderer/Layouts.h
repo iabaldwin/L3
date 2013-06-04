@@ -285,8 +285,6 @@ namespace Visualisers
 
             EstimatorLayout( glv::Window& win);
 
-            bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience );
-
             boost::shared_ptr< L3::Experience>                      experience ;
             boost::shared_ptr< L3::Visualisers::PoseRenderer >      estimated_pose_renderer;
 
@@ -312,6 +310,10 @@ namespace Visualisers
             boost::shared_ptr< AlgorithmVisualiser > algorithm_renderer;
     
             boost::shared_ptr< ParticleFilterRendererLeaf> particle_filter_renderer; 
+            
+            bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience );
+
+            bool algorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm );
     };
 
 } 

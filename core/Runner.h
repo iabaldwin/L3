@@ -179,8 +179,6 @@ struct EstimatorRunner : DatasetRunner, Lockable
 
     EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
     {
-        L3::WriteLock algo_lock( this->mutex ); 
-        
         this->algorithm = algorithm;
      
         // Remove it if it exista

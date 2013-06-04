@@ -476,22 +476,8 @@ namespace L3
             /*
              *  Table based algorithm renderer
              */
-            algorithm_renderer = AlgorithmRendererFactory::Produce( runner->algorithm, temporal_updater.get() );
-
-            if (algorithm_renderer)
-            {
-                // Already there?
-                std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), algorithm_renderer );
-
-                if ( it != tables.end() )
-                    tables.erase( it );
-                else
-                {
-                    tables.push_back( algorithm_renderer );
-                    top << *algorithm_renderer;
-                }
-            }
-
+            algorithm( runner->algorithm );
+            
             /*
              *  Debug algorithm renderer - render costs,etc at INS pose
              */
@@ -506,6 +492,24 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
             particle_filter_renderer.reset( new ParticleFilterRendererLeaf( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
+        }
+
+            
+        bool EstimatorLayout::algorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
+        {
+            // Already there?
+            std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), algorithm_renderer );
+
+            if ( it != tables.end() )
+                tables.erase( it );
+
+            algorithm_renderer = AlgorithmRendererFactory::Produce( algorithm, temporal_updater.get() );
+
+            if (algorithm_renderer)
+            {
+                tables.push_back( algorithm_renderer );
+                top << *algorithm_renderer;
+            }
         }
     }
 }

@@ -165,24 +165,23 @@ namespace L3
         if (!container)
             return std::make_pair( false, "CI::No associated container: " + load_command); 
 
-        //container->cost_function.reset( new L3::Estimator::MICostFunction<double>() );
-  
-        container->runner->stop();
+        if (!layout)
+            return std::make_pair( false, "CI::No associated layout : " + load_command); 
 
-        container->runner->start();
+        if( boost::shared_ptr< EstimatorRunner > runner = boost::dynamic_pointer_cast< EstimatorRunner >( container->runner) )
+        {
+            L3::WriteLock algorithm_lock( runner->mutex );
+            boost::shared_ptr< L3::Estimator::CostFunction<double > > cost_function = runner->algorithm->cost_function; 
+            boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::IterativeDescent<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), container->experience->experience_pyramid ));
+            runner->setAlgorithm( algo );
+        
+            dynamic_cast< L3::Visualisers::EstimatorLayout* >( layout )->algorithm( algo );
 
-        //if( boost::shared_ptr< EstimatorRunner > runner = boost::dynamic_pointer_cast< EstimatorRunner >( container->runner) )
-        //{
-            ////boost::shared_ptr< L3::Estimator::CostFunction<double > > cost_function = runner->algorithm->cost_function; 
-           
-            //boost::shared_ptr< L3::Estimator::CostFunction<double> > fn( new L3::Estimator::KLCostFunction<double>() );
+            return std::make_pair( true, "CI::Loaded< Algorithm >" );
+        
+        }
 
-            ////runner->
-        //}
-
-        //container->algorithm.reset( new L3::Estimator::IterativeDescent<double>( container->cost_function.get(), container->experience->experience_pyramid ) );
-
-        return std::make_pair( true, "CI::Loaded< Algorithm >" );
+        return std::make_pair( false, "CI::Failed to load< Algorithm >" );
     }
 
     std::pair< bool, std::string> CommandInterface::print( const std::string& load_command )

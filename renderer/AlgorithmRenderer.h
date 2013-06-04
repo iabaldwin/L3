@@ -94,7 +94,9 @@ namespace L3
         struct MinimisationVisualiser : AlgorithmVisualiser
         {
 
-            MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm, Updater* updater = NULL )  : algorithm(algorithm)
+            MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm, Updater* updater = NULL )  
+                : algorithm(algorithm),
+                updater(updater)
             {
                 // Estimation traversals
                 boost::shared_ptr< glv::View > ptr = boost::dynamic_pointer_cast<glv::View>( boost::make_shared< TraversalVisualiser >( algorithm ) );
@@ -123,6 +125,19 @@ namespace L3
                 views.push_back( plot );
             }
 
+            Updater* updater;
+
+            ~MinimisationVisualiser()
+            {
+                if( updater )
+                {
+                    // Remove myself from the updates list  
+                    std::list < Updateable* >::iterator it = std::find( updater->updateables.begin(), updater->updateables.end(), dynamic_cast< L3::Updateable*>(plottables.front().get() ) );
+
+                    if( it != updater->updateables.end() )
+                        updater->updateables.erase( it );
+                }
+            }
                 
             std::deque< boost::shared_ptr< glv::View > > views;
             std::deque< boost::shared_ptr< glv::Plottable > > plottables;

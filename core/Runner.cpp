@@ -83,73 +83,73 @@ namespace L3
         {
             if( !paused )
             {
-            performance_index = 0;
-            performance_timer.begin();
+                performance_index = 0;
+                performance_timer.begin();
 
-            current_time += ( t.elapsed() - real_time_elapsed )*speedup;
-                
-            real_time_elapsed = t.elapsed(); 
+                current_time += ( t.elapsed() - real_time_elapsed )*speedup;
 
-            /*
-             *  Update all watchers
-             */
-            TemporalRunner::update( current_time );
-            timings[ performance_index++ ] = performance_timer.elapsed();
+                real_time_elapsed = t.elapsed(); 
 
-            static int counter = 0;
-            
-            if( !init )
-            {
-                *current = oracle->operator()();
+                /*
+                 *  Update all watchers
+                 */
+                TemporalRunner::update( current_time );
+                timings[ performance_index++ ] = performance_timer.elapsed();
 
-                counter++;
+                static int counter = 0;
 
-                if ( counter == 60 )
-                    init = true;
-            }
+                if( !init )
+                {
+                    *current = oracle->operator()();
 
-              /*
-               *Recompute swathe
-               */
-            swathe_builder->update( current_time );
-            timings[ performance_index++ ] = performance_timer.elapsed();
+                    counter++;
 
-              /*
-               *Point cloud generation, projection
-               */
-            L3::WriteLock point_cloud_lock( projector->cloud->mutex );
-            projector->project( swathe_builder->swathe );
-            point_cloud_lock.unlock();
-            timings[ performance_index++ ] = performance_timer.elapsed();
+                    if ( counter == 60 )
+                        init = true;
+                }
 
-            
-              /*
-               *Update everything else
-               */
-            update( current_time );
-            timings[ performance_index++ ] = performance_timer.elapsed();
+                /*
+                 *Recompute swathe
+                 */
+                swathe_builder->update( current_time );
+                timings[ performance_index++ ] = performance_timer.elapsed();
 
-            if( stand_alone )
-            {
+                /*
+                 *Point cloud generation, projection
+                 */
+                L3::WriteLock point_cloud_lock( projector->cloud->mutex );
+                projector->project( swathe_builder->swathe );
+                point_cloud_lock.unlock();
+                timings[ performance_index++ ] = performance_timer.elapsed();
 
-                if( !output.is_open() )
-                    output.open( "poses.dat", std::ios::out );
 
-                std::stringstream ss;
-                ss << "Observer update:"  << "\t" << timings[0] << std::endl;
-                ss << "Swathe update:"    << "\t\t" << timings[1] << std::endl;
-                ss << "Point generation:" << "\t" << timings[2] << std::endl;
-                ss << "Estimation:"       << "\t\t" << timings[3] << std::endl;
-                std::cout << ss.str() << "------------" << std::endl;
-           
-                output << *current << '\n';
-            }
+                /*
+                 *Update everything else
+                 */
+                update( current_time );
+                timings[ performance_index++ ] = performance_timer.elapsed();
 
-            /*
-             * Perform post-update, don't care about how long this takes
-             */
-            std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
-        
+                if( stand_alone )
+                {
+
+                    if( !output.is_open() )
+                        output.open( "poses.dat", std::ios::out );
+
+                    std::stringstream ss;
+                    ss << "Observer update:"  << "\t" << timings[0] << std::endl;
+                    ss << "Swathe update:"    << "\t\t" << timings[1] << std::endl;
+                    ss << "Point generation:" << "\t" << timings[2] << std::endl;
+                    ss << "Estimation:"       << "\t\t" << timings[3] << std::endl;
+                    std::cout << ss.str() << "------------" << std::endl;
+
+                    output << *current << '\n';
+                }
+
+                /*
+                 * Perform post-update, don't care about how long this takes
+                 */
+                std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
+
             }
             else
                 usleep( .5*1e6 );
@@ -168,9 +168,9 @@ namespace L3
         /*
          *  Estimate
          */
-        //L3::ReadLock algo_lock( this->mutex ); 
+        L3::ReadLock algo_lock( this->mutex ); 
         *current = algorithm->operator()( projector->cloud, *current );
-        //algo_lock.unlock();
+        algo_lock.unlock();
 
         return true;
     }

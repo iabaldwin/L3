@@ -57,8 +57,6 @@ namespace Visualisers
         ImageRenderer( ImageData& data, image_bounds b )  : b(b), data(data)
         {
             GLubyte image_texture[data.img->height][data.img->width][4];
-            //GLubyte (*image_texture) = malloc[data.img->height][data.img->width][4];
-            //GLubyte (*image_texture)[data.img->width] = (GLubyte*)malloc(data.img->height*data.img->width*4);
             
             for(int j=data.img->height-1; j> 0; j--)
             {

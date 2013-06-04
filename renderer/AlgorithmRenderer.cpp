@@ -43,7 +43,6 @@ namespace L3
             glv::draw::pointSize(1);
             glv::draw::lineWidth(.1);
             glv::draw::paint( glv::draw::LineStrip, vertices, colors, counter );
-            
         
         }
 
