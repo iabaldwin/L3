@@ -671,17 +671,14 @@ namespace Visualisers
     /*
      *  Scan matching renderers
      */
-    //struct ScanMatchingTrajectoryRenderer : glv::View3D
     struct ScanMatchingTrajectoryRenderer : Composite
     {
-        //ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : glv::View3D( glv::Rect(150, 150)), engine(engine)
-        ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : Composite( glv::Rect(150, 150)), engine(engine)
+        ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : Composite( glv::Rect(175, 175)), engine(engine)
         {
-            //label.reset( new glv::Label("Open-loop trajectory" ) );
-            //label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-            //(*this) << *label;
-            //dynamic_cast< glv::View3D* >(this)-operator<< *label;
-       
+            *(dynamic_cast< glv::View3D* >(this)) << label;
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
+            label.setValue( "Open-loop trajectory");
+            
             this->disable( glv::Property::AlwaysBubble );
       
             this->operator<< ( grid );
@@ -693,7 +690,7 @@ namespace Visualisers
         
         boost::shared_ptr< Controller> controller;
         
-        glv::View label;
+        glv::Label label;
 
         Grid grid;
 

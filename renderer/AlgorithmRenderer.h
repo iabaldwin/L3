@@ -46,7 +46,6 @@ namespace L3
 
             glv::Label label;
 
-
         };
 
         struct DiscreteTranslationVisualiser : DiscreteEstimatorVisualiser, glv::View3D

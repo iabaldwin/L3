@@ -1023,8 +1023,6 @@ namespace Visualisers
             lock.unlock();
         }
         
-        
-        
         L3::SE3 zero;
         CoordinateSystem( zero ).onDraw3D(g);
         
@@ -1326,22 +1324,6 @@ namespace Visualisers
 
             it++;
         }
-       
-        
-        //glv::draw::push();
-        //glv::draw::pointSize( 3 );
-        
-        //glMap1f(GL_MAP1_VERTEX_3, 0.0, 1.0, 3, ptr->sections.size(), &ctrlpoints[0][0]);
-        
-        //glEnable(GL_MAP1_VERTEX_3);
-        //glBegin(GL_LINE_STRIP);
-        //glColor3f(1.0, 0.0, 0.0);
-        //for (int i = 0; i <= 100; i++) 
-            //glEvalCoord1f((GLfloat) i/100 );
-        //glEnd();
-        //glDisable(GL_MAP2_VERTEX_3);
-        
-        //glv::draw::pop();
 
         float point_size = enabled( glv::Maximized ) ? 5 : 1;
 
@@ -1354,31 +1336,6 @@ namespace Visualisers
         static int draw_counter = 0;
         glv::draw::text( "Is this the real world", draw_counter++, 40, 20 );
    
-        if( enabled( glv::Maximized ) )
-        {
-
-            //glv::Point3 vertices[2];
-            //glv::Color  colors[2];
-            //std::fill( colors, colors+2, glv::Color( .7, .7, .7, .75  ) );
-
-
-            //// X index
-            //vertices[0]( 0, 0, 0 ); 
-            //vertices[1]( current->X(), 0, 0 ); 
-
-            //glv::draw::enable( glv::draw::Blend );
-            //glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
-
-            //// Y index
-            //vertices[0]( current->X(), 0, 0 ); 
-            //vertices[1]( current->X(), current->Y(), 0 ); 
-
-            //glv::draw::paint( glv::draw::Lines, vertices, colors, 2 );
-            //glv::draw::disable( glv::draw::Blend );
-
-        }
-        glv::draw::pop();
-    
     }
 
     /*
