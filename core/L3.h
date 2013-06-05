@@ -21,6 +21,7 @@
 #include "PoseProvider.h"       // Pose sources
 #include "Histogram.h"          // Custom histogram type
 #include "Estimator.h"          // Core estimator
+#include "AlgorithmFactory.h"   // Factory
 #include "Smoother.h"           // Histogram smoothing
 #include "Integrator.h"         // Chain integration
 #include "Predictor.h"          // Pose predcition

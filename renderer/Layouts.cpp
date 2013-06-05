@@ -505,7 +505,6 @@ namespace L3
             if (algorithm_renderer)
             {
                 tables.push_back( algorithm_renderer );
-                    
                 algorithm_renderer->pos( window.width()-(555), 0); 
                 top << *algorithm_renderer;
             }

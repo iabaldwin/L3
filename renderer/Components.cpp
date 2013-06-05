@@ -350,11 +350,10 @@ namespace Visualisers
         if( hist_ptr->empty() )
             return;
 
-        L3::ReadLock lock( hist_ptr->mutex );
+        //L3::ReadLock lock( hist_ptr->mutex );
         if( !hist_ptr->empty() ) 
             L3::clone( hist_ptr.get(), render_histogram.get() );
-        lock.unlock();   
-
+        //lock.unlock();   
     }
 
     void HistogramDensityRenderer::onDraw( glv::GLV& g)
@@ -1036,7 +1035,7 @@ namespace Visualisers
             {
                 L3::SE3 pose;
                 pose.setHomogeneous( *it );
-                CoordinateSystem( pose, 2 ).onDraw3D(g);
+                CoordinateSystem( pose, 10 ).onDraw3D(g);
             }
 
         }

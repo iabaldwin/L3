@@ -31,7 +31,8 @@ namespace L3
     template <typename T>
         void clone( Histogram<T>* src, Histogram<T> * dest )
         {
-            L3::WriteLock(dest->mutex);
+            L3::WriteLock wlock(dest->mutex);
+            L3::ReadLock rlock(src->mutex);
 
             // Parameter copy
             dest->create( src->x_centre,     
