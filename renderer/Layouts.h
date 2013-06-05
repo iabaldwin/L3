@@ -46,7 +46,7 @@ namespace Visualisers
                         it++)
                 {
                     (*it)->arrange();
-                    (*it)->pos( window.width()-(555), 0);
+                    (*it)->pos( window.width()-(555), 0); //Here we go
                 }
 
                 window.setGLV(top);
