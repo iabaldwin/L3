@@ -420,8 +420,8 @@ namespace L3
                     boost::tuple<double,double,double> means     = L3::mean( &*resident_point_cloud );
 
                     //L3::BoxSmoother< double, 3 > smoother; 
-                    //L3::GaussianSmoother< double > smoother; 
-                    L3::LogisticSmoother< double > smoother; 
+                    L3::GaussianSmoother< double > smoother; 
+                    //L3::LogisticSmoother< double > smoother; 
 
                     for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = this->experience_pyramid->begin();
                             it != this->experience_pyramid->end();

@@ -350,10 +350,12 @@ namespace Visualisers
         if( hist_ptr->empty() )
             return;
 
-        //L3::ReadLock lock( hist_ptr->mutex );
+        L3::ReadLock rlock( hist_ptr->mutex );
+        L3::WriteLock wlock( render_histogram->mutex );
         if( !hist_ptr->empty() ) 
             L3::clone( hist_ptr.get(), render_histogram.get() );
-        //lock.unlock();   
+        rlock.unlock();   
+        wlock.unlock();   
     }
 
     void HistogramDensityRenderer::onDraw( glv::GLV& g)
