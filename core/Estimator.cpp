@@ -266,9 +266,9 @@ namespace L3
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
 
-                //L3::LogisticSmoother<double> smoother;
+                L3::LogisticSmoother<double> smoother;
                 //L3::GaussianSmoother<double> smoother;
-                //smoother.smooth( &swathe_histogram );
+                smoother.smooth( &swathe_histogram );
 
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
@@ -394,6 +394,12 @@ namespace L3
         template < typename T >
             SE3 Minimisation<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
+
+                if( timer.elapsed() < 1.0/this->fundamental_frequency )
+                    return estimate;
+
+                timer.begin();
+
                 L3::WriteLock   master( this->mutex );
                 L3::ReadLock    swathe_lock( swathe->mutex );               
                 L3::ReadLock    histogram_lock( (*this->pyramid)[this->pyramid_index]->mutex );

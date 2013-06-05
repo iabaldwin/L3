@@ -10,6 +10,7 @@
 
 #include "Histogram.h"
 #include "Smoother.h"
+#include "Timing.h"
 
 namespace L3
 {
@@ -274,11 +275,12 @@ namespace Estimator
     template < typename T>
         struct Algorithm : Lockable
         {
-            Algorithm( boost::shared_ptr< CostFunction<T> > cost_function ) : cost_function(cost_function)
+            Algorithm( boost::shared_ptr< CostFunction<T> > cost_function, float fundamental_frequency=std::numeric_limits<float>::infinity() ) : cost_function(cost_function), fundamental_frequency(fundamental_frequency)
             {
 
             }
 
+            float fundamental_frequency;
             boost::shared_ptr< CostFunction<T> > cost_function;
 
             virtual SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
@@ -387,9 +389,12 @@ namespace Estimator
                 s = gsl_multimin_fminimizer_alloc (type, 3);
 
                 MinimisationParameters::global_minimiser = this;
-          
+         
+                timer.begin();
             }
-                
+     
+            L3::Timing::ChronoTimer timer;
+
             int max_iterations, algorithm_iterations, pyramid_index;
 
             double tolerance;

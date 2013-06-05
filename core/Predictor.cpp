@@ -28,10 +28,10 @@ namespace L3
                                                                                         LHLV_iterator->window.end(), 
                                                                                         previous_update,
                                                                                         comparator );
-        
+    
         window.resize( std::distance( index, LHLV_iterator->window.end() ) );
-                
-        sink.resize( window.size() );
+        
+        std::cout << window.size() << std::endl;
 
         double distance;
 
@@ -41,7 +41,7 @@ namespace L3
                                     window.begin(), 
                                     distance, 
                                     std::numeric_limits<double>::infinity() );
-
+        
         previous_update = t;
     }
 
