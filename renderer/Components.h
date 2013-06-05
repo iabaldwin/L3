@@ -12,6 +12,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/shared_array.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/date_time/local_time/local_time.hpp>
 
 #include "L3.h"
@@ -115,8 +116,8 @@ namespace Visualisers
             : draw_bounds(false),
                 visible(true)
         {
-            bound_vertices.reset( new glv::Point3[24] ); 
-            bound_colors.reset( new glv::Color[24] ); 
+            bound_vertices = boost::make_shared< glv::Point3[] >( 24 ); 
+            bound_colors   = boost::make_shared< glv::Color[] >( 24 ); 
         }
 
         struct bounds {
@@ -127,8 +128,8 @@ namespace Visualisers
 
         bounds lower,upper;
 
-        boost::shared_array< glv::Point3 > bound_vertices;
-        boost::shared_array< glv::Color>   bound_colors;
+        boost::shared_ptr< glv::Point3[] >  bound_vertices;
+        boost::shared_ptr< glv::Color[] >   bound_colors;
 
         virtual void onDraw3D( glv::GLV& g ) = 0;
 
@@ -162,7 +163,7 @@ namespace Visualisers
 
         void setVariable( T& t )
         {
-            lock.reset( new variable_lock<T>( t ) );
+            lock = boost::make_shared< variable_lock<T> >( boost::ref(t) ); 
         }
 
         void onDraw(glv::GLV& g)
@@ -260,7 +261,7 @@ namespace Visualisers
         std::list<Leaf*>                components; 
         L3::Visualisers::Controller*    controller;
 
-        void onDraw3D( glv::GLV& g );
+        virtual void onDraw3D( glv::GLV& g );
 
         Composite& operator<<( Leaf& leaf )
         {
@@ -650,9 +651,9 @@ namespace Visualisers
             //REFERENCE TO REFERENCE
             //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), g ) );
             //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), boost::reference_wrapper<glv::GLV>(g) ) );
+            //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), std::reference_wrapper(g) ) );
 
             glv::draw::translateZ( -20 );
-            //glv::draw::rotate( 45, 10, 45);
 
             Grid().onDraw3D(g);
 
@@ -670,19 +671,31 @@ namespace Visualisers
     /*
      *  Scan matching renderers
      */
-    struct ScanMatchingTrajectoryRenderer : glv::View3D
+    //struct ScanMatchingTrajectoryRenderer : glv::View3D
+    struct ScanMatchingTrajectoryRenderer : Composite
     {
-
-        ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : glv::View3D( glv::Rect(150, 150)), engine(engine)
+        //ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : glv::View3D( glv::Rect(150, 150)), engine(engine)
+        ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : Composite( glv::Rect(150, 150)), engine(engine)
         {
-            label.reset( new glv::Label("Open-loop trajectory" ) );
-            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-            (*this) << *label;
-        }
+            //label.reset( new glv::Label("Open-loop trajectory" ) );
+            //label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            //(*this) << *label;
+            //dynamic_cast< glv::View3D* >(this)-operator<< *label;
+       
+            this->disable( glv::Property::AlwaysBubble );
+      
+            this->operator<< ( grid );
 
+            controller = boost::make_shared< L3::Visualisers::CompositeController >( dynamic_cast< glv::View3D* >(this), boost::ref( this->position ) );
+        }
+            
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
         
-        boost::shared_ptr< glv::View > label;
+        boost::shared_ptr< Controller> controller;
+        
+        glv::View label;
+
+        Grid grid;
 
         void onDraw3D( glv::GLV& g );
 

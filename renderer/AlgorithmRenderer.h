@@ -79,8 +79,12 @@ namespace L3
 
             TraversalVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm  ) : algorithm(algorithm), glv::View3D( glv::Rect( 250,250 ))
             {
-
+                *this  << label;
+                label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
+                label.setValue( "Minimisation evaluations");
             }
+
+            glv::Label label;
 
             void onDraw3D( glv::GLV& g );
 
@@ -119,13 +123,19 @@ namespace L3
 
                 plot->range(0,100,0);
                 plot->range(0,50*10,1);
-                
+               
+                *plot << iterations_label;
+                iterations_label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
+                iterations_label.setValue( "Algorithm iterations");
+
                 (*this) << *plot;
 
                 views.push_back( plot );
             }
 
             Updater* updater;
+            
+            glv::Label iterations_label;
 
             ~MinimisationVisualiser()
             {

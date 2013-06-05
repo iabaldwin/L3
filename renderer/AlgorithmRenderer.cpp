@@ -43,7 +43,9 @@ namespace L3
             glv::draw::pointSize(1);
             glv::draw::lineWidth(.1);
             glv::draw::paint( glv::draw::LineStrip, vertices, colors, counter );
-        
+
+            CoordinateSystem( evaluations.front(), .1 ).onDraw3D(g);
+            CoordinateSystem( evaluations.back(), .1 ).onDraw3D(g);
         }
 
         IterativeDescentVisualiser::IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm, Updater* updater ) 

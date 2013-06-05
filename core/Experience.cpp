@@ -308,9 +308,6 @@ namespace L3
         densities.push_back( .5 );
         densities.push_back( .75 );
         densities.push_back( 1 );
-        //densities.push_back( 1.1 );
-
-
 
         experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
         resident_point_cloud.reset( new L3::PointCloud<double>() );

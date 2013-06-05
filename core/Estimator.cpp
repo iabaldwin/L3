@@ -406,18 +406,31 @@ namespace L3
                 gsl_vector_set (x, 2, estimate.Q() );
 
                 // Construct tolerances
+                //
+
+                static int counter = 0;
+
+                if ( counter++ == 120 )
+                {
+                gsl_vector_set_all (ss, 0.1);
+                }
+                else
                 gsl_vector_set_all (ss, 0.5);
+
                 gsl_vector_set( ss, 2, .05 );
+
 
                 gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
 
                 int status;
                 algorithm_iterations = 0;
-            
                 evaluations.clear();
+                evaluations.reserve(max_iterations+1);
+              
+                evaluations.push_back(estimate);
 
-                evaluations.reserve(max_iterations);
                 double size;            
+                
                 do
                 {
                     algorithm_iterations++;
@@ -480,9 +493,6 @@ namespace L3
             return this->minimisation->operator()( swathe, refined );
         
         }
-
-        
-    
     }   // Estimator
 }       // L3
 

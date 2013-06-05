@@ -373,10 +373,10 @@ namespace Estimator
                     pyramid(experience_pyramid),
                     max_iterations(max_iterations),
                     tolerance(tolerance),
-                    pyramid_index(2)
+                    pyramid_index(1)
             {
-                //const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2;
-                const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2rand;
+                const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2;
+                //const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2rand;
                 
                 minex_func.n = 3;
                 minex_func.f = L3::Estimator::global_minimisation_function;

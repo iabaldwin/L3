@@ -1013,28 +1013,25 @@ namespace Visualisers
     void ScanMatchingTrajectoryRenderer::onDraw3D( glv::GLV& g )
     {
         boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
-         
-        if( enabled( glv::Maximized ) )
-        {
-            far(300);
-            glv::draw::translateZ( -250 );
-        }
-        else
-            glv::draw::translateZ( -25 );
-
-        L3::SE3 zero;
-        CoordinateSystem( zero ).onDraw3D(g);
-
+       
+            
+        std::deque< Eigen::Matrix4f > trajectory;
         if( engine_ptr )
         {
             L3::ReadLock lock( engine_ptr->mutex );
-            std::deque< Eigen::Matrix4f > trajectory( engine_ptr->trajectory.begin(), engine_ptr->trajectory.end() );
+            trajectory.assign( engine_ptr->trajectory.begin(), engine_ptr->trajectory.end() );
             lock.unlock();
-
-            Eigen::Matrix4f first = trajectory.back();
-
-            glv::draw::translate( -1*first(0,3), -1*first(1,3), 0.0 );
-
+        }
+        
+        
+        
+        L3::SE3 zero;
+        CoordinateSystem( zero ).onDraw3D(g);
+        
+        if( enabled( glv::Maximized ) )
+        {
+            Composite::onDraw3D(g);
+            //grid.onDraw3D(g);
             for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
                     it != trajectory.end();
                     it++ )
@@ -1042,6 +1039,28 @@ namespace Visualisers
                 L3::SE3 pose;
                 pose.setHomogeneous( *it );
                 CoordinateSystem( pose, 2 ).onDraw3D(g);
+            }
+
+        }
+        else
+        {
+            glv::draw::translateZ( -25 );
+
+            if( !trajectory.empty() )
+            {
+                Eigen::Matrix4f first = trajectory.back();
+
+                glv::draw::translate( -1*first(0,3), -1*first(1,3), 0.0 );
+
+                for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
+                        it != trajectory.end();
+                        it++ )
+                {
+                    L3::SE3 pose;
+                    pose.setHomogeneous( *it );
+                    CoordinateSystem( pose, 2 ).onDraw3D(g);
+                }
+
             }
         }
     }
@@ -1112,6 +1131,11 @@ namespace Visualisers
             putative_colors[i].set( 1, 0, 0, .5 ); 
         }
 
+        if( enabled( glv::Maximized ) )
+            glv::draw::pointSize(4);
+        else
+            glv::draw::pointSize(1);
+
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Points, scan_vertices, scan_colors, scan_points );
         glv::draw::paint( glv::draw::Points, putative_vertices, putative_colors, putative_points );
@@ -1121,7 +1145,7 @@ namespace Visualisers
         if (enabled( glv::Maximized ))
         {
             trajectory->enable( glv::Visible );
-            trajectory->enable( glv::DrawBorder );
+            //trajectory->enable( glv::DrawBorder );
             boost::dynamic_pointer_cast< ScanMatchingTrajectoryRenderer >(trajectory)->engine = engine;
         }
         else
