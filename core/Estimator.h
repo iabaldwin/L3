@@ -370,7 +370,7 @@ namespace Estimator
     template <typename T>
         struct Minimisation : Algorithm<T>
         {
-            Minimisation( boost::shared_ptr< CostFunction<T> > cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, int max_iterations = 100, double tolerance = 0.1 ) 
+            Minimisation( boost::shared_ptr< CostFunction<T> > cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, int max_iterations = 100, double tolerance = 0.075 ) 
                 : Algorithm<T>(cost_function), 
                     pyramid(experience_pyramid),
                     max_iterations(max_iterations),
@@ -440,7 +440,7 @@ namespace Estimator
         }
 
 
-        boost::shared_ptr< Minimisation<T> >        minimisation;
+        boost::shared_ptr< Minimisation<T> >                    minimisation;
         std::deque< boost::shared_ptr< DiscreteEstimator<T> > > discrete_estimators;
 
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );

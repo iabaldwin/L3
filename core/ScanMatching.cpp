@@ -1,7 +1,7 @@
 #include "ScanMatching.h"
 
 #define TRAJECTORY_LIMIT 200 
-
+            
 int do_projection( const L3::LMS151& current_scan, double* matrix, double threshold = 5.0 )
 {
     double* matrix_ptr = matrix;
@@ -31,6 +31,8 @@ int do_projection( const L3::LMS151& current_scan, double* matrix, double thresh
 
     return counter;
 }
+
+typedef std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LMS151> >, std::pair<double, boost::shared_ptr<L3::LMS151> >&, std::pair<double, boost::shared_ptr<L3::LMS151> >*> LIDAR_ITERATOR;
 
 namespace L3
 {
@@ -108,28 +110,27 @@ namespace ScanMatching
 
         transformation = icp.getFinalTransformation();
 
-        // Compute instantaneous velocity
-        instantaneous_velocity = std::make_pair( current_scan.first, (sqrt( pow( transformation( 0,3 ), 2 ) + pow( transformation( 1,3 ), 2 ) ))/( current_scan.first -previous_time ) );
-
         // Do swap
         scan.swap( putative );
         scan_points = putative_points;
-       
+
+        //std::cout << current_scan.first - previous_time << std::endl;
         previous_time = current_scan.first;
 
         return icp.hasConverged();
     }
     
-    bool Engine::update( double )
+    bool Engine::update( double time )
     {
-        Eigen::Matrix4f transformation;
-
         if( this->windower->window.empty() )
             return false;
 
+        // Get the most recent
         std::pair< double, boost::shared_ptr< L3::LMS151 > > scan = this->windower->window.back();
-
+        
         L3::WriteLock write_lock( this->mutex );
+
+        Eigen::Matrix4f transformation;
 
         if( matcher->match( scan, transformation ) ) 
         {
@@ -137,7 +138,8 @@ namespace ScanMatching
             
             if( trajectory.size() > TRAJECTORY_LIMIT)
                 trajectory.pop_front();
-            trajectory.push_back( current_transformation );
+            trajectory.push_back( std::make_pair( scan.first, current_transformation) );
+        
         }
     }
 }

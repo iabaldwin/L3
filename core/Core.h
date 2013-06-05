@@ -79,10 +79,10 @@ struct Comparator
         return ( t.first < f);
     }
 
-    bool operator()( const double f, const T t ) const
-    {
-        return ( t.first < f);
-    }
+    //bool operator()( const double f, const T t ) const
+    //{
+        //return ( t.first < f);
+    //}
 
 };
 

@@ -14,6 +14,7 @@
 #include "SwatheBuilder.h"
 #include "ScanMatching.h"
 #include "Predictor.h"
+#include "VelocityProvider.h"
 
 #include <Poco/Task.h>
 #include <Poco/TaskManager.h>
@@ -90,6 +91,8 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::SE3 > current;
     
     boost::shared_ptr< L3::PoseProvider > provider;
+
+    boost::shared_ptr< L3::VelocityProvider > sm_velocity_provider;
 
     boost::shared_ptr< L3::SE3 >                projection;
     boost::shared_ptr< L3::Projector<double> >  projector;

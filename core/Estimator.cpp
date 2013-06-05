@@ -394,7 +394,6 @@ namespace L3
         template < typename T >
             SE3 Minimisation<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
-
                 if( timer.elapsed() < 1.0/this->fundamental_frequency )
                     return estimate;
 
@@ -413,16 +412,14 @@ namespace L3
                 gsl_vector_set (x, 2, estimate.Q() );
 
                 // Construct tolerances
-                //
-
                 static int counter = 0;
 
                 if ( counter++ == 120 )
                 {
-                gsl_vector_set_all (ss, 0.1);
+                    gsl_vector_set_all (ss, 0.05);
                 }
                 else
-                gsl_vector_set_all (ss, 0.5);
+                    gsl_vector_set_all (ss, 0.5);
 
                 gsl_vector_set( ss, 2, .05 );
 

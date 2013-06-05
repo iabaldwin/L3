@@ -70,8 +70,6 @@ namespace L3
 
             distance += inter_pose_distance;
       
-            std::cout << distance << ":" << required_distance << std::endl;
-
             if( distance > required_distance )
                 break;
 

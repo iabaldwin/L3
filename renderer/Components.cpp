@@ -1016,7 +1016,7 @@ namespace Visualisers
         boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
        
             
-        std::deque< Eigen::Matrix4f > trajectory;
+        std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
         if( engine_ptr )
         {
             L3::ReadLock lock( engine_ptr->mutex );
@@ -1030,16 +1030,7 @@ namespace Visualisers
         if( enabled( glv::Maximized ) )
         {
             Composite::onDraw3D(g);
-            //grid.onDraw3D(g);
-            for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
-                    it != trajectory.end();
-                    it++ )
-            {
-                L3::SE3 pose;
-                pose.setHomogeneous( *it );
-                CoordinateSystem( pose, 10 ).onDraw3D(g);
-            }
-
+            
         }
         else
         {
@@ -1047,21 +1038,21 @@ namespace Visualisers
 
             if( !trajectory.empty() )
             {
-                Eigen::Matrix4f first = trajectory.back();
+                std::pair< double, Eigen::Matrix4f > start_pose = trajectory.back();
 
-                glv::draw::translate( -1*first(0,3), -1*first(1,3), 0.0 );
-
-                for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
-                        it != trajectory.end();
-                        it++ )
-                {
-                    L3::SE3 pose;
-                    pose.setHomogeneous( *it );
-                    CoordinateSystem( pose, 2 ).onDraw3D(g);
-                }
-
+                glv::draw::translate( -1*start_pose.second(0,3), -1*start_pose.second(1,3), 0.0 );
             }
         }
+
+        for( std::deque< std::pair< double, Eigen::Matrix4f > >::iterator it = trajectory.begin();
+                it != trajectory.end();
+                it++ )
+        {
+            L3::SE3 pose;
+            pose.setHomogeneous( it->second );
+            CoordinateSystem( pose, 10 ).onDraw3D(g);
+        }
+
     }
 
 

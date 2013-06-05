@@ -36,8 +36,6 @@ namespace ScanMatching
             boost::shared_array< double > putative;
             int putative_points;
 
-            std::pair< double, double > instantaneous_velocity;
-
         protected:
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in;
@@ -60,7 +58,8 @@ namespace ScanMatching
     struct Engine : L3::TemporalObserver, Lockable
     { 
         Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
-            windower(windower)
+            windower(windower),
+            previous_update(0.0)
         {
             matcher.reset( new ICP() );
        
@@ -79,8 +78,10 @@ namespace ScanMatching
         
         boost::shared_ptr< ScanMatcher > matcher;
 
-        std::deque< Eigen::Matrix4f > trajectory;
+        std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
 
+        double previous_update;
+        
         bool update( double time );
     };
 

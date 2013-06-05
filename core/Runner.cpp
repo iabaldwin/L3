@@ -44,11 +44,14 @@ namespace L3
 
         // Scan matching engine
         engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
-       
+     
+        // Velocity extractor
+        sm_velocity_provider = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
+
         // Predictor
         predictor = boost::make_shared< L3::Predictor >( LHLV_iterator.get() );
         
-        (*this) << pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << pose_windower.get() << swathe_builder.get() << engine.get() << predictor.get() ;
+        (*this) << pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << pose_windower.get() << swathe_builder.get() << engine.get() << predictor.get() << sm_velocity_provider.get();
 
         current = boost::make_shared< L3::SE3 >( L3::SE3::ZERO() );
  

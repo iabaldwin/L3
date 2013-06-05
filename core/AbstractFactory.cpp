@@ -150,9 +150,6 @@ std::pair< double, boost::shared_ptr<L3::Pose> > AbstractFactory<L3::Pose>::prod
             return std::make_pair( time, boost::make_shared<L3::SE3>( elements ) );
 
         default:
-            std::copy( elements.begin(), 
-                    elements.end(), 
-                    std::ostream_iterator<double>( std::cout, " " ) );
             throw std::exception();
     }
 }
