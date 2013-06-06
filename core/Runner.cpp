@@ -172,7 +172,8 @@ namespace L3
          *  Estimate
          */
         L3::ReadLock algo_lock( this->mutex ); 
-        *current = algorithm->operator()( projector->cloud, *current );
+        //*current = algorithm->operator()( projector->cloud, *current );
+        *current = algorithm->operator()( projector->cloud, oracle->operator()() );
         algo_lock.unlock();
 
         return true;

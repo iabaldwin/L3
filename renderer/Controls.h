@@ -73,6 +73,23 @@ struct Toggle: Action
     }
 };
 
+template <typename T>
+struct Increment : Action
+{
+
+    Increment( T& t ) : t(t)
+    {
+
+    }
+
+    T& t ;
+
+    void apply( glv::View* )
+    {
+        t++;
+    }
+};
+
 struct EventController : glv::EventHandler
 {
     EventController( glv::View* view, glv::Event::t type, Action* action  ) 
@@ -117,6 +134,15 @@ struct DoubleClickController : EventController
 struct DoubleClickMaximiseToggle : DoubleClickController
 {
     DoubleClickMaximiseToggle( glv::View* view ) : DoubleClickController( view, new Toggle() )
+    {
+    }
+};
+
+template <typename T>
+struct Incrementer : EventController
+{
+    Incrementer( glv::View* view, T t  ) 
+        : EventController( view,  static_cast< glv::Event::t >( DBG_X ), new Increment<T>(t))
     {
     }
 };

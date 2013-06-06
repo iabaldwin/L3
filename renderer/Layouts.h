@@ -49,89 +49,22 @@ namespace Visualisers
                     (*it)->pos( window.width()-(555), 0); //Here we go
                 }
 
+                x_inc = boost::make_shared< Incrementer<double> >( renderables.back(), linear_velocity_plotter->x_tmp );
+                
+                top.addHandler( static_cast< glv::Event::t >( DBG_X ), boost::ref( *x_inc ) );
+
                 window.setGLV(top);
 
                 glv::Application::run();
             
             }
 
-            void addRotationalVelocityPlot()
-            {
-                /*
-                 *  Rotational Velocity
-                 */
+            boost::shared_ptr< Incrementer<int> > y_inc;
+            boost::shared_ptr< Incrementer<double> > x_inc;
+            
+            void addRotationalVelocityPlot();
 
-                // Add plotter
-                rotational_velocity_plotter = boost::make_shared< RotationalVelocityPlotter>();
-                rotational_velocity_plotter->stroke( 2.0 );
-
-                boost::shared_ptr< glv::Plot > plot = boost::make_shared< glv::Plot >( glv::Rect( 0, 650+5, .6*window.width(), 150-5), boost::ref( *rotational_velocity_plotter ) );
-
-                // Scaling
-                plot->disable( glv::Controllable );
-                plot->range( 0, 1000, 0 );
-                plot->range( -1, 1, 1 );
-
-                
-                plot->showNumbering(true);
-                plot->numbering(true,0);
-                plot->numbering(true,1);
-
-                plot->minor( .05 );
-                plot->major( .1 );
-
-                plots.push_front( plot );
-
-                // Add rendererable
-                this->renderables.push_front( plot.get() );
-                
-                // Mark as updateable
-                temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter.get()) );
-
-                boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Rotational velocity. (rad/s)" );
-                velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
-                this->labels.push_front( velocity_label );
-
-                *plot << *velocity_label;
-            }
-
-
-            void addLinearVelocityPlot()
-            {
-                /*
-                 *  Linear Velocity
-                 */
-                // Add plotter
-                linear_velocity_plotter = boost::make_shared< LinearVelocityPlotter >();
-                linear_velocity_plotter->stroke( 2.0 );
-
-                // Add plot region
-                boost::shared_ptr< glv::Plot > plot_region = boost::make_shared< glv::Plot >( glv::Rect( 0, 500+5, .6*window.width(), 150-5), boost::ref( *linear_velocity_plotter ) );
-
-                linear_velocity_plotter->setParent( plot_region );
-
-                plot_region->disable( glv::Controllable );
-                plot_region->range( 0, 1000, 0 );
-                plot_region->range( -1, 10 , 1 );
-
-                //plot_region->numbering(true);
-                plot_region->showNumbering(true);
-                plot_region->numbering(false,0);
-
-                plots.push_front( plot_region );
-
-                // Add rendererable
-                this->renderables.push_front( plot_region.get() );
-                
-                // Mark as updateable
-                temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter.get()) );
-
-                boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Linear velocity (m/s)" );
-                velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
-                this->labels.push_front( velocity_label );
-
-                *plot_region << *velocity_label;
-            }
+            void addLinearVelocityPlot();
 
             bool addExtra( std::string description, boost::shared_ptr< Leaf > renderable )
             {

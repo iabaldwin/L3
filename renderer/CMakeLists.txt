@@ -20,6 +20,7 @@ add_library( L3Vis
                 RenderCore.cpp
                 Visualisers.cpp 
                 Components.cpp 
+                Plotters.cpp 
                 AlgorithmRenderer.cpp
                 ViewController.cpp 
                 Layouts.cpp 

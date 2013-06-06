@@ -88,11 +88,11 @@ namespace L3
 
             double q, x_vel, y_vel, velocity_delta, x, y;
             
-            boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
-            boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .1 );
+            //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
+            //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .1 );
            
-            //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .5 );
-            //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .075 );
+            boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .05 );
+            boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .005 );
 
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
@@ -135,7 +135,11 @@ namespace L3
         
             std::vector< double > _weights;
             _weights.assign( results.begin(), results.end() );
-            
+          
+            //DBG
+            //weights.assign( _weights.begin(), _weights.end() );
+            //DBG
+
             double sum = std::accumulate( results.begin(), results.end(), 0.0 );
 
             // Normalize

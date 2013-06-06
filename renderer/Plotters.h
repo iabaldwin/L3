@@ -1,9 +1,13 @@
 #ifndef L3_VISUALISERS_PLOTTERS_H
 #define L3_VISUALISERS_PLOTTERS_H
 
+#include "L3.h"
+
 #include <GLV/glv.h>
 #include <GLV/glv_binding.h>
 #include <GLV/glv_util.h>
+
+#include "Controls.h"
 
 namespace L3
 {
@@ -15,85 +19,43 @@ namespace L3
                 : glv::Plottable( glv::draw::LineStrip, 1 ),
                     index(-1)
             {
+                init = false;
+                
+                x_tmp = 0;
+                y_tmp = 0;
+
             }
+
 
             virtual ~VelocityPlotter()
             {
             }
 
             int index;
-            double current;
+            bool init; 
+            double x_limit, y_limit;
+            
+            int y_tmp;
+            double x_tmp;
+            
             boost::weak_ptr< glv::Plot > plot_parent; 
             boost::weak_ptr< L3::ConstantTimeIterator< L3::LHLV> > iterator; 
-
-            void setParent( boost::shared_ptr< glv::Plot > plotter )
-            {
-                plot_parent = plotter;
-            }
-             
-            void assignIterator( boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > LHLV_iterator )
-            {
-                this->iterator = LHLV_iterator;
-            }
 
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {
                 L3::ReadLock reader( this->mutex );
+                int counter = 0; 
                 while(i()){
-                    double x = i[0];
-                    double y = d.at<double>(0, i[0]);
+                    double x = d.at<double>(0, counter );
+                    double y = d.at<double>(1, counter );
+                    counter++;
+                    
                     g.addVertex(x, y);
                 }
                 reader.unlock();
-
             }
 
-            void update()
-            {
-                boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > iterator_ptr = iterator.lock();
-
-                if( !iterator_ptr)
-                    return;
-
-                std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
-
-                iterator_ptr->getWindow( window );
-
-                current = -1*std::numeric_limits<double>::infinity();
-
-                if ( window.size() > 0 )
-                {
-                    L3::WriteLock writer( this->mutex );
-                   
-                    mData.resize( glv::Data::DOUBLE, 1, window.size() );
-
-                    glv::Indexer i(mData.size(1));
-
-                    int counter = 0;
-
-                    while( i() && counter < window.size() ) 
-                    {
-                        double d = window[counter++].second->data[index];
-
-                        if ( d > current )
-                            current = d;
-
-                        mData.assign( d, i[0], i[1] );
-                    }
-
-                    writer.unlock();
-                }
-
-                boost::shared_ptr< glv::View > parent = plot_parent.lock();
-               
-                if( parent )
-                {
-                    boost::shared_ptr< glv::Plot > parent_plot = boost::dynamic_pointer_cast< glv::Plot >( parent );
-                    if ( parent_plot )
-                        parent_plot->range( -1, current + 2.0 , 1 );
-                }
-               
-            }
+            void update();
 
         };
 

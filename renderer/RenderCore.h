@@ -19,7 +19,9 @@ enum CUSTOM_EVENT_TYPES
     {
         OVERLAY_TOGGLE = 20,
         SELECT_CLICK,
-        TABLE_TOGGLE
+        TABLE_TOGGLE,
+        DBG_X,
+        DBG_Y
     };
 
     /*
@@ -49,8 +51,16 @@ enum CUSTOM_EVENT_TYPES
 
                     case glv::Key::Tab:
                         this->broadcastEvent( static_cast< glv::Event::t>( TABLE_TOGGLE ) );
-                        
                         break;
+
+                    case '+':
+                        this->broadcastEvent( static_cast< glv::Event::t>( DBG_X ) );
+                        break;
+
+                    case '-':
+                        this->broadcastEvent( static_cast< glv::Event::t>( DBG_Y ) );
+                        break;
+
 
                     default:
                         break; 

@@ -115,8 +115,8 @@ namespace Visualisers
     Grid::Grid( float lower, float upper, float spacing) 
         : lower(lower), upper(upper), spacing(spacing)
     {
-        vertices.reset( new glv::Point3[ 101*4 ] );
-        colors.reset( new glv::Color[ 101*4 ] );
+        vertices = boost::make_shared< glv::Point3[] >( 101*4 );
+        colors = boost::make_shared< glv::Color[] >( 101*4 );
 
         counter = 0;
 
@@ -171,8 +171,8 @@ namespace Visualisers
      */
     DefaultAxes::DefaultAxes()
     {
-        vertices.reset( new glv::Point3[ 6 ] );
-        colors.reset( new glv::Color[ 6 ] );
+        vertices = boost::make_shared< glv::Point3[ ] >( 6 );
+        colors = boost::make_shared< glv::Color[] >(  6 );
 
         glv::Color c =  glv::Color( 112.f/255.f, 138.f/255.f, 144.f/255.f ) ; 
 
@@ -541,7 +541,7 @@ namespace Visualisers
     CoordinateSystem::CoordinateSystem( L3::SE3& pose, float scale, float alpha ) 
         : pose( pose ), scale(scale), alpha(alpha)
     {
-        vertices.reset( new glv::Point3[6] );
+        vertices = boost::make_shared< glv::Point3[]> (6);
 
         vertices[0]( 0, 0, 0 ); 
         vertices[1]( scale, 0, 0 ); 
@@ -1307,7 +1307,6 @@ namespace Visualisers
         while( it != ptr->sections.end() )
         {
             experience_nodes_vertices[ counter ]( it->x, it->y, 0 );
-            //experience_nodes_colors[ counter++ ].set( 255, 0, 0 );
             experience_nodes_colors[ counter++ ].set( interpolator( double(counter)/ptr->sections.size() ) ); 
 
             ctrlpoints[counter][0]= it->x;

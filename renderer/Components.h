@@ -223,7 +223,7 @@ namespace Visualisers
             tag.x = 0.0;
             tag.y = 0.0;
 
-            label.reset( new L3::Visualisers::LeafLabel( &this->tag ) );
+            label = boost::make_shared< L3::Visualisers::LeafLabel >( &this->tag );
         }
 
         label_tag tag;
@@ -279,8 +279,8 @@ namespace Visualisers
         explicit CoordinateSystem( L3::SE3& pose , float scale=10.0f, float alpha=1.0f );
 
         L3::SE3&                            pose;
-        boost::shared_array< glv::Color >   colors;
-        boost::shared_array< glv::Point3 >  vertices;
+        boost::shared_ptr< glv::Color[] >   colors;
+        boost::shared_ptr< glv::Point3[] >  vertices;
 
         float scale, alpha;
 
@@ -302,7 +302,7 @@ namespace Visualisers
 
         virtual void onDraw3D( glv::GLV& g )
         {
-            CoordinateSystem( pose ).onDraw3D( g ); 
+            CoordinateSystem( pose, 1.0 ).onDraw3D( g ); 
         }
 
     };
@@ -414,20 +414,20 @@ namespace Visualisers
             current_estimate(estimate)
 
         {
-            bounds_renderer.reset( new PointCloudBoundsRenderer( cloud ) );
-        
-            label.reset( new glv::Label("Run-time swathe" ) );
-            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-            (*this) << *label;
+            bounds_renderer = boost::make_shared< PointCloudBoundsRenderer >( cloud );
+
+            label.setValue( "Run-time swathe" );
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            (*this) << label;
         }
 
         boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer > bounds_renderer;
 
         boost::weak_ptr< L3::SE3 > current_estimate;
         
-        boost::shared_ptr< glv::View > label;
-
         std::pair<double,double> centroid;
+
+        glv::Label label;
 
         void update();
 
@@ -472,8 +472,8 @@ namespace Visualisers
         Grid( float lower=-500, float upper=500, float spacing=50);
 
         int counter;
-        boost::shared_array< glv::Point3 > vertices;
-        boost::shared_array< glv::Color >  colors;
+        boost::shared_ptr< glv::Point3[] > vertices;
+        boost::shared_ptr< glv::Color[] >  colors;
 
         float lower, upper, spacing;
 
@@ -516,8 +516,8 @@ namespace Visualisers
         DefaultAxes();
 
         int counter;
-        boost::shared_array< glv::Point3 >  vertices;
-        boost::shared_array< glv::Color >   colors;
+        boost::shared_ptr< glv::Point3[] >  vertices;
+        boost::shared_ptr< glv::Color[] >   colors;
 
         void onDraw3D(glv::GLV& g);
 
@@ -533,13 +533,11 @@ namespace Visualisers
             : glv::View3D( rect ),
             provider(provider)
         {
-            pose.reset( new L3::SE3( L3::SE3::ZERO() ) );
+            pose = boost::make_shared< L3::SE3 >();
 
-            label.reset( new glv::Label(text) );
-
-            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-            *this << *label;
-
+            label.setValue( text );
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            *this << label;
         }
 
         boost::weak_ptr< L3::PoseProvider > provider;
@@ -548,7 +546,7 @@ namespace Visualisers
 
         L3::Visualisers::DefaultAxes axes;
 
-        boost::shared_ptr< glv::View > label;
+        glv::Label label;
 
         void update();
 
@@ -566,17 +564,17 @@ namespace Visualisers
             color(color),
             range_threshold(range_threshold)
         {
-            scan.reset( new L3::LMS151() );
+            scan = boost::make_shared< LMS151 >();
         }
 
         virtual ~ScanRenderer2D()
         {
         }
 
-        float                                   rotate_z, range_threshold;
-        glv::Color                              color;
+        glv::Label      label;
+        glv::Color      color;
+        float           rotate_z, range_threshold;
         boost::shared_ptr<L3::LMS151>           scan;
-        boost::shared_ptr< glv::View >          label;
 
         boost::weak_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower;
 
@@ -596,12 +594,10 @@ namespace Visualisers
 
         {
             rotate_z = 0;
-            //label.reset( new glv::Label("LMS151::Horizontal", true) );
-            //label->pos( glv::Place::TL, 2, -10 ).anchor( glv::Place::BR ); 
-            label.reset( new glv::Label("LMS151::Horizontal" ) );
-            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-
-            (*this) << *label;
+            
+            label.setValue( "LMS151::Horizontal" );
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            (*this) << label;
         }
 
         void onDraw3D( glv::GLV& g )
@@ -618,12 +614,10 @@ namespace Visualisers
             ScanRenderer2D( windower, glv::Color(0,0,1),0 )
         {
             rotate_z = 180;
-
-            label.reset( new glv::Label("LMS151::Vertical" ) );
-            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-
-            (*this) << *label;
-
+            
+            label.setValue( "LMS151::Vertical" );
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            (*this) << label;
         }
 
         void onDraw3D( glv::GLV& g )
@@ -705,9 +699,9 @@ namespace Visualisers
             engine(engine)
         {
 
-            label.reset( new glv::Label("SM engine" ) );
-            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-            (*this) << *label;
+            label.setValue( "SM engine" );
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            (*this) << label;
 
             trajectory = boost::dynamic_pointer_cast< glv::View3D >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
 
@@ -716,11 +710,11 @@ namespace Visualisers
             trajectory->disable( glv::Visible );
         }
 
+        boost::weak_ptr< L3::ScanMatching::Engine > engine;
+        
         boost::shared_ptr< glv::View3D > trajectory;
 
-        boost::weak_ptr< L3::ScanMatching::Engine > engine;
-
-        boost::shared_ptr< glv::View > label;
+        glv::Label label;
 
         void onDraw3D( glv::GLV& g );
 
@@ -839,19 +833,19 @@ namespace Visualisers
             : ExperienceLocationOverview( experience, provider ), 
             glv::View3D(rect)
         {
-            label.reset( new glv::Label("Experience" ) );
-            label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            
+            label.setValue( "Experience" );
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            (*this) << label;
 
-            (*this) << *label;
+            current = boost::make_shared< L3::SE3 >();
 
-            current.reset( new L3::SE3( L3::SE3::ZERO() ) );
-
-            animation.reset( new AnimatedPoseRenderer( *current ) );
+            animation = boost::make_shared< AnimatedPoseRenderer >( boost::ref( *current ) );
         }
 
-        boost::shared_ptr< L3::SE3 >    current;
-        boost::shared_ptr< glv::View >  label;
         boost::shared_ptr< AnimatedPoseRenderer > animation;
+        boost::shared_ptr< L3::SE3 > current;
+        glv::Label label;
 
         void onDraw3D(glv::GLV& g);
 
@@ -860,7 +854,6 @@ namespace Visualisers
 
     struct DatasetOverviewView : glv::View3D
     {
-
         DatasetOverviewView( const glv::Rect& rect, boost::shared_ptr< L3::Dataset > dataset, boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr< L3::PoseProvider >() ) 
             : glv::View3D(rect), 
             provider( provider )
@@ -874,15 +867,15 @@ namespace Visualisers
                 pose_reader->extract( *poses );
             }
 
-            current_pose.reset( new L3::SE3( L3::SE3::ZERO() ) );
+            current_pose = boost::make_shared< L3::SE3 >();
 
-            renderer.reset( new L3::Visualisers::AnimatedPoseRenderer( *current_pose ) );
+            renderer = boost::make_shared< L3::Visualisers::AnimatedPoseRenderer >( boost::ref( *current_pose ) );
         }
 
-        boost::shared_ptr< L3::SE3 > current_pose;
+        boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > > poses;
         boost::shared_ptr< L3::Visualisers::AnimatedPoseRenderer > renderer;
         boost::weak_ptr< L3::PoseProvider > provider;
-        boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > > poses;
+        boost::shared_ptr< L3::SE3 > current_pose;
 
         void onDraw3D( glv::GLV& g );
     };
@@ -925,7 +918,7 @@ namespace Visualisers
             HistogramRenderer(histogram),
             mTex(0,0,GL_RGBA,GL_UNSIGNED_BYTE)
         {
-            render_histogram.reset( new L3::Histogram<double> () );
+            render_histogram = boost::make_shared< L3::Histogram<double> >();
         }
 
         glv::Texture2 mTex;
@@ -1058,7 +1051,7 @@ namespace Visualisers
             int start = 0;
             for( int i=0; i< num_pyramids; i++ )
             {
-                boost::shared_ptr< HistogramDensityRenderer > renderer( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
+                boost::shared_ptr< HistogramDensityRenderer > renderer = boost::make_shared< HistogramDensityRenderer >( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() );
               
                 std::stringstream ss;
 
@@ -1158,7 +1151,7 @@ namespace Visualisers
 
         void setVariable( T& t )
         {
-            lock.reset( new variable_lock<T>( t ) );
+            lock = boost::make_shared< variable_lock<T> >( boost::ref( t ) );
         }
 
         void update()
