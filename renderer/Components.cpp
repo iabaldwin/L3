@@ -1028,13 +1028,10 @@ namespace Visualisers
         CoordinateSystem( zero ).onDraw3D(g);
         
         if( enabled( glv::Maximized ) )
-        {
             Composite::onDraw3D(g);
-            
-        }
         else
         {
-            glv::draw::translateZ( -25 );
+            glv::draw::translateZ( -45 );
 
             if( !trajectory.empty() )
             {

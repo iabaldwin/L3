@@ -6,14 +6,18 @@ namespace L3
     {
         void VelocityPlotter::update()
         {
-                boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > iterator_ptr = iterator.lock();
+                //boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > > iterator_ptr = iterator.lock();
+                boost::shared_ptr< L3::VelocityProvider > iterator_ptr = iterator.lock();
 
                 if( !iterator_ptr)
                     return;
 
-                std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
+                //std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
+                //std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > window ;
+                //iterator_ptr->getWindow( window );
 
-                iterator_ptr->getWindow( window );
+                VELOCITY_WINDOW window;
+                window.assign( iterator_ptr->velocities.begin(), iterator_ptr->velocities.end() );
 
                 y_limit = -1*std::numeric_limits<double>::infinity();
 
@@ -29,8 +33,13 @@ namespace L3
 
                     while( i() && counter < window.size() ) 
                     {
-                        double variable = window[counter].second->data[index];
+                        //double variable = window[counter].second->data[index];
+                        //double dt = window[counter].first - window[0].first;
+
+                        double variable = window[counter].second.second;
                         double dt = window[counter].first - window[0].first;
+
+
 
                         y_limit = std::max( y_limit, variable );
 

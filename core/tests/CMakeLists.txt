@@ -58,8 +58,8 @@ target_link_libraries( test_estimator_runner config L3 ${Boost_LIBRARIES} )
 #add_executable( test_swathe_builder_LHLV test_swathe_builder_LHLV.cpp )
 #target_link_libraries( test_swathe_builder_LHLV config L3 ${Boost_LIBRARIES}  )
 
-add_executable( test_buffered_swathe_builder_LHLV test_buffered_swathe_builder_LHLV.cpp )
-target_link_libraries( test_buffered_swathe_builder_LHLV config L3 ${Boost_LIBRARIES}  )
+#add_executable( test_buffered_swathe_builder_LHLV test_buffered_swathe_builder_LHLV.cpp )
+#target_link_libraries( test_buffered_swathe_builder_LHLV config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_iterator test_iterator.cpp )
 target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES}  )

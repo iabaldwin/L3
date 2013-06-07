@@ -429,40 +429,40 @@ namespace L3
        
             void update()
             {
-                boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm_ptr = algorithm.lock();
+                //boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm_ptr = algorithm.lock();
 
-                if( !algorithm_ptr )
-                    return;
+                //if( !algorithm_ptr )
+                    //return;
 
-                L3::ReadLock master( algorithm_ptr->mutex );
-                std::vector<double> weights( algorithm_ptr->weights.begin(), algorithm_ptr->weights.end() );
-                std::vector<L3::SE3> hypotheses( algorithm_ptr->hypotheses.begin(), algorithm_ptr->hypotheses.end() );
-                L3::SE3 current_prediction = algorithm_ptr->current_prediction;
-                master.unlock();
+                //L3::ReadLock master( algorithm_ptr->mutex );
+                //std::vector<double> weights( algorithm_ptr->weights.begin(), algorithm_ptr->weights.end() );
+                //std::vector<L3::SE3> hypotheses( algorithm_ptr->hypotheses.begin(), algorithm_ptr->hypotheses.end() );
+                //L3::SE3 current_prediction = algorithm_ptr->current_prediction;
+                //master.unlock();
            
-                x_weight->weights = weights;
-                x_weight->hypotheses.resize( weights.size() ); 
+                //x_weight->weights = weights;
+                //x_weight->hypotheses.resize( weights.size() ); 
                 
-                y_weight->weights = weights;
-                y_weight->hypotheses.resize( weights.size() ); 
+                //y_weight->weights = weights;
+                //y_weight->hypotheses.resize( weights.size() ); 
                
-                theta_weight->weights = weights;
-                theta_weight->hypotheses.resize( weights.size() ); 
+                //theta_weight->weights = weights;
+                //theta_weight->hypotheses.resize( weights.size() ); 
 
-                int counter = 0;
-                for( std::vector<L3::SE3>::iterator it = hypotheses.begin();
-                        it != hypotheses.end();
-                        it++) 
-                {
-                    x_weight->hypotheses[counter]=it->X()-current_prediction.X();
-                    y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
-                    theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
+                //int counter = 0;
+                //for( std::vector<L3::SE3>::iterator it = hypotheses.begin();
+                        //it != hypotheses.end();
+                        //it++) 
+                //{
+                    //x_weight->hypotheses[counter]=it->X()-current_prediction.X();
+                    //y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
+                    //theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
                
-                    counter++;
-                }
-                x_weight->update();
-                y_weight->update();
-                theta_weight->update();
+                    //counter++;
+                //}
+                //x_weight->update();
+                //y_weight->update();
+                //theta_weight->update();
 
             }
         

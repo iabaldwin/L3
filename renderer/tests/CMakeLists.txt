@@ -46,8 +46,8 @@ target_link_libraries( test_swathe_builder_INS_visual GLV ${GLUT_LIBRARIES} ${OP
 add_executable( test_swathe_builder_LHLV_visual test_swathe_builder_LHLV.cpp )
 target_link_libraries( test_swathe_builder_LHLV_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
-add_executable( test_swathe_builder_LHLV_constant_distance_visual test_swathe_builder_LHLV_constant_distance.cpp )
-target_link_libraries( test_swathe_builder_LHLV_constant_distance_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+#add_executable( test_swathe_builder_LHLV_constant_distance_visual test_swathe_builder_LHLV_constant_distance.cpp )
+#target_link_libraries( test_swathe_builder_LHLV_constant_distance_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 #add_executable( test_point_clouds_transform test_point_clouds_transform.cpp )
 #target_link_libraries( test_point_clouds_transform GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})

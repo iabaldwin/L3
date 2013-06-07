@@ -36,14 +36,26 @@ namespace L3
     bool ConstantDistanceWindower::update( double time )
     {
         // Find the new data, between the last update time and now
-        L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( constant_time_iterator->window.begin(), 
-                constant_time_iterator->window.end(), 
+        //L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( constant_time_iterator->window.begin(), 
+                //constant_time_iterator->window.end(), 
+                //previous_update,
+                //comparator );
+
+        L3::VelocityProvider::VELOCITY_ITERATOR index = std::lower_bound( velocity_provider->velocities.begin(),
+                velocity_provider->velocities.end(),
                 previous_update,
                 comparator );
 
+
+
         // Create a delta buffer
-        std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > _window_delta_buffer;
-        _window_delta_buffer.assign( index, constant_time_iterator->window.end() );
+        //std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > _window_delta_buffer;
+        //_window_delta_buffer.assign( index, constant_time_iterator->window.end() );
+        
+        // Create a delta buffer
+        //std::deque< std::pair< double, std::pair< double, double > > > _window_delta_buffer;
+        VELOCITY_WINDOW _window_delta_buffer;
+        _window_delta_buffer.assign( index, velocity_provider->velocities.end() );
         
         if (_window_delta_buffer.empty() )
             return false;
@@ -61,7 +73,6 @@ namespace L3
                 0.1, 
                 swathe_length,
                 written);
-
 
         std::reverse( _constant_distance_window.begin(), _constant_distance_window.end() );
     

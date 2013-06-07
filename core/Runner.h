@@ -90,9 +90,6 @@ struct DatasetRunner : ThreadedRunner
     
     boost::shared_ptr< L3::SE3 > current;
     
-    boost::shared_ptr< L3::PoseProvider > provider;
-
-    boost::shared_ptr< L3::VelocityProvider > sm_velocity_provider;
 
     boost::shared_ptr< L3::SE3 >                projection;
     boost::shared_ptr< L3::Projector<double> >  projector;
@@ -100,7 +97,12 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::SwatheBuilder >      swathe_builder;
     boost::shared_ptr< L3::Predictor >          predictor;
 
-    boost::shared_ptr< L3::PoseWindower > pose_windower;
+    boost::shared_ptr< L3::PoseProvider >       provider;
+    boost::shared_ptr< L3::PoseWindower >       pose_windower;
+    boost::shared_ptr< L3::VelocityProvider >   lhlv_velocity_provider;
+    boost::shared_ptr< L3::VelocityProvider >   sm_velocity_provider;
+
+
     boost::shared_ptr< L3::ConstantTimeWindower< L3::SE3 > >    oracle;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > >    pose_iterator;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > >   LHLV_iterator;
@@ -151,7 +153,6 @@ struct EstimatorRunner : DatasetRunner, Lockable
         : DatasetRunner( dataset, mission, speedup ),
             experience(experience)
     {
-        estimated.reset( new L3::SE3( L3::SE3::ZERO() ) ); 
     }
 
 
@@ -163,22 +164,10 @@ struct EstimatorRunner : DatasetRunner, Lockable
             thread.join();
     }
     
-    boost::shared_ptr< L3::SE3 > estimated;
-
     L3::Experience*                                         experience;
-    L3::ConstantTimeWindower<L3::LHLV>*                     windower;
     boost::shared_ptr< L3::Estimator::Algorithm<double> >   algorithm;
 
     bool update( double time );
-
-    EstimatorRunner& setPoseWindower( L3::ConstantTimeWindower<L3::LHLV>* windower )
-    {
-        this->windower = windower;
-        (*this) << dynamic_cast<L3::TemporalObserver*>(windower);
-        (*this) << dynamic_cast<L3::Dumpable*>(windower);
-
-        return *this;
-    }
 
     EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
     {

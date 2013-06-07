@@ -39,7 +39,7 @@ namespace L3
             double x_tmp;
             
             boost::weak_ptr< glv::Plot > plot_parent; 
-            boost::weak_ptr< L3::ConstantTimeIterator< L3::LHLV> > iterator; 
+            boost::weak_ptr< L3::VelocityProvider > iterator; 
 
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {

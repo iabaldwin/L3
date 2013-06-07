@@ -8,9 +8,8 @@ namespace L3
         velocities.clear();
 
         // Copy the window
-
         std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
-        
+
         L3::ReadLock lock( engine->mutex );
         if( engine->trajectory.empty() )
             return false;
@@ -39,5 +38,30 @@ namespace L3
         }
 
         return true;
+    }
+
+    struct zipper : std::unary_function< std::pair< double, boost::shared_ptr< L3::LHLV > >, std::pair< double, std::pair< double, double> > >
+    {
+        std::pair< double, std::pair< double, double> > operator()( std::pair< double, boost::shared_ptr< L3::LHLV > > input )     
+        {
+            return std::make_pair( input.first, std::make_pair( input.second->data[9], input.second->data[3] ) );
+        }
+
+    };
+
+
+    
+    bool LHLVVelocityProvider::update( double time  )
+    {
+        velocities.clear();
+
+        zipper z;
+
+        std::transform( iterator->window.begin(),
+                iterator->window.end(),
+                std::back_inserter( velocities ),
+                z );
+
+        return ( !velocities.empty() );
     }
 }

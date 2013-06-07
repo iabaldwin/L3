@@ -343,8 +343,10 @@ namespace L3
             /*
              *  Velocity plots
              */
-            linear_velocity_plotter->iterator = runner->LHLV_iterator;
-            rotational_velocity_plotter->iterator = runner->LHLV_iterator;
+            //linear_velocity_plotter->iterator = runner->LHLV_iterator;
+            //rotational_velocity_plotter->iterator = runner->LHLV_iterator;
+            linear_velocity_plotter->iterator = runner->lhlv_velocity_provider;
+            rotational_velocity_plotter->iterator = runner->lhlv_velocity_provider;
 
             /*
              *  Scale
@@ -406,7 +408,8 @@ namespace L3
              *  Run-time swathe
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( runtime_cloud_renderer_leaf.get() ) );
-            runtime_cloud_renderer_leaf = boost::make_shared< L3::Visualisers::PointCloudRendererLeaf >( runner->point_cloud, runner->provider );
+            //runtime_cloud_renderer_leaf = boost::make_shared< L3::Visualisers::PointCloudRendererLeaf >( runner->point_cloud, runner->provider );
+            runtime_cloud_renderer_leaf = boost::make_shared< L3::Visualisers::PointCloudRendererLeaf >( runner->point_cloud, runner->oracle );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
             //  Toggle
             point_cloud_visualiser_toggle->leaf = runtime_cloud_renderer_leaf;
@@ -439,12 +442,14 @@ namespace L3
             /*
              *  Oracle
              */
-            oracle_renderer->provider = runner->provider; 
+            //oracle_renderer->provider = runner->provider; 
+            oracle_renderer->provider = runner->oracle; 
       
             /*
              *  Spatial grid
              */
-            spatial_updater->provider = runner->provider;
+            //spatial_updater->provider = runner->provider;
+            spatial_updater->provider = runner->oracle;
             spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( grid.get() ) ) );
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) );
             grid = boost::make_shared< DynamicGrid> ();
@@ -460,7 +465,8 @@ namespace L3
              *  Update view
              */
 
-            L3::SE3 start_pose = runner->provider->operator()();
+            //L3::SE3 start_pose = runner->provider->operator()();
+            L3::SE3 start_pose = runner->oracle->operator()();
 
             composite->position.x = -1*start_pose.X();
             composite->position.y = -1*start_pose.Y();
@@ -515,7 +521,8 @@ namespace L3
              *  Experience & location
              */
             experience_location->experience = experience;
-            experience_location->provider = runner->provider;
+            //experience_location->provider = runner->provider;
+            experience_location->provider = runner->oracle;
 
             /*
              *  Stand-alone pyramid renderer

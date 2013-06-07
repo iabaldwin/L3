@@ -25,15 +25,23 @@ namespace L3
         point_cloud = boost::make_shared< L3::PointCloud<double> >();
         projection = boost::make_shared< L3::SE3 >();
 
-        // Get the calibratoin
+        // Get the calibration
         L3::Configuration::convert( mission->lidars[mission->declined], *projection );
-
-        projector = boost::make_shared< L3::Projector<double> >( projection.get(), point_cloud.get() );
        
+        // Point projector
+        projector = boost::make_shared< L3::Projector<double> >( projection.get(), point_cloud.get() );
+      
+        // Scan matching engine
+        engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
+
+        // Velocity providers
+        sm_velocity_provider   = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
+        lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
+
         // Pose Provider
         //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
-        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 40 );
-        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 80 );
+        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 40 );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( boost::dynamic_pointer_cast< LHLVVelocityProvider >(lhlv_velocity_provider).get(), 40 );
        
         // Swathe generator
         //swathe_builder = boost::make_shared< L3::RawSwatheBuilder > ( pose_windower.get(), vertical_LIDAR.get() );
@@ -41,28 +49,31 @@ namespace L3
    
         // INS pose
         oracle = boost::make_shared< L3::ConstantTimeWindower< L3::SE3 > > ( pose_iterator.get() );
-
-        // Scan matching engine
-        engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
-     
-        // Velocity extractor
-        sm_velocity_provider = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
-
+        
         // Predictor
         predictor = boost::make_shared< L3::Predictor >( LHLV_iterator.get() );
         
-        (*this) << pose_iterator.get() << LHLV_iterator.get() << vertical_LIDAR.get() << horizontal_LIDAR.get() << pose_windower.get() << swathe_builder.get() << engine.get() << predictor.get() << sm_velocity_provider.get();
-
-        current = boost::make_shared< L3::SE3 >( L3::SE3::ZERO() );
- 
-        // This, should be TMP
-        this->provider = oracle;
-  
-        // Timing statistics
+        //  Zero-th pose
+        current = boost::make_shared< L3::SE3 >();
+        
+        // Timing container
         timings.resize(5);
-   
+      
+        /*
+         *Note: order is important here
+         */
+        (*this) << pose_iterator.get() 
+                << LHLV_iterator.get() 
+                << vertical_LIDAR.get() 
+                << horizontal_LIDAR.get() 
+                << pose_windower.get() 
+                << swathe_builder.get() 
+                << engine.get() 
+                << predictor.get() 
+                << sm_velocity_provider.get() 
+                << lhlv_velocity_provider.get();
     }
-    
+
     /*
      *  Dataset runner
      */
@@ -172,8 +183,8 @@ namespace L3
          *  Estimate
          */
         L3::ReadLock algo_lock( this->mutex ); 
-        //*current = algorithm->operator()( projector->cloud, *current );
-        *current = algorithm->operator()( projector->cloud, oracle->operator()() );
+        *current = algorithm->operator()( projector->cloud, *current );
+        //*current = algorithm->operator()( projector->cloud, oracle->operator()() );
         algo_lock.unlock();
 
         return true;

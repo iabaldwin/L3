@@ -4,12 +4,18 @@
 #include "Core.h"
 #include "ScanMatching.h"
 
+    
+typedef std::deque< std::pair< double, std::pair< double, double > > > VELOCITY_WINDOW;
+//typedef std::vector< std::pair< double, std::pair< double, double > > > VELOCITY_WINDOW;
+
 namespace L3
 {
 
 struct VelocityProvider : Lockable, TemporalObserver
 {
-    std::deque< std::pair< double, std::pair< double, double > > > velocities;
+    VELOCITY_WINDOW velocities;
+
+    typedef VELOCITY_WINDOW::iterator VELOCITY_ITERATOR;
 };
 
 
@@ -27,6 +33,22 @@ struct ScanMatchingVelocityProvider : VelocityProvider
     
 
 };
+
+struct LHLVVelocityProvider : VelocityProvider
+{
+    LHLVVelocityProvider( L3::ConstantTimeIterator< L3::LHLV > * iterator ) : iterator(iterator)
+    {
+
+    }
+
+    L3::ConstantTimeIterator< L3::LHLV > * iterator;
+
+    bool update( double time );
+
+};
+
+
+
 
 }
 
