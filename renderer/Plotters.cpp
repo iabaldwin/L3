@@ -33,13 +33,8 @@ namespace L3
 
                     while( i() && counter < window.size() ) 
                     {
-                        //double variable = window[counter].second->data[index];
-                        //double dt = window[counter].first - window[0].first;
-
-                        double variable = window[counter].second.second;
+                        double variable = window[counter].second[index];
                         double dt = window[counter].first - window[0].first;
-
-
 
                         y_limit = std::max( y_limit, variable );
 

@@ -33,24 +33,30 @@ namespace L3
 
             if( std::isinf( velocity ) || std::isnan( velocity ) )
                 continue;
-            
-            velocities.push_back( std::make_pair( it->first, std::make_pair( velocity, 0.0 ) ) );
+          
+            std::vector<double> data(4);
+            data[0] = velocity;
+
+            //velocities.push_back( std::make_pair( it->first, std::make_pair( velocity, 0.0 ) ) );
+            velocities.push_back( std::make_pair( it->first, data ) );
         }
 
         return true;
     }
 
-    struct zipper : std::unary_function< std::pair< double, boost::shared_ptr< L3::LHLV > >, std::pair< double, std::pair< double, double> > >
+    struct zipper : std::unary_function< std::pair< double, boost::shared_ptr< L3::LHLV > >, std::pair< double, std::vector< double > > >
     {
-        std::pair< double, std::pair< double, double> > operator()( std::pair< double, boost::shared_ptr< L3::LHLV > > input )     
+        std::pair< double, std::vector< double > > operator()( std::pair< double, boost::shared_ptr< L3::LHLV > > input )     
         {
-            return std::make_pair( input.first, std::make_pair( input.second->data[9], input.second->data[3] ) );
+            std::vector< double > data( 4 );
+            data[0] = input.second->data[9];
+            data[3] = input.second->data[3];
+            //return std::make_pair( input.first, std::make_pair( input.second->data[9], input.second->data[3] ) );
+            return std::make_pair( input.first, data );
         }
 
     };
 
-
-    
     bool LHLVVelocityProvider::update( double time  )
     {
         velocities.clear();

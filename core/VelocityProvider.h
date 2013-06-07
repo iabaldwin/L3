@@ -5,8 +5,9 @@
 #include "ScanMatching.h"
 
     
-typedef std::deque< std::pair< double, std::pair< double, double > > > VELOCITY_WINDOW;
+//typedef std::deque< std::pair< double, std::pair< double, double > > > VELOCITY_WINDOW;
 //typedef std::vector< std::pair< double, std::pair< double, double > > > VELOCITY_WINDOW;
+typedef std::deque< std::pair< double, std::vector< double > > > VELOCITY_WINDOW;
 
 namespace L3
 {

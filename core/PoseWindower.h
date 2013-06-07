@@ -105,9 +105,7 @@ namespace L3
     {
         public:
 
-            //ConstantDistanceWindower( L3::ConstantTimeIterator<L3::LHLV>* iterator, double swathe_length = 10.0  ) 
             ConstantDistanceWindower( L3::LHLVVelocityProvider* provider, double swathe_length = 10.0  ) 
-                //: constant_time_iterator(provider),
                 : velocity_provider(provider),
                     swathe_length(swathe_length),
                     previous_update(0.0)
@@ -125,22 +123,11 @@ namespace L3
             std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > _constant_distance_window;
 
             // Window buffer
-            //std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > _window_buffer;
-            //std::deque< std::pair< double, std::pair<double, double> > > _window_buffer;
             VELOCITY_WINDOW _window_buffer;
             
-            // Window buffer::Incremental distances
-            std::deque < double > _window_incremental_distances;
-           
-            // Sink
-            std::deque < double > _sink;
-
-            // Pose inverter
-            Inverter inverter;
-        
             // Search structure
-            //Comparator< std::pair< double, boost::shared_ptr<L3::LHLV> > > comparator;
-            Comparator< std::pair< double, std::pair< double, double > > > comparator;
+            //Comparator< std::pair< double, std::pair< double, double > > > comparator;
+            Comparator< std::pair< double, std::vector< double > > > comparator;
 
             double swathe_length;
 

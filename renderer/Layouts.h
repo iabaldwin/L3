@@ -49,7 +49,7 @@ namespace Visualisers
                     (*it)->pos( window.width()-(555), 0); //Here we go
                 }
 
-                x_inc = boost::make_shared< Incrementer<double> >( renderables.back(), linear_velocity_plotter->x_tmp );
+                x_inc = boost::make_shared< Incrementer<double> >( renderables.back(), linear_velocity_plotter_lhlv->x_tmp );
                 
                 top.addHandler( static_cast< glv::Event::t >( DBG_X ), boost::ref( *x_inc ) );
 
@@ -140,7 +140,8 @@ namespace Visualisers
 
             std::list< boost::shared_ptr< glv::Plot > >     plots;
 
-            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter;
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_lhlv;
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_sm;
             boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter;
 
             boost::shared_ptr< WASDManager > selection_manager;

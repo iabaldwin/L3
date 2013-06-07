@@ -63,7 +63,7 @@ namespace L3
         {
             LinearVelocityPlotter() 
             {
-                index = 9;
+                index = 0;
                 this->color( glv::Color( 1,0,0 ) );
             }
         };
