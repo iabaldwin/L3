@@ -15,7 +15,7 @@ namespace L3
                 //o.stream << *(it->second) << std::endl;
             //}
 
-            //return o;
+            return o;
         }
 
         template <>

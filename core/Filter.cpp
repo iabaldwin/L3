@@ -173,6 +173,8 @@ namespace L3
         bool ParticleFilter<T>::update( double time )
         {
             current_time = time;
+       
+            return true;
         }
      
 

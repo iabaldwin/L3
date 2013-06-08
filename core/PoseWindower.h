@@ -45,15 +45,15 @@ namespace L3
 
             bool update( double t)
             {
-                L3::WriteLock( this->mutex );
+                L3::WriteLock lock( this->mutex );
                 return constant_time_iterator->update(t);
             }
 
             L3::SE3 operator()( void )
             {
-                L3::ReadLock( this->mutex );
+                L3::ReadLock lock( this->mutex );
 
-                if ( this->constant_time_iterator->window.size() > 0 )
+                if ( !this->constant_time_iterator->window.empty() )
                     return *(this->constant_time_iterator->window.back().second);
                 else
                     return L3::SE3::ZERO();

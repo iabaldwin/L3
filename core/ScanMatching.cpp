@@ -1,6 +1,10 @@
 #include "ScanMatching.h"
 
-#define TRAJECTORY_LIMIT 200 
+#include <pcl/registration/icp.h>
+//#include <pcl/registration/ndt_2d.h>
+#include <pcl/registration/gicp.h>
+
+#define TRAJECTORY_LIMIT 500 
             
 int do_projection( const L3::LMS151& current_scan, double* matrix, double threshold = 5.0 )
 {
@@ -91,24 +95,26 @@ namespace ScanMatching
             cloud_out->points[i].z = *cloud_ptr++;
         }
 
-        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+        //pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
+        //pcl::NormalDistributionsTransform2D<pcl::PointXYZ, pcl::PointXYZ> registration;
+        pcl::GeneralizedIterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
 
-        //icp.setMaxCorrespondenceDistance (0.05);
+        //registration.setMaxCorrespondenceDistance (0.05);
         // Set the maximum number of iterations (criterion 1)
-        icp.setMaximumIterations (20);
+        registration.setMaximumIterations (20);
         // Set the transformation epsilon (criterion 2)
-        //icp.setTransformationEpsilon (1e-8);
+        //registration.setTransformationEpsilon (1e-8);
         // Set the euclidean distance difference epsilon (criterion 3)
-        //icp.setEuclideanFitnessEpsilon (1);
+        //registration.setEuclideanFitnessEpsilon (1);
 
-        icp.setInputSource(cloud_out);
-        icp.setInputTarget(cloud_in);
+        registration.setInputSource(cloud_out);
+        registration.setInputTarget(cloud_in);
 
         // Alignment
         pcl::PointCloud<pcl::PointXYZ> final;
-        icp.align(final);
+        registration.align(final);
 
-        transformation = icp.getFinalTransformation();
+        transformation = registration.getFinalTransformation();
 
         // Do swap
         scan.swap( putative );
@@ -117,7 +123,7 @@ namespace ScanMatching
         //std::cout << current_scan.first - previous_time << std::endl;
         previous_time = current_scan.first;
 
-        return icp.hasConverged();
+        return registration.hasConverged();
     }
     
     bool Engine::update( double time )
@@ -141,6 +147,8 @@ namespace ScanMatching
             trajectory.push_back( std::make_pair( scan.first, current_transformation) );
         
         }
+
+        write_lock.unlock();
     }
 }
 }

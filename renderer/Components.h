@@ -4,10 +4,8 @@
 #include <iostream>
 #include <GLV/glv.h>
 
-// Text
-#include "libglf/glf.h"
-
 #include <boost/ref.hpp>
+#include <boost/any.hpp>
 #include <boost/shared_array.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem.hpp>
@@ -18,6 +16,12 @@
 #include "L3.h"
 #include "RenderingUtils.h"
 #include "ViewController.h"
+
+/*
+ *Octree specific
+ */
+#include <pcl/point_cloud.h>
+#include <pcl/octree/octree.h>
 
 namespace L3
 {
@@ -64,9 +68,6 @@ namespace Visualisers
             observers.push_front( observer );
             return *this;
         }
-
-
-
     };
 
     struct Controllable
@@ -502,6 +503,8 @@ namespace Visualisers
         {
             current_x = x;
             current_y = y;
+       
+            return false;
         }
 
         void onDraw3D(glv::GLV& g);
@@ -811,10 +814,13 @@ namespace Visualisers
 
     };
 
-    struct ExperienceLocationOverview
+    /*
+     *  Experience views
+     */
+    struct ExperienceView
     {
 
-        ExperienceLocationOverview( boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PoseProvider > provider ) 
+        ExperienceView( boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PoseProvider > provider ) 
             : experience(experience), provider(provider)
         {
         }
@@ -826,14 +832,43 @@ namespace Visualisers
 
     };
 
-
-    struct ExperienceLocationOverviewView : ExperienceLocationOverview, glv::View3D
+    struct ExperienceCloudView : ExperienceView, glv::View3D
     {
-        ExperienceLocationOverviewView( const glv::Rect& rect, boost::shared_ptr<L3::Experience> experience, boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr<L3::PoseProvider>() ) 
-            : ExperienceLocationOverview( experience, provider ), 
+
+        ExperienceCloudView( const glv::Rect& rect, 
+                boost::shared_ptr<L3::Experience> experience, 
+                boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr<L3::PoseProvider>() ) 
+            : ExperienceView( experience, provider ), 
             glv::View3D(rect)
         {
-            
+        }
+
+        boost::shared_ptr< glv::Point3[] > vertices;
+  
+        boost::shared_ptr< PointCloud<double> > master;
+
+        std::list< boost::shared_ptr< PointCloud<double> > > clouds;
+
+        boost::shared_ptr< PointCloudRendererLeaf > point_cloud_renderer_leaf;
+
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+        
+        boost::shared_ptr< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> > octree;
+        
+        void load( boost::shared_ptr< L3::Experience > experience );
+        
+        void onDraw3D( glv::GLV& g );
+    };
+
+    struct ExperienceOverviewView : ExperienceView, glv::View3D
+    {
+        ExperienceOverviewView( const glv::Rect& rect, 
+                boost::shared_ptr<L3::Experience> experience, 
+                boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr<L3::PoseProvider>() ) 
+            : ExperienceView( experience, provider ), 
+            glv::View3D(rect)
+        {
+
             label.setValue( "Experience" );
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
             (*this) << label;
@@ -841,16 +876,34 @@ namespace Visualisers
             current = boost::make_shared< L3::SE3 >();
 
             animation = boost::make_shared< AnimatedPoseRenderer >( boost::ref( *current ) );
+      
+            experience_point_cloud = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, provider );
+       
+            *this << *experience_point_cloud;
+            experience_point_cloud->disable( glv::Visible );
         }
 
         boost::shared_ptr< AnimatedPoseRenderer > animation;
+        boost::shared_ptr< ExperienceCloudView > experience_point_cloud;
         boost::shared_ptr< L3::SE3 > current;
         glv::Label label;
+
+
+        void setProvider( boost::shared_ptr< L3::PoseProvider > provider )
+        {
+            this->provider = provider;
+            this->experience_point_cloud->provider = provider;
+        }
+
+        void setExperience( boost::shared_ptr< L3::Experience > experience )
+        {
+            this->experience = experience;
+            this->experience_point_cloud->load( experience );
+        }
 
         void onDraw3D(glv::GLV& g);
 
     };
-
 
     struct DatasetOverviewView : glv::View3D
     {

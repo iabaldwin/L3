@@ -104,6 +104,8 @@ struct CompositeController : Controller
         {
             origin_x = g.mouse().x();
             origin_y = g.mouse().y();
+       
+            return false;
         }
 
     };

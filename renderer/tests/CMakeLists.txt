@@ -64,8 +64,8 @@ target_link_libraries( test_swathe_builder_LHLV_visual GLV ${GLUT_LIBRARIES} ${O
 #add_executable( test_smoother_visual test_smoother.cpp )
 #target_link_libraries( test_smoother_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
-add_executable( test_experience_renderer test_experience_renderer.cpp )
-target_link_libraries( test_experience_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+#add_executable( test_experience_renderer test_experience_renderer.cpp )
+#target_link_libraries( test_experience_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 #add_executable( test_layout test_layout.cpp )
 #target_link_libraries( test_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})

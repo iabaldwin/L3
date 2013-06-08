@@ -11,7 +11,6 @@
 #include <mach/mach_host.h>
 #include<mach/mach.h> 
 
-
 namespace L3
 {
 namespace Visualisers
@@ -1014,9 +1013,9 @@ namespace Visualisers
     void ScanMatchingTrajectoryRenderer::onDraw3D( glv::GLV& g )
     {
         boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
-       
             
         std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
+        
         if( engine_ptr )
         {
             L3::ReadLock lock( engine_ptr->mutex );
@@ -1051,7 +1050,6 @@ namespace Visualisers
         }
 
     }
-
 
     void ScanMatchingScanRenderer::onDraw3D( glv::GLV& g )
     {
@@ -1132,7 +1130,6 @@ namespace Visualisers
         if (enabled( glv::Maximized ))
         {
             trajectory->enable( glv::Visible );
-            //trajectory->enable( glv::DrawBorder );
             boost::dynamic_pointer_cast< ScanMatchingTrajectoryRenderer >(trajectory)->engine = engine;
         }
         else
@@ -1270,16 +1267,16 @@ namespace Visualisers
      *  Experience location overview
      */
 
-    void ExperienceLocationOverviewView::onDraw3D(glv::GLV& g)
+    void ExperienceOverviewView::onDraw3D(glv::GLV& g)
     {
         far(1000); 
 
         glv::draw::translateZ( -850 );
 
-        boost::shared_ptr< L3::PoseProvider > ptr_provider = provider.lock();
-        if( ptr_provider )
+        boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
+        if( provider_ptr )
         {
-            *current = ptr_provider->operator()();
+            *current = provider_ptr->operator()();
             glv::draw::translate( -1*current->X(), -1*current->Y() );
             animation->onDraw3D(g);
         }
@@ -1323,8 +1320,109 @@ namespace Visualisers
 
         static int draw_counter = 0;
         glv::draw::text( "Is this the real world", draw_counter++, 40, 20 );
-   
+
+        if( enabled( glv::Maximized ) )
+        {
+            boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud)->experience = experience;
+            experience_point_cloud->enable( glv::Visible );
+        }
+        else
+            experience_point_cloud->disable( glv::Visible );
     }
+
+    /*
+     *  Experience point viewer
+     */
+    void ExperienceCloudView::onDraw3D( glv::GLV& g)
+    {
+        L3::SE3 current;
+        if( boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock() )
+        {
+            current = provider_ptr->operator()();
+            glv::draw::translateZ( -200 );
+            glv::draw::translate( -1*current.X(), -1*current.Y(), 0 );
+        }
+
+        //glMultMatrixf( current.getHomogeneous().data() );
+        far( 1000 );
+        glv::draw::pointSize( 2 );
+        //glv::draw::translateZ( -800 );
+       
+        pcl::PointXYZ searchPoint;
+
+        searchPoint.x = current.X();
+        searchPoint.y = current.Y();
+        searchPoint.z = current.Z();
+
+        std::vector<int> pointIdxVec;
+
+        if (octree->voxelSearch (searchPoint, pointIdxVec))
+        {
+            glv::Point3 vertices[pointIdxVec.size()];
+            glv::Color  colors[pointIdxVec.size()];
+
+            for (size_t i = 0; i < pointIdxVec.size (); ++i)
+            {
+                vertices[i]( cloud->points[pointIdxVec[i]].x, cloud->points[pointIdxVec[i]].y, cloud->points[pointIdxVec[i]].z );
+            }
+  
+            glv::draw::paint( glv::draw::Points, vertices, colors, pointIdxVec.size() );
+        
+        }
+
+        //point_cloud_renderer_leaf->onDraw3D( g );
+    }
+
+    void ExperienceCloudView::load(  boost::shared_ptr< L3::Experience > experience )
+    {
+        int section_counter = 0;
+
+        while( true )
+        {
+            try
+            {
+                // Load the experience
+                std::pair< long unsigned int, L3::Point<double>* > load_result = experience->load( section_counter );
+           
+                boost::shared_ptr< L3::PointCloud<double> > cloud = boost::make_shared<L3::PointCloud<double> >();
+
+                cloud->num_points = load_result.first;
+                cloud->points = load_result.second;
+
+                clouds.push_back( cloud );
+            }
+            catch( ... )
+            {
+                break;
+            }
+
+            section_counter++;
+        }
+
+        join( clouds, master );
+
+        point_cloud_renderer_leaf = boost::make_shared< PointCloudRendererLeaf >( master );
+
+        cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
+  
+        cloud->height = 1;
+        cloud->width = master->num_points;
+        cloud->points.resize (cloud->width * cloud->height);
+
+        for (size_t i = 0; i < cloud->points.size (); ++i)
+        {
+            cloud->points[i].x = master->points[i].x; 
+            cloud->points[i].y = master->points[i].y; 
+            cloud->points[i].z = master->points[i].z; 
+        }
+
+        //octree = boost::make_shared< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> >( 128.0f ) ;
+        octree = boost::make_shared< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> >( 10.0f ) ;
+
+        octree->setInputCloud (cloud);
+        octree->addPointsFromInputCloud ();
+    }
+
 
     /*
      *  Dataset viewer
@@ -1544,11 +1642,7 @@ namespace Visualisers
         for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = filter_ptr->hypotheses.begin();  
                 it != filter_ptr->hypotheses.end();
                 it++ )
-        {
-       
             CoordinateSystem( *it ).onDraw3D(g);
-        }
-
     }
 
 

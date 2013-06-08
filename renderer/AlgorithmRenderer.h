@@ -80,7 +80,7 @@ namespace L3
             {
                 *this  << label;
                 label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
-                label.setValue( "Minimisation evaluations");
+                label.setValue( "Cost-function evaluations");
             }
 
             glv::Label label;

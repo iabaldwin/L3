@@ -8,89 +8,99 @@ namespace L3
     {
         void Layout::addLinearVelocityPlot()
         {
-                /*
-                 *  Linear Velocity
-                 */
-                // Add plotter
-                linear_velocity_plotter_lhlv = boost::make_shared< LinearVelocityPlotter >();
-                linear_velocity_plotter_lhlv->stroke( 2.0 );
+            /*
+             *  Linear Velocity
+             */
 
-                linear_velocity_plotter_sm = boost::make_shared< LinearVelocityPlotter >();
-                linear_velocity_plotter_sm->stroke( 2.0 );
+            // Add plotter
+            linear_velocity_plotter_lhlv = boost::make_shared< LinearVelocityPlotter >();
+            linear_velocity_plotter_lhlv->stroke( 2.0 );
 
-                // Add plot region
-                boost::shared_ptr< glv::Plot > plot_region 
-                    = boost::make_shared< glv::Plot >( glv::Rect( 0, 500+5, .6*window.width(), 150-5), 
-                            boost::ref( *linear_velocity_plotter_lhlv ) ,
-                            boost::ref( *linear_velocity_plotter_sm ) 
-                            );
+            linear_velocity_plotter_sm = boost::make_shared< LinearVelocityPlotter >();
+            linear_velocity_plotter_sm->stroke( 2.0 );
 
-                linear_velocity_plotter_lhlv->plot_parent = plot_region;
+            // Add plot region
+            boost::shared_ptr< glv::Plot > plot_region 
+                = boost::make_shared< glv::Plot >( glv::Rect( 0, 500+5, .6*window.width(), 150-5), 
+                        boost::ref( *linear_velocity_plotter_lhlv ) ,
+                        boost::ref( *linear_velocity_plotter_sm ) 
+                        );
 
-                plot_region->disable( glv::Controllable );
-                plot_region->range( 0, 10, 0 );
-                plot_region->range( -1, 10 , 1 );
-                plot_region->minor( 0, 0 );
-                plot_region->major( .01, 0 );
-                plot_region->equalizeAxes(false);
-                plot_region->showNumbering(true);
+            linear_velocity_plotter_lhlv->plot_parent = plot_region;
 
-                plots.push_front( plot_region );
+            plot_region->disable( glv::Controllable );
+            plot_region->range( 0, 10, 0 );
+            plot_region->range( -1, 10 , 1 );
+            plot_region->minor( 0, 0 );
+            plot_region->major( .01, 0 );
+            plot_region->equalizeAxes(false);
+            plot_region->showNumbering(true);
 
-                // Add rendererable
-                this->renderables.push_front( plot_region.get() );
-                
-                // Mark as updateable
-                temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_lhlv.get()) );
-                temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_sm.get()) );
+            plots.push_front( plot_region );
 
-                boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Linear velocity (m/s)" );
-                velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
-                this->labels.push_front( velocity_label );
+            // Add rendererable
+            this->renderables.push_front( plot_region.get() );
 
-                *plot_region << *velocity_label;
-       
+            // Mark as updateable
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_lhlv.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_sm.get()) );
+
+            boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Linear velocity (m/s)" );
+            velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
+            this->labels.push_front( velocity_label );
+
+            *plot_region << *velocity_label;
+
         }
        
         void Layout::addRotationalVelocityPlot()
         {
-                /*
-                 *  Rotational Velocity
-                 */
+            /*
+             *  Rotational Velocity
+             */
 
-                // Add plotter
-                rotational_velocity_plotter = boost::make_shared< RotationalVelocityPlotter>();
-                rotational_velocity_plotter->stroke( 2.0 );
+            // Add plotter
+            rotational_velocity_plotter_lhlv = boost::make_shared< RotationalVelocityPlotter>();
+            rotational_velocity_plotter_lhlv->stroke( 2.0 );
 
-                boost::shared_ptr< glv::Plot > plot = boost::make_shared< glv::Plot >( glv::Rect( 0, 650+5, .6*window.width(), 150-5), boost::ref( *rotational_velocity_plotter ) );
-                rotational_velocity_plotter->plot_parent = plot;
+            rotational_velocity_plotter_sm = boost::make_shared< RotationalVelocityPlotter>();
+            rotational_velocity_plotter_sm->stroke( 2.0 );
 
-                // Scaling
-                plot->disable( glv::Controllable );
-                plot->range( 0, 10, 0 );
-                plot->range( -1, 1, 1 );
+            boost::shared_ptr< glv::Plot > plot 
+                = boost::make_shared< glv::Plot >( glv::Rect( 0, 650+5, .6*window.width(), 150-5), 
+                        boost::ref( *rotational_velocity_plotter_lhlv ),
+                        boost::ref( *rotational_velocity_plotter_sm )
+                        );
 
-                plot->showNumbering(true);
-                plot->numbering(true,0);
-                plot->numbering(true,1);
+            rotational_velocity_plotter_lhlv->plot_parent = plot;
 
-                plot->minor( .05, 1 );
-                plot->major( .1, 1);
+            // Scaling
+            plot->disable( glv::Controllable );
+            plot->range( 0, 10, 0 );
+            plot->range( -1, 1, 1 );
 
-                plots.push_front( plot );
+            plot->showNumbering(true);
+            plot->numbering(true,0);
+            plot->numbering(true,1);
 
-                // Add rendererable
-                this->renderables.push_front( plot.get() );
-                
-                // Mark as updateable
-                temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter.get()) );
+            plot->minor( .05, 1 );
+            plot->major( .1, 1);
 
-                boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Rotational velocity. (rad/s)" );
-                velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
-                this->labels.push_front( velocity_label );
+            plots.push_front( plot );
 
-                *plot << *velocity_label;
-            }
+            // Add rendererable
+            this->renderables.push_front( plot.get() );
+
+            // Mark as updateable
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter_lhlv.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter_sm.get()) );
+
+            boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Rotational velocity. (rad/s)" );
+            velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
+            this->labels.push_front( velocity_label );
+
+            *plot << *velocity_label;
+        }
 
 
         Layout::Layout( glv::Window& win ) : window(win)
@@ -172,12 +182,13 @@ namespace L3
             *ancillary_1 << *oracle_renderer;
 
             // Experience renderer
-            experience_location = boost::make_shared< ExperienceLocationOverviewView >( glv::Rect(180,180), boost::shared_ptr<L3::Experience>() );
+            experience_location = boost::make_shared< ExperienceOverviewView >( glv::Rect(180,180), boost::shared_ptr<L3::Experience>() );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( experience_location.get() ) );
+            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( experience_location->experience_point_cloud.get() ) ) );
             *ancillary_1 << *experience_location;
 
             // Scan-matching scan renderer
-            scan_matching_renderer = boost::make_shared< L3::Visualisers::ScanMatchingScanRenderer >( glv::Rect( 180,180 ),boost::shared_ptr< L3::ScanMatching::Engine >() );
+            scan_matching_renderer = boost::make_shared< L3::Visualisers::ScanMatchingScanRenderer >( glv::Rect( 180,180 ), boost::shared_ptr< L3::ScanMatching::Engine >() );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( scan_matching_renderer.get() ) ) );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( scan_matching_renderer->trajectory.get() ) ) );
             *ancillary_1 << *scan_matching_renderer;
@@ -349,10 +360,11 @@ namespace L3
             /*
              *  Velocity plots
              */
-            linear_velocity_plotter_lhlv->iterator = runner->lhlv_velocity_provider;    // LHLV
-            rotational_velocity_plotter->iterator = runner->lhlv_velocity_provider;     
+            linear_velocity_plotter_lhlv->iterator = runner->lhlv_velocity_provider;    
+            rotational_velocity_plotter_lhlv->iterator = runner->lhlv_velocity_provider;     
             
-            linear_velocity_plotter_sm->iterator = runner->sm_velocity_provider;        // SM
+            linear_velocity_plotter_sm->iterator = runner->sm_velocity_provider;       
+            rotational_velocity_plotter_sm->iterator = runner->sm_velocity_provider;       
 
             /*
              *  Scale
@@ -476,6 +488,8 @@ namespace L3
 
             composite->position.x = -1*start_pose.X();
             composite->position.y = -1*start_pose.Y();
+       
+            return true;
         }
 
         /*
@@ -526,9 +540,8 @@ namespace L3
             /*
              *  Experience & location
              */
-            experience_location->experience = experience;
-            //experience_location->provider = runner->provider;
-            experience_location->provider = runner->oracle;
+            experience_location->setExperience( experience );
+            experience_location->setProvider( runner->oracle );
 
             /*
              *  Stand-alone pyramid renderer
@@ -582,6 +595,8 @@ namespace L3
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
             particle_filter_renderer = boost::make_shared< ParticleFilterRendererLeaf >( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) );
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
+       
+            return true;
         }
 
             
@@ -601,6 +616,8 @@ namespace L3
                 algorithm_renderer->pos( window.width()-(555), 0); 
                 top << *algorithm_renderer;
             }
+       
+            return true;
         }
     }
 }

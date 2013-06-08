@@ -10,11 +10,13 @@ namespace L3
     bool ParticleFilter::update( double t )
     {
 
+        return true;
     }
 
     bool ParticleFilter::predict( const L3::SE3& current )
     {
 
+        return true;
     }
 
     bool Predictor::update( double t )

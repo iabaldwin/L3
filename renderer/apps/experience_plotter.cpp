@@ -95,7 +95,6 @@ struct ColoredExperienceRenderer : L3::Visualisers::Leaf
             {
                 // Load the experience
                 std::pair< long unsigned int, L3::Point<double>* > load_result = experience->load( section_counter );
-            
 #ifndef NDEBUG
                 std::cout << load_result.first<< ":" << load_result.second << std::endl;
 #endif

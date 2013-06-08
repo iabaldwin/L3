@@ -142,7 +142,8 @@ namespace Visualisers
 
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_lhlv;
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_sm;
-            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter;
+            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_lhlv;
+            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_sm;
 
             boost::shared_ptr< WASDManager > selection_manager;
             boost::shared_ptr< MouseQuerySelect > mouse_query;
@@ -179,7 +180,7 @@ namespace Visualisers
             boost::shared_ptr< ScanRenderer2D >                             horizontal_scan_renderer;
             boost::shared_ptr< ScanRenderer2D >                             vertical_scan_renderer;
             boost::shared_ptr< ScanMatchingScanRenderer >                   scan_matching_renderer;
-            boost::shared_ptr< ExperienceLocationOverviewView >             experience_location;
+            boost::shared_ptr< ExperienceOverviewView >                     experience_location;
             boost::shared_ptr< DedicatedPoseRenderer>                       oracle_renderer;
             boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >  point_cloud_bounds_renderer;
             boost::shared_ptr< EventController >                            point_cloud_maximise_controller;

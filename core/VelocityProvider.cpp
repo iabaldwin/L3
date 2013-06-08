@@ -1,4 +1,5 @@
 #include  "VelocityProvider.h"
+#include "Utils.h"
 
 namespace L3
 {
@@ -34,8 +35,15 @@ namespace L3
             if( std::isinf( velocity ) || std::isnan( velocity ) )
                 continue;
           
+
+            L3::SE3 previous = L3::Utils::Math::poseFromRotation( (it-1)->second );
+            L3::SE3 current = L3::Utils::Math::poseFromRotation( it->second );
+
+            double rotational_velocity = (current.Q()-previous.Q())/dt;
+
             std::vector<double> data(4);
             data[0] = velocity;
+            data[3] = rotational_velocity;
 
             //velocities.push_back( std::make_pair( it->first, std::make_pair( velocity, 0.0 ) ) );
             velocities.push_back( std::make_pair( it->first, data ) );
