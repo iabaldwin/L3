@@ -52,8 +52,8 @@ target_link_libraries( test_swathe_builder_LHLV_visual GLV ${GLUT_LIBRARIES} ${O
 #add_executable( test_point_clouds_transform test_point_clouds_transform.cpp )
 #target_link_libraries( test_point_clouds_transform GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
-#add_executable( test_draw_cube test_draw_cube.cpp )
-#target_link_libraries( test_draw_cube GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+add_executable( test_draw_cube test_draw_cube.cpp )
+target_link_libraries( test_draw_cube GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 #add_executable( test_histogram_renderer test_histogram_renderer.cpp )
 #target_link_libraries( test_histogram_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
