@@ -21,7 +21,7 @@ namespace ScanMatching
     {
         public:
           
-            ScanMatcher() : initialised(false)
+            ScanMatcher() : initialised(false), scan_points(0), putative_points(0)
             {
                 cloud_in.reset(new pcl::PointCloud<pcl::PointXYZ>);
                 cloud_out.reset(new pcl::PointCloud<pcl::PointXYZ>);
@@ -58,11 +58,10 @@ namespace ScanMatching
     { 
         Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
             windower(windower),
-            previous_update(0.0)
+            previous_update(0.0),
+            matcher( new ICP() ),
+            current_transformation( Eigen::Matrix4f::Identity() )
         {
-            matcher.reset( new ICP() );
-       
-            current_transformation = Eigen::Matrix4f::Identity();
         }
     
         virtual ~Engine()
@@ -73,11 +72,11 @@ namespace ScanMatching
 
         std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
 
+        std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
+
         L3::ConstantTimeIterator<L3::LMS151>* windower;
         
         boost::shared_ptr< ScanMatcher > matcher;
-
-        std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
 
         double previous_update;
         

@@ -79,6 +79,8 @@ namespace ScanMatching
          */
         putative.reset( new double[541*3] );
         putative_points  = do_projection( (*current_scan.second), putative.get() );
+        
+        std::cout << "SM: " << scan_points << ',' << putative_points << std::endl;
 
         cloud_out->width    = putative_points;
         cloud_out->height   = 1;
@@ -116,11 +118,13 @@ namespace ScanMatching
 
         transformation = registration.getFinalTransformation();
 
+        
+        std::cout << "/SM: " << scan_points << ',' << putative_points << std::endl;
+        
         // Do swap
         scan.swap( putative );
         scan_points = putative_points;
 
-        //std::cout << current_scan.first - previous_time << std::endl;
         previous_time = current_scan.first;
 
         return registration.hasConverged();

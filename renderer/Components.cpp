@@ -1338,19 +1338,32 @@ namespace Visualisers
      */
     void ExperienceCloudView::onDraw3D( glv::GLV& g)
     {
+        far( 1000 );
         L3::SE3 current;
         if( boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock() )
         {
             current = provider_ptr->operator()();
-            glv::draw::translateZ( -200 );
-            glv::draw::translate( -1*current.X(), -1*current.Y(), 0 );
+            //glv::draw::translateZ( -200 );
+            //glv::draw::translate( -1*current.X(), -1*current.Y(), 0 );
+       
+            //Eigen::Matrix4f translate = Eigen::Matrix4f::Identity();
+
+            //translate( 0, 3 ) = -1*current.X();
+            //translate( 1, 3 ) = -1*current.Y();
+            //translate( 2, 3 ) = -200;
+
+            Eigen::Matrix4f translate = current.getHomogeneous();
+      
+            //translate(0,3) = -1*translate(0,3);
+            //translate(1,3) = -1*translate(1,3);
+            //translate(2,3) = -300;
+
+            //glMultMatrixf( translate.data() );
+
+
         }
 
-        //glMultMatrixf( current.getHomogeneous().data() );
-        far( 1000 );
-        glv::draw::pointSize( 2 );
-        //glv::draw::translateZ( -800 );
-       
+               
         pcl::PointXYZ searchPoint;
 
         searchPoint.x = current.X();
@@ -1359,9 +1372,10 @@ namespace Visualisers
 
         std::vector<int> pointIdxVec;
 
-        pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_iterator;
-        pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_iterator_end = octree->end();
+        pcl::octree::OctreePointCloudDensity<pcl::PointXYZ>::Iterator tree_iterator;
+        pcl::octree::OctreePointCloudDensity<pcl::PointXYZ>::Iterator tree_iterator_end = octree->end();
 
+        // Traverse the whole depth
         int depth = octree->getTreeDepth();
 
         pcl::PointXYZ pt;
@@ -1378,13 +1392,26 @@ namespace Visualisers
             pt.y = (voxel_min.y() + voxel_max.y()) / 2.0f;
             pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
        
+            int density = octree->getVoxelDensityAtPoint( pt ); 
+            
             vertices.push_back( glv::Point3( pt.x, pt.y, pt.z ) );
-            colors.push_back( glv::Color( 1, 0, 0 ) );
+            
+            colors.push_back( glv::Color( .5, .5, .5, float(density)/10.0 ) );
+       
         }
 
+
+        glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
+        glv::draw::disable( glv::draw::Blend );
 
         //point_cloud_renderer_leaf->onDraw3D( g );
+   
+        CoordinateSystem( current ).onDraw3D(g);
+    
+        //glv::draw::translateZ( -800 );
+
+            glMultMatrixf( current.getHomogeneous().data() );
     }
 
     void ExperienceCloudView::load(  boost::shared_ptr< L3::Experience > experience )
@@ -1429,10 +1456,6 @@ namespace Visualisers
             cloud->points[i].y = master->points[i].y; 
             cloud->points[i].z = master->points[i].z; 
         }
-
-        //octree = boost::make_shared< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> >( 128.0f ) ;
-        //octree = boost::make_shared< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> >( 10.0f ) ;
-        //octree = boost::make_shared< pcl::octree::OctreePointCloud<pcl::PointXYZ> >( 10.0f ) ;
 
         octree->setInputCloud (cloud);
         octree->addPointsFromInputCloud ();

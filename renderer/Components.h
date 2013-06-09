@@ -844,7 +844,7 @@ namespace Visualisers
             glv::View3D(rect)
         {
         
-            octree = boost::make_shared< pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> >( 10.0f ); 
+            octree = boost::make_shared< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> >( 1.0f ); 
         }
 
         boost::shared_ptr< glv::Point3[] > vertices;
@@ -857,8 +857,10 @@ namespace Visualisers
 
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         
-        boost::shared_ptr<  pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> > octree;
-        
+        //boost::shared_ptr<  pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> > octree;
+      
+        boost::shared_ptr< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> > octree;
+
         void load( boost::shared_ptr< L3::Experience > experience );
         
         void onDraw3D( glv::GLV& g );
