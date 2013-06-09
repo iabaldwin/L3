@@ -39,13 +39,13 @@ namespace L3
             L3::SE3 previous = L3::Utils::Math::poseFromRotation( (it-1)->second );
             L3::SE3 current = L3::Utils::Math::poseFromRotation( it->second );
 
-            double rotational_velocity = (current.Q()-previous.Q())/dt;
+            //double rotational_velocity = (current.Q()-previous.Q())/dt;
+            double rotational_velocity = (previous.Q()-current.Q())/dt;
 
             std::vector<double> data(4);
             data[0] = velocity;
             data[3] = rotational_velocity;
 
-            //velocities.push_back( std::make_pair( it->first, std::make_pair( velocity, 0.0 ) ) );
             velocities.push_back( std::make_pair( it->first, data ) );
         }
 
@@ -59,7 +59,7 @@ namespace L3
             std::vector< double > data( 4 );
             data[0] = input.second->data[9];
             data[3] = input.second->data[3];
-            //return std::make_pair( input.first, std::make_pair( input.second->data[9], input.second->data[3] ) );
+
             return std::make_pair( input.first, data );
         }
 

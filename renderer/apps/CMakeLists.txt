@@ -30,4 +30,4 @@ target_link_libraries( calibrate_map GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${O
 ##==========
 
 add_executable( app app.cpp )
-target_link_libraries( app GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( app GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis ${Boost_LIBRARIES} pcl_octree )

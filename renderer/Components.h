@@ -22,6 +22,8 @@
  */
 #include <pcl/point_cloud.h>
 #include <pcl/octree/octree.h>
+#include <pcl/octree/octree_impl.h>
+#include <pcl/octree/octree_iterator.h>
 
 namespace L3
 {
@@ -841,6 +843,8 @@ namespace Visualisers
             : ExperienceView( experience, provider ), 
             glv::View3D(rect)
         {
+        
+            octree = boost::make_shared< pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> >( 10.0f ); 
         }
 
         boost::shared_ptr< glv::Point3[] > vertices;
@@ -853,7 +857,7 @@ namespace Visualisers
 
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         
-        boost::shared_ptr< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> > octree;
+        boost::shared_ptr<  pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> > octree;
         
         void load( boost::shared_ptr< L3::Experience > experience );
         

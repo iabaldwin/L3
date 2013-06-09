@@ -134,9 +134,9 @@ namespace ScanMatching
         // Get the most recent
         std::pair< double, boost::shared_ptr< L3::LMS151 > > scan = this->windower->window.back();
         
-        L3::WriteLock write_lock( this->mutex );
-
         Eigen::Matrix4f transformation;
+
+        L3::WriteLock write_lock( this->mutex );
 
         if( matcher->match( scan, transformation ) ) 
         {

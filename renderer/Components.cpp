@@ -9,7 +9,7 @@
 #include <mach/mach_types.h> 
 #include <mach/mach_init.h>
 #include <mach/mach_host.h>
-#include<mach/mach.h> 
+#include <mach/mach.h> 
 
 namespace L3
 {
@@ -530,7 +530,6 @@ namespace Visualisers
                 }
 
             }
-
         }
     }
 
@@ -590,9 +589,6 @@ namespace Visualisers
         for( int i=0; i<plot_cloud->num_points; i++) 
         {
             vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
-            //colors[i] = color; 
-            // TODO: Have a color policy
-            //colors[i] = glv::Color( plot_cloud->points[i].z/10.0 );
             colors[i] = glv::Color( (plot_cloud->points[i].z - bounds.get<2>())/10.0 );
         }
 
@@ -1068,19 +1064,26 @@ namespace Visualisers
         int scan_points = ptr->matcher->scan_points;
         int putative_points = ptr->matcher->putative_points;
 
-        if( (scan_points <= 0 || scan_points > 541 )|| (putative_points <= 0  || putative_points > 541 ) )
+        if( (scan_points <= 0 || scan_points > 541 ) || (putative_points <= 0  || putative_points > 541 ) )
             return;
 
+        else
+            std::cout << 1 << ":" << scan_points  << ',' << putative_points << std::endl;
+
+            
+        std::cout << 2 << ":" << scan_points  << std::endl;
         scan.reset( new double[scan_points*3] );
         std::copy( ptr->matcher->scan.get(), 
                 ptr->matcher->scan.get()+ scan_points*3, 
                 scan.get() );
 
+        std::cout << 3 << ":" << putative_points << std::endl;
         putative.reset( new double[putative_points*3] );
         std::copy( ptr->matcher->putative.get(), 
                 ptr->matcher->putative.get()+putative_points*3,
                 putative.get() );
 
+        std::cout << 4 << std::endl;
         lock.unlock();
 
         glv::Point3 scan_vertices[scan_points];
@@ -1356,19 +1359,30 @@ namespace Visualisers
 
         std::vector<int> pointIdxVec;
 
-        if (octree->voxelSearch (searchPoint, pointIdxVec))
-        {
-            glv::Point3 vertices[pointIdxVec.size()];
-            glv::Color  colors[pointIdxVec.size()];
+        pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_iterator;
+        pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_iterator_end = octree->end();
 
-            for (size_t i = 0; i < pointIdxVec.size (); ++i)
-            {
-                vertices[i]( cloud->points[pointIdxVec[i]].x, cloud->points[pointIdxVec[i]].y, cloud->points[pointIdxVec[i]].z );
-            }
-  
-            glv::draw::paint( glv::draw::Points, vertices, colors, pointIdxVec.size() );
-        
+        int depth = octree->getTreeDepth();
+
+        pcl::PointXYZ pt;
+
+        std::vector< glv::Point3 >  vertices;
+        std::vector< glv::Color  >  colors;
+
+        for (tree_iterator = octree->begin(depth); tree_iterator!=tree_iterator_end; ++tree_iterator)
+        {
+            Eigen::Vector3f voxel_min, voxel_max;
+            octree->getVoxelBounds(tree_iterator, voxel_min, voxel_max);
+
+            pt.x = (voxel_min.x() + voxel_max.x()) / 2.0f;
+            pt.y = (voxel_min.y() + voxel_max.y()) / 2.0f;
+            pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
+       
+            vertices.push_back( glv::Point3( pt.x, pt.y, pt.z ) );
+            colors.push_back( glv::Color( 1, 0, 0 ) );
         }
+
+        glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
 
         //point_cloud_renderer_leaf->onDraw3D( g );
     }
@@ -1417,7 +1431,8 @@ namespace Visualisers
         }
 
         //octree = boost::make_shared< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> >( 128.0f ) ;
-        octree = boost::make_shared< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> >( 10.0f ) ;
+        //octree = boost::make_shared< pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> >( 10.0f ) ;
+        //octree = boost::make_shared< pcl::octree::OctreePointCloud<pcl::PointXYZ> >( 10.0f ) ;
 
         octree->setInputCloud (cloud);
         octree->addPointsFromInputCloud ();

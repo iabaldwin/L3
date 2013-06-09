@@ -104,5 +104,5 @@ target_link_libraries( test_pose_windower GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARI
 #target_link_libraries( test_estimator_prediction GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_L3 test_L3.cpp )
-target_link_libraries( test_L3 GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_L3 GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 pcl_octree L3Vis  ${Boost_LIBRARIES} )
 
