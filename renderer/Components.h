@@ -844,21 +844,20 @@ namespace Visualisers
             glv::View3D(rect)
         {
         
-            octree = boost::make_shared< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> >( 1.0f ); 
+            octree = boost::make_shared< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> >( 0.5f ); 
         }
+        
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
-        boost::shared_ptr< glv::Point3[] > vertices;
-  
+        std::vector< glv::Point3 >  vertices;
+        std::vector< glv::Color  >  colors;
+        
         boost::shared_ptr< PointCloud<double> > master;
 
         std::list< boost::shared_ptr< PointCloud<double> > > clouds;
 
         boost::shared_ptr< PointCloudRendererLeaf > point_cloud_renderer_leaf;
 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
-        
-        //boost::shared_ptr<  pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> > octree;
-      
         boost::shared_ptr< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> > octree;
 
         void load( boost::shared_ptr< L3::Experience > experience );
@@ -1301,6 +1300,8 @@ namespace Visualisers
         void onDraw3D( glv::GLV& g );
     };
 
+
+    void transformCameraToPose( L3::SE3& pose );
 
 }   // Visualisers
 }   // L3

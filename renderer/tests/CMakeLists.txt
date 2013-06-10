@@ -103,6 +103,9 @@ target_link_libraries( test_pose_windower GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARI
 #add_executable( test_estimator_prediction test_estimator_prediction.cpp )
 #target_link_libraries( test_estimator_prediction GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
+add_executable( test_camera_transform test_camera_transform.cpp )
+target_link_libraries( test_camera_transform GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+
 add_executable( test_L3 test_L3.cpp )
 target_link_libraries( test_L3 GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 pcl_octree L3Vis  ${Boost_LIBRARIES} )
 

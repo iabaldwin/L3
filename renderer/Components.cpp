@@ -15,6 +15,28 @@ namespace L3
 {
 namespace Visualisers
 {
+
+    void transformCameraToPose( L3::SE3& pose )
+    {
+
+        // SE3->GL
+        L3::SE3 rotation( 0, 0, 0, 0, -1.57, 0 );
+        glMultMatrixf( rotation.getHomogeneous().data() );
+
+        //Eigen::Matrix4f rot = pose.getHomogeneous();
+        //rot( 0,3) = 0.0;
+        //rot( 1,3) = 0.0;
+        //rot( 2,3) = 0.0;
+        //glMultMatrixf( rot.data() );
+
+        //Eigen::Matrix4f rot( 0, 0, 0, 0, 0, pose.Q() ); 
+        L3::SE3 rot( 0, 0, 0, -1*pose.R(), -1*pose.P(), -1*pose.Q() );
+        glMultMatrixf( rot.getHomogeneous().data() );
+
+        L3::SE3 translate( -1*pose.X(), -1*pose.Y(), -1*pose.Z(), 0, 0, 0 );
+        glMultMatrixf( translate.getHomogeneous().data() );
+    }
+
     /*
      *  Composite
      */
@@ -1067,23 +1089,16 @@ namespace Visualisers
         if( (scan_points <= 0 || scan_points > 541 ) || (putative_points <= 0  || putative_points > 541 ) )
             return;
 
-        else
-            std::cout << 1 << ":" << scan_points  << ',' << putative_points << std::endl;
-
-            
-        std::cout << 2 << ":" << scan_points  << std::endl;
         scan.reset( new double[scan_points*3] );
         std::copy( ptr->matcher->scan.get(), 
                 ptr->matcher->scan.get()+ scan_points*3, 
                 scan.get() );
 
-        std::cout << 3 << ":" << putative_points << std::endl;
         putative.reset( new double[putative_points*3] );
         std::copy( ptr->matcher->putative.get(), 
                 ptr->matcher->putative.get()+putative_points*3,
                 putative.get() );
 
-        std::cout << 4 << std::endl;
         lock.unlock();
 
         glv::Point3 scan_vertices[scan_points];
@@ -1339,68 +1354,13 @@ namespace Visualisers
     void ExperienceCloudView::onDraw3D( glv::GLV& g)
     {
         far( 1000 );
+        
         L3::SE3 current;
         if( boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock() )
-        {
             current = provider_ptr->operator()();
-            //glv::draw::translateZ( -200 );
-            //glv::draw::translate( -1*current.X(), -1*current.Y(), 0 );
-       
-            //Eigen::Matrix4f translate = Eigen::Matrix4f::Identity();
 
-            //translate( 0, 3 ) = -1*current.X();
-            //translate( 1, 3 ) = -1*current.Y();
-            //translate( 2, 3 ) = -200;
-
-            Eigen::Matrix4f translate = current.getHomogeneous();
-      
-            //translate(0,3) = -1*translate(0,3);
-            //translate(1,3) = -1*translate(1,3);
-            //translate(2,3) = -300;
-
-            //glMultMatrixf( translate.data() );
-
-
-        }
-
+        transformCameraToPose( current );
                
-        pcl::PointXYZ searchPoint;
-
-        searchPoint.x = current.X();
-        searchPoint.y = current.Y();
-        searchPoint.z = current.Z();
-
-        std::vector<int> pointIdxVec;
-
-        pcl::octree::OctreePointCloudDensity<pcl::PointXYZ>::Iterator tree_iterator;
-        pcl::octree::OctreePointCloudDensity<pcl::PointXYZ>::Iterator tree_iterator_end = octree->end();
-
-        // Traverse the whole depth
-        int depth = octree->getTreeDepth();
-
-        pcl::PointXYZ pt;
-
-        std::vector< glv::Point3 >  vertices;
-        std::vector< glv::Color  >  colors;
-
-        for (tree_iterator = octree->begin(depth); tree_iterator!=tree_iterator_end; ++tree_iterator)
-        {
-            Eigen::Vector3f voxel_min, voxel_max;
-            octree->getVoxelBounds(tree_iterator, voxel_min, voxel_max);
-
-            pt.x = (voxel_min.x() + voxel_max.x()) / 2.0f;
-            pt.y = (voxel_min.y() + voxel_max.y()) / 2.0f;
-            pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
-       
-            int density = octree->getVoxelDensityAtPoint( pt ); 
-            
-            vertices.push_back( glv::Point3( pt.x, pt.y, pt.z ) );
-            
-            colors.push_back( glv::Color( .5, .5, .5, float(density)/10.0 ) );
-       
-        }
-
-
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
         glv::draw::disable( glv::draw::Blend );
@@ -1409,9 +1369,6 @@ namespace Visualisers
    
         CoordinateSystem( current ).onDraw3D(g);
     
-        //glv::draw::translateZ( -800 );
-
-            glMultMatrixf( current.getHomogeneous().data() );
     }
 
     void ExperienceCloudView::load(  boost::shared_ptr< L3::Experience > experience )
@@ -1459,6 +1416,30 @@ namespace Visualisers
 
         octree->setInputCloud (cloud);
         octree->addPointsFromInputCloud ();
+    
+        pcl::octree::OctreePointCloudDensity<pcl::PointXYZ>::Iterator tree_iterator;
+        pcl::octree::OctreePointCloudDensity<pcl::PointXYZ>::Iterator tree_iterator_end = octree->end();
+
+        // Traverse the whole depth
+        int depth = octree->getTreeDepth();
+
+        pcl::PointXYZ pt;
+
+        for (tree_iterator = octree->begin(depth); tree_iterator!=tree_iterator_end; ++tree_iterator)
+        {
+            Eigen::Vector3f voxel_min, voxel_max;
+            octree->getVoxelBounds(tree_iterator, voxel_min, voxel_max);
+
+            pt.x = (voxel_min.x() + voxel_max.x()) / 2.0f;
+            pt.y = (voxel_min.y() + voxel_max.y()) / 2.0f;
+            pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
+       
+            int density = octree->getVoxelDensityAtPoint( pt ); 
+            
+            vertices.push_back( glv::Point3( pt.x, pt.y, pt.z ) );
+            
+            colors.push_back( glv::Color( .5, .5, .5, float(density)/10.0 ) );
+        }
     }
 
 
