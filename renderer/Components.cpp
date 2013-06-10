@@ -1359,6 +1359,8 @@ namespace Visualisers
         if( boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock() )
             current = provider_ptr->operator()();
 
+
+        current.Z( current.Z() + 3.0);
         transformCameraToPose( current );
                
         glv::draw::enable( glv::draw::Blend );
