@@ -15,26 +15,123 @@ namespace L3
 {
 namespace Visualisers
 {
-
     void transformCameraToPose( L3::SE3& pose )
     {
 
         // SE3->GL
         L3::SE3 rotation( 0, 0, 0, 0, -1.57, 0 );
         glMultMatrixf( rotation.getHomogeneous().data() );
-
-        //Eigen::Matrix4f rot = pose.getHomogeneous();
-        //rot( 0,3) = 0.0;
-        //rot( 1,3) = 0.0;
-        //rot( 2,3) = 0.0;
-        //glMultMatrixf( rot.data() );
-
-        //Eigen::Matrix4f rot( 0, 0, 0, 0, 0, pose.Q() ); 
+        
         L3::SE3 rot( 0, 0, 0, -1*pose.R(), -1*pose.P(), -1*pose.Q() );
         glMultMatrixf( rot.getHomogeneous().data() );
 
         L3::SE3 translate( -1*pose.X(), -1*pose.Y(), -1*pose.Z(), 0, 0, 0 );
         glMultMatrixf( translate.getHomogeneous().data() );
+    }
+
+    void renderCube( Cube* cube )
+    {
+        int num_tris = 6;
+        
+        glv::Point3 triangle_vertices[num_tris*6];
+        glv::Color  triangle_colors[num_tris*6];
+
+        glv::Point3 line_points[12*2];
+        glv::Color  line_colors[12*2];
+
+        std::fill( triangle_colors, triangle_colors+(num_tris*6), glv::Color( .5, .5, .5, cube->opacity ) );
+        std::fill( line_colors, line_colors+12*2, glv::Color( .5, .5, .5, 1-cube->opacity ) );
+
+        int counter = 0;
+
+        // Bottom
+        line_points[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
+        line_points[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
+        line_points[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
+        line_points[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
+        line_points[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
+        line_points[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
+        line_points[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
+        line_points[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
+        
+        line_points[counter++]( cube->x_lower, cube->y_lower, cube->z_upper  );
+        line_points[counter++]( cube->x_lower, cube->y_upper, cube->z_upper  );
+        line_points[counter++]( cube->x_lower, cube->y_upper, cube->z_upper  );
+        line_points[counter++]( cube->x_upper, cube->y_upper, cube->z_upper  );
+        line_points[counter++]( cube->x_upper, cube->y_upper, cube->z_upper  );
+        line_points[counter++]( cube->x_upper, cube->y_lower, cube->z_upper  );
+        line_points[counter++]( cube->x_upper, cube->y_lower, cube->z_upper  );
+        line_points[counter++]( cube->x_lower, cube->y_lower, cube->z_upper  );
+
+
+        glv::draw::lineWidth( 2 );
+        glv::draw::enable( glv::draw::Blend );
+        glv::draw::paint( glv::draw::Lines, line_points, line_colors, counter );
+        glv::draw::disable( glv::draw::Blend );
+        glv::draw::lineWidth( 1 );
+
+        counter = 0;
+        
+        // Bottom
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
+        
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
+
+        // Top
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_upper );
+        triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_upper );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
+        
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_upper );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_upper );
+
+        // Left
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_upper );
+        
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_upper );
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_upper );
+
+
+        // Right
+        triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
+        
+        triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
+        triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_upper );
+
+        // Back
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_upper );
+        
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_upper );
+        triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_upper );
+
+        // Front
+        triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
+        
+        triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
+        triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_upper );
+
+
+        glv::draw::enable( glv::draw::Blend );
+        glv::draw::paint( glv::draw::Triangles, triangle_vertices, triangle_colors, counter );
+        glv::draw::disable( glv::draw::Blend );
+
     }
 
     /*
@@ -1368,7 +1465,11 @@ namespace Visualisers
         glv::draw::disable( glv::draw::Blend );
 
         //point_cloud_renderer_leaf->onDraw3D( g );
-   
+        //for( std::deque< Cube >::iterator it = voxels.begin();
+                //it != voxels.end();
+                //it++ )
+            //renderCube( &*it ); 
+
         CoordinateSystem( current ).onDraw3D(g);
     
     }
@@ -1437,9 +1538,11 @@ namespace Visualisers
             pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
        
             int density = octree->getVoxelDensityAtPoint( pt ); 
-            
+          
+            //voxels.push_back( Cube( voxel_min.x(), voxel_min.y(), voxel_min.z(),
+                                //voxel_max.x(), voxel_max.y(), voxel_max.z(), density ) );
+
             vertices.push_back( glv::Point3( pt.x, pt.y, pt.z ) );
-            
             colors.push_back( glv::Color( .5, .5, .5, float(density)/10.0 ) );
         }
     }

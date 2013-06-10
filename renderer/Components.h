@@ -29,7 +29,29 @@ namespace L3
 {
 namespace Visualisers
 {
-    
+    /*
+     *  Misc
+     */
+    void transformCameraToPose( L3::SE3& pose );
+
+    struct Cube
+    {
+        Cube( float x_lower, float y_lower, float z_lower, 
+                float x_upper, float y_upper, float z_upper,
+                float opacity ) 
+            : x_lower(x_lower), y_lower( y_lower ), z_lower( z_lower ),
+            x_upper(x_upper), y_upper( y_upper ), z_upper( z_upper ),
+            opacity( opacity )
+        {
+        }
+        float opacity;
+        float x_lower, y_lower, z_lower;
+        float x_upper, y_upper, z_upper;
+    };
+
+    void renderCube( Cube* cube );
+
+
     struct VisualUpdater : glv::View, L3::Updater
     {
         void onDraw(glv::GLV& g)
@@ -117,7 +139,7 @@ namespace Visualisers
     {
         Leaf() 
             : draw_bounds(false),
-                visible(true)
+            visible(true)
         {
             bound_vertices = boost::make_shared< glv::Point3[] >( 24 ); 
             bound_colors   = boost::make_shared< glv::Color[] >( 24 ); 
@@ -176,11 +198,11 @@ namespace Visualisers
 
             if( lock )
                 ss << lock->t;
-         
+
             mText = ss.str();
 
             glv::TextView::onDraw(g);
-           
+
         }
 
     };
@@ -364,7 +386,7 @@ namespace Visualisers
         PointCloudBoundsRenderer( boost::shared_ptr< L3::PointCloud<double> > point_cloud ) : cloud(point_cloud)
         {
         }
-        
+
         boost::weak_ptr< L3::PointCloud<double> > cloud;
 
         void onDraw3D(glv::GLV& g);
@@ -427,7 +449,7 @@ namespace Visualisers
         boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer > bounds_renderer;
 
         boost::weak_ptr< L3::SE3 > current_estimate;
-        
+
         std::pair<double,double> centroid;
 
         glv::Label label;
@@ -505,7 +527,7 @@ namespace Visualisers
         {
             current_x = x;
             current_y = y;
-       
+
             return false;
         }
 
@@ -599,7 +621,7 @@ namespace Visualisers
 
         {
             rotate_z = 0;
-            
+
             label.setValue( "LMS151::Horizontal" );
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
             (*this) << label;
@@ -619,7 +641,7 @@ namespace Visualisers
             ScanRenderer2D( windower, glv::Color(0,0,1),0 )
         {
             rotate_z = 180;
-            
+
             label.setValue( "LMS151::Vertical" );
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
             (*this) << label;
@@ -677,18 +699,18 @@ namespace Visualisers
             *(dynamic_cast< glv::View3D* >(this)) << label;
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
             label.setValue( "Open-loop trajectory");
-            
+
             this->disable( glv::Property::AlwaysBubble );
-      
+
             this->operator<< ( grid );
 
             controller = boost::make_shared< L3::Visualisers::CompositeController >( dynamic_cast< glv::View3D* >(this), boost::ref( this->position ) );
         }
-            
+
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
-        
+
         boost::shared_ptr< Controller> controller;
-        
+
         glv::Label label;
 
         Grid grid;
@@ -716,7 +738,7 @@ namespace Visualisers
         }
 
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
-        
+
         boost::shared_ptr< glv::View3D > trajectory;
 
         glv::Label label;
@@ -843,15 +865,17 @@ namespace Visualisers
             : ExperienceView( experience, provider ), 
             glv::View3D(rect)
         {
-        
+
             octree = boost::make_shared< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> >( 0.5f ); 
         }
-        
+
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
         std::vector< glv::Point3 >  vertices;
         std::vector< glv::Color  >  colors;
-        
+
+        //std::deque< Cube > voxels;
+
         boost::shared_ptr< PointCloud<double> > master;
 
         std::list< boost::shared_ptr< PointCloud<double> > > clouds;
@@ -861,7 +885,7 @@ namespace Visualisers
         boost::shared_ptr< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> > octree;
 
         void load( boost::shared_ptr< L3::Experience > experience );
-        
+
         void onDraw3D( glv::GLV& g );
     };
 
@@ -881,9 +905,9 @@ namespace Visualisers
             current = boost::make_shared< L3::SE3 >();
 
             animation = boost::make_shared< AnimatedPoseRenderer >( boost::ref( *current ) );
-      
+
             experience_point_cloud = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, provider );
-       
+
             *this << *experience_point_cloud;
             experience_point_cloud->disable( glv::Visible );
         }
@@ -980,7 +1004,7 @@ namespace Visualisers
         }
 
         glv::Texture2 mTex;
-        
+
         boost::shared_ptr< L3::Histogram<double> > render_histogram;
 
         void update();
@@ -1110,7 +1134,7 @@ namespace Visualisers
             for( int i=0; i< num_pyramids; i++ )
             {
                 boost::shared_ptr< HistogramDensityRenderer > renderer = boost::make_shared< HistogramDensityRenderer >( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() );
-              
+
                 std::stringstream ss;
 
                 ss << "Pyramid <" << i << ">";
@@ -1134,7 +1158,7 @@ namespace Visualisers
         std::deque< boost::shared_ptr< HistogramDensityRenderer > > renderers;
 
         std::deque < boost::shared_ptr< glv::View > > labels;
-        
+
         void loadPyramid( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid )
         {
             this->pyramid = histogram_pyramid;
@@ -1244,7 +1268,7 @@ namespace Visualisers
     struct Statistics : glv::Table
     {
         Statistics();
-        
+
         std::vector< boost::shared_ptr< glv::Plot > > plots;
         std::vector< boost::shared_ptr< glv::Label > > labels;
         std::vector< boost::shared_ptr< StatisticsPlottable<double> > > plottables;
@@ -1263,7 +1287,7 @@ namespace Visualisers
             swathe_generation->setVariable( runner->timings[1] );
             points_per_second->setVariable( runner->timings[2] );
             estimation->setVariable(        runner->timings[3] );
-       
+
             plottables[0]->setVariable( runner->timings[0] );
             plottables[1]->setVariable( runner->timings[1] );
             plottables[2]->setVariable( runner->timings[2] );
@@ -1278,9 +1302,9 @@ namespace Visualisers
         ParticleFilterRendererLeaf( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter ) : filter(filter)
         {
         }
-        
+
         boost::weak_ptr< L3::Estimator::ParticleFilter<double> > filter;
-   
+
         void onDraw3D( glv::GLV& g );
     };
 
@@ -1301,7 +1325,6 @@ namespace Visualisers
     };
 
 
-    void transformCameraToPose( L3::SE3& pose );
 
 }   // Visualisers
 }   // L3

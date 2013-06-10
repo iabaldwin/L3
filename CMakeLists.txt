@@ -33,6 +33,10 @@ include_directories( "/Users/ian/code/build/include/eigen3/" )
 find_package( GSL REQUIRED )                                    # Math,statistics
 include_directories( ${GSL_INCLUDE_DIRS} )
 
+find_package( IPP REQUIRED )                                    # Math,statistics
+link_directories( "/opt/intel/ipp/lib/" )
+
+
 #PCL
 #include_directories( "/Users/ian/code/build/include/pcl-1.5/" )
 #include_directories( "/Users/ian/code/build/include/pcl-1.6/" )

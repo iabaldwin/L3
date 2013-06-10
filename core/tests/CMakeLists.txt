@@ -1,3 +1,6 @@
+add_executable( test_ipp test_ipp.cpp )
+target_link_libraries( test_ipp config L3 ${Boost_LIBRARIES} ipps )
+
 #add_executable( test_libconfig test_libconfig.cpp )
 #target_link_libraries( test_libconfig config L3 ${Boost_LIBRARIES} )
 

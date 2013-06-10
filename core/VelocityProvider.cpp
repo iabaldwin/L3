@@ -17,29 +17,25 @@ namespace L3
         trajectory.assign( engine->trajectory.begin(), engine->trajectory.end() );
         lock.unlock();
 
-        for( std::deque< std::pair< double, Eigen::Matrix4f > >::iterator it = (trajectory.begin()+1);
-                it != trajectory.end();
+        std::deque< std::pair< double, Eigen::Matrix4f > >::iterator it = trajectory.begin();
+        std::advance( it, 1 );
+
+        for( ; it != trajectory.end();
                 it++ )
         {
             // Compute instantaneous velocity
-            //double instantaneous_velocity = (sqrt( pow( it->second( 0,3 ) - (it-1)->second(0,3), 2 ) 
-                        //+ pow( it->second( 1,3 ) - (it-1)->second(1,3), 2 ) ))/( it->first - (it-1)->first );
-
             double distance = (sqrt( pow( it->second( 0,3 ) - (it-1)->second(0,3), 2 ) 
                         + pow( it->second( 1,3 ) - (it-1)->second(1,3), 2 ) ));
 
             double dt = ( it->first - (it-1)->first );
-
+            
             double velocity = distance/dt;
 
             if( std::isinf( velocity ) || std::isnan( velocity ) )
                 continue;
-          
 
             L3::SE3 previous = L3::Utils::Math::poseFromRotation( (it-1)->second );
             L3::SE3 current = L3::Utils::Math::poseFromRotation( it->second );
-
-            //double rotational_velocity = (current.Q()-previous.Q())/dt;
             double rotational_velocity = (previous.Q()-current.Q())/dt;
 
             std::vector<double> data(4);
