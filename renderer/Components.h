@@ -1213,7 +1213,7 @@ namespace Visualisers
     template <typename T>
         struct StatisticsPlottable  : BasicPlottable<T>
     {
-        StatisticsPlottable() : print(false)
+        StatisticsPlottable() 
         {
             this->color( glv::Color( 1, 0, 0, .5 ) );
             this->stroke(2);
@@ -1228,7 +1228,6 @@ namespace Visualisers
             }
         }
 
-        bool print;
         boost::shared_ptr< variable_lock<T> > lock;
 
         void setVariable( T& t )
@@ -1242,9 +1241,6 @@ namespace Visualisers
                 return;
 
             this->plot_data.push_back( lock->t );
-
-            if( print )
-                std::cout << this->plot_data.back() << std::endl;
 
             if ( this->plot_data.size() > 100 )
                 this->plot_data.pop_front();

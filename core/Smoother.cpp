@@ -5,13 +5,12 @@ namespace L3
     template <typename T>
         void LogisticSmoother<T>::smooth( L3::Histogram<T>* hist ) 
         {
-            double tmp = 250;
+            double tmp = 150;
 
             double* bin_ptr = hist->hist->bin;
             for( unsigned int x = 0; x < hist->hist->nx*hist->hist->ny; x++ )
             {
-                if( *bin_ptr > tmp )
-                    *bin_ptr=tmp;
+                *bin_ptr = std::min( *bin_ptr, tmp );
                 bin_ptr++;
             }
         };

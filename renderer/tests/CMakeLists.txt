@@ -1,3 +1,6 @@
+add_executable( test_itpp_visual test_itpp.cpp )
+target_link_libraries( test_itpp_visual  GLV L3Vis L3 ${Boost_LIBRARIES}  ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} fftw3 lapack blas itpp_static )
+
 #add_executable( test_ray_query test_ray_query.cpp )
 #target_link_libraries( test_ray_query GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} ${BULLET_LIBRARIES} )
 

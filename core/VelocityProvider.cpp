@@ -1,6 +1,11 @@
 #include  "VelocityProvider.h"
 #include "Utils.h"
 
+// Smoothing
+#include "itpp/signal/filter.h"
+#include "itpp/signal/freq_filt.h"
+
+
 namespace L3
 {
 
