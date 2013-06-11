@@ -105,7 +105,7 @@ namespace L3
     {
         public:
 
-            ConstantDistanceWindower( L3::LHLVVelocityProvider* provider, double swathe_length = 10.0  ) 
+            ConstantDistanceWindower( L3::VelocityProvider* provider, double swathe_length = 10.0  ) 
                 : velocity_provider(provider),
                     swathe_length(swathe_length),
                     previous_update(0.0)
@@ -114,9 +114,7 @@ namespace L3
                 this->window = &_constant_distance_window;
             }
 
-
-            // provider base
-            //L3::ConstantTimeIterator<L3::LHLV>* constant_time_iterator;
+            // Provider base
             L3::VelocityProvider* velocity_provider;
 
             // Core window
@@ -126,7 +124,6 @@ namespace L3
             VELOCITY_WINDOW _window_buffer;
             
             // Search structure
-            //Comparator< std::pair< double, std::pair< double, double > > > comparator;
             Comparator< std::pair< double, std::vector< double > > > comparator;
 
             double swathe_length;
