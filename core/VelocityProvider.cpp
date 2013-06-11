@@ -5,13 +5,12 @@
 #include "itpp/signal/filter.h"
 #include "itpp/signal/freq_filt.h"
 
-
 namespace L3
 {
 
     bool ScanMatchingVelocityProvider::update( double time )
     {
-        velocities.clear();
+        raw_velocities.clear();
 
         // Copy the window
         std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
@@ -47,8 +46,32 @@ namespace L3
             data[0] = velocity;
             data[3] = rotational_velocity;
 
-            velocities.push_back( std::make_pair( it->first, data ) );
+            raw_velocities.push_back( std::make_pair( it->first, data ) );
+        
+
         }
+
+        itpp::vec filter;
+        filter.set_size(3);
+        filter[0] = 1.0/3.0;
+        filter[1] = 1.0/3.0;
+        filter[2] = 1.0/3.0;
+
+        itpp::vec b;
+        b.set_size(raw_velocities.size());
+        for( int i=0; i<raw_velocities.size(); i++ )
+            b[i] = raw_velocities[i].second[0];
+
+        itpp::Freq_Filt<double> FF(filter,1000);
+
+        itpp::vec res = FF.filter( b );
+
+        filtered_velocities.assign( raw_velocities.begin(), raw_velocities.end() );
+
+        std::vector<double> data(4);
+       
+        for( int i=0; i<raw_velocities.size(); i++ )
+            filtered_velocities[i].second[0] = res[i];
 
         return true;
     }
@@ -68,15 +91,15 @@ namespace L3
 
     bool LHLVVelocityProvider::update( double time  )
     {
-        velocities.clear();
+        filtered_velocities.clear();
 
         zipper z;
 
         std::transform( iterator->window.begin(),
                 iterator->window.end(),
-                std::back_inserter( velocities ),
+                std::back_inserter( filtered_velocities ),
                 z );
 
-        return ( !velocities.empty() );
+        return ( !filtered_velocities.empty() );
     }
 }

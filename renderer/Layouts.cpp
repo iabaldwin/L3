@@ -19,12 +19,18 @@ namespace L3
             linear_velocity_plotter_sm = boost::make_shared< LinearVelocityPlotter >();
             linear_velocity_plotter_sm->stroke( 2.0 );
 
+            linear_velocity_plotter_sm_unfiltered = boost::make_shared< LinearVelocityPlotter >( false );
+            linear_velocity_plotter_sm_unfiltered->stroke( 2.0 );
+
             // Add plot region
             boost::shared_ptr< glv::Plot > plot_region 
                 = boost::make_shared< glv::Plot >( glv::Rect( 0, 500+5, .6*window.width(), 150-5), 
                         boost::ref( *linear_velocity_plotter_lhlv ) ,
                         boost::ref( *linear_velocity_plotter_sm ) 
                         );
+
+                        
+            plot_region->add( boost::ref( *linear_velocity_plotter_sm_unfiltered ) );
 
             linear_velocity_plotter_lhlv->plot_parent = plot_region;
 
@@ -44,6 +50,7 @@ namespace L3
             // Mark as updateable
             temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_lhlv.get()) );
             temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_sm.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_sm_unfiltered.get()) );
 
             boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Linear velocity (m/s)" );
             velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
@@ -351,7 +358,6 @@ namespace L3
 
         bool DatasetLayout::load( L3::DatasetRunner* runner )
         {
-
             /*
              *  Add the updater to the runenr
              */
@@ -365,6 +371,8 @@ namespace L3
             
             linear_velocity_plotter_sm->iterator = runner->sm_velocity_provider;       
             rotational_velocity_plotter_sm->iterator = runner->sm_velocity_provider;       
+            
+            linear_velocity_plotter_sm_unfiltered->iterator = runner->sm_velocity_provider; 
 
             /*
              *  Scale

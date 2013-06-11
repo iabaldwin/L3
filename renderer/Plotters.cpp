@@ -12,7 +12,15 @@ namespace L3
                     return;
 
                 VELOCITY_WINDOW window;
-                window.assign( iterator_ptr->velocities.begin(), iterator_ptr->velocities.end() );
+                
+                if (filtered)
+                    window.assign( iterator_ptr->filtered_velocities.begin(), iterator_ptr->filtered_velocities.end() );
+                else
+                {
+                    window.assign( iterator_ptr->raw_velocities.begin(), iterator_ptr->raw_velocities.end() );
+                    this->color ( glv::Color( .5, .5, .5 ) );
+                    this->mPrim = glv::draw::Points;
+                }
 
                 y_limit = -1*std::numeric_limits<double>::infinity();
 
@@ -32,7 +40,6 @@ namespace L3
 
                     while( i() && counter < window.size() ) 
                     {
-                        //double dt = window[counter].first - window[0].first;
                         double dt = window[counter].first - zero_time;
                         double variable = window[counter].second[index];
 
@@ -59,9 +66,6 @@ namespace L3
                     {
                         parent_plot->range( 0, x_limit + 0.5 , 0 );
                         parent_plot->range( -1, y_limit + 2.0 , 1 );
-
-                        parent_plot->minor( y_tmp, 0 );
-                        parent_plot->major( x_tmp, 0 );
                     }
                 }
                

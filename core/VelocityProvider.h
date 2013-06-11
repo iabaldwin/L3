@@ -14,7 +14,8 @@ namespace L3
 
 struct VelocityProvider : Lockable, TemporalObserver
 {
-    VELOCITY_WINDOW velocities;
+    VELOCITY_WINDOW raw_velocities;
+    VELOCITY_WINDOW filtered_velocities;
 
     typedef VELOCITY_WINDOW::iterator VELOCITY_ITERATOR;
 };

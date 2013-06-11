@@ -15,15 +15,11 @@ namespace L3
     {
         struct VelocityPlotter : glv::Plottable, Lockable, Updateable
         {
-            VelocityPlotter()
+            VelocityPlotter( bool filtered = true )
                 : glv::Plottable( glv::draw::LineStrip, 1 ),
-                    index(-1)
+                    index(-1),
+                    filtered(filtered)
             {
-                init = false;
-                
-                x_tmp = 0;
-                y_tmp = 0;
-
             }
 
 
@@ -32,12 +28,9 @@ namespace L3
             }
 
             int index;
-            bool init; 
+            bool filtered; 
             double x_limit, y_limit;
-            
-            int y_tmp;
-            double x_tmp;
-            
+          
             boost::weak_ptr< glv::Plot > plot_parent; 
             boost::weak_ptr< L3::VelocityProvider > iterator; 
 
@@ -61,7 +54,7 @@ namespace L3
 
         struct LinearVelocityPlotter : VelocityPlotter
         {
-            LinearVelocityPlotter() 
+            LinearVelocityPlotter( bool filtered = true)  : VelocityPlotter(filtered)
             {
                 index = 0;
                 this->color( glv::Color( 1,0,0 ) );
@@ -70,7 +63,7 @@ namespace L3
 
         struct RotationalVelocityPlotter : VelocityPlotter
         {
-            RotationalVelocityPlotter() 
+            RotationalVelocityPlotter( bool filtered = true )  : VelocityPlotter(filtered)
             {
                 index = 3;
                 this->color( glv::Color( 0,1,0 ) );
