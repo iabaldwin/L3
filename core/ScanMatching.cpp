@@ -1,7 +1,7 @@
 #include "ScanMatching.h"
 
 #include <pcl/registration/icp.h>
-//#include <pcl/registration/ndt_2d.h>
+#include <pcl/registration/ndt_2d.h>
 #include <pcl/registration/gicp.h>
 
 #define TRAJECTORY_LIMIT 500 
@@ -101,7 +101,7 @@ namespace ScanMatching
 
         //registration.setMaxCorrespondenceDistance (0.05);
         // Set the maximum number of iterations (criterion 1)
-        registration.setMaximumIterations (40);
+        registration.setMaximumIterations (50);
         // Set the transformation epsilon (criterion 2)
         //registration.setTransformationEpsilon (1e-8);
         // Set the euclidean distance difference epsilon (criterion 3)
@@ -111,15 +111,14 @@ namespace ScanMatching
         registration.setInputTarget(cloud_in);
 
         // Alignment
-        pcl::PointCloud<pcl::PointXYZ> final;
-        registration.align(final);
+        registration.align(*final);
 
         transformation = registration.getFinalTransformation();
 
         // Do swap
         scan.swap( putative );
         scan_points = putative_points;
-
+        
         previous_time = current_scan.first;
 
         return registration.hasConverged();

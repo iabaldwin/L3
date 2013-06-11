@@ -21,6 +21,7 @@ namespace L3
             {
             }
 
+            Updater* updater ;
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
 
@@ -96,14 +97,14 @@ namespace L3
          */
         struct MinimisationVisualiser : AlgorithmVisualiser
         {
-
             MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm, Updater* updater = NULL )  
-                : algorithm(algorithm),
-                updater(updater)
+                : algorithm(algorithm)
             {
                 // Estimation traversals
                 boost::shared_ptr< glv::View > ptr = boost::dynamic_pointer_cast<glv::View>( boost::make_shared< TraversalVisualiser >( algorithm ) );
                 views.push_back( ptr );
+
+                this->updater = updater;
 
                 (*this) << *ptr;
 
@@ -132,8 +133,6 @@ namespace L3
                 views.push_back( plot );
             }
 
-            Updater* updater;
-            
             glv::Label iterations_label;
 
             ~MinimisationVisualiser()
@@ -193,10 +192,14 @@ namespace L3
         struct ParticleFilterVisualiser : AlgorithmVisualiser
         {
             ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater = NULL ) ;
-            
+      
+            ~ParticleFilterVisualiser();
+
+            boost::shared_ptr< glv::View > weight_visualiser;
+
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
-       
+     
         };
 
         /*

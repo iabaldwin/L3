@@ -474,8 +474,10 @@ namespace L3
         ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater  )  
         {
             // Weight visualiser
-            boost::shared_ptr< glv::View > weight_visualiser = boost::make_shared< ParticleWeightOverview >( algorithm, updater );
+            weight_visualiser = boost::make_shared< ParticleWeightOverview >( algorithm, updater );
             *this << *weight_visualiser;
+
+            this->updater = updater;
 
             if( updater )
                 updater->operator<<( (boost::dynamic_pointer_cast< Updateable >(weight_visualiser)).get() );
@@ -489,6 +491,25 @@ namespace L3
  
             this->fit();
             this->arrange();
+        }
+
+
+        ParticleFilterVisualiser::~ParticleFilterVisualiser()
+        {
+
+            if ( updater )
+            {
+                // Remove myself from the updates list  
+                std::list < Updateable* >::iterator it 
+                    = std::find( updater->updateables.begin(), 
+                            updater->updateables.end(), 
+                            dynamic_cast< L3::Updateable*>( weight_visualiser.get()) );
+
+                if( it != updater->updateables.end() )
+                    updater->updateables.erase( it );
+
+            }
+
         }
 
     }

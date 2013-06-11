@@ -190,8 +190,8 @@ namespace L3
 
             // Experience renderer
             experience_location = boost::make_shared< ExperienceOverviewView >( glv::Rect(180,180), boost::shared_ptr<L3::Experience>() );
-            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( experience_location.get() ) );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( experience_location->experience_point_cloud.get() ) ) );
+            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( experience_location.get() ) );
             *ancillary_1 << *experience_location;
 
             // Scan-matching scan renderer
