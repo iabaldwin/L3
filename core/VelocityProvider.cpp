@@ -4,6 +4,7 @@
 // Smoothing
 #include "itpp/signal/filter.h"
 #include "itpp/signal/freq_filt.h"
+#include "itpp/signal/transforms.h"
 
 namespace L3
 {
@@ -47,15 +48,10 @@ namespace L3
             data[3] = rotational_velocity;
 
             raw_velocities.push_back( std::make_pair( it->first, data ) );
-        
-
         }
 
-        itpp::vec filter;
-        filter.set_size(3);
-        filter[0] = 1.0/3.0;
-        filter[1] = 1.0/3.0;
-        filter[2] = 1.0/3.0;
+        //itpp::vec filter = itpp::fir1 (int N, double cutoff)
+        itpp::vec filter = itpp::fir1 (50,.01);
 
         itpp::vec b;
         b.set_size(raw_velocities.size());
@@ -73,6 +69,22 @@ namespace L3
         for( int i=0; i<raw_velocities.size(); i++ )
             filtered_velocities[i].second[0] = res[i];
 
+
+        // Compute fft
+
+        if ( b.size() > 0 )
+        {
+        itpp::cvec fft_res;
+
+        fft_res  = itpp::fft_real(b);
+
+        //std::cout << fft_res << std::endl;
+
+        for( int i = 0; i<fft_res.size() ; i++ )
+            std::cout << fft_res[i] << std::endl;
+
+        }
+        std::cout << "--------------" << std::endl;
         return true;
     }
 

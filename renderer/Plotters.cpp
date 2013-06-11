@@ -35,7 +35,6 @@ namespace L3
                     int counter = 0;
 
                     // Render 10s
-                    //double zero_time = window.back().first - 10.0;
                     double zero_time = window.back().first - 10.0;
 
                     while( i() && counter < window.size() ) 

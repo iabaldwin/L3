@@ -95,13 +95,13 @@ namespace ScanMatching
             cloud_out->points[i].z = *cloud_ptr++;
         }
 
-        //pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
+        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
         //pcl::NormalDistributionsTransform2D<pcl::PointXYZ, pcl::PointXYZ> registration;
-        pcl::GeneralizedIterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
+        //pcl::GeneralizedIterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
 
         //registration.setMaxCorrespondenceDistance (0.05);
         // Set the maximum number of iterations (criterion 1)
-        registration.setMaximumIterations (20);
+        registration.setMaximumIterations (40);
         // Set the transformation epsilon (criterion 2)
         //registration.setTransformationEpsilon (1e-8);
         // Set the euclidean distance difference epsilon (criterion 3)
