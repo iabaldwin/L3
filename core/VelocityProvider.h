@@ -4,9 +4,6 @@
 #include "Core.h"
 #include "ScanMatching.h"
 
-    
-//typedef std::deque< std::pair< double, std::pair< double, double > > > VELOCITY_WINDOW;
-//typedef std::vector< std::pair< double, std::pair< double, double > > > VELOCITY_WINDOW;
 typedef std::deque< std::pair< double, std::vector< double > > > VELOCITY_WINDOW;
 
 namespace L3
@@ -14,6 +11,7 @@ namespace L3
 
 struct VelocityProvider : Lockable, TemporalObserver
 {
+
     VELOCITY_WINDOW raw_velocities;
     VELOCITY_WINDOW filtered_velocities;
 
