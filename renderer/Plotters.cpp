@@ -22,8 +22,6 @@ namespace L3
                     this->mPrim = glv::draw::Points;
                 }
 
-                y_limit = -1*std::numeric_limits<double>::infinity();
-
                 if ( window.size() > 0 )
                 {
                     L3::WriteLock writer( this->mutex );
@@ -35,14 +33,16 @@ namespace L3
                     int counter = 0;
 
                     // Render 10s
-                    double zero_time = window.back().first - 10.0;
+                    double zero_time;
+                    if( time_lock )
+                        zero_time = time_lock->t - 10;
+                    else
+                        zero_time = window.back().first;
 
                     while( i() && counter < window.size() ) 
                     {
                         double dt = window[counter].first - zero_time;
                         double variable = window[counter].second[index];
-
-                        y_limit = std::max( y_limit, variable );
 
                         mData.assign( dt, 0, counter );
                         mData.assign( variable, 1, counter );
@@ -50,7 +50,14 @@ namespace L3
                         counter++;
                     }
 
-                    x_limit = window.back().first - window.front().first;
+                    //x_limit = window.back().first - window.front().first;
+                    x_limit = 10.0;
+
+                        
+                    //y_centroid = std::max( y_centroid, variable );
+
+                    y_centroid = window.back().second[index];
+
 
                     writer.unlock();
                 }
@@ -64,7 +71,7 @@ namespace L3
                     if ( parent_plot )
                     {
                         parent_plot->range( 0, x_limit + 0.5 , 0 );
-                        parent_plot->range( -1, y_limit + 2.0 , 1 );
+                        parent_plot->range( y_centroid -2.0, y_centroid + 2.0 , 1 );
                     }
                 }
                

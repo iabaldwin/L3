@@ -7,16 +7,41 @@
 
 typedef std::deque< std::pair< double, std::vector< double > > > VELOCITY_WINDOW;
 
+struct zipper : std::unary_function< std::pair< double, boost::shared_ptr< L3::LHLV > >, std::pair< double, std::vector< double > > >
+{
+    zipper()
+    {
+        data.resize(4);
+    }
+
+    std::vector< double > data;
+
+    std::pair< double, std::vector< double > > operator()( std::pair< double, boost::shared_ptr< L3::LHLV > > input )     
+    {
+        data[0] = input.second->data[9];
+        data[3] = input.second->data[3];
+
+        return std::make_pair( input.first, data );
+    }
+
+};
+
 namespace L3
 {
 
 struct VelocityProvider : Lockable, TemporalObserver
 {
 
+    VelocityProvider() : previous_update(0.0)
+    {
+    }
+
     VELOCITY_WINDOW raw_velocities;
     VELOCITY_WINDOW filtered_velocities;
 
     typedef VELOCITY_WINDOW::iterator VELOCITY_ITERATOR;
+    
+    double previous_update;
 };
 
 
@@ -29,6 +54,8 @@ struct ScanMatchingVelocityProvider : VelocityProvider
 
     boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _linear_velocity_filter;
     boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _rotational_velocity_filter;
+            
+    Comparator< std::pair< double, Eigen::Matrix4f > > comparator;
 
     bool update( double time );
 
@@ -41,7 +68,11 @@ struct LHLVVelocityProvider : VelocityProvider
 
     }
 
+    Comparator< std::pair< double, boost::shared_ptr< L3::LHLV > > > comparator;
+    Comparator< std::pair< double, std::vector< double > > > velocity_comparator;       
     L3::ConstantTimeIterator< L3::LHLV > * iterator;
+    
+    zipper z;
 
     bool update( double time );
 

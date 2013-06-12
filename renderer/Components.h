@@ -167,16 +167,6 @@ namespace Visualisers
      *  Text
      */
     template <typename T> 
-        struct variable_lock
-        {
-            explicit variable_lock( T& t ) : t(t)
-            {
-            }
-
-            T& t;
-        };
-
-    template <typename T> 
         struct TextRenderer : glv::TextView
     {
         explicit TextRenderer() : glv::TextView( glv::Rect(150,25 ) )

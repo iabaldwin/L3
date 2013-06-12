@@ -8,6 +8,7 @@
 #include <GLV/glv_util.h>
 
 #include "Controls.h"
+#include "RenderingUtils.h"
 
 namespace L3
 {
@@ -17,7 +18,6 @@ namespace L3
         {
             VelocityPlotter( bool filtered = true )
                 : glv::Plottable( glv::draw::LineStrip, 1 ),
-                    index(-1),
                     filtered(filtered)
             {
             }
@@ -27,12 +27,19 @@ namespace L3
             {
             }
 
+
             int index;
             bool filtered; 
-            double x_limit, y_limit;
-          
+            double x_limit, y_centroid;
+            boost::shared_ptr< variable_lock<double> > time_lock;
+
             boost::weak_ptr< glv::Plot > plot_parent; 
             boost::weak_ptr< L3::VelocityProvider > iterator; 
+
+            void setTime( double& time )
+            {
+                time_lock = boost::make_shared< variable_lock<double> >( boost::ref(time) ); 
+            }
 
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {

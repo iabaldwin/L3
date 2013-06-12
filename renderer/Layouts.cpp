@@ -374,6 +374,12 @@ namespace L3
             
             linear_velocity_plotter_sm_unfiltered->iterator = runner->sm_velocity_provider; 
 
+            linear_velocity_plotter_lhlv->setTime( runner->current_time );
+            linear_velocity_plotter_sm->setTime( runner->current_time );
+            linear_velocity_plotter_sm_unfiltered->setTime( runner->current_time );
+            rotational_velocity_plotter_lhlv->setTime( runner->current_time );
+            rotational_velocity_plotter_sm->setTime( runner->current_time );
+
             /*
              *  Scale
              */
