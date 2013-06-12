@@ -1755,16 +1755,18 @@ namespace Visualisers
 
     void ParticleFilterRendererLeaf::onDraw3D( glv::GLV& g )
     {
-
         boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter_ptr = filter.lock();
 
         if( !filter_ptr )
             return;
 
         L3::ReadLock lock( filter_ptr->mutex );
-
-        for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = filter_ptr->hypotheses.begin();  
-                it != filter_ptr->hypotheses.end();
+        std::vector< L3::SE3 > hypotheses( filter_ptr->hypotheses.begin(), filter_ptr->hypotheses.end() );
+        lock.unlock();
+       
+        std::cout << hypotheses.size() << std::endl;
+        for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();  
+                it != hypotheses.end();
                 it++ )
             CoordinateSystem( *it ).onDraw3D(g);
     }

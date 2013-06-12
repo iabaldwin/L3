@@ -9,8 +9,7 @@ namespace L3
 {
     namespace Estimator
     {
-
-
+        
         void AlphaBetaFilter::update( double time, double measurement )
         {
             /*
@@ -32,7 +31,6 @@ namespace L3
             /*
              *Update
              */
-            //double residual = _current_state.x - measurement;
             double residual = measurement - _current_state.x ;
       
             _current_state.x = _current_state.x  + alpha*residual;
@@ -206,7 +204,10 @@ namespace L3
 
                 hypotheses.assign( resampled.begin(), resampled.end() );
 
+                master.unlock();
+
                 return this->current_prediction;
+           
             }
 
         template <typename T>

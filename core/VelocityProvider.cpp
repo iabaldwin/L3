@@ -20,7 +20,8 @@ namespace L3
     ScanMatchingVelocityProvider::ScanMatchingVelocityProvider( L3::ScanMatching::Engine* engine  ) 
         : engine(engine)
     {
-        _filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
+        _linear_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
+        _rotational_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
     }
 
 
@@ -71,47 +72,18 @@ namespace L3
         
         }
 
-        std::deque< std::pair< double, Eigen::Matrix4f > >::reverse_iterator iterator= trajectory.rbegin();
-
-        std::pair< double, Eigen::Matrix4f > current = *iterator++;
-        std::pair< double, Eigen::Matrix4f > previous = *iterator++;
-      
-        double velocity = (sqrt( pow( current.second( 0,3 ) - previous.second(0,3), 2 ) 
-                        + pow( current.second( 1,3 ) - previous.second(1,3), 2 ) ))/( current.first - previous.first );
-
-        std::vector<double> data2( 2 );
-        _filter->update( current.first, velocity );
-        data2[0] = _filter->_state.x;
+        if( raw_velocities.empty() )
+            return false;
+         
+        std::pair< double, std::vector<double> > current = raw_velocities.back();
+ 
+        std::vector<double> data2( 4 );
+        _linear_velocity_filter->update( current.first, current.second[0] );
+        _rotational_velocity_filter->update( current.first, current.second[3] );
+       
+        data2[0] = _linear_velocity_filter->_state.x;
+        data2[3] = _rotational_velocity_filter->_state.x;
         filtered_velocities.push_back( std::make_pair( current.first, data2 ) );
-
-        //// Compute mean
-
-        //double mean_vel;
-        //VELOCITY_WINDOW::iterator mean_it = raw_velocities.begin();
-        
-        //while( mean_it != raw_velocities.end() )
-        //{
-            //mean_vel += mean_it->second[0];
-            //mean_it++;
-        //}
-
-        //mean_vel /= raw_velocities.size();
-
-        //// Filter
-        //filtered_velocities.assign( raw_velocities.begin(), raw_velocities.end() );
-
-
-        //itpp::vec b;
-        //b.set_size(raw_velocities.size());
-        //for( int i=0; i<raw_velocities.size(); i++ )
-            //b[i] = raw_velocities[i].second[0] - mean_vel;
-
-        //itpp::Freq_Filt<double> FF(filter,1000);
-
-        //itpp::vec res = FF.filter( b );
-
-        //for( int i=0; i<raw_velocities.size(); i++ )
-            //filtered_velocities[i].second[0] = res[i] + mean_vel;
         
         return true;
     }
@@ -146,9 +118,6 @@ namespace L3
                 std::back_inserter( filtered_velocities ),
                 z );
 
-        //if( !filtered_velocities.empty() )
-            //std::cout << filtered_velocities.size() << ":" << filtered_velocities.back().first - filtered_velocities.front().first << std::endl;
-        
         return ( !filtered_velocities.empty() );
     }
 }
