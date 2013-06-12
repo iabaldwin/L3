@@ -1764,7 +1764,6 @@ namespace Visualisers
         std::vector< L3::SE3 > hypotheses( filter_ptr->hypotheses.begin(), filter_ptr->hypotheses.end() );
         lock.unlock();
        
-        std::cout << hypotheses.size() << std::endl;
         for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();  
                 it != hypotheses.end();
                 it++ )
