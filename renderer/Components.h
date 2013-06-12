@@ -1186,7 +1186,7 @@ namespace Visualisers
     };
 
     template <typename T>
-        struct BasicPlottable :  Updateable, glv::Plottable, Lockable
+        struct BasicPlottable : glv::Plottable,  Updateable, Lockable
     {
 
         BasicPlottable() : glv::Plottable( glv::draw::LineStrip, 1 )

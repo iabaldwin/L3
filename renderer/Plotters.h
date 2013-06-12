@@ -49,7 +49,6 @@ namespace L3
             }
 
             void update();
-
         };
 
         struct LinearVelocityPlotter : VelocityPlotter
