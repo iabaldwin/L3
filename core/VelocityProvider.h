@@ -2,6 +2,7 @@
 #define L3_VELOCITY_SOURCE
 
 #include "Core.h"
+#include "Filter.h"
 #include "ScanMatching.h"
 
 typedef std::deque< std::pair< double, std::vector< double > > > VELOCITY_WINDOW;
@@ -22,15 +23,13 @@ struct VelocityProvider : Lockable, TemporalObserver
 struct ScanMatchingVelocityProvider : VelocityProvider
 {
 
-    ScanMatchingVelocityProvider( L3::ScanMatching::Engine* engine  ) : engine(engine)
-    {
+    ScanMatchingVelocityProvider( L3::ScanMatching::Engine* engine  ) ;
 
-    }
+    L3::ScanMatching::Engine* engine;
 
-    L3::ScanMatching::Engine* engine ;
+    boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _filter;
 
     bool update( double time );
-    
 
 };
 
