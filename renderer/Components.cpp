@@ -377,8 +377,6 @@ namespace Visualisers
             return;
 
         // Obtain the mutex
-        L3::ReadLock( hist_ptr->mutex );
-
         std::pair<float, float> lower_left = hist_ptr->coords(0,0);
         std::pair<float, float> upper_right = hist_ptr->coords( hist_ptr->x_bins, hist_ptr->y_bins );
 
@@ -751,6 +749,16 @@ namespace Visualisers
 
         // Centering heuristic
         glv::draw::translate( 0, 60, -200 );
+        
+        boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
+
+        if( !cloud_ptr )
+            return;
+
+        if( cloud_ptr->num_points == 0 ) 
+            return;
+
+        L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
 
         PointCloudRenderer::onDraw3D(g);    
 
@@ -758,13 +766,15 @@ namespace Visualisers
 
     void PointCloudRendererView::update()
     {
-        boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
+        //boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
 
-        if( !cloud_ptr )
-            return;
+        //if( !cloud_ptr )
+            //return;
 
-        if( cloud_ptr->num_points > 0 ) 
-            L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        //plot_cloud = boost::make_shared< PointCloud<double> >();
+
+        //if( cloud_ptr->num_points > 0 ) 
+            //L3::copy( cloud_ptr.get(), plot_cloud.get() );
     }
 
     /*
@@ -780,14 +790,8 @@ namespace Visualisers
         if( !plot_cloud )
             return;
 
-        boost::scoped_ptr< L3::PointCloud<double> > tmp( new L3::PointCloud<double>() );
-
-        L3::ReadLock point_cloud_lock( plot_cloud->mutex );
-        L3::copy( plot_cloud.get(), tmp.get() ); 
-        point_cloud_lock.unlock();
-
-        boost::tuple<double, double, double> lower_left = min( tmp.get() );
-        boost::tuple<double, double, double> upper_right = max( tmp.get() );
+        boost::tuple<double, double, double> lower_left = min( plot_cloud.get() );
+        boost::tuple<double, double, double> upper_right = max( plot_cloud.get() );
 
         glv::draw::blendTrans();
 
@@ -1133,9 +1137,9 @@ namespace Visualisers
         
         if( engine_ptr )
         {
-            L3::ReadLock lock( engine_ptr->mutex );
+            //L3::ReadLock lock( engine_ptr->mutex );
             trajectory.assign( engine_ptr->trajectory.begin(), engine_ptr->trajectory.end() );
-            lock.unlock();
+            //lock.unlock();
         }
         
         L3::SE3 zero;
@@ -1178,7 +1182,7 @@ namespace Visualisers
         boost::scoped_array<double> putative;
 
         // Lock
-        L3::ReadLock lock( ptr->mutex );
+        //L3::ReadLock lock( ptr->mutex );
 
         int scan_points = ptr->matcher->scan_points;
         int putative_points = ptr->matcher->putative_points;
@@ -1196,7 +1200,7 @@ namespace Visualisers
                 ptr->matcher->putative.get()+putative_points*3,
                 putative.get() );
 
-        lock.unlock();
+        //lock.unlock();
 
         glv::Point3 scan_vertices[scan_points];
         glv::Color  scan_colors[scan_points];
@@ -1760,14 +1764,10 @@ namespace Visualisers
         if( !filter_ptr )
             return;
 
-        L3::ReadLock lock( filter_ptr->mutex );
-        std::vector< L3::SE3 > hypotheses( filter_ptr->hypotheses.begin(), filter_ptr->hypotheses.end() );
-        lock.unlock();
-       
-        for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();  
-                it != hypotheses.end();
-                it++ )
-            CoordinateSystem( *it ).onDraw3D(g);
+        //for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = filter_ptr->hypotheses.begin();  
+                //it != filter_ptr->hypotheses.end();
+                //it++ )
+            //CoordinateSystem( *it ).onDraw3D(g);
     }
 
 

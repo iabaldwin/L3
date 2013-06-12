@@ -23,82 +23,19 @@ namespace L3
     ScanMatchingVelocityProvider::ScanMatchingVelocityProvider( L3::ScanMatching::Engine* engine  ) 
         : engine(engine)
     {
-        _linear_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
-        _rotational_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
     }
 
 
     bool ScanMatchingVelocityProvider::update( double time )
     {
-        return true;
+        raw_velocities.push_back(  engine->raw_velocity_data );
+        filtered_velocities.push_back(  engine->filtered_velocity_data );
 
-        //if( engine->trajectory.empty() )
-            //return false;
-   
-        //TRAJECTORY_ITERATOR iterator = std::lower_bound(
-                //engine->trajectory.begin(),
-                //engine->trajectory.end(),
-                //previous_update,
-                //comparator
-                //);
+        if( raw_velocities.back().first - raw_velocities.front().first > 10.0 )
+            raw_velocities.pop_front();
 
-        //previous_update = engine->trajectory.back().first;
-
-        //// Copy the window
-        //std::deque< std::pair< double, Eigen::Matrix4f > > trajectory( iterator, engine->trajectory.end() );
-        
-        //std::deque< std::pair< double, Eigen::Matrix4f > >::iterator it = trajectory.begin();
-        //std::advance( it, 1 );
-
-        //std::vector<double> data(4);
-        
-        //for( ; 
-                //it != trajectory.end();
-                //it++ )
-        //{
-            //// Compute instantaneous velocity
-            //double distance = (sqrt( pow( it->second( 0,3 ) - (it-1)->second(0,3), 2 ) 
-                        //+ pow( it->second( 1,3 ) - (it-1)->second(1,3), 2 ) ));
-
-            //double dt = ( it->first - (it-1)->first );
-            
-            //double velocity = distance/dt;
-
-            //if( std::isinf( velocity ) || std::isnan( velocity ) )
-                //continue;
-
-            //L3::SE3 previous = L3::Utils::Math::poseFromRotation( (it-1)->second );
-            //L3::SE3 current = L3::Utils::Math::poseFromRotation( it->second );
-            //double rotational_velocity = (previous.Q()-current.Q())/dt;
-
-            //data[0] = velocity;
-            //data[3] = rotational_velocity;
-
-            //raw_velocities.push_back( std::make_pair( it->first, data ) );
-        //}
-
-        //if( raw_velocities.empty() )
-            //return false;
-         
-        //std::pair< double, std::vector<double> > current = raw_velocities.back();
-
-        //if( current.second[0] > 15 )
-        //{
-            //std::cout << current.second[0] << std::endl;
-            //return false;
-        //}
-
-        //std::vector<double> data2( 4 );
-        //_linear_velocity_filter->update( current.first, current.second[0] );
-        //_rotational_velocity_filter->update( current.first, current.second[3] );
-       
-        //data2[0] = _linear_velocity_filter->_state.x;
-        //data2[3] = _rotational_velocity_filter->_state.x;
-        
-        //filtered_velocities.push_back( std::make_pair( current.first, data2 ) );
-      
-        //if( filtered_velocities.back().first - filtered_velocities.front().first > 10.0 )
-            //filtered_velocities.pop_front();
+        if( filtered_velocities.back().first - filtered_velocities.front().first > 10.0 )
+            filtered_velocities.pop_front();
 
         return true;
     }
@@ -121,16 +58,19 @@ namespace L3
         if( !filtered_velocities.empty() )
         {
             // Compute trim 
-            double trim_val = time - 10.0; 
+            //double trim_val = time - 10.0; 
 
-            VELOCITY_ITERATOR erase_it = std::lower_bound(
-                filtered_velocities.begin(),
-                filtered_velocities.end(),
-                trim_val,
-                velocity_comparator 
-                );
+            //VELOCITY_ITERATOR erase_it = std::lower_bound(
+                //filtered_velocities.begin(),
+                //filtered_velocities.end(),
+                //trim_val,
+                //velocity_comparator 
+                //);
 
-            filtered_velocities.erase( filtered_velocities.begin(), erase_it );
+            //filtered_velocities.erase( filtered_velocities.begin(), erase_it );
+
+            while( filtered_velocities.front().first - filtered_velocities.back().first > 10.0 )
+                filtered_velocities.pop_front();
 
             previous_update = iterator->window.back().first;
         }

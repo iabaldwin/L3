@@ -52,8 +52,6 @@ struct ScanMatchingVelocityProvider : VelocityProvider
 
     L3::ScanMatching::Engine* engine;
 
-    boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _linear_velocity_filter;
-    boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _rotational_velocity_filter;
             
     Comparator< std::pair< double, Eigen::Matrix4f > > comparator;
 

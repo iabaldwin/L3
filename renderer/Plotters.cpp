@@ -52,10 +52,7 @@ namespace L3
 
                     //x_limit = window.back().first - window.front().first;
                     x_limit = 10.0;
-
-                        
                     //y_centroid = std::max( y_centroid, variable );
-
                     y_centroid = window.back().second[index];
 
 
@@ -71,7 +68,7 @@ namespace L3
                     if ( parent_plot )
                     {
                         parent_plot->range( 0, x_limit + 0.5 , 0 );
-                        parent_plot->range( y_centroid -2.0, y_centroid + 2.0 , 1 );
+                        parent_plot->range( -1, y_centroid + 2.0 , 1 );
                     }
                 }
                

@@ -5,6 +5,7 @@
 #include "Datatypes.h"
 #include "Datatypes.h"
 #include "Iterator.h"
+#include "Filter.h"
 
 #include "Poco/Thread.h"
 
@@ -38,6 +39,7 @@ namespace ScanMatching
             
             boost::shared_array< double > registered;
 
+        
         protected:
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr final;
@@ -61,16 +63,21 @@ namespace ScanMatching
         Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
             windower(windower),
             previous_update(0.0),
+            current_update(0.0),
             matcher( new ICP() ),
             current_transformation( Eigen::Matrix4f::Identity() )
         {
+            _linear_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
+            _rotational_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
+       
+            raw_velocity_data.second.resize( 4);
+            filtered_velocity_data.second.resize( 4);
         }
     
-        virtual ~Engine()
-        {
-        }
+        boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _linear_velocity_filter;
+        boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _rotational_velocity_filter;
 
-        Eigen::Matrix4f current_transformation;
+        Eigen::Matrix4f current_transformation, previous_transformation;
 
         std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
 
@@ -80,7 +87,9 @@ namespace ScanMatching
         
         boost::shared_ptr< ScanMatcher > matcher;
 
-        double previous_update;
+        double previous_update, current_update;
+            
+        std::pair< double, std::vector<double> > raw_velocity_data, filtered_velocity_data;
         
         bool update( double time );
     };

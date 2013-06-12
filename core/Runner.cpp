@@ -162,8 +162,8 @@ namespace L3
                 /*
                  * Perform post-update, don't care about how long this takes
                  */
-                std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
 
+                std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
             }
             else
                 usleep( .5*1e6 );

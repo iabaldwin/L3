@@ -51,8 +51,6 @@ namespace ScanMatching
 
             initialised = true;
        
-            previous_time = current_scan.first;
-
             return false;
         }
 
@@ -119,8 +117,6 @@ namespace ScanMatching
         scan.swap( putative );
         scan_points = putative_points;
         
-        previous_time = current_scan.first;
-
         return registration.hasConverged();
     }
     
@@ -131,22 +127,54 @@ namespace ScanMatching
 
         // Get the most recent
         std::pair< double, boost::shared_ptr< L3::LMS151 > > scan = this->windower->window.back();
-        
+     
+        current_update = scan.first;
+
         Eigen::Matrix4f transformation;
 
         L3::WriteLock write_lock( this->mutex );
 
+        double distance, dt, linear_velocity, rotational_velocity;
         if( matcher->match( scan, transformation ) ) 
         {
+            // Swap
+            previous_transformation = current_transformation;
+
+            // Compute delta
             current_transformation *= transformation;
-            
-            if( trajectory.size() > TRAJECTORY_LIMIT)
-                trajectory.pop_front();
-            trajectory.push_back( std::make_pair( scan.first, current_transformation) );
-        
+
+            // Estimate linear velocity
+            distance = (sqrt( pow( current_transformation( 0,3 ) - previous_transformation(0,3), 2 ) 
+                        + pow( current_transformation( 1,3 ) - previous_transformation(1,3), 2 ) ));
+
+            dt = current_update - previous_update;
+
+            linear_velocity = distance/dt;
+
+            // Estimate rotational velocity
+            L3::SE3 previous = L3::Utils::Math::poseFromRotation( previous_transformation );
+            L3::SE3 current = L3::Utils::Math::poseFromRotation( current_transformation );
+            rotational_velocity = (previous.Q()-current.Q())/dt;
+
+            _linear_velocity_filter->update( current_update, linear_velocity );
+            _rotational_velocity_filter->update( current_update, rotational_velocity );
+
+            raw_velocity_data.first = current_update;
+            filtered_velocity_data.second[0] = linear_velocity;
+            filtered_velocity_data.second[3] = rotational_velocity;
+
+
+            filtered_velocity_data.first = current_update;
+            filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
+            filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
+
         }
+        else
+            previous_update = scan.first;
 
         write_lock.unlock();
+   
+        previous_update = current_update;
     }
 }
 }
