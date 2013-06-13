@@ -174,10 +174,6 @@ namespace L3
                 std::vector< double > _weights;
                 _weights.assign( results.begin(), results.end() );
 
-                //DBG
-                //weights.assign( _weights.begin(), _weights.end() );
-                //DBG
-
                 double sum = std::accumulate( results.begin(), results.end(), 0.0 );
 
                 // Normalize
@@ -202,7 +198,7 @@ namespace L3
                     resampled.push_back( hypotheses[ std::distance( cdf.begin(), std::lower_bound( cdf.begin(), cdf.end(), d ) )] ); 
                 }
 
-                hypotheses.assign( resampled.begin(), resampled.end() );
+                hypotheses.swap( resampled );
 
                 master.unlock();
 

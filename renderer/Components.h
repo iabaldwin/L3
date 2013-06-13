@@ -1282,16 +1282,19 @@ namespace Visualisers
 
     };
 
-    struct ParticleFilterRendererLeaf : Leaf
+    struct ParticleFilterRendererLeaf : Leaf, Updateable
     {
-
         ParticleFilterRendererLeaf( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter ) : filter(filter)
         {
         }
 
         boost::weak_ptr< L3::Estimator::ParticleFilter<double> > filter;
 
+        std::vector< L3::SE3 > hypotheses;
+
         void onDraw3D( glv::GLV& g );
+   
+        void update();
     };
 
     /*

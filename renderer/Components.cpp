@@ -1757,17 +1757,28 @@ namespace Visualisers
         this->arrange();
     }
 
+    /*
+     *  Particle filter renderer
+     */
     void ParticleFilterRendererLeaf::onDraw3D( glv::GLV& g )
+    {
+        /*
+         *  This is not called on update
+         */
+        for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();  
+                it != hypotheses.end();
+                it++ )
+            CoordinateSystem( *it ).onDraw3D(g);
+    }
+
+    void ParticleFilterRendererLeaf::update()
     {
         boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter_ptr = filter.lock();
 
         if( !filter_ptr )
             return;
-
-        //for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = filter_ptr->hypotheses.begin();  
-                //it != filter_ptr->hypotheses.end();
-                //it++ )
-            //CoordinateSystem( *it ).onDraw3D(g);
+        
+        hypotheses.assign( filter_ptr->hypotheses.begin(), filter_ptr->hypotheses.end() );
     }
 
 
