@@ -128,7 +128,6 @@ namespace L3
                 q = previous_pose->Q() + (-1*w3)*dt;
 
                 // Compute x_bar, y_bar, z_bar 
-                //lin_vel = current_in->second.first;
                 lin_vel = current_in->second[0];
 
                 x_vel = lin_vel * sin(q);  

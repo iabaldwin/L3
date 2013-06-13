@@ -46,10 +46,10 @@ namespace L3
             this->renderables.push_front( plot_region.get() );
 
             // Mark as updateable
-            //temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_lhlv.get()) );
-            //temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_sm.get()) );
-            //temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_scan_matching.get()) );
-            //temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_scan_matching_unfiltered.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_lhlv.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_sm.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_scan_matching.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_scan_matching_unfiltered.get()) );
 
             boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Linear velocity (m/s)" );
             velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
@@ -76,8 +76,8 @@ namespace L3
                 = boost::make_shared< glv::Plot >( glv::Rect( 0, 650+5, .6*window.width(), 150-5)
                         );
 
-            //plot_region->add( boost::ref( *rotational_velocity_plotter_lhlv ) );
-            //plot_region->add( boost::ref( *rotational_velocity_plotter_scan_matching ) );
+            plot_region->add( boost::ref( *rotational_velocity_plotter_lhlv ) );
+            plot_region->add( boost::ref( *rotational_velocity_plotter_scan_matching ) );
 
             rotational_velocity_plotter_lhlv->plot_parent = plot_region;
 
@@ -442,18 +442,18 @@ namespace L3
              *  Run-time swathe
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( runtime_cloud_renderer_leaf.get() ) );
-            //runtime_cloud_renderer_leaf = boost::make_shared< L3::Visualisers::PointCloudRendererLeaf >( runner->point_cloud, runner->oracle );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
-            // Toggle
-            //point_cloud_visualiser_toggle->leaf = runtime_cloud_renderer_leaf;
+            runtime_cloud_renderer_leaf = boost::make_shared< L3::Visualisers::PointCloudRendererLeaf >( runner->point_cloud, runner->oracle );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(runtime_cloud_renderer_leaf.get() ) ) );
+            //Toggle
+            point_cloud_visualiser_toggle->leaf = runtime_cloud_renderer_leaf;
 
             /*
              * Run-time swathe bounds
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( point_cloud_bounds_renderer.get() ) );
-            //point_cloud_bounds_renderer = boost::make_shared< L3::Visualisers::PointCloudBoundsRenderer >( runtime_cloud_renderer_leaf->plot_cloud );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
-            //point_cloud_bounds_toggle->leaf = point_cloud_bounds_renderer;
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( point_cloud_bounds_renderer.get() ) );
+            point_cloud_bounds_renderer = boost::make_shared< L3::Visualisers::PointCloudBoundsRenderer >( runtime_cloud_renderer_leaf->plot_cloud );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
+            point_cloud_bounds_toggle->leaf = point_cloud_bounds_renderer;
 
             /*
              *  Swathe cloud, separate view
@@ -464,24 +464,23 @@ namespace L3
             /*
              *  Scan renderers
              */
-            //horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
-            //vertical_scan_renderer->windower = runner->vertical_LIDAR;
+            horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
+            vertical_scan_renderer->windower = runner->vertical_LIDAR;
 
             /*
              *  Scan matcher
              */
-            //scan_matching_renderer->engine = runner->engine;
+            scan_matching_renderer->engine = runner->engine;
 
             /*
              *  Oracle
              */
-            //oracle_renderer->provider = runner->provider; 
-            //oracle_renderer->provider = runner->oracle; 
+            oracle_renderer->provider = runner->provider; 
+            oracle_renderer->provider = runner->oracle; 
       
             /*
              *  Spatial grid
              */
-            //spatial_updater->provider = runner->provider;
             spatial_updater->provider = runner->oracle;
             spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( grid.get() ) ) );
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) );
@@ -516,10 +515,10 @@ namespace L3
              */
             pyramid_renderer = boost::make_shared< L3::Visualisers::HistogramPyramidRendererView >( boost::shared_ptr< L3::HistogramPyramid<double> >(), 3 );
 
-            //for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
-                    //it != pyramid_renderer->renderers.end();
-                    //it++ )
-                //temporal_updater->operator<<( it->get() );
+            for ( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it = pyramid_renderer->renderers.begin();
+                    it != pyramid_renderer->renderers.end();
+                    it++ )
+                temporal_updater->operator<<( it->get() );
 
             (*tables[0]) << *pyramid_renderer;
 
@@ -539,7 +538,7 @@ namespace L3
             /*
              *  Debug algorithm renderer
              */
-            //debug_algorithm_renderer = boost::make_shared< DebugAlgorithmRenderer >( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) ;
+            debug_algorithm_renderer = boost::make_shared< DebugAlgorithmRenderer >( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) ;
            
         }
 
@@ -553,62 +552,62 @@ namespace L3
             /*
              *  Experience & location
              */
-            //experience_location->setExperience( experience );
-            //experience_location->setProvider( runner->oracle );
+            experience_location->setExperience( experience );
+            experience_location->setProvider( runner->oracle );
 
             /*
              *  Stand-alone pyramid renderer
              */
-            //pyramid_renderer->loadPyramid( experience->experience_pyramid );
+            pyramid_renderer->loadPyramid( experience->experience_pyramid );
 
             /*
              *  Histogram Bounds
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) );
-            //histogram_bounds_renderer->hist = (*experience->experience_pyramid)[0];
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
-            //experience_bounds_toggle->leaf = histogram_bounds_renderer;
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) );
+            histogram_bounds_renderer->hist = (*experience->experience_pyramid)[0];
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_bounds_renderer.get() ) ) );
+            experience_bounds_toggle->leaf = histogram_bounds_renderer;
             
             /*
              *  Histogram voxel
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf .get() ) );
-            //histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
-            //experience_voxel_toggle->leaf = histogram_voxel_renderer_experience_leaf; 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf .get() ) );
+            histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
+            experience_voxel_toggle->leaf = histogram_voxel_renderer_experience_leaf; 
             
             /*
              *  Predicted estimates
              */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            //algorithm_costs_renderer->algorithm = runner->algorithm;
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
+            algorithm_costs_renderer->algorithm = runner->algorithm;
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
             
             /*
              *  Experience overview
              */
-            //experience_window->attachVariable( runner->experience->window );
+            experience_window->attachVariable( runner->experience->window );
   
             /*
              *  Table based algorithm renderer
              */
-            //algorithm( runner->algorithm );
+            algorithm( runner->algorithm );
             
             /*
              *  Debug algorithm renderer - render costs,etc at INS pose
              */
-            //if (!debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )))
-            //{
-                //std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), debug_algorithm_renderer );
+            if (!debug_algorithm_renderer->setInstance( boost::dynamic_pointer_cast< L3::Estimator::PassThrough<double> >( runner->algorithm )))
+            {
+                std::deque< boost::shared_ptr< glv::Table> >::iterator it  = std::find( tables.begin(), tables.end(), debug_algorithm_renderer );
           
-                //if ( it != tables.end() )
-                    //tables.erase( it );
-            //}
+                if ( it != tables.end() )
+                    tables.erase( it );
+            }
 
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
-            //particle_filter_renderer = boost::make_shared< ParticleFilterRendererLeaf >( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) );
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
-            //temporal_updater->operator<<( particle_filter_renderer.get() );
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
+            particle_filter_renderer = boost::make_shared< ParticleFilterRendererLeaf >( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
+            temporal_updater->operator<<( particle_filter_renderer.get() );
             
             return true;
         }

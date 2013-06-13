@@ -166,10 +166,8 @@ namespace L3
             if( !ptr )
                 return;
          
-            //L3::ReadLock lock( ptr->pose_estimates->mutex );
             std::vector<L3::SE3> estimates( ptr->pose_estimates->estimates.begin(), ptr->pose_estimates->estimates.end() );
             std::vector<double> costs( ptr->pose_estimates->costs.begin(), ptr->pose_estimates->costs.end() );
-            //lock.unlock();
            
             L3::WriteLock writer( this->mutex );
             mData.resize( glv::Data::DOUBLE, 2, costs.size() );
@@ -196,12 +194,13 @@ namespace L3
                
                 counter++;
             }
+            writer.unlock();
                 
         }
 
         void DiscreteRotationVisualiser::onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
         {
-            L3::WriteLock reader( this->mutex );
+            L3::ReadLock reader( this->mutex );
             int counter = 0;
             while(i()){
                 double x = d.at<double>( 0, counter );
@@ -209,8 +208,8 @@ namespace L3
                 g.addVertex(x, y);
 
                 counter++;
-
             }
+            reader.unlock();
         }
 
         /*

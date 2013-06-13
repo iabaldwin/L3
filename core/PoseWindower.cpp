@@ -66,7 +66,7 @@ namespace L3
         _window_buffer.erase( _window_buffer.begin(), _window_buffer.begin() + ( _window_buffer.size() - written ) );
 
         // Update
-        previous_update = time;
+        previous_update = _window_buffer.back().first;
 
         return true;
     }

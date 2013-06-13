@@ -42,9 +42,8 @@ namespace L3
         sm_velocity_provider   = boost::make_shared< L3::SMVelocityProvider >( velocity_source );
 
         // Pose Provider
-        pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
-        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 40 );
-        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( lhlv_velocity_provider.get(), 40 );
+        //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( lhlv_velocity_provider.get(), 40 );
         //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( sm_velocity_provider.get(), 40 );
        
         // Swathe generator
@@ -73,8 +72,8 @@ namespace L3
                 << velocity_source.get()
                 << lhlv_velocity_provider.get()
                 << sm_velocity_provider.get() 
-                //<< scan_matching_velocity_provider.get() 
-                //<< engine.get() 
+                << scan_matching_velocity_provider.get() 
+                << engine.get() 
                 << pose_windower.get() 
                 << swathe_builder.get() 
                 << predictor.get();
