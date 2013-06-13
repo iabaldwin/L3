@@ -91,7 +91,7 @@ namespace L3
                     this->operator<<( *plot );
                 }
                 else
-                    std::cout << "Unknown"<< std::endl;
+                    std::cerr<< "Unknown type!"<< std::endl;
 
 
             }

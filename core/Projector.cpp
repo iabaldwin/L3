@@ -100,7 +100,6 @@ namespace L3
         //cloud->num_points = std::distance( cloud->begin(), end );
         //if( cloud->num_points > 0 )
         //{ 
-        //std::cout << cloud->num_points << std::endl;
         //std::ofstream output( "output.dat" );
         //output << *cloud << std::endl;
         //}

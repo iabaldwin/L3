@@ -33,8 +33,6 @@ namespace L3
     
         window.resize( std::distance( index, LHLV_iterator->window.end() ) );
         
-        //std::cout << window.size() << std::endl;
-
         double distance;
 
         // 2. Isolate from here to the end of the chain

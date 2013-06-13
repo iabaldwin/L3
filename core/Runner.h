@@ -101,6 +101,7 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::PoseWindower >       pose_windower;
     boost::shared_ptr< L3::VelocityProvider >   lhlv_velocity_provider;
     boost::shared_ptr< L3::VelocityProvider >   sm_velocity_provider;
+    boost::shared_ptr< L3::VelocityProvider >   scan_matching_velocity_provider;
 
 
     boost::shared_ptr< L3::ConstantTimeWindower< L3::SE3 > >    oracle;
@@ -109,7 +110,7 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > vertical_LIDAR;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > horizontal_LIDAR;
     
-    boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > >    velocity_provider;
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > >    velocity_source;
      
     boost::shared_ptr< L3::ScanMatching::Engine > engine;
         

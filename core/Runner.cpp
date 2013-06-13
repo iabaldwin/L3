@@ -20,6 +20,8 @@ namespace L3
         // LIDAR iterators
         horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->horizontal] );
         vertical_LIDAR   = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->declined] );
+        // Velocity iterator 
+        velocity_source = boost::make_shared< L3::ConstantTimeIterator< L3::SMVelocity > >( dataset->velocity_reader );
 
         // Point-clouds
         point_cloud = boost::make_shared< L3::PointCloud<double> >();
@@ -35,12 +37,9 @@ namespace L3
         engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
 
         // Velocity providers
-        sm_velocity_provider   = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
+        scan_matching_velocity_provider   = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
         lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
-
-        // Scan-matching velocity provider
-    
-        velocity_provider = boost::make_shared< L3::ConstantTimeIterator< L3::SMVelocity > >( dataset->velocity_reader );
+        sm_velocity_provider   = boost::make_shared< L3::SMVelocityProvider >( velocity_source );
 
         // Pose Provider
         //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
@@ -70,12 +69,13 @@ namespace L3
                 << LHLV_iterator.get() 
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
-                << velocity_provider.get() 
+                << velocity_source.get()
+                << sm_velocity_provider.get() 
                 << pose_windower.get() 
                 << swathe_builder.get() 
                 << engine.get() 
                 << predictor.get() 
-                << sm_velocity_provider.get() 
+                << scan_matching_velocity_provider.get() 
                 << lhlv_velocity_provider.get();
     }
 
@@ -185,7 +185,7 @@ namespace L3
         experience->update( current->X(), current->Y() );
 
         /*
-         *  Estimate
+         *  Do estimation
          */
         L3::ReadLock algo_lock( this->mutex ); 
         *current = algorithm->operator()( projector->cloud, *current );

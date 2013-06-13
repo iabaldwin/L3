@@ -19,8 +19,6 @@ namespace Visualisers
             std::string image_parameters = "/Users/ian/code/L3/media/" + locale.name + ".dat";
             std::ifstream stream( image_parameters.c_str() );
 
-            std::cout << image_parameters << std::endl;
-
             if ( !stream.good())
                 return boost::shared_ptr< LocaleRenderer >();
 

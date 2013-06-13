@@ -41,6 +41,44 @@ namespace L3
         return true;
     }
 
+    struct sm_zipper : std::unary_function< std::pair<double, boost::shared_ptr<SMVelocity> >, std::pair< double, std::vector<double> > >
+    {
+    
+        sm_zipper()
+        {
+            data.resize(4);
+        }
+
+        std::vector<double> data;
+
+        std::pair< double, std::vector<double> > operator()( std::pair<double, boost::shared_ptr<SMVelocity> > entry )
+        {
+            return std::make_pair( entry.first, entry.second->data );
+        }
+
+
+
+    };
+
+    bool SMVelocityProvider::update( double time )
+    {
+        filtered_velocities.clear();
+
+        boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider_ptr = velocity_provider.lock(); 
+
+        sm_zipper zipper;
+
+        std::transform( velocity_provider_ptr->window.begin(), 
+                velocity_provider_ptr->window.end(),
+                std::back_inserter( filtered_velocities ),
+                zipper );
+
+        if( !filtered_velocities.empty()  )
+        {
+            while( filtered_velocities.back().first - filtered_velocities.front().first > 10.0 )
+                filtered_velocities.pop_front();
+        }
+    };
     
     bool LHLVVelocityProvider::update( double time  )
     {

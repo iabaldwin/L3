@@ -115,10 +115,8 @@ namespace ScanMatching
         // Compute the features
         ne.compute (*cloud_normals_in);
 
-        //pcl::IterativeClosestPointWithNormals<pcl::PointNormal, pcl::PointXYZ > registration;
-        //pcl::IterativeClosestPointWithNormals<pcl::PointXYZ, pcl::PointNormal > registration;
-        pcl::IterativeClosestPointWithNormals<pcl::PointNormal, pcl::PointNormal > registration;
-        //pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
+        //pcl::IterativeClosestPointWithNormals<pcl::PointNormal, pcl::PointNormal > registration;
+        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
         //pcl::NormalDistributionsTransform2D<pcl::PointXYZ, pcl::PointXYZ> registration;
         //pcl::GeneralizedIterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
 
@@ -130,18 +128,17 @@ namespace ScanMatching
         // Set the euclidean distance difference epsilon (criterion 3)
         //registration.setEuclideanFitnessEpsilon (1);
 
-        //registration.setInputSource(cloud_out);
-        //registration.setInputTarget(cloud_in);
+        registration.setInputSource(cloud_out);
+        registration.setInputTarget(cloud_in);
 
         //registration.setInputSource(cloud_normals_out);
         //registration.setInputTarget(cloud_normals_in);
-
 
         //registration.setInputSource(cloud_normals_out);
         //registration.setInputTarget(cloud_in);
         
         // Alignment
-        //registration.align(*final);
+        registration.align(*final);
 
         transformation = registration.getFinalTransformation();
 
@@ -174,22 +171,14 @@ namespace ScanMatching
 
             dt = current_update - previous_update;
 
-            std::cout << transformation << std::endl;
-
             // Estimate linear velocity
-            //distance = (sqrt( pow( current_transformation( 0,3 ) - previous_transformation(0,3), 2 ) 
-                        //+ pow( current_transformation( 1,3 ) - previous_transformation(1,3), 2 ) ));
-
             distance = (sqrt( pow( transformation( 0,3 ), 2 ) 
                         + pow( transformation( 1,3 ), 2 ) ));
-
-            std::cout << distance << std::endl;
 
             linear_velocity = distance/dt;
 
             // Estimate rotational velocity
             L3::SE3 pose = L3::Utils::Math::poseFromRotation( transformation );
-            //rotational_velocity = (pose.Q()-current.Q())/dt;
             rotational_velocity = pose.Q()/dt;
 
             _linear_velocity_filter->update( current_update, linear_velocity );

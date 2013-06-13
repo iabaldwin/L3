@@ -109,6 +109,9 @@ namespace Visualisers
             boost::shared_ptr< glv::View > main_view;
             
             std::list< glv::View* > renderables;
+            boost::shared_ptr< Composite>                   composite;
+            std::list< boost::shared_ptr< glv::Plot > >     plots;
+            std::list< boost::shared_ptr< glv::View > >     labels;
 
             boost::shared_ptr< LogCapture > log_capture;
 
@@ -121,12 +124,6 @@ namespace Visualisers
             boost::shared_ptr< glv::Slider >  point_cloud_downsample;
             boost::shared_ptr< glv::Slider >  experience_window;
             
-            std::deque< boost::shared_ptr< glv::Label > > slider_labels;
-           
-            std::list< boost::shared_ptr< glv::View > >     labels;
-
-            boost::shared_ptr< Composite>           composite;
-            boost::shared_ptr< EventController >    composite_maximise_controller;
             std::list< boost::shared_ptr< EventController > > window_controllers;
             
             boost::shared_ptr< Grid>            grid;
@@ -134,14 +131,13 @@ namespace Visualisers
             boost::shared_ptr< Updater >        temporal_updater;
             boost::shared_ptr< SpatialUpdater > spatial_updater;
 
-            std::list< boost::shared_ptr< glv::Plot > >     plots;
 
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_lhlv;
-            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_lhlv;
-            
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_sm;
-            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_sm_unfiltered;
-            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_sm;
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_scan_matching;
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_scan_matching_unfiltered;
+            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_scan_matching;
+            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_lhlv;
 
             boost::shared_ptr< WASDManager > selection_manager;
             boost::shared_ptr< MouseQuerySelect > mouse_query;

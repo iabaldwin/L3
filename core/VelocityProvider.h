@@ -52,9 +52,21 @@ struct ScanMatchingVelocityProvider : VelocityProvider
 
     L3::ScanMatching::Engine* engine;
 
-            
     Comparator< std::pair< double, Eigen::Matrix4f > > comparator;
 
+    bool update( double time );
+
+};
+
+
+struct SMVelocityProvider : VelocityProvider
+{
+    SMVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider ) : velocity_provider(velocity_provider)
+    {
+    }
+    
+    boost::weak_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider;
+    
     bool update( double time );
 
 };
