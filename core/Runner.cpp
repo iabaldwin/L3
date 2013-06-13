@@ -38,6 +38,10 @@ namespace L3
         sm_velocity_provider   = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
         lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
 
+        // Scan-matching velocity provider
+    
+        velocity_provider = boost::make_shared< L3::ConstantTimeIterator< L3::SMVelocity > >( dataset->velocity_reader );
+
         // Pose Provider
         //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
         //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 40 );
@@ -66,6 +70,7 @@ namespace L3
                 << LHLV_iterator.get() 
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
+                << velocity_provider.get() 
                 << pose_windower.get() 
                 << swathe_builder.get() 
                 << engine.get() 

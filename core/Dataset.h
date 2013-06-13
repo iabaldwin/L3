@@ -20,7 +20,7 @@
 namespace L3
 {
 
-enum extensionType { INS_file, LIDAR_file, LHLV_file };
+enum extensionType { INS_file, LIDAR_file, LHLV_file, SM_FILE };
 
 class Dataset : private boost::noncopyable
 {
@@ -42,6 +42,7 @@ class Dataset : private boost::noncopyable
         // Threaded windowers
         boost::shared_ptr<SlidingWindow<L3::SE3> >                  pose_reader;
         boost::shared_ptr<SlidingWindow<L3::LHLV> >                 LHLV_reader;
+        boost::shared_ptr<SlidingWindow<L3::SMVelocity> >           velocity_reader;
         std::map< std::string, boost::shared_ptr< SlidingWindow<L3::LMS151> > > LIDAR_readers;
        
         
@@ -54,6 +55,7 @@ class Dataset : private boost::noncopyable
 
         boost::filesystem::directory_entry              OxTS_ins;
         boost::filesystem::directory_entry              OxTS_lhlv;
+        boost::filesystem::directory_entry              SM_vel;
         std::list<boost::filesystem::directory_entry>   LIDARs;
         
         boost::filesystem::path root_path;

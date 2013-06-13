@@ -17,7 +17,7 @@ namespace L3
              */
             double dt = time - previous_update;
 
-            if( dt > 1 || (dt == 0 ))
+            if( dt > 1 )
             {
                 previous_update = time;
                 return;
@@ -32,7 +32,11 @@ namespace L3
              *Update
              */
             double residual = measurement - _current_state.x ;
-      
+
+            //residual = std::min( residual, 3.0 );
+            //residual = std::max( -3.0, residual );
+            //std::cout << residual << std::endl;
+            
             _current_state.x = _current_state.x  + alpha*residual;
             _current_state.v = _current_state.v  + (beta/dt)*residual;
        

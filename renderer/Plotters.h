@@ -16,7 +16,7 @@ namespace L3
     {
         struct VelocityPlotter : glv::Plottable, Lockable, Updateable
         {
-            VelocityPlotter( bool filtered = true )
+            VelocityPlotter( bool filtered )
                 : glv::Plottable( glv::draw::LineStrip, 1 ),
                     filtered(filtered)
             {

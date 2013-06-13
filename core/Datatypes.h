@@ -169,6 +169,18 @@ struct LMS151 : LIDAR
     
 };
 
+struct SMVelocity  
+{
+    typedef std::vector<double>::iterator ITERATOR;
+
+    SMVelocity( const std::vector<double> v ) 
+    {
+        data.assign( v.begin(), v.end() );
+    }
+    
+    std::vector< double > data;
+};
+
 template <typename T>
 struct Sizes
 {
@@ -192,6 +204,13 @@ struct Sizes<L3::LHLV>
 {
     const static int elements = 11+1;
 };
+
+template <>
+struct Sizes<L3::SMVelocity>
+{
+    const static int elements = 4+1;
+};
+
 
 /*
  *  I/O

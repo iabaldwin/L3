@@ -108,6 +108,8 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > >   LHLV_iterator;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > vertical_LIDAR;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > horizontal_LIDAR;
+    
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > >    velocity_provider;
      
     boost::shared_ptr< L3::ScanMatching::Engine > engine;
         

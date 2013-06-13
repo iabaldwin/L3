@@ -23,8 +23,11 @@ namespace L3
                 std::vector<BYTE> sample( 1024 );
 
                 if( !file_input.good() )
-                    throw L3::no_such_file();
-                                
+                {
+                    std::cerr << "No such file: " << file.c_str() << std::endl;
+                    return boost::shared_ptr< SlidingWindow<T> >();
+                }
+
                 file_input.read( (char*)(&sample[0]), 1024 );
 
                 file_input.close();

@@ -157,6 +157,7 @@ std::pair< double, boost::shared_ptr<L3::Pose> > AbstractFactory<L3::Pose>::prod
 } // L3
 
 // Explicit instantiations
+template class L3::AbstractFactory<L3::SMVelocity>;
 template class L3::AbstractFactory<L3::LHLV>;
 template class L3::AbstractFactory<L3::LMS151>;
 template std::pair< double, boost::shared_ptr<L3::SE3> > L3::AbstractFactory<L3::SE3>::produce(std::basic_string<char, std::char_traits<char>, std::allocator<char> >&, L3::MaskPolicy<L3::SE3>);

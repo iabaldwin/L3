@@ -4,13 +4,15 @@
 #include <pcl/registration/ndt_2d.h>
 #include <pcl/registration/gicp.h>
 
+#include <pcl/features/normal_3d.h>
+
 #define TRAJECTORY_LIMIT 500 
             
 int do_projection( const L3::LMS151& current_scan, double* matrix, double threshold = 5.0 )
 {
     double* matrix_ptr = matrix;
 
-    double range,angle,x,y,z=0;
+    double range,angle,x,y,z=0.0;
   
     int counter = 0;
 
@@ -20,7 +22,7 @@ int do_projection( const L3::LMS151& current_scan, double* matrix, double thresh
         angle = scan_counter*current_scan.angle_spacing +  current_scan.angle_start; 
         range = current_scan.ranges[scan_counter];  
 
-        if ( range < threshold )
+        if ( range < threshold || range > 20.0 )
             continue;
 
         x = range*cos( angle );
@@ -93,7 +95,30 @@ namespace ScanMatching
             cloud_out->points[i].z = *cloud_ptr++;
         }
 
-        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
+          
+        pcl::NormalEstimation<pcl::PointXYZ, pcl::PointNormal> ne;
+        pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+        ne.setSearchMethod (tree);
+
+        //ne.setRadiusSearch (0.3);
+        ne.setKSearch (30);
+
+        ne.setInputCloud (cloud_out);    
+        pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals_out(new pcl::PointCloud<pcl::PointNormal>);
+
+        // Compute the features
+        ne.compute (*cloud_normals_out);
+
+        ne.setInputCloud (cloud_in);    
+        pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals_in(new pcl::PointCloud<pcl::PointNormal>);
+
+        // Compute the features
+        ne.compute (*cloud_normals_in);
+
+        //pcl::IterativeClosestPointWithNormals<pcl::PointNormal, pcl::PointXYZ > registration;
+        //pcl::IterativeClosestPointWithNormals<pcl::PointXYZ, pcl::PointNormal > registration;
+        pcl::IterativeClosestPointWithNormals<pcl::PointNormal, pcl::PointNormal > registration;
+        //pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
         //pcl::NormalDistributionsTransform2D<pcl::PointXYZ, pcl::PointXYZ> registration;
         //pcl::GeneralizedIterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
 
@@ -105,16 +130,23 @@ namespace ScanMatching
         // Set the euclidean distance difference epsilon (criterion 3)
         //registration.setEuclideanFitnessEpsilon (1);
 
-        registration.setInputSource(cloud_out);
-        registration.setInputTarget(cloud_in);
+        //registration.setInputSource(cloud_out);
+        //registration.setInputTarget(cloud_in);
 
+        //registration.setInputSource(cloud_normals_out);
+        //registration.setInputTarget(cloud_normals_in);
+
+
+        //registration.setInputSource(cloud_normals_out);
+        //registration.setInputTarget(cloud_in);
+        
         // Alignment
-        registration.align(*final);
+        //registration.align(*final);
 
         transformation = registration.getFinalTransformation();
 
         // Do swap
-        scan.swap( putative );
+        scan = putative;
         scan_points = putative_points;
         
         return registration.hasConverged();
@@ -137,44 +169,47 @@ namespace ScanMatching
         double distance, dt, linear_velocity, rotational_velocity;
         if( matcher->match( scan, transformation ) ) 
         {
-            // Swap
-            previous_transformation = current_transformation;
-
             // Compute delta
             current_transformation *= transformation;
 
-            // Estimate linear velocity
-            distance = (sqrt( pow( current_transformation( 0,3 ) - previous_transformation(0,3), 2 ) 
-                        + pow( current_transformation( 1,3 ) - previous_transformation(1,3), 2 ) ));
-
             dt = current_update - previous_update;
+
+            std::cout << transformation << std::endl;
+
+            // Estimate linear velocity
+            //distance = (sqrt( pow( current_transformation( 0,3 ) - previous_transformation(0,3), 2 ) 
+                        //+ pow( current_transformation( 1,3 ) - previous_transformation(1,3), 2 ) ));
+
+            distance = (sqrt( pow( transformation( 0,3 ), 2 ) 
+                        + pow( transformation( 1,3 ), 2 ) ));
+
+            std::cout << distance << std::endl;
 
             linear_velocity = distance/dt;
 
             // Estimate rotational velocity
-            L3::SE3 previous = L3::Utils::Math::poseFromRotation( previous_transformation );
-            L3::SE3 current = L3::Utils::Math::poseFromRotation( current_transformation );
-            rotational_velocity = (previous.Q()-current.Q())/dt;
+            L3::SE3 pose = L3::Utils::Math::poseFromRotation( transformation );
+            //rotational_velocity = (pose.Q()-current.Q())/dt;
+            rotational_velocity = pose.Q()/dt;
 
             _linear_velocity_filter->update( current_update, linear_velocity );
             _rotational_velocity_filter->update( current_update, rotational_velocity );
 
             raw_velocity_data.first = current_update;
-            filtered_velocity_data.second[0] = linear_velocity;
-            filtered_velocity_data.second[3] = rotational_velocity;
-
+            raw_velocity_data.second[0] = linear_velocity;
+            raw_velocity_data.second[3] = rotational_velocity;
 
             filtered_velocity_data.first = current_update;
             filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
             filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
 
+            // Swap
+            previous_update = current_update;
         }
         else
             previous_update = scan.first;
 
         write_lock.unlock();
-   
-        previous_update = current_update;
     }
 }
 }

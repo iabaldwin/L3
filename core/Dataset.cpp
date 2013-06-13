@@ -28,9 +28,10 @@ Dataset::Dataset( const std::string& target )  : start_time(0)
         throw L3::no_such_folder();
     }
 
-    lookup[".ins"] = INS_file;
-    lookup[".lhlv"] = LHLV_file;
+    lookup[".ins"]   = INS_file;
+    lookup[".lhlv"]  = LHLV_file;
     lookup[".lidar"] = LIDAR_file;
+    lookup[".sm"]    = SM_FILE;
 }
 
 Dataset::~Dataset()
@@ -85,6 +86,10 @@ bool Dataset::validate()
                 OxTS_lhlv = *it;
                 break;
 
+            case SM_FILE:
+                SM_vel= *it;
+                break;
+
             default:
                 break;
         
@@ -104,13 +109,20 @@ bool Dataset::validate()
 
 bool Dataset::load()
 {
+    // Pose Reader
     pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
     pose_reader->initialise(); 
     runnables.push_back( pose_reader );
 
+    // LHLV Reader
     LHLV_reader = L3::WindowerFactory<L3::LHLV>::constantTimeWindow( OxTS_lhlv.path().string(), 30 ) ;
     LHLV_reader->initialise(); 
     runnables.push_back( LHLV_reader );
+
+    // Velocity reader
+    velocity_reader = L3::WindowerFactory<L3::SMVelocity>::constantTimeWindow( SM_vel.path().string(), 30 ) ;
+    velocity_reader->initialise(); 
+    runnables.push_back( velocity_reader );
 
     // Load LIDARs
     std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();

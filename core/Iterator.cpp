@@ -76,6 +76,7 @@ bool ConstantTimeIterator<T>::update( double time )
 } // L3
 
 // Explicit Instantiations
+template class L3::ConstantTimeIterator<L3::SMVelocity>;
 template class L3::ConstantTimeIterator<L3::SE3>;
 template class L3::ConstantTimeIterator<L3::LHLV>;
 template class L3::ConstantTimeIterator<L3::LMS151>;

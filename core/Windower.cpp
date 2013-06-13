@@ -181,3 +181,13 @@ template bool L3::SlidingWindow<L3::Pose>::update(double);
 template L3::SlidingWindow<L3::Pose>::~SlidingWindow();
 template std::deque< std::pair< double, boost::shared_ptr<L3::Pose> > > L3::SlidingWindow<L3::Pose>::getWindow();
 
+
+template void L3::SlidingWindow<L3::SMVelocity>::run();
+template bool L3::SlidingWindow<L3::SMVelocity>::good();
+template int L3::SlidingWindow<L3::SMVelocity>::read();
+template bool L3::SlidingWindow<L3::SMVelocity>::update(double);
+template L3::SlidingWindow<L3::SMVelocity>::~SlidingWindow();
+template std::deque< std::pair< double, boost::shared_ptr<L3::SMVelocity> > > L3::SlidingWindow<L3::SMVelocity>::getWindow();
+
+
+

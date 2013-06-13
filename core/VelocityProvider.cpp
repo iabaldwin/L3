@@ -6,6 +6,7 @@
 #include "itpp/signal/freq_filt.h"
 #include "itpp/signal/transforms.h"
 
+// Filter tap weights/coefficients
 //10-20
 itpp::vec filter = "0.000091 0.000190 0.000327 0.000505 0.000727 0.000993 0.001301 0.001646 0.002021 0.002416 0.002822 0.003224 0.003610 0.003965 0.004277 0.004534 0.004725 0.004843 0.004883 0.004843 0.004725 0.004534 0.004277 0.003965 0.003610 0.003224 0.002822 0.002416 0.002021 0.001646 0.001301 0.000993 0.000727 0.000505 0.000327 0.000190 0.000091";
 //itpp::vec filter = "0.000131 0.001215 0.002201 -0.000000 -0.005505 -0.008035 -0.002673 0.003664 -0.000000 -0.006502    0.008502    0.046832    0.060955    -0.000000    -0.107747    -0.151990    -0.056011    0.114721    0.200000    0.114721    -0.056011    -0.151990    -0.107747    -0.000000    0.060955    0.046832    0.008502    -0.006502    -0.000000    0.003664    -0.002673    -0.008035    -0.005505    -0.000000    0.002201    0.001215    0.000131 ";
@@ -57,18 +58,6 @@ namespace L3
 
         if( !filtered_velocities.empty() )
         {
-            // Compute trim 
-            //double trim_val = time - 10.0; 
-
-            //VELOCITY_ITERATOR erase_it = std::lower_bound(
-                //filtered_velocities.begin(),
-                //filtered_velocities.end(),
-                //trim_val,
-                //velocity_comparator 
-                //);
-
-            //filtered_velocities.erase( filtered_velocities.begin(), erase_it );
-
             while( filtered_velocities.front().first - filtered_velocities.back().first > 10.0 )
                 filtered_velocities.pop_front();
 

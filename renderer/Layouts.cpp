@@ -20,16 +20,15 @@ namespace L3
             linear_velocity_plotter_sm->stroke( 2.0 );
 
             linear_velocity_plotter_sm_unfiltered = boost::make_shared< LinearVelocityPlotter >( false );
-            linear_velocity_plotter_sm_unfiltered->stroke( 2.0 );
+            linear_velocity_plotter_sm_unfiltered->stroke( 1.0 );
 
             // Add plot region
             boost::shared_ptr< glv::Plot > plot_region 
-                = boost::make_shared< glv::Plot >( glv::Rect( 0, 500+5, .6*window.width(), 150-5), 
-                        boost::ref( *linear_velocity_plotter_lhlv ) ,
-                        boost::ref( *linear_velocity_plotter_sm ) 
+                = boost::make_shared< glv::Plot >( glv::Rect( 0, 500+5, .6*window.width(), 150-5)
                         );
-
                         
+            plot_region->add( boost::ref( *linear_velocity_plotter_lhlv ) );
+            plot_region->add( boost::ref( *linear_velocity_plotter_sm ) );
             plot_region->add( boost::ref( *linear_velocity_plotter_sm_unfiltered ) );
 
             linear_velocity_plotter_lhlv->plot_parent = plot_region;
@@ -367,13 +366,13 @@ namespace L3
              *  Velocity plots
              */
             linear_velocity_plotter_lhlv->iterator = runner->lhlv_velocity_provider;    
-            rotational_velocity_plotter_lhlv->iterator = runner->lhlv_velocity_provider;     
-            
             linear_velocity_plotter_sm->iterator = runner->sm_velocity_provider;       
-            rotational_velocity_plotter_sm->iterator = runner->sm_velocity_provider;       
-            
             linear_velocity_plotter_sm_unfiltered->iterator = runner->sm_velocity_provider; 
+            
+            rotational_velocity_plotter_sm->iterator = runner->sm_velocity_provider;       
+            rotational_velocity_plotter_lhlv->iterator = runner->lhlv_velocity_provider;     
 
+            // Bind times
             linear_velocity_plotter_lhlv->setTime( runner->current_time );
             linear_velocity_plotter_sm->setTime( runner->current_time );
             linear_velocity_plotter_sm_unfiltered->setTime( runner->current_time );
