@@ -37,7 +37,7 @@ struct PoseChainRenderer : Leaf
  */
 template <typename T>
 //struct IteratorRenderer : SelectableLeaf
-struct IteratorRenderer 
+struct IteratorRenderer  : Leaf
 {
     IteratorRenderer( boost::shared_ptr< L3::Iterator<T> > iterator )  : 
         iterator(iterator )

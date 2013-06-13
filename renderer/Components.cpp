@@ -430,9 +430,6 @@ namespace Visualisers
         L3::clone( hist_ptr.get(), &tmp );
         lock.unlock();   
 
-        float x_delta = tmp.x_delta;
-        float y_delta = tmp.y_delta;
-
         glv::Point3     vertices[ tmp.x_bins*tmp.y_bins];
         glv::Color      colors[ tmp.x_bins*tmp.y_bins];
 

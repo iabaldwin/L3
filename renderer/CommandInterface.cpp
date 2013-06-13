@@ -244,6 +244,8 @@ namespace L3
     std::pair< bool, std::string> CommandInterface::quit( const std::string& load_command )
     {
         glv::Application::quit();
+   
+        return std::make_pair( false, ""  );    // We never get here, just to satisfy the compiler
     }
 
     std::pair< bool, std::string> CommandInterface::script( const std::string& load_command )
@@ -452,6 +454,6 @@ namespace L3
 
     std::string CommandInterface::getState()
     {
-        
+        return "";
     }
 }

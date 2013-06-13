@@ -63,9 +63,20 @@ struct SMVelocityProvider : VelocityProvider
 {
     SMVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider ) : velocity_provider(velocity_provider)
     {
+        _linear_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
+        _rotational_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
+    
+        raw_velocity_data.second.resize( 4);
+        filtered_velocity_data.second.resize( 4);
+
     }
     
+    boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _linear_velocity_filter;
+    boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _rotational_velocity_filter;
+
     boost::weak_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider;
+        
+    std::pair< double, std::vector<double> > raw_velocity_data, filtered_velocity_data;
     
     bool update( double time );
 

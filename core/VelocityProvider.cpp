@@ -61,9 +61,27 @@ namespace L3
 
     bool SMVelocityProvider::update( double time )
     {
-        filtered_velocities.clear();
-
         boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider_ptr = velocity_provider.lock(); 
+
+        if( !velocity_provider_ptr || velocity_provider_ptr->window.empty()  )
+            return false;
+
+        //_linear_velocity_filter->update( time, velocity_provider_ptr->window.back().second->data[0] );
+        //_rotational_velocity_filter->update( time, velocity_provider_ptr->window.back().second->data[3]);
+
+        ////raw_velocity_data.first = time;
+        ////raw_velocity_data.second[0] = linear_velocity;
+        ////raw_velocity_data.second[3] = rotational_velocity;
+
+        //filtered_velocity_data.first = time;
+        //filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
+        //filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
+
+        //filtered_velocities.push_back( filtered_velocity_data );
+
+        //return true;
+        
+        filtered_velocities.clear();
 
         sm_zipper zipper;
 
