@@ -39,7 +39,7 @@ namespace L3
                     else
                         zero_time = window.back().first;
 
-                    while( i() && counter < window.size() ) 
+                    while( i() && (unsigned int)counter < window.size() ) 
                     {
                         double dt = window[counter].first - zero_time;
                         double variable = window[counter].second[index];

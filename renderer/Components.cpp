@@ -694,7 +694,7 @@ namespace Visualisers
         plot_cloud.reset( new L3::PointCloud<double>() );
 
         // Allocate
-        L3::allocate( plot_cloud.get(), 5*1000 );
+        L3::allocate( plot_cloud.get(), 2*1000 );
 
         vertices.reset( new glv::Point3[plot_cloud->num_points] );
         colors.reset( new glv::Color[plot_cloud->num_points] );
@@ -709,6 +709,7 @@ namespace Visualisers
             colors[i] = glv::Color( (plot_cloud->points[i].z - bounds.get<2>())/10.0 );
         }
 
+        glv::draw::pointSize( 2 );
         glv::draw::paint( glv::draw::Points, vertices.get(), colors.get(), plot_cloud->num_points);
     }
 
@@ -749,32 +750,23 @@ namespace Visualisers
 
         // Centering heuristic
         glv::draw::translate( 0, 60, -200 );
-        
-        boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
-
-        if( !cloud_ptr )
-            return;
-
-        if( cloud_ptr->num_points == 0 ) 
-            return;
-
-        L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
-
+       
+        L3::ReadLock lock( plot_cloud->mutex );
         PointCloudRenderer::onDraw3D(g);    
+        lock.unlock(); 
 
     }
 
     void PointCloudRendererView::update()
     {
-        //boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
+        boost::shared_ptr< L3::PointCloud<double> > cloud_ptr = cloud.lock();
 
-        //if( !cloud_ptr )
-            //return;
+        if( !cloud_ptr || cloud_ptr->num_points == 0 )
+            return;
 
-        //plot_cloud = boost::make_shared< PointCloud<double> >();
-
-        //if( cloud_ptr->num_points > 0 ) 
-            //L3::copy( cloud_ptr.get(), plot_cloud.get() );
+        L3::WriteLock lock( plot_cloud->mutex );
+        L3::sample( cloud_ptr.get(), plot_cloud.get(), plot_cloud->num_points, false );
+        lock.unlock();
     }
 
     /*
@@ -850,6 +842,7 @@ namespace Visualisers
     void DedicatedPoseRenderer::update()
     {
         boost::shared_ptr< L3::PoseProvider > ptr = provider.lock();
+        
         if ( !ptr )
             return;
 
@@ -1036,6 +1029,9 @@ namespace Visualisers
 
     void HistogramPyramidRendererView::update()
     {
+        if( !this->enabled( glv::Visible ) )
+            return;
+        
         for( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it=renderers.begin();
                 it != renderers.end();
                 it++ )
@@ -1659,7 +1655,6 @@ namespace Visualisers
             std::pair< int64_t, int64_t > memory_stats = getApplicationMemoryUsage();
 
             ss << memory_stats.first/(1024) << " kB (" << memory_stats.first/(1024*1024) << " MB)" << std::endl;
-            //ss << memory_stats.second/(1024) << " kB (" << memory_stats.second/(1024*1024) << " MB)" << std::endl;
 
             mText = ss.str();
 
@@ -1778,7 +1773,7 @@ namespace Visualisers
         if( !filter_ptr )
             return;
         
-        hypotheses.assign( filter_ptr->hypotheses.begin(), filter_ptr->hypotheses.end() );
+        //hypotheses.assign( filter_ptr->hypotheses.begin(), filter_ptr->hypotheses.end() );
     }
 
 

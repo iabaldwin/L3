@@ -190,7 +190,7 @@ namespace Visualisers
         std::vector< std::pair< boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> > > single_scan( swathe_builder->swathe.begin(), swathe_builder->swathe.begin()+1 );
         projector->project( single_scan );
 
-        for( int i=0; i<cloud->num_points; i++ )
+        for( unsigned int i=0; i<cloud->num_points; i++ )
             point_vertices[i]( cloud->points[i].x, cloud->points[i].y, cloud->points[i].z );
         
         glv::draw::paint( glv::draw::Points, point_vertices.get(), point_colors.get(), cloud->num_points );

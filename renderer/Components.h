@@ -1120,7 +1120,6 @@ namespace Visualisers
             num_pyramids(num_pyramids)
         {
             int width = 180;
-            int start = 0;
             for( int i=0; i< num_pyramids; i++ )
             {
                 boost::shared_ptr< HistogramDensityRenderer > renderer = boost::make_shared< HistogramDensityRenderer >( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() );

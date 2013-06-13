@@ -59,7 +59,7 @@ namespace Visualisers
 
             current_table++;
 
-            if( current_table == tables->size() )
+            if( (unsigned int)current_table == tables->size() )
                 current_table = 0;
 
             (*tables)[current_table]->enable( glv::Property::Visible );

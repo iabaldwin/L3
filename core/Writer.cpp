@@ -76,8 +76,8 @@ namespace L3
                     this->stream.write( (char*)( &(*it->second).data[0]), sizeof(double)*(it->second->data.size() ) );
                     written += sizeof(double)*(it->second->data.size() );
                 }            
-            
-            
+           
+                return written;
             }
     }
 }

@@ -151,7 +151,7 @@ namespace L3
                 *point_iterator++ = input->points[ *index_iterator++ ];
 
 
-            return ( std::distance( output->begin(), output->end() ) == output->num_points );
+            return ( (unsigned int)std::distance( output->begin(), output->end() ) == output->num_points );
         }
 
     template <typename T>
@@ -247,7 +247,7 @@ namespace L3
             dest->num_points = src->num_points;
             dest->points = new Point<T>[ dest->num_points ];
             std::copy( src->begin(), src->end(), dest->begin() );
-            return ( std::distance( dest->begin(), dest->end() ) == dest->num_points );
+            return ( (unsigned int)std::distance( dest->begin(), dest->end() ) == dest->num_points );
         }
 
     template <typename T>

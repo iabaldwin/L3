@@ -22,7 +22,7 @@ namespace ScanMatching
     {
         public:
           
-            ScanMatcher() : initialised(false), scan_points(0), putative_points(0)
+            ScanMatcher() : scan_points(0), putative_points(0), initialised(false)
             {
                 cloud_in.reset(new pcl::PointCloud<pcl::PointXYZ>);
                 cloud_out.reset(new pcl::PointCloud<pcl::PointXYZ>);
@@ -77,17 +77,17 @@ namespace ScanMatching
         boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _linear_velocity_filter;
         boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _rotational_velocity_filter;
 
-        Eigen::Matrix4f current_transformation, previous_transformation;
-
         std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
 
         std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
 
         L3::ConstantTimeIterator<L3::LMS151>* windower;
         
-        boost::shared_ptr< ScanMatcher > matcher;
-
         double previous_update, current_update;
+        
+        boost::shared_ptr< ScanMatcher > matcher;
+        
+        Eigen::Matrix4f current_transformation, previous_transformation;
             
         std::pair< double, std::vector<double> > raw_velocity_data, filtered_velocity_data;
         

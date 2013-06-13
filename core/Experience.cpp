@@ -260,7 +260,7 @@ namespace L3
          *  Build up a list of required sections
          */
         required_sections.clear();
-        for( unsigned int i=0; i<window && i<distances.size(); i++ )
+        for( int i=0; i<window && i<(int)distances.size(); i++ )
             required_sections.push_front( distances_iterator++->second );
 
         return ( !required_sections.empty() );
@@ -275,11 +275,12 @@ namespace L3
             std::string& fname, 
             boost::shared_ptr< SelectionPolicy > policy,
             int window ) 
-        : sections(sections), 
-        window(window),
+        : window(window),
+        sections(sections), 
+        policy(policy),
         running(true),
-        _x(0.0), _y(0.0),
-        policy(policy)
+        _x(0.0), _y(0.0)
+
     {
         // Open 
         data.open( fname.c_str(), std::ios::binary );

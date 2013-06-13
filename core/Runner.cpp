@@ -6,8 +6,8 @@ namespace L3
 {
 
     DatasetRunner::DatasetRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup ) 
-        : dataset(dataset), 
-            mission(mission),
+        : mission(mission),
+            dataset(dataset), 
             speedup(speedup),
             current_time(0.0),
             start_time(dataset->start_time),
@@ -42,9 +42,10 @@ namespace L3
         sm_velocity_provider   = boost::make_shared< L3::SMVelocityProvider >( velocity_source );
 
         // Pose Provider
-        //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
+        pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
         //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( LHLV_iterator.get(), 40 );
-        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( boost::dynamic_pointer_cast< LHLVVelocityProvider >(lhlv_velocity_provider).get(), 40 );
+        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( lhlv_velocity_provider.get(), 40 );
+        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( sm_velocity_provider.get(), 40 );
        
         // Swathe generator
         //swathe_builder = boost::make_shared< L3::RawSwatheBuilder > ( pose_windower.get(), vertical_LIDAR.get() );
@@ -70,13 +71,13 @@ namespace L3
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
                 << velocity_source.get()
+                << lhlv_velocity_provider.get()
                 << sm_velocity_provider.get() 
+                //<< scan_matching_velocity_provider.get() 
+                //<< engine.get() 
                 << pose_windower.get() 
                 << swathe_builder.get() 
-                << engine.get() 
-                << predictor.get() 
-                << scan_matching_velocity_provider.get() 
-                << lhlv_velocity_provider.get();
+                << predictor.get();
     }
 
     /*
@@ -187,6 +188,7 @@ namespace L3
         /*
          *  Do estimation
          */
+       
         L3::ReadLock algo_lock( this->mutex ); 
         *current = algorithm->operator()( projector->cloud, *current );
         algo_lock.unlock();

@@ -23,7 +23,7 @@ namespace L3
 
             double filter_element=0.0, hist_value=0.0;
                     
-            int query_x, query_y;
+            unsigned int query_x, query_y;
 
 #pragma omp parallel private(sum) shared( hist  )
             for( unsigned int x = 0; x < hist->x_bins; x++ )

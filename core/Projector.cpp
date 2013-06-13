@@ -23,8 +23,8 @@ namespace L3
         L3::Timing::SysTimer t;
         t.begin();
 #endif
-        int scan_counter, pair_counter, n = swathe.size();
-
+        int scan_counter;
+        unsigned int n = swathe.size(), pair_counter;
         // Enough space?
         if ( n > allocated_size )
             reallocate( n );
@@ -54,7 +54,7 @@ namespace L3
                 for (scan_counter=0; scan_counter<541; scan_counter++) 
                 {
                     // Compute angle 
-                    double angle = scan_counter*(*swathe_ptr)[pair_counter].second->angle_spacing +  (*swathe_ptr)[pair_counter].second->angle_start; 
+                    angle = scan_counter*(*swathe_ptr)[pair_counter].second->angle_spacing +  (*swathe_ptr)[pair_counter].second->angle_start; 
 
                     range = (*swathe_ptr)[pair_counter].second->ranges[scan_counter];  
                    

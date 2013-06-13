@@ -78,8 +78,6 @@ namespace L3
 
         L3::Iterator<L3::SE3>::WINDOW_ITERATOR it = pose_windower->window->begin() ;
    
-        int skip = 0;
-
         // For each lidar pose, find the nearest scan
         while( it != pose_windower->window->end() )
         {
@@ -91,34 +89,30 @@ namespace L3
 
             if ( index == _window_buffer.end() )
             {
-                std::cout << "LIDAR" << std::endl;
+                std::cerr << "LIDAR" << std::endl;
                 for(std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > >::iterator lidar_it = LIDAR_iterator->window.begin();
                         lidar_it != LIDAR_iterator->window.end();
                         lidar_it++)
-                    std::cout << lidar_it->first << std::endl;
+                    std::cerr << lidar_it->first << std::endl;
 
-                std::cout << "-------------" << std::endl;
-                std::cout << "TMP BUFFER" << std::endl;
+                std::cerr << "-------------" << std::endl;
+                std::cerr << "TMP BUFFER" << std::endl;
                 
                 for(std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > >::iterator buf_it = _window_buffer.begin();
                         buf_it != _window_buffer.end();
                         buf_it++)
-                    std::cout << buf_it->first << std::endl;
-                std::cout << "-------------" << std::endl;
-                std::cout << it->first << std::endl;
+                    std::cerr << buf_it->first << std::endl;
+                std::cerr << "-------------" << std::endl;
+                std::cerr << it->first << std::endl;
 
-                std::cout << previous_update << std::endl;
+                std::cerr << previous_update << std::endl;
 
+                std::cerr << "Missing data." << std::endl;
                 exit(-1);
             }
 
             if (( index->first - it->first) == 0 )
                 swathe.push_back( std::make_pair( it->second, index->second ) );
-            else
-            {
-                //std::cerr << "NO match" << std::endl;
-                //exit(-1);
-            }
             
             it++;
         }

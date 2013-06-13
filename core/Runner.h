@@ -79,11 +79,12 @@ struct DatasetRunner : ThreadedRunner
 
     std::ofstream   output;
 
-    bool            stand_alone;
+    Configuration::Mission*     mission;
+    Dataset*                    dataset;
+    
     float           speedup;
     double          current_time, start_time;  
-    Dataset*        dataset;
-    Configuration::Mission*     mission;
+    bool            stand_alone;
    
     std::list < Updater* > updaters;
     std::list < Dumpable* > dumps;

@@ -57,7 +57,6 @@ namespace L3
         }
 
 
-
     };
 
     bool SMVelocityProvider::update( double time )
@@ -78,6 +77,8 @@ namespace L3
             while( filtered_velocities.back().first - filtered_velocities.front().first > 10.0 )
                 filtered_velocities.pop_front();
         }
+
+        return ( !filtered_velocities.empty() );
     };
     
     bool LHLVVelocityProvider::update( double time  )

@@ -395,6 +395,7 @@ struct CompositeLeafViewToggle : glv::Buttons
         if ( leaf_ptr )
             leaf_ptr->visible = getValue();
 
+        return false;
     }
 
 };

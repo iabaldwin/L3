@@ -53,12 +53,11 @@ namespace L3
         _constant_distance_window.clear();
 
         int written;
-        double total_distance;
-
+        
         L3::reverseTrajectoryAccumulate( _window_buffer.rbegin(),
                 _window_buffer.rend(),
                 std::back_inserter( _constant_distance_window ),
-                0.1, 
+                0.2, 
                 swathe_length,
                 written);
 

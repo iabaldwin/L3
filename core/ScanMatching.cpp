@@ -116,9 +116,9 @@ namespace ScanMatching
         ne.compute (*cloud_normals_in);
 
         //pcl::IterativeClosestPointWithNormals<pcl::PointNormal, pcl::PointNormal > registration;
-        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
+        //pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
         //pcl::NormalDistributionsTransform2D<pcl::PointXYZ, pcl::PointXYZ> registration;
-        //pcl::GeneralizedIterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
+        pcl::GeneralizedIterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> registration;
 
         //registration.setMaxCorrespondenceDistance (0.05);
         // Set the maximum number of iterations (criterion 1)
@@ -169,36 +169,41 @@ namespace ScanMatching
             // Compute delta
             current_transformation *= transformation;
 
-            dt = current_update - previous_update;
+            //dt = current_update - previous_update;
 
-            // Estimate linear velocity
-            distance = (sqrt( pow( transformation( 0,3 ), 2 ) 
-                        + pow( transformation( 1,3 ), 2 ) ));
+            //// Estimate linear velocity
+            //distance = (sqrt( pow( transformation( 0,3 ), 2 ) 
+                        //+ pow( transformation( 1,3 ), 2 ) ));
 
-            linear_velocity = distance/dt;
+            //linear_velocity = distance/dt;
 
-            // Estimate rotational velocity
-            L3::SE3 pose = L3::Utils::Math::poseFromRotation( transformation );
-            rotational_velocity = pose.Q()/dt;
+            //// Estimate rotational velocity
+            //L3::SE3 pose = L3::Utils::Math::poseFromRotation( transformation );
+            //rotational_velocity = pose.Q()/dt;
 
-            _linear_velocity_filter->update( current_update, linear_velocity );
-            _rotational_velocity_filter->update( current_update, rotational_velocity );
+            //_linear_velocity_filter->update( current_update, linear_velocity );
+            //_rotational_velocity_filter->update( current_update, rotational_velocity );
 
-            raw_velocity_data.first = current_update;
-            raw_velocity_data.second[0] = linear_velocity;
-            raw_velocity_data.second[3] = rotational_velocity;
+            //raw_velocity_data.first = current_update;
+            //raw_velocity_data.second[0] = linear_velocity;
+            //raw_velocity_data.second[3] = rotational_velocity;
 
-            filtered_velocity_data.first = current_update;
-            filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
-            filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
+            //filtered_velocity_data.first = current_update;
+            //filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
+            //filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
 
             // Swap
             previous_update = current_update;
         }
         else
+        {
             previous_update = scan.first;
+            return false;
+        }
 
         write_lock.unlock();
+   
+        return true;
     }
 }
 }

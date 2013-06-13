@@ -284,14 +284,13 @@ namespace L3
 
                 // Lock the experience histogram
                 L3::ReadLock histogram_lock( this->experience_histogram->mutex );
-                L3::ReadLock swathe_lock( swathe->mutex );
 
                 if (swathe->num_points == 0 ) 
                     return false;
 
                 //  Speed considerations
                 L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false );
-
+                
                 // Allocate results
                 std::vector<double>::iterator result_iterator = this->pose_estimates->costs.begin();
                 // Pointer to beginning
@@ -399,9 +398,8 @@ namespace L3
 
                 timer.begin();
 
-                L3::WriteLock   master( this->mutex );
-                L3::ReadLock    swathe_lock( swathe->mutex );               
-                L3::ReadLock    histogram_lock( (*this->pyramid)[this->pyramid_index]->mutex );
+                L3::WriteLock master( this->mutex );
+                L3::ReadLock  histogram_lock( (*this->pyramid)[this->pyramid_index]->mutex );
 
                 _cost_function = this->cost_function.get();
 
@@ -478,8 +476,6 @@ namespace L3
         SE3 Hybrid<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
 
         {
-            L3::ReadLock swathe_lock( swathe->mutex );
-
             discrete_estimators[0]->cost_function = this->cost_function.get();
             discrete_estimators[0]->operator()( swathe, estimate );
             std::vector<double>::iterator it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
@@ -489,8 +485,6 @@ namespace L3
             discrete_estimators[1]->operator()( swathe, estimate );
             it = std::min_element( discrete_estimators[0]->pose_estimates->costs.begin() , discrete_estimators[0]->pose_estimates->costs.end() );
             refined = discrete_estimators[0]->pose_estimates->estimates[ std::distance( discrete_estimators[0]->pose_estimates->costs.begin(), it )] ;
-
-            swathe_lock.unlock();
 
             minimisation->max_iterations = 20;
 

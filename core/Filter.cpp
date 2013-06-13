@@ -80,10 +80,7 @@ namespace L3
                     return estimate;
                 }
 
-                L3::WriteLock master( this->mutex );
-
                 // Find the new data, between the last update time and now
-                // Do we need to lock this?
                 L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( constant_time_iterator->window.begin(), 
                         constant_time_iterator->window.end(), 
                         previous_time,
@@ -119,11 +116,10 @@ namespace L3
                 int pyramid_index = 0;
 
                 L3::ReadLock histogram_lock( (*this->pyramid)[pyramid_index]->mutex );
-                L3::ReadLock swathe_lock( swathe->mutex );
 
                 if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
                     return estimate;    // Point cloud is empty
-
+                    
                 double q, x_vel, y_vel, velocity_delta, x, y;
 
                 //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
@@ -167,7 +163,6 @@ namespace L3
                 group.wait();
 
                 histogram_lock.unlock();
-                swathe_lock.unlock();
 
                 hypotheses.swap( delta );
 
@@ -199,8 +194,6 @@ namespace L3
                 }
 
                 hypotheses.swap( resampled );
-
-                master.unlock();
 
                 return this->current_prediction;
            
