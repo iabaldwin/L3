@@ -96,8 +96,6 @@ namespace L3
 
         int performance_index;
            
-        bool init = false;
-
         while( running )
         {
             if( !paused )
@@ -114,18 +112,6 @@ namespace L3
                  */
                 TemporalRunner::update( current_time );
                 timings[ performance_index++ ] = performance_timer.elapsed();
-
-                static int counter = 0;
-
-                if( !init )
-                {
-                    *current = oracle->operator()();
-
-                    counter++;
-
-                    if ( counter == 60 )
-                        init = true;
-                }
 
                 /*
                  *Recompute swathe
@@ -187,13 +173,17 @@ namespace L3
         /*
          *  Do estimation
          */
-      
+
+        static int counter = 0;
+
+        if( counter++ < 20 )
+            *current = oracle->operator()();
+        else
+        {
         L3::ReadLock algo_lock( this->mutex ); 
         *current = algorithm->operator()( projector->cloud, *current );
-        //algorithm->operator()( projector->cloud, *current );
-        //algorithm->operator()( projector->cloud, *current );
-        //algo_lock.unlock();
-        
+        }
+
         return true;
     }
 }

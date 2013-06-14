@@ -50,23 +50,6 @@ namespace L3
                 // Compute time elapsed
                 double dt = current_time - previous_time;
               
-                //std::cout << dt << ':' << _window_delta_buffer.size() << std::endl;
-
-                //std::cout << velocity_provider->filtered_velocities.front().first << ":" << 
-                    //velocity_provider->filtered_velocities.back().first << std::endl;
-                
-                //std::cout << "----------------------" << std::endl;
-
-                
-                //if ( _window_delta_buffer.empty() )
-                //{
-                    ////std::cout << _window_delta_buffer.size() << std::endl;
-                    ////std::cout << velocity_provider->filtered_velocities.front().first << ':' << velocity_provider->filtered_velocities.back().first << std::endl;
-                    ////std::cout << previous_time << std::endl;
-                    //return estimate;
-
-                //}
-                
                 double mean_linear_velocity = 0.0;
                 double mean_rotational_velocity = 0.0;
 
@@ -77,7 +60,6 @@ namespace L3
                 {
                     mean_linear_velocity += it->second[0];
                     mean_rotational_velocity += it->second[3];
-                
                 }
 
                 // Compute the average velocities
@@ -93,10 +75,7 @@ namespace L3
 
                 double q, x_vel, y_vel, velocity_delta, x, y;
 
-                //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
-                //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .1 );
-
-                boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .05 );
+                boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
                 boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .005 );
 
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
@@ -106,7 +85,6 @@ namespace L3
                 delta.reserve( hypotheses.size() );
 
                 if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
-                    //return estimate;    // Point cloud is empty
                     throw std::exception();
 
                 // Apply the constant average velocities to the particles
@@ -163,10 +141,7 @@ namespace L3
                 }
 
                 hypotheses.swap( resampled );
-                
-                previous_time = current_time;
               
-                // End
                 previous_time = current_time;
                 
                 return this->current_prediction;
