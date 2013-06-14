@@ -857,7 +857,13 @@ namespace Visualisers
         {
 
             octree = boost::make_shared< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> >( 0.5f ); 
-        }
+            
+            label.setValue( "Experience <octree>");
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            *this  << label;
+       }
+
+        glv::Label label;
 
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
@@ -1281,21 +1287,7 @@ namespace Visualisers
 
     };
 
-    struct ParticleFilterRendererLeaf : Leaf, Updateable
-    {
-        ParticleFilterRendererLeaf( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter ) : filter(filter)
-        {
-        }
-
-        boost::weak_ptr< L3::Estimator::ParticleFilter<double> > filter;
-
-        std::vector< L3::SE3 > hypotheses;
-
-        void onDraw3D( glv::GLV& g );
-   
-        void update();
-    };
-
+    
     /*
      *  Chase
      */

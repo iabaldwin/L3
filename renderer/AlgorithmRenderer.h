@@ -13,7 +13,6 @@ namespace L3
 {
     namespace Visualisers
     {
-
         struct AlgorithmVisualiser : glv::Table
         {
             AlgorithmVisualiser( const char * arrangement="<", glv::space_t padX=3, glv::space_t padY=3, const glv::Rect& r=glv::Rect(0)) 
@@ -184,22 +183,26 @@ namespace L3
 
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
-            std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
+            std::deque < boost::shared_ptr< glv::Plottable >  > plottables;
 
         };
 
 
         struct ParticleFilterVisualiser : AlgorithmVisualiser
         {
-            ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater = NULL ) ;
+            ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater, boost::shared_ptr< Composite> composite );
       
             ~ParticleFilterVisualiser();
 
+            boost::weak_ptr< Composite > composite;
             boost::shared_ptr< glv::View > weight_visualiser;
+            boost::shared_ptr< Leaf > particle_filter_renderer; 
 
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
-     
+    
+            std::list< Leaf* > leafs;
+            std::list< Updateable* > updateables;
         };
 
         /*
@@ -207,7 +210,7 @@ namespace L3
          */
         struct AlgorithmRendererFactory
         {
-            static boost::shared_ptr< AlgorithmVisualiser > Produce( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm, Updater* updater = NULL )
+            static boost::shared_ptr< AlgorithmVisualiser > Produce( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm, Updater* updater, boost::shared_ptr< Composite> composite = boost::shared_ptr< Composite >() )
             {
                 // Iterative descent
                 if( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::IterativeDescent<double> >( algorithm ) )
@@ -223,7 +226,7 @@ namespace L3
 
                 // PF
                 if( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::ParticleFilter<double> >( algorithm ) )
-                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< ParticleFilterVisualiser>( ptr, updater ) );
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< ParticleFilterVisualiser>( ptr, updater, composite ) );
 
                 return boost::shared_ptr<AlgorithmVisualiser>();
 

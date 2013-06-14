@@ -265,11 +265,55 @@ namespace L3
             this->operator<<( *minimisation_visualiser );
         }
 
+        struct ParticleFilterRendererLeaf : Leaf, Updateable, Lockable
+        {
+            ParticleFilterRendererLeaf( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter ) : filter(filter)
+            {
+            }
+
+            boost::weak_ptr< L3::Estimator::ParticleFilter<double> > filter;
+
+            std::vector< L3::SE3 > hypotheses;
+
+            void onDraw3D( glv::GLV& g )
+            {
+
+                L3::ReadLock lock( this->mutex );
+                std::vector< L3::SE3> _hypotheses( hypotheses.begin(), hypotheses.end() );
+                lock.unlock();
+
+                /*
+                 *  This is not called on update
+                 */
+                for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = _hypotheses.begin();  
+                        it != _hypotheses.end();
+                        it++ )
+                    CoordinateSystem( *it ).onDraw3D(g);
+            }
+
+
+            void update()
+            {
+                boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter_ptr = filter.lock();
+
+                if( !filter_ptr )
+                    return;
+
+                L3::WriteLock lock( this->mutex );
+                hypotheses.assign( filter_ptr->hypotheses.begin(), filter_ptr->hypotheses.end() );
+                lock.unlock();
+            }
+        };
+
+
+
         struct ParticleVisualiser : glv::View3D
         {
 
             ParticleVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm ) : glv::View3D( glv::Rect(400,400)), algorithm(algorithm)
             {
+
+                
             }
 
             boost::weak_ptr< L3::Estimator::ParticleFilter<double> > algorithm;
@@ -307,7 +351,6 @@ namespace L3
 
         struct ParticleWeightVisualiser : BasicPlottable<double>
         {
-
             ParticleWeightVisualiser()
             {
                 this->mPrim = glv::draw::Points;
@@ -322,7 +365,7 @@ namespace L3
                 
                     double x = d.at<double>( 0, counter );
                     double y = d.at<double>(1, counter );
-                    g.addVertex(x, y*100);
+                    g.addVertex(x, y*100*2);
                     counter++;
                 }
 
@@ -353,7 +396,7 @@ namespace L3
             }
         };
 
-        struct ParticleWeightOverview : Updateable, glv::Table
+        struct ParticleWeightOverview : glv::Table, Updateable, Lockable
         {
             ParticleWeightOverview( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater = NULL ) : glv::Table( "x," ), algorithm(algorithm)
             {
@@ -361,20 +404,16 @@ namespace L3
                     // X
                     x_weight = boost::make_shared< ParticleWeightVisualiser >();
 
-                    boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *x_weight ) );
+                    boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 2*80), *x_weight ) );
                     *this << *plot;
                     
                     plots.push_back( plot );
                     
                     plot->disable( glv::Controllable );
-                    //plot->showNumbering(true);
-                    //plot->numbering(false,1);
+                    plot->showNumbering(true);
+                    plot->range( -1, 1, 0 );
+                    plot->range( 0, 1, 1 );
                     
-                    plot->range( -5, 5, 0 );
-                    
-                    //plot->range( 0, 100, 0 );
-                    //plot->range( 0, 2, 1 );
-            
 
                 }
 
@@ -389,13 +428,8 @@ namespace L3
                     
                     plot->disable( glv::Controllable );
                     plot->showNumbering(true);
-                    plot->numbering(false,1);
 
-                    plot->range( -5, 5, 0 );
-                    //plot->range( 0, 100, 0 );
-                    //plot->range( 0, 2, 0 );
-            
-
+                    plot->range( -.5, .5, 0 );
                 }
 
                 {
@@ -409,12 +443,8 @@ namespace L3
 
                     plot->disable( glv::Controllable );
                     plot->showNumbering(true);
-                    plot->numbering(false,1);
  
                     plot->range( -5, 5, 0 );
-                    //plot->range( 0, 100, 0 );
-                    //plot->range( 0, .5, 0 );
-                              
                 }
 
                 this->fit();
@@ -428,58 +458,68 @@ namespace L3
        
             void update()
             {
-                //boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm_ptr = algorithm.lock();
+                boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm_ptr = algorithm.lock();
 
-                //if( !algorithm_ptr )
-                    //return;
+                if( !algorithm_ptr )
+                    return;
 
-                //L3::ReadLock master( algorithm_ptr->mutex );
-                //std::vector<double> weights( algorithm_ptr->weights.begin(), algorithm_ptr->weights.end() );
-                //std::vector<L3::SE3> hypotheses( algorithm_ptr->hypotheses.begin(), algorithm_ptr->hypotheses.end() );
-                //L3::SE3 current_prediction = algorithm_ptr->current_prediction;
-                //master.unlock();
-           
-                //x_weight->weights = weights;
-                //x_weight->hypotheses.resize( weights.size() ); 
+                L3::ReadLock master( this->mutex );
+                std::vector<double> weights( algorithm_ptr->weights.begin(), algorithm_ptr->weights.end() );
+                std::vector<L3::SE3> hypotheses( algorithm_ptr->hypotheses.begin(), algorithm_ptr->hypotheses.end() );
+                L3::SE3 current_prediction = algorithm_ptr->current_prediction;
+                master.unlock();
+         
+                x_weight->weights = weights;
+                x_weight->hypotheses.resize( weights.size() ); 
                 
-                //y_weight->weights = weights;
-                //y_weight->hypotheses.resize( weights.size() ); 
+                y_weight->weights = weights;
+                y_weight->hypotheses.resize( weights.size() ); 
                
-                //theta_weight->weights = weights;
-                //theta_weight->hypotheses.resize( weights.size() ); 
+                theta_weight->weights = weights;
+                theta_weight->hypotheses.resize( weights.size() ); 
 
-                //int counter = 0;
-                //for( std::vector<L3::SE3>::iterator it = hypotheses.begin();
-                        //it != hypotheses.end();
-                        //it++) 
-                //{
-                    //x_weight->hypotheses[counter]=it->X()-current_prediction.X();
-                    //y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
-                    //theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
+                int counter = 0;
+                for( std::vector<L3::SE3>::iterator it = hypotheses.begin();
+                        it != hypotheses.end();
+                        it++) 
+                {
+                    x_weight->hypotheses[counter]= it->X()-current_prediction.X();
+                    y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
+                    theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
                
-                    //counter++;
-                //}
-                //x_weight->update();
-                //y_weight->update();
-                //theta_weight->update();
+                    counter++;
+                }
+                
+                x_weight->update();
+                y_weight->update();
+                theta_weight->update();
 
             }
         
         };
 
+
         /*
          *  Particle Filter
          */
-        ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater  )  
+        ParticleFilterVisualiser::ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater, boost::shared_ptr< Composite> composite )  
+            : composite(composite)
         {
-            // Weight visualiser
-            weight_visualiser = boost::make_shared< ParticleWeightOverview >( algorithm, updater );
-            *this << *weight_visualiser;
-
             this->updater = updater;
 
-            if( updater )
-                updater->operator<<( (boost::dynamic_pointer_cast< Updateable >(weight_visualiser)).get() );
+            if( !updater )
+            {
+                std::cerr << "No updater!" << std::endl;
+                throw std::exception();
+            }
+
+            /*
+             *  Stand-alone components
+             */
+            weight_visualiser = boost::make_shared< ParticleWeightOverview >( algorithm, updater );
+            *this << *weight_visualiser;
+            updater->operator<<( (boost::dynamic_pointer_cast< Updateable >(weight_visualiser)).get() );
+            updateables.push_back(dynamic_cast< Updateable* >(weight_visualiser.get() ) ); 
 
             views.push_back( weight_visualiser );
 
@@ -487,29 +527,71 @@ namespace L3
             //boost::shared_ptr< ParticleVisualiser > visualiser = boost::make_shared< ParticleVisualiser >( algorithm );
             //views.push_back( boost::dynamic_pointer_cast< glv::View >( visualiser ) );
             //*this << *visualiser;
- 
+
             this->fit();
             this->arrange();
-        }
+       
+            /*
+             *  3D components
+             */
+            boost::shared_ptr< Composite > composite_ptr = this->composite.lock();
 
+            if( composite_ptr )
+            {
+                //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
+                particle_filter_renderer = boost::make_shared< ParticleFilterRendererLeaf >( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >( algorithm ) );
+                
+                composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
+                leafs.push_back( dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ) );
+                    
+                updater->operator<<( dynamic_cast< Updateable* >(particle_filter_renderer.get() ) );
+                updateables.push_back(dynamic_cast< Updateable* >(particle_filter_renderer.get() ) ); 
+            
+            }
+            else
+                std::cerr << "No composite pointer passed!" << std::endl;
+        }
 
         ParticleFilterVisualiser::~ParticleFilterVisualiser()
         {
-
+            // Remove children from the updates list  
             if ( updater )
             {
-                // Remove myself from the updates list  
-                std::list < Updateable* >::iterator it 
-                    = std::find( updater->updateables.begin(), 
-                            updater->updateables.end(), 
-                            dynamic_cast< L3::Updateable*>( weight_visualiser.get()) );
+                for( std::list< Updateable* >::iterator updateable_it =  updateables.begin();
+                        updateable_it != updateables.end();
+                        updateable_it++ )
+                {
+                    std::list < Updateable* >::iterator it 
+                        = std::find( updater->updateables.begin(), 
+                                updater->updateables.end(), 
+                                *updateable_it 
+                                );
 
-                if( it != updater->updateables.end() )
-                    updater->updateables.erase( it );
+                    if( it != updater->updateables.end() )
+                        updater->updateables.erase( it );
+                }
 
             }
+            
+            boost::shared_ptr< Composite > composite_ptr = this->composite.lock();
 
+            if( composite_ptr )
+            {
+                for( std::list< Leaf* >::iterator leaf_it =  leafs.begin();
+                        leaf_it != leafs.end();
+                        leaf_it++ )
+                {
+                    std::list < Leaf* >::iterator it 
+                        = std::find( composite_ptr->components.begin(), 
+                                composite_ptr->components.end(), 
+                                *leaf_it
+                                );
+
+                    if( it != composite_ptr->components.end() )
+                        composite_ptr->components.erase( it );
+
+                }
+            }
         }
-
     }
 }

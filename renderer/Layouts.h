@@ -233,11 +233,9 @@ namespace Visualisers
             boost::shared_ptr< L3::Visualisers::CostRendererView >          cost_renderer_view;
             boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
     
-            boost::shared_ptr< L3::Visualisers::DebugAlgorithmRenderer >    debug_algorithm_renderer;
 
             boost::shared_ptr< AlgorithmVisualiser > algorithm_renderer;
-    
-            boost::shared_ptr< ParticleFilterRendererLeaf> particle_filter_renderer; 
+            boost::shared_ptr< L3::Visualisers::DebugAlgorithmRenderer >    debug_algorithm_renderer;
             
             bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience );
 

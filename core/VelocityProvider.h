@@ -47,7 +47,6 @@ struct VelocityProvider : Lockable, TemporalObserver
 
 struct ScanMatchingVelocityProvider : VelocityProvider
 {
-
     ScanMatchingVelocityProvider( L3::ScanMatching::Engine* engine  ) ;
 
     L3::ScanMatching::Engine* engine;
@@ -61,16 +60,8 @@ struct ScanMatchingVelocityProvider : VelocityProvider
 
 struct SMVelocityProvider : VelocityProvider
 {
-    SMVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider ) : velocity_provider(velocity_provider)
-    {
-        _linear_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
-        _rotational_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
-    
-        raw_velocity_data.second.resize( 4);
-        filtered_velocity_data.second.resize( 4);
-
-    }
-    
+    SMVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider );
+        
     boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _linear_velocity_filter;
     boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _rotational_velocity_filter;
 

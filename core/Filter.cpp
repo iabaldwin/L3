@@ -17,7 +17,7 @@ namespace L3
              */
             double dt = time - previous_update;
 
-            if( dt > 1 )
+            if( dt > 1 || dt == 0 ) // Initialisation conditinos
             {
                 previous_update = time;
                 return;
@@ -139,6 +139,7 @@ namespace L3
                     return estimate;
 
                 std::vector< L3::SE3 > delta;
+                delta.reserve( hypotheses.size() );
 
                 // Apply the constant average velocities to the particles
                 for( PARTICLE_ITERATOR it = hypotheses.begin();

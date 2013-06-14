@@ -14,14 +14,14 @@ namespace L3
             linear_velocity_plotter_lhlv = boost::make_shared< LinearVelocityPlotter >();
             linear_velocity_plotter_lhlv->stroke( 2.0 );
 
-            linear_velocity_plotter_scan_matching = boost::make_shared< LinearVelocityPlotter >();
-            linear_velocity_plotter_scan_matching->stroke( 2.0 );
-
-            linear_velocity_plotter_scan_matching_unfiltered = boost::make_shared< LinearVelocityPlotter >( false );
-            linear_velocity_plotter_scan_matching_unfiltered->stroke( 1.0 );
-
             linear_velocity_plotter_sm = boost::make_shared< LinearVelocityPlotter >();
             linear_velocity_plotter_sm->stroke( 1.0 );
+            
+            linear_velocity_plotter_scan_matching = boost::make_shared< LinearVelocityPlotter >();
+            linear_velocity_plotter_scan_matching->stroke( 2.0 );
+            
+            linear_velocity_plotter_scan_matching_unfiltered = boost::make_shared< LinearVelocityPlotter >( false );
+            linear_velocity_plotter_scan_matching_unfiltered->stroke( 1.0 );
 
             // Add plot region
             boost::shared_ptr< glv::Plot > plot_region 
@@ -604,11 +604,6 @@ namespace L3
                     tables.erase( it );
             }
 
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
-            particle_filter_renderer = boost::make_shared< ParticleFilterRendererLeaf >( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >(runner->algorithm ) );
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
-            temporal_updater->operator<<( particle_filter_renderer.get() );
-            
             return true;
         }
 
@@ -621,7 +616,7 @@ namespace L3
             if ( it != tables.end() )
                 tables.erase( it );
 
-            algorithm_renderer = AlgorithmRendererFactory::Produce( algorithm, temporal_updater.get() );
+            algorithm_renderer = AlgorithmRendererFactory::Produce( algorithm, temporal_updater.get(), composite );
 
             if (algorithm_renderer)
             {

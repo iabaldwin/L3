@@ -27,6 +27,7 @@ namespace Visualisers
 
         L3::SE3 translate( -1*pose.X(), -1*pose.Y(), -1*pose.Z(), 0, 0, 0 );
         glMultMatrixf( translate.getHomogeneous().data() );
+    
     }
 
     void renderCube( Cube* cube )
@@ -1748,31 +1749,6 @@ namespace Visualisers
 
         this->arrange();
     }
-
-    /*
-     *  Particle filter renderer
-     */
-    void ParticleFilterRendererLeaf::onDraw3D( glv::GLV& g )
-    {
-        /*
-         *  This is not called on update
-         */
-        for ( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();  
-                it != hypotheses.end();
-                it++ )
-            CoordinateSystem( *it ).onDraw3D(g);
-    }
-
-    void ParticleFilterRendererLeaf::update()
-    {
-        boost::shared_ptr< L3::Estimator::ParticleFilter<double> > filter_ptr = filter.lock();
-
-        if( !filter_ptr )
-            return;
-        
-        //hypotheses.assign( filter_ptr->hypotheses.begin(), filter_ptr->hypotheses.end() );
-    }
-
 
     /*
      *  Specific controllers
