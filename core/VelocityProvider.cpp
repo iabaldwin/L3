@@ -41,11 +41,11 @@ namespace L3
         return true;
     }
 
-    SMVelocityProvider::SMVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider ) 
+    FilteredScanMatchingVelocityProvider::FilteredScanMatchingVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider ) 
         : velocity_provider(velocity_provider)
     {
-        _linear_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.001);
-        _rotational_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
+        _linear_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.05,0.001);
+        _rotational_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.05,0.0001);
     
         raw_velocity_data.second.resize( 4);
         filtered_velocity_data.second.resize( 4);
@@ -70,7 +70,7 @@ namespace L3
 
     };
 
-    bool SMVelocityProvider::update( double time )
+    bool FilteredScanMatchingVelocityProvider::update( double time )
     {
         boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider_ptr = velocity_provider.lock(); 
 
@@ -115,6 +115,8 @@ namespace L3
         //}
 
         //return ( !filtered_velocities.empty() );
+   
+        return true;
     };
     
     bool LHLVVelocityProvider::update( double time  )

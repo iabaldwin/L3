@@ -100,9 +100,10 @@ struct DatasetRunner : ThreadedRunner
 
     boost::shared_ptr< L3::PoseProvider >       provider;
     boost::shared_ptr< L3::PoseWindower >       pose_windower;
+    
     boost::shared_ptr< L3::VelocityProvider >   lhlv_velocity_provider;
-    boost::shared_ptr< L3::VelocityProvider >   sm_velocity_provider;
     boost::shared_ptr< L3::VelocityProvider >   scan_matching_velocity_provider;
+    boost::shared_ptr< L3::VelocityProvider >   filtered_scan_matching_velocity_provider;
 
 
     boost::shared_ptr< L3::ConstantTimeWindower< L3::SE3 > >    oracle;

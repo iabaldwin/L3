@@ -367,7 +367,7 @@ namespace L3
              *  Velocity plots
              */
             linear_velocity_plotter_lhlv->iterator                      = runner->lhlv_velocity_provider;    
-            linear_velocity_plotter_sm->iterator                        = runner->sm_velocity_provider;    
+            linear_velocity_plotter_sm->iterator                        = runner->filtered_scan_matching_velocity_provider;    
             linear_velocity_plotter_scan_matching->iterator             = runner->scan_matching_velocity_provider;       
             linear_velocity_plotter_scan_matching_unfiltered->iterator  = runner->scan_matching_velocity_provider; 
             

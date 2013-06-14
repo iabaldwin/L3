@@ -697,7 +697,7 @@ namespace Visualisers
     void PointCloudRenderer::onDraw3D( glv::GLV& g )
     {
         boost::tuple<double,double,double> bounds = L3::min( plot_cloud.get() );
-        for( int i=0; i<plot_cloud->num_points; i++) 
+        for( unsigned int i=0; i<plot_cloud->num_points; i++) 
         {
             vertices[i]( plot_cloud->points[i].x, plot_cloud->points[i].y, plot_cloud->points[i].z); 
             colors[i] = glv::Color( (plot_cloud->points[i].z - bounds.get<2>())/10.0 );

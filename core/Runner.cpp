@@ -37,14 +37,14 @@ namespace L3
         engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
 
         // Velocity providers
-        scan_matching_velocity_provider   = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
-        lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
-        sm_velocity_provider   = boost::make_shared< L3::SMVelocityProvider >( velocity_source );
+        lhlv_velocity_provider          = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
+        scan_matching_velocity_provider = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
+        filtered_scan_matching_velocity_provider = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );
 
         // Pose Provider
         //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
         //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( lhlv_velocity_provider.get(), 40 );
-        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( sm_velocity_provider.get(), 40 );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( filtered_scan_matching_velocity_provider.get(), 40 );
        
         // Swathe generator
         //swathe_builder = boost::make_shared< L3::RawSwatheBuilder > ( pose_windower.get(), vertical_LIDAR.get() );
@@ -71,7 +71,7 @@ namespace L3
                 << horizontal_LIDAR.get() 
                 << velocity_source.get()
                 << lhlv_velocity_provider.get()
-                << sm_velocity_provider.get() 
+                << filtered_scan_matching_velocity_provider.get() 
                 << scan_matching_velocity_provider.get() 
                 << engine.get() 
                 << pose_windower.get() 

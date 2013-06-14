@@ -2,10 +2,11 @@
 #define L3_VELOCITY_SOURCE
 
 #include "Core.h"
-#include "Filter.h"
+#include "Tracking.h"
 #include "ScanMatching.h"
 
 typedef std::deque< std::pair< double, std::vector< double > > > VELOCITY_WINDOW;
+typedef std::deque< std::pair< double, std::vector< double > > >::iterator VELOCITY_WINDOW_ITERATOR;
 
 struct zipper : std::unary_function< std::pair< double, boost::shared_ptr< L3::LHLV > >, std::pair< double, std::vector< double > > >
 {
@@ -58,12 +59,12 @@ struct ScanMatchingVelocityProvider : VelocityProvider
 };
 
 
-struct SMVelocityProvider : VelocityProvider
+struct FilteredScanMatchingVelocityProvider : VelocityProvider
 {
-    SMVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider );
+    FilteredScanMatchingVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider );
         
-    boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _linear_velocity_filter;
-    boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _rotational_velocity_filter;
+    boost::shared_ptr< L3::Tracking::AlphaBetaFilter > _linear_velocity_filter;
+    boost::shared_ptr< L3::Tracking::AlphaBetaFilter > _rotational_velocity_filter;
 
     boost::weak_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider;
         

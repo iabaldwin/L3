@@ -415,10 +415,14 @@ namespace L3
                 if ( counter++ == 120 )
                 {
                     gsl_vector_set_all (ss, 0.05);
+                    gsl_vector_set( ss, 2, .01 );
                 }
                 else
+                {
                     gsl_vector_set_all (ss, 0.5);
 
+                gsl_vector_set( ss, 2, .05 );
+                }
                 gsl_vector_set( ss, 2, .05 );
 
 
@@ -467,6 +471,7 @@ namespace L3
 
             evaluations.push_back( pose_estimate );
 
+            // Estimate, here
             Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[this->pyramid_index].get() , this->_cost_function, cost.begin() )();
 
             return cost[0];

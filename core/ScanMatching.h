@@ -5,7 +5,7 @@
 #include "Datatypes.h"
 #include "Datatypes.h"
 #include "Iterator.h"
-#include "Filter.h"
+#include "Tracking.h"
 
 #include "Poco/Thread.h"
 
@@ -67,15 +67,15 @@ namespace ScanMatching
             matcher( new ICP() ),
             current_transformation( Eigen::Matrix4f::Identity() )
         {
-            _linear_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
-            _rotational_velocity_filter = boost::make_shared< L3::Estimator::AlphaBetaFilter >(.05,0.0001);
+            _linear_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.05,0.0001);
+            _rotational_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.05,0.0001);
        
             raw_velocity_data.second.resize( 4);
             filtered_velocity_data.second.resize( 4);
         }
     
-        boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _linear_velocity_filter;
-        boost::shared_ptr< L3::Estimator::AlphaBetaFilter > _rotational_velocity_filter;
+        boost::shared_ptr< L3::Tracking::AlphaBetaFilter > _linear_velocity_filter;
+        boost::shared_ptr< L3::Tracking::AlphaBetaFilter > _rotational_velocity_filter;
 
         std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
 

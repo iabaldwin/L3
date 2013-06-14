@@ -344,7 +344,7 @@ namespace Visualisers
             skip = 100; 
         }
 
-        int highlighted_position, skip ;
+        unsigned int highlighted_position, skip ;
 
         boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > > > pose_sequence;
 
@@ -903,6 +903,8 @@ namespace Visualisers
             animation = boost::make_shared< AnimatedPoseRenderer >( boost::ref( *current ) );
 
             experience_point_cloud = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, provider );
+
+            this->enable( glv::Controllable );
 
             *this << *experience_point_cloud;
             experience_point_cloud->disable( glv::Visible );

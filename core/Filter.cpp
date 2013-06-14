@@ -1,60 +1,16 @@
 #include "Filter.h"
 
-typedef std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > > VELOCITY_WINDOW;
-typedef std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > >::iterator VELOCITY_WINDOW_ITERATOR;
-
-
-
 namespace L3
 {
     namespace Estimator
     {
-        
-        void AlphaBetaFilter::update( double time, double measurement )
-        {
-            /*
-             *Predict
-             */
-            double dt = time - previous_update;
-
-            if( dt > 1 || dt == 0 ) // Initialisation conditinos
-            {
-                previous_update = time;
-                return;
-            }
-
-            state _current_state;
-
-            _current_state.x = _state.x + dt *_state.v;
-            _current_state.v = _state.v;
-
-            /*
-             *Update
-             */
-            double residual = measurement - _current_state.x ;
-            
-            _current_state.x = _current_state.x  + alpha*residual;
-            _current_state.v = _current_state.v  + (beta/dt)*residual;
-       
-            _state = _current_state;
-     
-            previous_update = time;
-        }
-
-
-        std::ostream& operator<<( std::ostream& out, const AlphaBetaFilter::state& state  )
-        {
-            out << "State: " << state.x << ','  << state.v;
-            return out;
-        }
-
-
         template <typename T>
             SE3 ParticleFilter<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
-                boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > constant_time_iterator = this->iterator.lock();
+                //boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > constant_time_iterator = this->iterator.lock();
+                boost::shared_ptr< L3::VelocityProvider > velocity_provider = this->iterator.lock();
 
-                if( !constant_time_iterator  )
+                if( !velocity_provider  )
                 {
                     std::cerr << "No velocity window, cannot continue..." << std::endl;
                     exit(-1);
@@ -80,16 +36,17 @@ namespace L3
                     return estimate;
                 }
 
+                
                 // Find the new data, between the last update time and now
-                L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( constant_time_iterator->window.begin(), 
-                        constant_time_iterator->window.end(), 
+                VELOCITY_WINDOW_ITERATOR index = std::lower_bound( velocity_provider->filtered_velocities.begin(), 
+                        velocity_provider->filtered_velocities.end(), 
                         previous_time,
                         comparator );
 
                 VELOCITY_WINDOW _window_delta_buffer;
 
                 // Add in the newly-seen data
-                _window_delta_buffer.assign( index, constant_time_iterator->window.end() );
+                _window_delta_buffer.assign( index, velocity_provider->filtered_velocities.end() );
 
                 if ( _window_delta_buffer.empty() )
                     return estimate;
@@ -102,8 +59,9 @@ namespace L3
                         it!= _window_delta_buffer.end();
                         it++ )
                 {
-                    mean_linear_velocity += it->second->data[9];
-                    mean_rotational_velocity += it->second->data[3];
+                    mean_linear_velocity += it->second[0];
+                    mean_rotational_velocity += it->second[3];
+                
                 }
 
                 // Compute the average velocities
@@ -131,10 +89,11 @@ namespace L3
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
 
+                // Compute time
                 double dt = current_time - previous_time;
 
                 previous_time = current_time;
-
+                
                 if ( dt > 1 )
                     return estimate;
 

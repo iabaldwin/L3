@@ -12,8 +12,9 @@ add_library( L3
     Experience.cpp 
     Projector.cpp 
     Configuration.cpp 
-    Estimator.cpp 
     Filter.cpp 
+    Tracking.cpp 
+    Estimator.cpp 
     Runner.cpp 
     Histogram.cpp
     Smoother.cpp 

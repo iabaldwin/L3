@@ -483,9 +483,9 @@ namespace L3
                         it != hypotheses.end();
                         it++) 
                 {
-                    x_weight->hypotheses[counter]= it->X()-current_prediction.X();
-                    y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
-                    theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
+                    //x_weight->hypotheses[counter]= it->X()-current_prediction.X();
+                    //y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
+                    //theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
                
                     counter++;
                 }
