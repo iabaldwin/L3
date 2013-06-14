@@ -487,13 +487,11 @@ namespace Visualisers
         mTex.dealloc();
         mTex.alloc( render_histogram->x_bins, render_histogram->y_bins );
 
-        double normalizer = tmp.max();
-
         unsigned char * pixs = mTex.buffer<unsigned char>();
 
-        for(int j=0; j< tmp.y_bins; j++ )
+        for(unsigned int j=0; j< tmp.y_bins; j++ )
         {
-            for(int i=0; i<tmp.x_bins; i++ )
+            for(unsigned int i=0; i<tmp.x_bins; i++ )
             {
                 int data = (int)(((tmp.bin(i,j))));
                 data  = data*20;
@@ -526,8 +524,6 @@ namespace Visualisers
      */
     void HistogramVoxelRenderer::onDraw3D( glv::GLV& g )
     {
-        int counter = 0;
-
         double max = gsl_histogram2d_max_val( plot_histogram->hist );
 
         float x_delta = plot_histogram->x_delta;

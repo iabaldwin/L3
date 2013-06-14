@@ -163,7 +163,7 @@ namespace ScanMatching
 
         L3::WriteLock write_lock( this->mutex );
 
-        double distance, dt, linear_velocity, rotational_velocity;
+        //double distance, dt, linear_velocity, rotational_velocity;
         if( matcher->match( scan, transformation ) ) 
         {
             // Compute delta

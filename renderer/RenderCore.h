@@ -77,7 +77,6 @@ enum CUSTOM_EVENT_TYPES
         CustomTable( const char * arrangement="<", glv::space_t padX=3, glv::space_t padY=3, const glv::Rect& r= glv::Rect(0)) 
             : Table( arrangement, padX, padY, r )
         {
-              //this->enable( glv::DrawBack | glv::DrawBorder | glv::CropChildren | glv::FocusHighlight | glv::Controllable);
               this->enable( glv::DrawBack | glv::Controllable);
         }
 

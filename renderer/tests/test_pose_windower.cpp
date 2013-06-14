@@ -25,8 +25,6 @@ int main (int argc, char ** argv)
     // Constant time iterator over LIDAR
     L3::ConstantTimeIterator< L3::LMS151 > LIDAR_iterator( dataset.LIDAR_readers[ mission.declined ] );
     
-    double time = dataset.start_time;
-
     L3::ConstantTimeWindower<L3::LHLV> pose_windower( &iterator ); 
 
     /*

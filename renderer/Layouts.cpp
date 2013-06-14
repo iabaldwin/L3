@@ -528,7 +528,7 @@ namespace L3
             /*
              *  Cost visualisation
              */
-            algorithm_costs_renderer = boost::make_shared< L3::Visualisers::AlgorithmCostRendererLeaf >( boost::shared_ptr< L3::Estimator::Algorithm<double> >() );
+            //algorithm_costs_renderer = boost::make_shared< L3::Visualisers::AlgorithmCostRendererLeaf >( boost::shared_ptr< L3::Estimator::Algorithm<double> >() );
 
             /*
              *  Experience histogram voxel
@@ -579,9 +579,9 @@ namespace L3
             /*
              *  Predicted estimates
              */
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            algorithm_costs_renderer->algorithm = runner->algorithm;
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
+            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
+            //algorithm_costs_renderer->algorithm = runner->algorithm;
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
             
             /*
              *  Experience overview
@@ -623,6 +623,14 @@ namespace L3
                 tables.push_back( algorithm_renderer );
                 algorithm_renderer->pos( window.width()-(555), 0); 
                 top << *algorithm_renderer;
+         
+                if( toggler )
+                {
+                    if( toggler->current_table == 2 )
+                        algorithm_renderer->enable( glv::Visible );
+                    else
+                        algorithm_renderer->disable( glv::Visible );
+                }
             }
        
             return true;
