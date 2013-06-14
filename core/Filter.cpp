@@ -7,14 +7,7 @@ namespace L3
         template <typename T>
             SE3 ParticleFilter<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
-                //boost::shared_ptr< L3::ConstantTimeIterator<L3::LHLV> > constant_time_iterator = this->iterator.lock();
                 boost::shared_ptr< L3::VelocityProvider > velocity_provider = this->iterator.lock();
-
-                if( !velocity_provider  )
-                {
-                    std::cerr << "No velocity window, cannot continue..." << std::endl;
-                    exit(-1);
-                }
 
                 if ( !initialised && !(estimate == L3::SE3::ZERO() ) )
                 {
@@ -33,10 +26,16 @@ namespace L3
                         *it = L3::SE3( x_generator()+estimate.X(), y_generator()+estimate.Y(), 0, 0, 0, theta_generator()+estimate.Q() );
 
                     initialised = true;
+                    
                     return estimate;
                 }
 
-                
+                if( previous_time == 0 )
+                {
+                    previous_time = current_time;
+                    return estimate; 
+                }
+
                 // Find the new data, between the last update time and now
                 VELOCITY_WINDOW_ITERATOR index = std::lower_bound( velocity_provider->filtered_velocities.begin(), 
                         velocity_provider->filtered_velocities.end(), 
@@ -48,9 +47,26 @@ namespace L3
                 // Add in the newly-seen data
                 _window_delta_buffer.assign( index, velocity_provider->filtered_velocities.end() );
 
-                if ( _window_delta_buffer.empty() )
-                    return estimate;
+                // Compute time elapsed
+                double dt = current_time - previous_time;
+              
+                //std::cout << dt << ':' << _window_delta_buffer.size() << std::endl;
 
+                //std::cout << velocity_provider->filtered_velocities.front().first << ":" << 
+                    //velocity_provider->filtered_velocities.back().first << std::endl;
+                
+                //std::cout << "----------------------" << std::endl;
+
+                
+                //if ( _window_delta_buffer.empty() )
+                //{
+                    ////std::cout << _window_delta_buffer.size() << std::endl;
+                    ////std::cout << velocity_provider->filtered_velocities.front().first << ':' << velocity_provider->filtered_velocities.back().first << std::endl;
+                    ////std::cout << previous_time << std::endl;
+                    //return estimate;
+
+                //}
+                
                 double mean_linear_velocity = 0.0;
                 double mean_rotational_velocity = 0.0;
 
@@ -75,9 +91,6 @@ namespace L3
 
                 L3::ReadLock histogram_lock( (*this->pyramid)[pyramid_index]->mutex );
 
-                if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
-                    return estimate;    // Point cloud is empty
-                    
                 double q, x_vel, y_vel, velocity_delta, x, y;
 
                 //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
@@ -89,16 +102,12 @@ namespace L3
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
 
-                // Compute time
-                double dt = current_time - previous_time;
-
-                previous_time = current_time;
-                
-                if ( dt > 1 )
-                    return estimate;
-
                 std::vector< L3::SE3 > delta;
                 delta.reserve( hypotheses.size() );
+
+                if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
+                    //return estimate;    // Point cloud is empty
+                    throw std::exception();
 
                 // Apply the constant average velocities to the particles
                 for( PARTICLE_ITERATOR it = hypotheses.begin();
@@ -145,7 +154,7 @@ namespace L3
                 std::vector< L3::SE3 > resampled;
                 resampled.reserve( hypotheses.size() );
 
-                // Sample
+                //Sample
                 for( int i=0; i<num_particles; i++ )
                 {
                     double d = uniform( rng );
@@ -154,7 +163,12 @@ namespace L3
                 }
 
                 hypotheses.swap( resampled );
-
+                
+                previous_time = current_time;
+              
+                // End
+                previous_time = current_time;
+                
                 return this->current_prediction;
            
             }

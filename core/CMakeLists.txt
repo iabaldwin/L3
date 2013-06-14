@@ -1,4 +1,5 @@
 add_library( L3 
+    Core.cpp
     Dataset.cpp 
     Datatypes.cpp 
     Iterator.cpp 

@@ -367,9 +367,9 @@ namespace L3
              *  Velocity plots
              */
             linear_velocity_plotter_lhlv->iterator                      = runner->lhlv_velocity_provider;    
-            linear_velocity_plotter_sm->iterator                        = runner->filtered_scan_matching_velocity_provider;    
             linear_velocity_plotter_scan_matching->iterator             = runner->scan_matching_velocity_provider;       
             linear_velocity_plotter_scan_matching_unfiltered->iterator  = runner->scan_matching_velocity_provider; 
+            linear_velocity_plotter_sm->iterator                        = runner->filtered_scan_matching_velocity_provider;    
             
             rotational_velocity_plotter_scan_matching->iterator         = runner->scan_matching_velocity_provider;       
             rotational_velocity_plotter_lhlv->iterator                  = runner->lhlv_velocity_provider;     
@@ -379,6 +379,7 @@ namespace L3
             linear_velocity_plotter_sm->setTime(                        runner->current_time );
             linear_velocity_plotter_scan_matching->setTime(             runner->current_time );
             linear_velocity_plotter_scan_matching_unfiltered->setTime(  runner->current_time );
+            
             rotational_velocity_plotter_lhlv->setTime(                  runner->current_time );
             rotational_velocity_plotter_scan_matching->setTime(         runner->current_time );
 

@@ -193,10 +193,10 @@ namespace L3
         if (!layout)
             return std::make_pair( false, "CI::No associated layout : " + load_command); 
 
-
         if( boost::shared_ptr< EstimatorRunner > runner = boost::dynamic_pointer_cast< EstimatorRunner >( container->runner) )
         {
             L3::WriteLock algorithm_lock( runner->mutex );
+            
             boost::shared_ptr< L3::Estimator::CostFunction<double > > cost_function = runner->algorithm->cost_function; 
 
             std::string algo_target( load_command );
@@ -207,10 +207,10 @@ namespace L3
             if( !algo )
                 return std::make_pair( false, "CI::Failed to load <" + algo_target + ">" );
 
-            // Assign cost function
+            //Assign cost function
             algo->cost_function = cost_function;
 
-            // Set algorithm
+            //Set algorithm
             runner->setAlgorithm( algo );
     
             // Reset pose
@@ -218,6 +218,8 @@ namespace L3
 
             // Associate algorithm, visually
             dynamic_cast< L3::Visualisers::EstimatorLayout* >( layout )->algorithm( algo );
+
+            algorithm_lock.unlock();
 
             return std::make_pair( true, "CI::Loaded< Algorithm >" );
         
@@ -441,7 +443,6 @@ namespace L3
         return std::make_pair( true, "CI::Clear" );
     }
 
-        
     std::pair< bool, std::string > CommandInterface::stop( const std::string& command )
     {
         container->runner->paused = true;

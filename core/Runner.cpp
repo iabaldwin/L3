@@ -69,10 +69,10 @@ namespace L3
                 << LHLV_iterator.get() 
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
-                << velocity_source.get()
                 << lhlv_velocity_provider.get()
                 << filtered_scan_matching_velocity_provider.get() 
                 << scan_matching_velocity_provider.get() 
+                << velocity_source.get()
                 << engine.get() 
                 << pose_windower.get() 
                 << swathe_builder.get() 
@@ -130,7 +130,7 @@ namespace L3
                 /*
                  *Recompute swathe
                  */
-                swathe_builder->update( current_time );
+                swathe_builder->update( 0.0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
                 /*
@@ -187,10 +187,12 @@ namespace L3
         /*
          *  Do estimation
          */
-       
+      
         L3::ReadLock algo_lock( this->mutex ); 
         *current = algorithm->operator()( projector->cloud, *current );
-        algo_lock.unlock();
+        //algorithm->operator()( projector->cloud, *current );
+        //algorithm->operator()( projector->cloud, *current );
+        //algo_lock.unlock();
         
         return true;
     }

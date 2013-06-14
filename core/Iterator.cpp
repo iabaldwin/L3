@@ -7,18 +7,17 @@ namespace L3
 template <typename T>
 void Iterator<T>::getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window)  
 {
-    this->mutex.lock();
+    L3::ReadLock lock( this->mutex );
 
     window.resize( this->window.size() );
     std::copy( this->window.begin(), this->window.end(), window.begin() );
-    
-    this->mutex.unlock();
+   
+    lock.unlock();
 }
 
 template <typename T>
 bool ConstantTimeIterator<T>::update( double time )
 {
-
     // Update the watcher with the new time
     boost::shared_ptr< L3::SlidingWindow<T> > windower_ptr = this->windower.lock();
 
@@ -37,17 +36,16 @@ bool ConstantTimeIterator<T>::update( double time )
     {
         std::cout.precision(15);
         std::cout << __PRETTY_FUNCTION__ << time << "->" << this->buffered_window.front().first << ":" << this->buffered_window.back().first << std::endl;
-        //L3::Misc::print_stack_trace();
         return false; 
     }
 
-    it = ( fabs(( it-1 )->first - time)  ) < ( fabs(( it )->first - time)  ) ? ( it-1) : it;
+    //it = ( fabs(( it-1 )->first - time)  ) < ( fabs(( it )->first - time)  ) ? ( it-1) : it;
 
     double data_swathe_length = 0;
 
     typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it_back_iterator = it;
 
-    this->mutex.lock();
+    L3::WriteLock lock( this->mutex );
     this->window.clear();
  
     double swathe_length_local = swathe_length;
@@ -68,7 +66,7 @@ bool ConstantTimeIterator<T>::update( double time )
         it_back_iterator--;
     }
     
-    this->mutex.unlock();
+    lock.unlock();
 
     return true;
 }

@@ -13,12 +13,10 @@ namespace L3
 
 struct Observer
 {
-
     virtual ~Observer()
     {
 
     }
-
 };
 
 struct Updateable
@@ -30,14 +28,11 @@ struct Updater
 {
     std::list < Updateable* > updateables;
 
-    void update()
-    {
-        std::for_each( updateables.begin(), updateables.end(), std::mem_fun( &Updateable::update ) );
-    }
+    void update();
 
     Updater& operator<<( Updateable* updateable )
     {
-        updateables.push_front( updateable );
+        updateables.push_back( updateable );
 
         return *this;
     }

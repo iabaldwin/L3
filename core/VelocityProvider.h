@@ -83,6 +83,7 @@ struct LHLVVelocityProvider : VelocityProvider
 
     Comparator< std::pair< double, boost::shared_ptr< L3::LHLV > > > comparator;
     Comparator< std::pair< double, std::vector< double > > > velocity_comparator;       
+    
     L3::ConstantTimeIterator< L3::LHLV > * iterator;
     
     zipper z;

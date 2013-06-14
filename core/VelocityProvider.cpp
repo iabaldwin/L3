@@ -121,25 +121,44 @@ namespace L3
     
     bool LHLVVelocityProvider::update( double time  )
     {
-        LHLV_ITERATOR it = std::lower_bound(
-                iterator->window.begin(),
-                iterator->window.end(),
-                previous_update,
-                comparator
-                );
+        filtered_velocities.clear();
 
-        std::transform( it, 
+        std::transform( iterator->window.begin(), 
                 iterator->window.end(),
                 std::back_inserter( filtered_velocities ),
                 z );
 
-        if( !filtered_velocities.empty() )
-        {
-            while( filtered_velocities.front().first - filtered_velocities.back().first > 10.0 )
-                filtered_velocities.pop_front();
+        //if( !iterator->window.empty())
+        //{
+            //std::cout << time << std::endl;
+            //std::cout << iterator->window.front().first << ':' << iterator->window.back().first << std::endl;
+            //std::cout << iterator->window.back().first - time << std::endl; 
+            //std::cout << "--------------" << std::endl;
 
-            previous_update = iterator->window.back().first;
-        }
+            ////std::cout << filtered_velocities.front().first << ':' << filtered_velocities.back().first << std::endl;
+            ////std::cout << time - filtered_velocities.front().first << ':' << filtered_velocities.back().first - time<< std::endl;
+
+        //}
+        
+        //LHLV_ITERATOR it = std::lower_bound(
+                //iterator->window.begin(),
+                //iterator->window.end(),
+                //previous_update,
+                //comparator
+                //);
+
+        //std::transform( it, 
+                //iterator->window.end(),
+                //std::back_inserter( filtered_velocities ),
+                //z );
+
+        //if( !filtered_velocities.empty() )
+        //{
+            //while( filtered_velocities.front().first - filtered_velocities.back().first > 10.0 )
+                //filtered_velocities.pop_front();
+
+            //previous_update = iterator->window.back().first;
+        //}
         
         return ( !filtered_velocities.empty() );
     }

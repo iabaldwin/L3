@@ -15,7 +15,7 @@ namespace L3
 {
 
 template <typename T>
-class Iterator : public TemporalObserver
+class Iterator : public TemporalObserver, public Lockable
 {
     public:
     
@@ -33,8 +33,6 @@ class Iterator : public TemporalObserver
         void getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window);
 
     protected:
-
-        Poco::Mutex mutex;
 
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > buffered_window;
