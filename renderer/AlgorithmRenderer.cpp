@@ -18,34 +18,34 @@ namespace L3
 
             // Note : this is going to be an issue
             //L3::ReadLock lock( algorithm_ptr->mutex );
-            //std::vector< L3::SE3 > evaluations( algorithm_ptr->evaluations.begin(), algorithm_ptr->evaluations.end() );
+            std::vector< L3::SE3 > evaluations( algorithm_ptr->evaluations.begin(), algorithm_ptr->evaluations.end() );
             //lock.unlock();
             
-            //far(150);
+            far(150);
 
-            //glv::draw::translate( -1*evaluations.back().X(), -1*evaluations.back().Y(), -5 );
+            glv::draw::translate( -1*evaluations.back().X(), -1*evaluations.back().Y(), -5 );
 
-            //glv::Point3 vertices[evaluations.size()];
-            //glv::Color  colors[evaluations.size()];
+            glv::Point3 vertices[evaluations.size()];
+            glv::Color  colors[evaluations.size()];
 
-            //int counter=0;
-            //for( std::vector< L3::SE3 >::iterator it = evaluations.begin();
-                    //it != evaluations.end();
-                    //it++ )
-            //{
-                //vertices[counter](it->X(), it->Y(), 0.0 );
-                //colors[counter].set( interpolator( double(counter)/evaluations.size() ) );
-                //counter++;
-            //}
+            int counter=0;
+            for( std::vector< L3::SE3 >::iterator it = evaluations.begin();
+                    it != evaluations.end();
+                    it++ )
+            {
+                vertices[counter](it->X(), it->Y(), 0.0 );
+                colors[counter].set( interpolator( double(counter)/evaluations.size() ) );
+                counter++;
+            }
             
-            //glv::draw::pointSize(3);
-            //glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-            //glv::draw::pointSize(1);
-            //glv::draw::lineWidth(.1);
-            //glv::draw::paint( glv::draw::LineStrip, vertices, colors, counter );
+            glv::draw::pointSize(3);
+            glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+            glv::draw::pointSize(1);
+            glv::draw::lineWidth(.1);
+            glv::draw::paint( glv::draw::LineStrip, vertices, colors, counter );
 
-            //CoordinateSystem( evaluations.front(), .1 ).onDraw3D(g);
-            //CoordinateSystem( evaluations.back(), .1 ).onDraw3D(g);
+            CoordinateSystem( evaluations.front(), 1 ).onDraw3D(g);
+            CoordinateSystem( evaluations.back(), 1 ).onDraw3D(g);
         }
 
         IterativeDescentVisualiser::IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm, Updater* updater ) 

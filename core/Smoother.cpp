@@ -5,7 +5,7 @@ namespace L3
     template <typename T>
         void LogisticSmoother<T>::smooth( L3::Histogram<T>* hist ) 
         {
-            double tmp = 150;
+            double tmp = 250;
 
             double* bin_ptr = hist->hist->bin;
             for( unsigned int x = 0; x < hist->hist->nx*hist->hist->ny; x++ )
@@ -53,7 +53,8 @@ namespace L3
                         }
                     }
 
-                    result [(x * hist->y_bins) + y] = (sum)/pow(N,2);
+                    //result [(x * hist->y_bins) + y] = (sum)/pow(N,2);
+                    result [(x * hist->y_bins) + y] = sum;
                 }
 
             std::copy( result, 

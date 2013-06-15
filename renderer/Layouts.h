@@ -55,12 +55,11 @@ namespace Visualisers
             
             }
 
-            boost::shared_ptr< Incrementer<int> > y_inc;
-            boost::shared_ptr< Incrementer<double> > x_inc;
-            
-            void addRotationalVelocityPlot();
-
+            /*
+             *Velocity plots
+             */
             void addLinearVelocityPlot();
+            void addRotationalVelocityPlot();
 
             bool addExtra( std::string description, boost::shared_ptr< Leaf > renderable )
             {
@@ -108,7 +107,7 @@ namespace Visualisers
             glv::Window& window; 
             boost::shared_ptr< glv::View > main_view;
             
-            std::list< glv::View* > renderables;
+            std::list< glv::View* >                         renderables;
             boost::shared_ptr< Composite>                   composite;
             std::list< boost::shared_ptr< glv::Plot > >     plots;
             std::list< boost::shared_ptr< glv::View > >     labels;
@@ -133,10 +132,10 @@ namespace Visualisers
 
 
             boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_lhlv;
-            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_sm;
-            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_scan_matching;
-            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_scan_matching_unfiltered;
-            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_scan_matching;
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_ics;
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_ics_unfiltered;
+            boost::shared_ptr< VelocityPlotter > linear_velocity_plotter_icp;
+            boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_ics;
             boost::shared_ptr< VelocityPlotter > rotational_velocity_plotter_lhlv;
 
             boost::shared_ptr< WASDManager > selection_manager;

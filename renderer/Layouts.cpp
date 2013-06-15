@@ -14,14 +14,18 @@ namespace L3
             linear_velocity_plotter_lhlv = boost::make_shared< LinearVelocityPlotter >();
             linear_velocity_plotter_lhlv->stroke( 2.0 );
 
-            linear_velocity_plotter_sm = boost::make_shared< LinearVelocityPlotter >();
-            linear_velocity_plotter_sm->stroke( 1.0 );
-            
-            linear_velocity_plotter_scan_matching = boost::make_shared< LinearVelocityPlotter >();
-            linear_velocity_plotter_scan_matching->stroke( 2.0 );
-            
-            linear_velocity_plotter_scan_matching_unfiltered = boost::make_shared< LinearVelocityPlotter >( false );
-            linear_velocity_plotter_scan_matching_unfiltered->stroke( 1.0 );
+            linear_velocity_plotter_ics = boost::make_shared< LinearVelocityPlotter >();
+            linear_velocity_plotter_ics->stroke( 1.0 );
+          
+            glv::Color c( 227/255.0, 66.0/255.0, 52.0/255.0 );
+            linear_velocity_plotter_ics->color( c );
+
+            linear_velocity_plotter_icp = boost::make_shared< LinearVelocityPlotter >();
+            linear_velocity_plotter_icp->stroke( 2.0 );
+
+            // Unfiltered
+            linear_velocity_plotter_ics_unfiltered = boost::make_shared< LinearVelocityPlotter >( false );
+            linear_velocity_plotter_ics_unfiltered->stroke( 2.0 );
 
             // Add plot region
             boost::shared_ptr< glv::Plot > plot_region 
@@ -29,9 +33,9 @@ namespace L3
                         );
                         
             plot_region->add( boost::ref( *linear_velocity_plotter_lhlv ) );
-            plot_region->add( boost::ref( *linear_velocity_plotter_sm) );
-            plot_region->add( boost::ref( *linear_velocity_plotter_scan_matching ) );
-            plot_region->add( boost::ref( *linear_velocity_plotter_scan_matching_unfiltered ) );
+            plot_region->add( boost::ref( *linear_velocity_plotter_ics) );
+            plot_region->add( boost::ref( *linear_velocity_plotter_icp ) );
+            plot_region->add( boost::ref( *linear_velocity_plotter_ics_unfiltered ) );
 
             linear_velocity_plotter_lhlv->plot_parent = plot_region;
 
@@ -47,9 +51,9 @@ namespace L3
 
             // Mark as updateable
             temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_lhlv.get()) );
-            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_sm.get()) );
-            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_scan_matching.get()) );
-            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_scan_matching_unfiltered.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_ics.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_icp.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_ics_unfiltered.get()) );
 
             boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Linear velocity (m/s)" );
             velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
@@ -69,15 +73,17 @@ namespace L3
             rotational_velocity_plotter_lhlv = boost::make_shared< RotationalVelocityPlotter>();
             rotational_velocity_plotter_lhlv->stroke( 2.0 );
 
-            rotational_velocity_plotter_scan_matching = boost::make_shared< RotationalVelocityPlotter>();
-            rotational_velocity_plotter_scan_matching->stroke( 2.0 );
+            glv::Color c( 119.0/255.0, 221.0/255.0, 119.0/255.0 );
+            rotational_velocity_plotter_ics = boost::make_shared< RotationalVelocityPlotter>();
+            rotational_velocity_plotter_ics->stroke( 1.0 );
+            rotational_velocity_plotter_ics->color(c); 
 
             boost::shared_ptr< glv::Plot > plot_region 
                 = boost::make_shared< glv::Plot >( glv::Rect( 0, 650+5, .6*window.width(), 150-5)
                         );
 
             plot_region->add( boost::ref( *rotational_velocity_plotter_lhlv ) );
-            plot_region->add( boost::ref( *rotational_velocity_plotter_scan_matching ) );
+            plot_region->add( boost::ref( *rotational_velocity_plotter_ics ) );
 
             rotational_velocity_plotter_lhlv->plot_parent = plot_region;
 
@@ -100,7 +106,7 @@ namespace L3
 
             // Mark as updateable
             temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter_lhlv.get()) );
-            temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter_scan_matching.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter_ics.get()) );
 
             boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Rotational velocity. (rad/s)" );
             velocity_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
@@ -366,22 +372,22 @@ namespace L3
             /*
              *  Velocity plots
              */
-            linear_velocity_plotter_lhlv->iterator                      = runner->lhlv_velocity_provider;    
-            linear_velocity_plotter_scan_matching->iterator             = runner->scan_matching_velocity_provider;       
-            linear_velocity_plotter_scan_matching_unfiltered->iterator  = runner->scan_matching_velocity_provider; 
-            linear_velocity_plotter_sm->iterator                        = runner->filtered_scan_matching_velocity_provider;    
+            linear_velocity_plotter_lhlv->iterator            = runner->lhlv_velocity_provider;    
+            linear_velocity_plotter_icp->iterator             = runner->icp_velocity_provider;       
+            linear_velocity_plotter_ics_unfiltered->iterator  = runner->ics_velocity_provider; 
+            linear_velocity_plotter_ics->iterator             = runner->ics_velocity_provider;    
             
-            rotational_velocity_plotter_scan_matching->iterator         = runner->scan_matching_velocity_provider;       
-            rotational_velocity_plotter_lhlv->iterator                  = runner->lhlv_velocity_provider;     
+            rotational_velocity_plotter_ics->iterator         = runner->ics_velocity_provider;       
+            rotational_velocity_plotter_lhlv->iterator        = runner->lhlv_velocity_provider;     
 
             // Bind times
-            linear_velocity_plotter_lhlv->setTime(                      runner->current_time );
-            linear_velocity_plotter_sm->setTime(                        runner->current_time );
-            linear_velocity_plotter_scan_matching->setTime(             runner->current_time );
-            linear_velocity_plotter_scan_matching_unfiltered->setTime(  runner->current_time );
+            linear_velocity_plotter_lhlv->setTime(            runner->current_time );
+            linear_velocity_plotter_ics->setTime(             runner->current_time );
+            linear_velocity_plotter_icp->setTime(             runner->current_time );
+            linear_velocity_plotter_ics_unfiltered->setTime(  runner->current_time );
             
-            rotational_velocity_plotter_lhlv->setTime(                  runner->current_time );
-            rotational_velocity_plotter_scan_matching->setTime(         runner->current_time );
+            rotational_velocity_plotter_lhlv->setTime(        runner->current_time );
+            rotational_velocity_plotter_ics->setTime(         runner->current_time );
 
             /*
              *  Scale

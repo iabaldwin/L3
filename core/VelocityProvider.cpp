@@ -44,12 +44,11 @@ namespace L3
     FilteredScanMatchingVelocityProvider::FilteredScanMatchingVelocityProvider( boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider ) 
         : velocity_provider(velocity_provider)
     {
-        _linear_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.05,0.001);
-        _rotational_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.05,0.0001);
+        _linear_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.1, .01);
+        _rotational_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.05,0.01);
     
         raw_velocity_data.second.resize( 4);
         filtered_velocity_data.second.resize( 4);
-
     }
 
     struct sm_zipper : std::unary_function< std::pair<double, boost::shared_ptr<SMVelocity> >, std::pair< double, std::vector<double> > >
@@ -66,8 +65,6 @@ namespace L3
         {
             return std::make_pair( entry.first, entry.second->data );
         }
-
-
     };
 
     bool FilteredScanMatchingVelocityProvider::update( double time )
@@ -79,6 +76,7 @@ namespace L3
 
         double linear_velocity     = velocity_provider_ptr->window.back().second->data[0];
         double rotational_velocity = velocity_provider_ptr->window.back().second->data[3];
+        
         _linear_velocity_filter->update( velocity_provider_ptr->window.back().first, linear_velocity );
         _rotational_velocity_filter->update( velocity_provider_ptr->window.back().first, rotational_velocity );
 
@@ -88,7 +86,8 @@ namespace L3
 
         filtered_velocity_data.first = velocity_provider_ptr->window.back().first;
         filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
-        filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
+        //filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
+        filtered_velocity_data.second[3] = rotational_velocity;
 
         raw_velocities.push_back( raw_velocity_data );
         filtered_velocities.push_back( filtered_velocity_data );

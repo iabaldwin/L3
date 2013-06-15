@@ -20,6 +20,7 @@ namespace L3
         // LIDAR iterators
         horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->horizontal] );
         vertical_LIDAR   = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->declined] );
+        
         // Velocity iterator 
         velocity_source = boost::make_shared< L3::ConstantTimeIterator< L3::SMVelocity > >( dataset->velocity_reader );
 
@@ -37,14 +38,14 @@ namespace L3
         engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
 
         // Velocity providers
-        lhlv_velocity_provider          = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
-        scan_matching_velocity_provider = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
-        filtered_scan_matching_velocity_provider = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );
+        lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
+        icp_velocity_provider  = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
+        ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );
 
         // Pose Provider
         //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
         //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( lhlv_velocity_provider.get(), 40 );
-        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( filtered_scan_matching_velocity_provider.get(), 40 );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
        
         // Swathe generator
         //swathe_builder = boost::make_shared< L3::RawSwatheBuilder > ( pose_windower.get(), vertical_LIDAR.get() );
@@ -70,8 +71,8 @@ namespace L3
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
                 << lhlv_velocity_provider.get()
-                << filtered_scan_matching_velocity_provider.get() 
-                << scan_matching_velocity_provider.get() 
+                << ics_velocity_provider.get() 
+                << icp_velocity_provider.get() 
                 << velocity_source.get()
                 << engine.get() 
                 << pose_windower.get() 
@@ -116,7 +117,7 @@ namespace L3
                 /*
                  *Recompute swathe
                  */
-                swathe_builder->update( 0.0 );
+                swathe_builder->update( 0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
                 /*
@@ -131,7 +132,7 @@ namespace L3
                 /*
                  *Update everything else
                  */
-                update( current_time );
+                update( 0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
                 if( stand_alone )
@@ -176,12 +177,12 @@ namespace L3
 
         static int counter = 0;
 
-        if( counter++ < 20 )
+        if( counter++ < 1000 )
             *current = oracle->operator()();
         else
         {
-        L3::ReadLock algo_lock( this->mutex ); 
-        *current = algorithm->operator()( projector->cloud, *current );
+            L3::ReadLock algo_lock( this->mutex ); 
+            *current = algorithm->operator()( projector->cloud, *current );
         }
 
         return true;

@@ -62,8 +62,6 @@ namespace L3
     {
         if( LIDAR_iterator->window.empty() || pose_windower->window->empty() )
             return false;
-      
-        std::cout.precision( 15 );
 
         // Rebuild swathe completely
         swathe.clear();
@@ -89,6 +87,8 @@ namespace L3
 
             if ( index == _window_buffer.end() )
             {
+                std::cerr.precision( 15 );
+                
                 std::cerr << "LIDAR" << std::endl;
                 for(std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > >::iterator lidar_it = LIDAR_iterator->window.begin();
                         lidar_it != LIDAR_iterator->window.end();
@@ -103,8 +103,8 @@ namespace L3
                         buf_it++)
                     std::cerr << buf_it->first << std::endl;
                 std::cerr << "-------------" << std::endl;
+                
                 std::cerr << it->first << std::endl;
-
                 std::cerr << previous_update << std::endl;
 
                 std::cerr << "Missing data." << std::endl;

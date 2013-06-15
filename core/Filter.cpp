@@ -30,11 +30,6 @@ namespace L3
                     return estimate;
                 }
 
-                if( previous_time == 0 )
-                {
-                    previous_time = current_time;
-                    return estimate; 
-                }
 
                 // Find the new data, between the last update time and now
                 VELOCITY_WINDOW_ITERATOR index = std::lower_bound( velocity_provider->filtered_velocities.begin(), 
@@ -47,8 +42,9 @@ namespace L3
                 // Add in the newly-seen data
                 _window_delta_buffer.assign( index, velocity_provider->filtered_velocities.end() );
 
-                // Compute time elapsed
-                double dt = current_time - previous_time;
+                if ( _window_delta_buffer.empty() )
+                    return estimate;
+
               
                 double mean_linear_velocity = 0.0;
                 double mean_rotational_velocity = 0.0;
@@ -75,14 +71,29 @@ namespace L3
 
                 double q, x_vel, y_vel, velocity_delta, x, y;
 
-                boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .75 );
-                boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .005 );
+                //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .05 );
+                //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .005 );
+
+                //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .5 );
+                //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .1 );
+
+                boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, 3 );
+                boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .2 );
 
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
 
+                // Compute time elapsed
+                double dt = current_time - previous_time;
+
                 std::vector< L3::SE3 > delta;
                 delta.reserve( hypotheses.size() );
+
+                previous_time = current_time;
+
+                if ( dt > 1 )
+                    return estimate;
+
 
                 if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
                     throw std::exception();
@@ -137,12 +148,12 @@ namespace L3
                 {
                     double d = uniform( rng );
 
+                    std::cout << d << std::endl;
+
                     resampled.push_back( hypotheses[ std::distance( cdf.begin(), std::lower_bound( cdf.begin(), cdf.end(), d ) )] ); 
                 }
 
                 hypotheses.swap( resampled );
-              
-                previous_time = current_time;
                 
                 return this->current_prediction;
            
