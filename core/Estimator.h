@@ -359,7 +359,9 @@ namespace Estimator
 
         };
 
-    //Minimisation global 
+    /*
+     *  Minimisation 
+     */
     double global_minimisation_function( const gsl_vector * x, void * params);
 
     struct MinimisationParameters
@@ -409,6 +411,7 @@ namespace Estimator
         
             PointCloud<T>* current_swathe;
 
+            L3::SE3 predicted;
             std::vector< L3::SE3 > evaluations;
 
             SE3 operator()( PointCloud<T>* swathe, SE3 estimate );

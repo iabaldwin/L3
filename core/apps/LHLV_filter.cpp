@@ -37,14 +37,14 @@ int main( int argc, char** argv )
     if (!LIDAR_reader->open( dataset.path() + "/LMS1xx_10420002_192.168.0.50.lidar" ) )
         throw std::exception();
 
-    std::vector< std::pair< double, boost::shared_ptr<L3::LHLV > > >    velocities;
+    std::vector< std::pair< double, boost::shared_ptr<L3::LHLV > > >  velocities;
     std::vector< std::pair< double, boost::shared_ptr<L3::LMS151> > > scans;
     
     // Read *all* the velocities
     LHLV_reader->read();
     LHLV_reader->extract( velocities );
     
-    std::vector< std::pair< double, boost::shared_ptr<L3::LHLV > > >    matched_velocities;
+    std::vector< std::pair< double, boost::shared_ptr<L3::LHLV > > >  matched_velocities;
 
     // Read LIDAR data, element at a time
     while( LIDAR_reader->read() )

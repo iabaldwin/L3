@@ -49,13 +49,15 @@ int main( int argc, char* argv[] )
     //L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::SSDCostFunction<double>();
     
     //boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algo( new L3::Estimator::IterativeDescent<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >( cost_function), experience->experience_pyramid ));
-    boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Minimisation<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid ));
+    //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Minimisation<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid ));
     //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::PassThrough<double>(cost_function, experience->experience_pyramid ));
     //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::Hybrid<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid ));
     
     // Create runner
     boost::shared_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( dataset, mission, experience.get() ) );
     runner->stand_alone = true;
+    
+    boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::ParticleFilter<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid, runner->lhlv_velocity_provider ) );
     
     runner->setAlgorithm( algo );
     runner->start();

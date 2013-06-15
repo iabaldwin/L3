@@ -94,7 +94,6 @@ namespace L3
                 if ( dt > 1 )
                     return estimate;
 
-
                 if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
                     throw std::exception();
 
@@ -116,6 +115,7 @@ namespace L3
                     delta.push_back( L3::SE3( x, y, 0, 0, 0, q ) );
 
                     group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[pyramid_index].get(), this->cost_function.get(), result_iterator++ ) );
+                    //Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[pyramid_index].get(), this->cost_function.get(), result_iterator++ )();
                 }
 
                 group.wait();
@@ -147,8 +147,6 @@ namespace L3
                 for( int i=0; i<num_particles; i++ )
                 {
                     double d = uniform( rng );
-
-                    std::cout << d << std::endl;
 
                     resampled.push_back( hypotheses[ std::distance( cdf.begin(), std::lower_bound( cdf.begin(), cdf.end(), d ) )] ); 
                 }

@@ -35,11 +35,18 @@ namespace L3
 
     bool ConstantDistanceWindower::update( double time )
     {
+       
+        if( velocity_provider->filtered_velocities.empty() )
+            return false;
+
         // Find the new data, between the last update time and now
         L3::VelocityProvider::VELOCITY_ITERATOR index = std::lower_bound( velocity_provider->filtered_velocities.begin(),
                 velocity_provider->filtered_velocities.end(),
                 previous_update,
                 comparator );
+        
+        if ( index->first == previous_update )
+            index++;
 
         // Create a delta buffer
         VELOCITY_WINDOW _window_delta_buffer;

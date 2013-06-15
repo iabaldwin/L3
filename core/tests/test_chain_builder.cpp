@@ -8,7 +8,7 @@ int main()
         L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
 
         if( !(dataset.validate() && dataset.load() ) )
-            throw std::exception();
+            exit(-1);
 
         // Constant time iterator over LHLV data
         L3::ConstantTimeIterator< L3::LHLV > iterator( dataset.LHLV_reader );

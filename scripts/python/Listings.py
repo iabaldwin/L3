@@ -15,4 +15,18 @@ class Listing:
         return datasets
 
 
+    @staticmethod
+    def listExperiences():
+        datasets = Listing.listDatasets()
+
+        experiences = []
+
+        for dataset in datasets:
+
+            if os.path.exists( os.path.join( dataset, 'L3', 'experience.dat' ) ):
+                experiences.append( dataset )
+
+
+        return experiences
+
 

@@ -17,43 +17,8 @@
 #include "MI/MutualInformation.h"
 #include "MI/RenyiMutualInformation.h"
 
-template <typename T>
-struct DataWriter : Poco::Runnable
-{
-
-    DataWriter( T* t ) : t(t)
-    {
-        
-    }
-
-    T* t;
-        
-    Poco::Thread thread;
-
-    std::string target;
-
-    ~DataWriter()
-    {
-    }
-
-    virtual void write( std::string target )
-    {
-        this->target = target;
-        thread.start( *this );
-    }
-
-    virtual void run()
-    {
-        std::ofstream output( target.c_str() );
-        output << *t;
-        output.close(); 
-    }
-
-};
-
 namespace L3
 {
-
     namespace Estimator
     {
         /*
@@ -396,6 +361,10 @@ namespace L3
                 if( timer.elapsed() < 1.0/this->fundamental_frequency )
                     return estimate;
 
+                //DBG
+                predicted = estimate;
+                //DBG
+
                 timer.begin();
 
                 L3::WriteLock master( this->mutex );
@@ -403,7 +372,16 @@ namespace L3
 
                 _cost_function = this->cost_function.get();
 
-                current_swathe = swathe;
+                boost::scoped_ptr< L3::PointCloud<double> > sampled_cloud( new L3::PointCloud<double>() );
+
+                if( this->current_swathe->num_points > 20000  )
+                {
+                    L3::sample( swathe, sampled_cloud.get(), 20000 );
+                    current_swathe = sampled_cloud.get();
+                }
+                else
+                    current_swathe = swathe;
+
 
                 gsl_vector_set (x, 0, estimate.X() );
                 gsl_vector_set (x, 1, estimate.Y() );
@@ -424,7 +402,6 @@ namespace L3
                 gsl_vector_set( ss, 2, .05 );
                 }
                 gsl_vector_set( ss, 2, .05 );
-
 
                 gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
 
@@ -471,9 +448,12 @@ namespace L3
 
             evaluations.push_back( pose_estimate );
 
+            double dist = sqrt( pow( pose_estimate.X() - predicted.X(),2 ) + pow( pose_estimate.Y() - predicted.Y(),2 ) );
+
             // Estimate, here
             Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[this->pyramid_index].get() , this->_cost_function, cost.begin() )();
 
+            //return cost[0]+dist/100.0;
             return cost[0];
         }
 

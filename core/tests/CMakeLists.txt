@@ -37,8 +37,8 @@ target_link_libraries( test_ipp config L3 ${Boost_LIBRARIES} ipps )
 #add_executable( test_point_cloud_transform test_point_cloud_transform.cpp )
 #target_link_libraries( test_point_cloud_transform config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
 
-#add_executable( test_dataset_runner test_dataset_runner.cpp )
-#target_link_libraries( test_dataset_runner L3 ${Boost_LIBRARIES}  readline curses )
+add_executable( test_dataset_runner test_dataset_runner.cpp )
+target_link_libraries( test_dataset_runner L3 ${Boost_LIBRARIES} )
 
 add_executable( test_estimator_runner test_estimator_runner.cpp )
 target_link_libraries( test_estimator_runner config L3 ${Boost_LIBRARIES} )

@@ -65,7 +65,7 @@ struct RetrospectiveWithLookaheadPolicy: SelectionPolicy
  */
 struct Experience : SpatialObserver, Poco::Runnable
 {
-    Experience( std::deque<experience_section> sections, std::string& fname, boost::shared_ptr< SelectionPolicy > policy, int WINDOW=10 );
+    Experience( std::deque<experience_section> sections, std::string& fname, boost::shared_ptr< SelectionPolicy > policy, int WINDOW=2 );
     
     int                                     window;
     std::ifstream                           data;
@@ -97,12 +97,12 @@ struct ExperienceLoader
 {
     std::deque<experience_section> sections;
 
-    ExperienceLoader( const L3::Dataset& dataset, int window_sections = 10 ) : window_sections(window_sections)
+    ExperienceLoader( const L3::Dataset& dataset, int window_sections = 3 ) : window_sections(window_sections)
     {
         load( dataset.path() );
     }
 
-    ExperienceLoader( const std::string& target, int window_sections = 10 ) : window_sections(window_sections)
+    ExperienceLoader( const std::string& target, int window_sections = 3 ) : window_sections(window_sections)
     {
         load( target );
     }

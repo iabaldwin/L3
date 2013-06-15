@@ -19,8 +19,10 @@ class Iterator : public TemporalObserver, public Lockable
 {
     public:
     
-        Iterator( boost::shared_ptr<L3::SlidingWindow<T> > w ) : windower(w)
+        Iterator( boost::shared_ptr<L3::SlidingWindow<T> > window ) : windower(window)
         {
+            if ( !window )
+                throw std::runtime_error( "Invalid window" ) ;
         }
 
         virtual ~Iterator()

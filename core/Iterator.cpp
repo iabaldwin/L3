@@ -47,7 +47,8 @@ bool ConstantTimeIterator<T>::update( double time )
 
     L3::WriteLock lock( this->mutex );
     this->window.clear();
- 
+
+    // Copy, as we alter the swathe_length variable
     double swathe_length_local = swathe_length;
 
     // Working backwards, build up the data swathe
@@ -66,8 +67,15 @@ bool ConstantTimeIterator<T>::update( double time )
         it_back_iterator--;
     }
     
-    lock.unlock();
+#ifdef NDEBUG
+    if( !this->window.empty() )
+        if( time - this->window.back().first > 1.0/50.0 )
+            std::cerr << "WHAT" <<  time - this->window.back().first << std::endl;
+#endif
 
+
+    lock.unlock();
+    
     return true;
 }
 

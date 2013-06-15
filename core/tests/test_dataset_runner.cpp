@@ -2,8 +2,6 @@
 #include <fstream>
 #include <sstream>
 
-#include <readline/readline.h>
-
 #include "L3.h"
 
 int main( int argc, char* argv[] )
@@ -35,21 +33,27 @@ int main( int argc, char* argv[] )
     runner.start();
 
     std::stringstream ss;
-    ss.precision( 16 );
-  
+    //std::cout.precision( 15 );
+    ss.precision( 15 );
+
+    int counter = 0;
+
+    char glyphs[] = { '\\', '|', '/', '-' };
+
     while( true )
     {
-        ss << runner.current_time;
-
-        char* res = readline( (ss.str() + " >> ").c_str() ); 
-
-        if( std::string(res) == "stop" )
-            break;
-
-        if ( !res )
-            break;
+        ss << ">>" << glyphs[counter++] << ":" << runner.current_time;
    
-        ss.str( std::string("") );
+        if ( counter == sizeof(glyphs)/sizeof(char) )
+            counter = 0;
+
+        std::cout << ss.str();
+        std::cout.flush();
+        std::cout << "\r";
+        ss.str("");
+
+        usleep( .2 * 1e6 );
+    
     }
 }
 

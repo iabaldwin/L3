@@ -211,6 +211,14 @@ struct Sizes<L3::SMVelocity>
     const static int elements = 4+1;
 };
 
+/*
+ *  Frequencies
+ */
+template <typename T>
+struct Frequency
+{
+    const static int frequency = 0;
+};
 
 /*
  *  I/O
