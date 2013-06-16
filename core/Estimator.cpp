@@ -199,6 +199,8 @@ namespace L3
                 std::for_each( diff, diff+size, std::bind2nd( std::ptr_fun( pow ), 2 ) );
                 double retval = std::accumulate( diff, diff+size, 0.0  );
 
+                std::cout << retval << std::endl;
+
                 return -1*retval;
 
             }
