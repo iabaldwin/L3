@@ -64,6 +64,6 @@ add_subdirectory( renderer )
 add_subdirectory( utils )
 
 # L3
-#add_subdirectory( app )
+add_subdirectory( app )
 
 

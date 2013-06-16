@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
-import os
 import sys
-import Parsers 
-import Configuration
+import os
+import pprint
+import subprocess
+
+import Extractor
 
 def printUsage():
     return "Usage: %s <dataset_name> <double:start> <double:end>" % sys.argv[0]
@@ -13,34 +15,26 @@ if __name__=="__main__":
     if len( sys.argv ) < 4:
         sys.exit( printUsage() )
 
-    dataset = Parsers.dataset( sys.argv[1] )
-    #dataset = Parsers.dataset( '/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow' )
-
-    c = Configuration.Configuration()
-    mission = Configuration.Mission( os.path.join( c.configuration_directory, os.path.split( sys.argv[1] )[-1] + '.config' )  )
-
-    print mission
-
-    parsers = []
-    
     # Start
-    #start = 2*60
-    #start = float(sys.argv[2])*60
     start = float(sys.argv[2])
 
     # End
-    #limit = 25*60
-    #limit = float(sys.argv[3])*60
     limit = float(sys.argv[3])
 
-    
     if( limit  < start ):
         sys.exit( "%f seconds requested..." % ( limit - start  ) )
 
+    dataset = Extractor.Dataset( sys.argv[1], start, limit ).Parse()
 
-    parsers.append( Parsers.INS( dataset.root, mission ).binary().duration( (start,limit) ).parse() )
-    parsers.append( Parsers.LHLV( dataset.root ).binary().duration( (start,limit) ).parse() )
-    parsers.append( Parsers.LIDAR( dataset.root ).binary().duration( (start,limit) ).parse() )
+    # Filter LHLV
+    lhlv_filter_bin = os.path.expanduser( '~/code/L3.build/release/core/apps/LHLV_filter' )
+        
+    args = [lhlv_filter_bin, dataset._name]
+    subprocess.call( args )
 
-    [ parser.write(dataset.target_directory) for parser in parsers ]
+    # Do scan-matching
+    scan_matcher_bin = os.path.expanduser( '~/code/octave/scan_matching/standalone.m' )
+
+    args = [scan_matcher_bin, dataset._name, sys.argv[2], sys.argv[3]]
+    subprocess.call( args )
 

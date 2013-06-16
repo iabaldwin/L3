@@ -25,9 +25,3 @@ target_link_libraries( calibrate_map GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${O
 #add_executable( experience_builder_app experience_builder.cpp )
 #target_link_libraries( experience_builder_app GLV ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} readline curses )
 
-##==========
-## App
-##==========
-
-add_executable( app app.cpp )
-target_link_libraries( app GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis ${Boost_LIBRARIES} pcl_octree )

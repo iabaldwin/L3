@@ -362,7 +362,7 @@ namespace L3
                     return estimate;
 
                 //DBG
-                predicted = estimate;
+                //predicted = estimate;
                 //DBG
 
                 timer.begin();
@@ -374,12 +374,12 @@ namespace L3
 
                 boost::scoped_ptr< L3::PointCloud<double> > sampled_cloud( new L3::PointCloud<double>() );
 
-                if( this->current_swathe->num_points > 20000  )
-                {
-                    L3::sample( swathe, sampled_cloud.get(), 20000 );
-                    current_swathe = sampled_cloud.get();
-                }
-                else
+                //if( this->current_swathe->num_points > 20000  )
+                //{
+                    //L3::sample( swathe, sampled_cloud.get(), 20000 );
+                    //current_swathe = sampled_cloud.get();
+                //}
+                //else
                     current_swathe = swathe;
 
 
@@ -399,7 +399,7 @@ namespace L3
                 {
                     gsl_vector_set_all (ss, 0.5);
 
-                gsl_vector_set( ss, 2, .05 );
+                    gsl_vector_set( ss, 2, .05 );
                 }
                 gsl_vector_set( ss, 2, .05 );
 
