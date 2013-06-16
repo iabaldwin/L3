@@ -191,7 +191,6 @@ namespace L3
         struct ParticleFilterVisualiser : AlgorithmVisualiser
         {
             ParticleFilterVisualiser( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > algorithm, Updater* updater, boost::shared_ptr< Composite> composite );
-      
             ~ParticleFilterVisualiser();
 
             boost::weak_ptr< Composite > composite;

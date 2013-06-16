@@ -40,6 +40,7 @@ namespace L3
         std::pair< bool, std::string > experience( const std::string& command );
         std::pair< bool, std::string > estimate( const std::string& command );
         std::pair< bool, std::string > algo( const std::string& command );
+        std::pair< bool, std::string > cost_function( const std::string& command );
         std::pair< bool, std::string > print( const std::string& command );
         std::pair< bool, std::string > quit( const std::string& command );
         std::pair< bool, std::string > script( const std::string& command );

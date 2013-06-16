@@ -18,6 +18,7 @@ namespace L3
         member_function_map.insert( std::make_pair( "_exp",             std::make_pair( &CommandInterface::experience,          "Load an experience" ) ));
         member_function_map.insert( std::make_pair( "_estimate",        std::make_pair( &CommandInterface::estimate,            "Load a dataset, for estimation" ) ) );
         member_function_map.insert( std::make_pair( "_algo",            std::make_pair( &CommandInterface::algo,                "Set current estimation algorithm" ) ) );
+        member_function_map.insert( std::make_pair( "_cost",            std::make_pair( &CommandInterface::cost_function,       "Set current estimation algorithm" ) ) );
         member_function_map.insert( std::make_pair( "_quit",            std::make_pair( &CommandInterface::quit,                "Leave" ) ) );
         member_function_map.insert( std::make_pair( "_script",          std::make_pair( &CommandInterface::script,              "Execute a script" ) ) );
         member_function_map.insert( std::make_pair( "_?",               std::make_pair( &CommandInterface::print,               "Print this help" ) ) );
@@ -185,6 +186,9 @@ namespace L3
         }
     }
 
+    /*
+     *  Algorithm selector
+     */
     std::pair< bool, std::string> CommandInterface::algo( const std::string& load_command )
     {
         if (!container)
@@ -221,12 +225,50 @@ namespace L3
 
             algorithm_lock.unlock();
 
-            return std::make_pair( true, "CI::Loaded< Algorithm >" );
+            return std::make_pair( true, "CI::Loaded< " + algo_target + ">" );
         
         }
 
         return std::make_pair( false, "CI::Failed to load< Algorithm >" );
     }
+
+  
+    /*
+     *  Cost-function selector
+     */
+    std::pair< bool, std::string> CommandInterface::cost_function( const std::string& load_command )
+    {
+        if (!container)
+            return std::make_pair( false, "CI::No associated container: " + load_command); 
+
+        if (!layout)
+            return std::make_pair( false, "CI::No associated layout : " + load_command); 
+
+            
+        std::string cost_function_target( load_command );
+        ltrim( cost_function_target );
+
+        if( boost::shared_ptr< EstimatorRunner > runner = boost::dynamic_pointer_cast< EstimatorRunner >( container->runner) )
+        {
+            boost::shared_ptr< L3::Estimator::CostFunction<double> > cost_function = L3::Estimator::CostFactory<double>::produce( cost_function_target );
+
+            if( !cost_function )
+                return std::make_pair( false, "CI::Failed to load <" + cost_function_target + ">" );
+
+            L3::WriteLock algorithm_lock( runner->mutex );
+
+            //Assign cost function
+            runner->algorithm->cost_function = cost_function;
+
+            algorithm_lock.unlock();
+
+            return std::make_pair( true, "CI::Loaded< " + cost_function_target + " >" );
+        
+        }
+
+        return std::make_pair( false, "CI::Failed to load< " + cost_function_target + " >" );
+    }
+
 
     std::pair< bool, std::string> CommandInterface::print( const std::string& load_command )
     {

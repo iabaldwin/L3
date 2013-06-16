@@ -7,6 +7,9 @@ namespace L3
     namespace Visualisers
     {
 
+        /*
+         *  Minimisation::Traversals
+         */
         void TraversalVisualiser::onDraw3D( glv::GLV& g )
         {
             boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm_ptr = algorithm.lock();
@@ -16,10 +19,7 @@ namespace L3
 
             ColorInterpolator interpolator;
 
-            // Note : this is going to be an issue
-            //L3::ReadLock lock( algorithm_ptr->mutex );
             std::vector< L3::SE3 > evaluations( algorithm_ptr->evaluations.begin(), algorithm_ptr->evaluations.end() );
-            //lock.unlock();
             
             far(150);
 
@@ -48,6 +48,9 @@ namespace L3
             CoordinateSystem( evaluations.back(), 1 ).onDraw3D(g);
         }
 
+        /*
+         *  IterativeDescent
+         */
         IterativeDescentVisualiser::IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm, Updater* updater ) 
             : AlgorithmVisualiser( "x x,", 2, 2), algorithm(algorithm)
         {
@@ -378,7 +381,9 @@ namespace L3
             {
                 std::vector< double >  _weights( weights.begin(), weights.end() );
                 std::vector< double > _hypotheses( hypotheses.begin(), hypotheses.end() );
-                
+              
+                //L3::SE3  current
+
                 L3::WriteLock lock(this->mutex);
               
                 mData.resize( glv::Data::DOUBLE, 2, _weights.size() );
@@ -411,7 +416,7 @@ namespace L3
                     
                     plot->disable( glv::Controllable );
                     plot->showNumbering(true);
-                    plot->range( -1, 1, 0 );
+                    plot->range( -2, 2, 0 );
                     plot->range( 0, 1, 1 );
                     
 
@@ -478,14 +483,17 @@ namespace L3
                 theta_weight->weights = weights;
                 theta_weight->hypotheses.resize( weights.size() ); 
 
+                if ( weights.empty() )
+                    return;
+
                 int counter = 0;
                 for( std::vector<L3::SE3>::iterator it = hypotheses.begin();
                         it != hypotheses.end();
                         it++) 
                 {
-                    //x_weight->hypotheses[counter]= it->X()-current_prediction.X();
-                    //y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
-                    //theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
+                    x_weight->hypotheses[counter]= it->X()-current_prediction.X();
+                    y_weight->hypotheses[counter]=it->Y()-current_prediction.Y();
+                    theta_weight->hypotheses[counter]=it->Q()-current_prediction.Q();
                
                     counter++;
                 }
@@ -493,7 +501,6 @@ namespace L3
                 x_weight->update();
                 y_weight->update();
                 theta_weight->update();
-
             }
         
         };
