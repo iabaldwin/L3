@@ -1142,14 +1142,12 @@ namespace Visualisers
 
             if( !trajectory.empty() )
             {
-                //std::pair< double, Eigen::Matrix4f > start_pose = trajectory.back();
                 Eigen::Matrix4f start_pose = trajectory.back();
 
                 glv::draw::translate( -1*start_pose(0,3), -1*start_pose(1,3), 0.0 );
             }
         }
 
-        //for( std::deque< std::pair< double, Eigen::Matrix4f > >::iterator it = trajectory.begin();
         for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
                 it != trajectory.end();
                 it++ )

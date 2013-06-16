@@ -2,6 +2,7 @@
 #define L3_ALGORITHM_FACTORY
 
 #include "Estimator.h"
+#include "Filter.h"
 
 namespace L3
 {
@@ -13,7 +14,8 @@ namespace L3
             {
                 static boost::shared_ptr< Algorithm<T> > produce( std::string algorithm, 
                                                                     boost::shared_ptr< CostFunction<T> > cost_function = boost::shared_ptr< CostFunction<T> >(),
-                                                                    boost::shared_ptr< L3::HistogramPyramid<T> > pyramid = boost::shared_ptr<L3::HistogramPyramid<T> >() )
+                                                                    boost::shared_ptr< L3::HistogramPyramid<T> > pyramid = boost::shared_ptr<L3::HistogramPyramid<T> >(),
+                                                                    boost::shared_ptr< L3::EstimatorRunner > runner = boost::shared_ptr< L3::EstimatorRunner >() )
                 {
                     if( algorithm == "ID" )
                         return boost::make_shared< IterativeDescent<T> >( cost_function, pyramid );
@@ -23,6 +25,12 @@ namespace L3
 
                     if( algorithm == "Hybrid" )
                         return boost::make_shared< Hybrid<T> >( cost_function, pyramid );
+
+                    if( algorithm == "PF" )
+                        if ( runner )
+                            return boost::make_shared< ParticleFilter<T> >( cost_function, pyramid, runner->ics_velocity_provider );
+                        else
+                            return boost::shared_ptr< ParticleFilter<T> >();
 
                     return boost::shared_ptr< Algorithm<T> >(); 
                 }

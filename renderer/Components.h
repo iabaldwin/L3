@@ -686,14 +686,14 @@ namespace Visualisers
     {
         ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : Composite( glv::Rect(175, 175)), engine(engine)
         {
+            this->operator<< ( grid );
+
             *(dynamic_cast< glv::View3D* >(this)) << label;
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
             label.setValue( "Open-loop trajectory");
 
             this->disable( glv::Property::AlwaysBubble );
-
-            this->operator<< ( grid );
-
+           
             //controller = boost::make_shared< L3::Visualisers::CompositeController >( dynamic_cast< glv::View3D* >(this), boost::ref( this->position ) );
         }
 
