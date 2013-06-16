@@ -162,7 +162,7 @@ namespace Visualisers
             boost::shared_ptr< TextRenderer<double> >       time_renderer;
             boost::shared_ptr< IteratorRenderer<L3::SE3> >  iterator_renderer;
             
-            boost::shared_ptr< PointCloudRendererLeaf > runtime_cloud_renderer_leaf; 
+            boost::shared_ptr< PointCloudRendererLeaf >     runtime_cloud_renderer_leaf; 
 
             boost::shared_ptr< LocaleRenderer >             map_view;
             boost::shared_ptr< LocaleBoundsRenderer >       locale_bounds;
@@ -212,29 +212,14 @@ namespace Visualisers
 
             EstimatorLayout( glv::Window& win);
 
-            boost::shared_ptr< L3::Experience>                      experience ;
-            boost::shared_ptr< L3::Visualisers::PoseRenderer >      estimated_pose_renderer;
+            boost::shared_ptr< L3::Experience>  experience ;
 
-            boost::shared_ptr< L3::Visualisers::DedicatedPoseRenderer> predicted_pose_renderer;
-
-            boost::shared_ptr< L3::Visualisers::PredictorRenderer >             predictor_renderer;
-            boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererView >    histogram_pixel_renderer_experience_view;
-            boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
-
-
-            boost::shared_ptr< L3::Visualisers::PointCloudRendererLeaf >                debug_renderer; 
-            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >               debug_histogram_bounds_renderer;
-            boost::shared_ptr< L3::Visualisers::CombinedScanRenderer2D >                combined_scan_renderer;
-            std::list< boost::shared_ptr< L3::Visualisers::HistogramDensityRenderer > > density_renderers;
-
-            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
-            
-            boost::shared_ptr< L3::Visualisers::CostRendererView >          cost_renderer_view;
-            boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
-    
-
-            boost::shared_ptr< AlgorithmVisualiser > algorithm_renderer;
+            boost::shared_ptr< AlgorithmVisualiser >                        algorithm_renderer;
             boost::shared_ptr< L3::Visualisers::DebugAlgorithmRenderer >    debug_algorithm_renderer;
+            boost::shared_ptr< L3::Visualisers::AlgorithmCostRendererLeaf > algorithm_costs_renderer;
+            
+            boost::shared_ptr< L3::Visualisers::HistogramBoundsRenderer >       histogram_bounds_renderer;
+            boost::shared_ptr< L3::Visualisers::HistogramVoxelRendererLeaf >    histogram_voxel_renderer_experience_leaf;
             
             bool load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience );
 

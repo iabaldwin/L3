@@ -157,50 +157,16 @@ namespace ScanMatching
         // Get the most recent
         std::pair< double, boost::shared_ptr< L3::LMS151 > > scan = this->windower->window.back();
      
-        current_update = scan.first;
-
         Eigen::Matrix4f transformation;
 
         L3::WriteLock write_lock( this->mutex );
 
-        //double distance, dt, linear_velocity, rotational_velocity;
         if( matcher->match( scan, transformation ) ) 
         {
             // Compute delta
             current_transformation *= transformation;
 
-            //dt = current_update - previous_update;
-
-            //// Estimate linear velocity
-            //distance = (sqrt( pow( transformation( 0,3 ), 2 ) 
-                        //+ pow( transformation( 1,3 ), 2 ) ));
-
-            //linear_velocity = distance/dt;
-
-            //// Estimate rotational velocity
-            //L3::SE3 pose = L3::Utils::Math::poseFromRotation( transformation );
-            //rotational_velocity = pose.Q()/dt;
-
-            //_linear_velocity_filter->update( current_update, linear_velocity );
-            //_rotational_velocity_filter->update( current_update, rotational_velocity );
-
-            //raw_velocity_data.first = current_update;
-            //raw_velocity_data.second[0] = linear_velocity;
-            //raw_velocity_data.second[3] = rotational_velocity;
-
-            //filtered_velocity_data.first = current_update;
-            //filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
-            //filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
-
-            // Swap
-            previous_update = current_update;
         }
-        else
-        {
-            previous_update = scan.first;
-            return false;
-        }
-
         write_lock.unlock();
    
         return true;

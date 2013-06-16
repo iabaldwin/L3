@@ -17,23 +17,21 @@ namespace Visualisers
 {
     void transformCameraToPose( L3::SE3& pose )
     {
-
         // SE3->GL
         L3::SE3 rotation( 0, 0, 0, 0, -1.57, 0 );
         glMultMatrixf( rotation.getHomogeneous().data() );
-        
+
         L3::SE3 rot( 0, 0, 0, -1*pose.R(), -1*pose.P(), -1*pose.Q() );
         glMultMatrixf( rot.getHomogeneous().data() );
 
         L3::SE3 translate( -1*pose.X(), -1*pose.Y(), -1*pose.Z(), 0, 0, 0 );
         glMultMatrixf( translate.getHomogeneous().data() );
-    
     }
 
     void renderCube( Cube* cube )
     {
         int num_tris = 6;
-        
+
         glv::Point3 triangle_vertices[num_tris*6];
         glv::Color  triangle_colors[num_tris*6];
 
@@ -54,7 +52,7 @@ namespace Visualisers
         line_points[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
         line_points[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
         line_points[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
-        
+
         line_points[counter++]( cube->x_lower, cube->y_lower, cube->z_upper  );
         line_points[counter++]( cube->x_lower, cube->y_upper, cube->z_upper  );
         line_points[counter++]( cube->x_lower, cube->y_upper, cube->z_upper  );
@@ -72,12 +70,12 @@ namespace Visualisers
         glv::draw::lineWidth( 1 );
 
         counter = 0;
-        
+
         // Bottom
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
-        
+
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
@@ -86,7 +84,7 @@ namespace Visualisers
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_upper );
         triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_upper );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
-        
+
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_upper );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
         triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_upper );
@@ -95,7 +93,7 @@ namespace Visualisers
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_upper );
-        
+
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_upper );
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_upper );
@@ -105,7 +103,7 @@ namespace Visualisers
         triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
-        
+
         triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
         triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_upper );
@@ -114,7 +112,7 @@ namespace Visualisers
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_lower );
         triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_upper );
-        
+
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_lower, cube->y_upper, cube->z_upper );
         triangle_vertices[counter++]( cube->x_lower, cube->y_lower, cube->z_upper );
@@ -123,7 +121,7 @@ namespace Visualisers
         triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
-        
+
         triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_lower );
         triangle_vertices[counter++]( cube->x_upper, cube->y_upper, cube->z_upper );
         triangle_vertices[counter++]( cube->x_upper, cube->y_lower, cube->z_upper );
@@ -132,7 +130,6 @@ namespace Visualisers
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Triangles, triangle_vertices, triangle_colors, counter );
         glv::draw::disable( glv::draw::Blend );
-
     }
 
     /*
@@ -160,9 +157,8 @@ namespace Visualisers
 
                 if( ( *leaf_iterator )->draw_bounds )
                     ( *leaf_iterator )->drawBounds();
-
             }
-                
+
             leaf_iterator++;
         }
     }
@@ -182,7 +178,6 @@ namespace Visualisers
         bound_vertices[counter++]( lower.x, upper.y, lower.z );
         bound_vertices[counter++]( upper.x, upper.y, lower.z );
         bound_vertices[counter++]( upper.x, lower.y, lower.z );
-
 
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::LineLoop, bound_vertices.get(), bound_colors.get(), 4 );
@@ -478,7 +473,7 @@ namespace Visualisers
 
         if( render_histogram->empty() ) 
             return;
-        
+
         L3::ReadLock lock( render_histogram->mutex );
         L3::clone( render_histogram.get(), &tmp ); 
         lock.unlock();
@@ -502,7 +497,6 @@ namespace Visualisers
                 *pixs++ = (unsigned char)255;
 
             }
-
         }
 
         mTex.recreate();				            // Recreate texture on GPU
@@ -744,7 +738,7 @@ namespace Visualisers
 
         // Centering heuristic
         glv::draw::translate( 0, 60, -200 );
-       
+
         L3::ReadLock lock( plot_cloud->mutex );
         PointCloudRenderer::onDraw3D(g);    
         lock.unlock(); 
@@ -836,7 +830,7 @@ namespace Visualisers
     void DedicatedPoseRenderer::update()
     {
         boost::shared_ptr< L3::PoseProvider > ptr = provider.lock();
-        
+
         if ( !ptr )
             return;
 
@@ -1025,7 +1019,7 @@ namespace Visualisers
     {
         if( !this->enabled( glv::Visible ) )
             return;
-        
+
         for( std::deque< boost::shared_ptr< HistogramDensityRenderer > >::iterator it=renderers.begin();
                 it != renderers.end();
                 it++ )
@@ -1122,19 +1116,24 @@ namespace Visualisers
     void ScanMatchingTrajectoryRenderer::onDraw3D( glv::GLV& g )
     {
         boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
-            
-        std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
-        
+
         if( engine_ptr )
         {
-            //L3::ReadLock lock( engine_ptr->mutex );
-            trajectory.assign( engine_ptr->trajectory.begin(), engine_ptr->trajectory.end() );
-            //lock.unlock();
+            L3::ReadLock lock( engine_ptr->mutex );
+            
+            current *= engine_ptr->current_transformation ;
+
+            trajectory.push_back( current );
+
+            if( trajectory.size() > 200 )
+                trajectory.pop_front();
+
+            lock.unlock();
         }
-        
+
         L3::SE3 zero;
         CoordinateSystem( zero ).onDraw3D(g);
-        
+
         if( enabled( glv::Maximized ) )
             Composite::onDraw3D(g);
         else
@@ -1143,18 +1142,20 @@ namespace Visualisers
 
             if( !trajectory.empty() )
             {
-                std::pair< double, Eigen::Matrix4f > start_pose = trajectory.back();
+                //std::pair< double, Eigen::Matrix4f > start_pose = trajectory.back();
+                Eigen::Matrix4f start_pose = trajectory.back();
 
-                glv::draw::translate( -1*start_pose.second(0,3), -1*start_pose.second(1,3), 0.0 );
+                glv::draw::translate( -1*start_pose(0,3), -1*start_pose(1,3), 0.0 );
             }
         }
 
-        for( std::deque< std::pair< double, Eigen::Matrix4f > >::iterator it = trajectory.begin();
+        //for( std::deque< std::pair< double, Eigen::Matrix4f > >::iterator it = trajectory.begin();
+        for( std::deque< Eigen::Matrix4f >::iterator it = trajectory.begin();
                 it != trajectory.end();
                 it++ )
         {
             L3::SE3 pose;
-            pose.setHomogeneous( it->second );
+            pose.setHomogeneous( *it );
             CoordinateSystem( pose, 10 ).onDraw3D(g);
         }
 
@@ -1171,9 +1172,6 @@ namespace Visualisers
         boost::scoped_array<double> scan;
         boost::scoped_array<double> putative;
 
-        // Lock
-        //L3::ReadLock lock( ptr->mutex );
-
         int scan_points = ptr->matcher->scan_points;
         int putative_points = ptr->matcher->putative_points;
 
@@ -1189,8 +1187,6 @@ namespace Visualisers
         std::copy( ptr->matcher->putative.get(), 
                 ptr->matcher->putative.get()+putative_points*3,
                 putative.get() );
-
-        //lock.unlock();
 
         glv::Point3 scan_vertices[scan_points];
         glv::Color  scan_colors[scan_points];
@@ -1401,7 +1397,7 @@ namespace Visualisers
         std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
 
         GLfloat ctrlpoints[ptr->sections.size()][3];
-        
+
         int counter =0;
 
         ColorInterpolator interpolator;
@@ -1445,7 +1441,7 @@ namespace Visualisers
     void ExperienceCloudView::onDraw3D( glv::GLV& g)
     {
         far( 1000 );
-        
+
         L3::SE3 current;
         if( boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock() )
             current = provider_ptr->operator()();
@@ -1453,19 +1449,19 @@ namespace Visualisers
 
         current.Z( current.Z() + 3.0);
         transformCameraToPose( current );
-               
+
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
         glv::draw::disable( glv::draw::Blend );
 
         //point_cloud_renderer_leaf->onDraw3D( g );
         //for( std::deque< Cube >::iterator it = voxels.begin();
-                //it != voxels.end();
-                //it++ )
-            //renderCube( &*it ); 
+        //it != voxels.end();
+        //it++ )
+        //renderCube( &*it ); 
 
         CoordinateSystem( current ).onDraw3D(g);
-    
+
     }
 
     void ExperienceCloudView::load(  boost::shared_ptr< L3::Experience > experience )
@@ -1478,7 +1474,7 @@ namespace Visualisers
             {
                 // Load the experience
                 std::pair< long unsigned int, L3::Point<double>* > load_result = experience->load( section_counter );
-           
+
                 boost::shared_ptr< L3::PointCloud<double> > cloud = boost::make_shared<L3::PointCloud<double> >();
 
                 cloud->num_points = load_result.first;
@@ -1499,7 +1495,7 @@ namespace Visualisers
         point_cloud_renderer_leaf = boost::make_shared< PointCloudRendererLeaf >( master );
 
         cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
-  
+
         cloud->height = 1;
         cloud->width = master->num_points;
         cloud->points.resize (cloud->width * cloud->height);
@@ -1513,7 +1509,7 @@ namespace Visualisers
 
         octree->setInputCloud (cloud);
         octree->addPointsFromInputCloud ();
-    
+
         pcl::octree::OctreePointCloudDensity<pcl::PointXYZ>::Iterator tree_iterator;
         pcl::octree::OctreePointCloudDensity<pcl::PointXYZ>::Iterator tree_iterator_end = octree->end();
 
@@ -1530,11 +1526,11 @@ namespace Visualisers
             pt.x = (voxel_min.x() + voxel_max.x()) / 2.0f;
             pt.y = (voxel_min.y() + voxel_max.y()) / 2.0f;
             pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
-       
+
             int density = octree->getVoxelDensityAtPoint( pt ); 
-          
+
             //voxels.push_back( Cube( voxel_min.x(), voxel_min.y(), voxel_min.z(),
-                                //voxel_max.x(), voxel_max.y(), voxel_max.z(), density ) );
+            //voxel_max.x(), voxel_max.y(), voxel_max.z(), density ) );
 
             vertices.push_back( glv::Point3( pt.x, pt.y, pt.z ) );
             colors.push_back( glv::Color( .5, .5, .5, float(density)/10.0 ) );
@@ -1591,12 +1587,12 @@ namespace Visualisers
 
     struct MemoryStatistics : glv::TextView
     {
-        
+
         explicit MemoryStatistics() : glv::TextView( glv::Rect(150,25 ) )
         {
             this->disable( glv::DrawBorder );
         }
-        
+
         vm_size_t page_size;
         mach_port_t mach_port;
         mach_msg_type_number_t count;
@@ -1619,7 +1615,7 @@ namespace Visualisers
 
                 return std::make_pair( used_memory, myFreeMemory );
             }
-                
+
             return std::make_pair( 0, 0);
         }
 
@@ -1628,7 +1624,7 @@ namespace Visualisers
         {
             struct task_basic_info t_info;
             mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
-            
+
             if (KERN_SUCCESS != task_info(mach_task_self(),
                         TASK_BASIC_INFO, (task_info_t)&t_info, 
                         &t_info_count))
@@ -1636,7 +1632,7 @@ namespace Visualisers
                 return std::make_pair( 0, 0 ) ;
             }
             else
-                 return std::make_pair( t_info.resident_size, t_info.virtual_size ) ;
+                return std::make_pair( t_info.resident_size, t_info.virtual_size ) ;
 
         }
 
@@ -1645,7 +1641,7 @@ namespace Visualisers
         {
             std::stringstream ss;
             ss.precision( 8 );
-     
+
             std::pair< int64_t, int64_t > memory_stats = getApplicationMemoryUsage();
 
             ss << memory_stats.first/(1024) << " kB (" << memory_stats.first/(1024*1024) << " MB)" << std::endl;
@@ -1653,7 +1649,7 @@ namespace Visualisers
             mText = ss.str();
 
             glv::TextView::onDraw(g);
-           
+
         }
 
     };
@@ -1680,10 +1676,10 @@ namespace Visualisers
         memory_statistics->paddingY( 10 );
 
         (*this) << dynamic_cast< glv::View* >(observer_update.get()) <<
-                    dynamic_cast< glv::View* >(swathe_generation.get()) <<
-                    dynamic_cast< glv::View* >(points_per_second.get()) <<
-                    dynamic_cast< glv::View* >(estimation.get()) <<
-                    dynamic_cast< glv::View* >(memory_statistics.get());
+            dynamic_cast< glv::View* >(swathe_generation.get()) <<
+            dynamic_cast< glv::View* >(points_per_second.get()) <<
+            dynamic_cast< glv::View* >(estimation.get()) <<
+            dynamic_cast< glv::View* >(memory_statistics.get());
 
         boost::shared_ptr< glv::Label > observer_label = boost::make_shared< glv::Label >( "Observer update" );
         labels.push_back( observer_label );
@@ -1722,7 +1718,7 @@ namespace Visualisers
             boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
             // Create the plot
             boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 540, 80), *plottable ) );
-           
+
             // Label
             boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( history_labels[i] );
             graph_label->pos( glv::Place::TR, 0, 0 ).anchor( glv::Place::TR ); 
@@ -1735,12 +1731,12 @@ namespace Visualisers
             plot->numbering(false,0);
             plot->range( 0, 100, 0 );
             plot->range( 0, 1.1, 1 );
-            
+
             (*this) << *plot;
-           
+
             plottables.push_back( plottable );
             plots.push_back( plot );
-                        
+
         }
 
         this->arrange();

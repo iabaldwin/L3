@@ -694,10 +694,14 @@ namespace Visualisers
 
             this->operator<< ( grid );
 
-            controller = boost::make_shared< L3::Visualisers::CompositeController >( dynamic_cast< glv::View3D* >(this), boost::ref( this->position ) );
+            //controller = boost::make_shared< L3::Visualisers::CompositeController >( dynamic_cast< glv::View3D* >(this), boost::ref( this->position ) );
         }
 
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
+
+        std::deque< Eigen::Matrix4f > trajectory;
+        
+        Eigen::Matrix4f current;
 
         boost::shared_ptr< Controller> controller;
 
@@ -715,12 +719,12 @@ namespace Visualisers
             : glv::View3D( rect ),
             engine(engine)
         {
-
             label.setValue( "SM engine" );
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
             (*this) << label;
 
-            trajectory = boost::dynamic_pointer_cast< glv::View3D >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
+            //trajectory = boost::dynamic_pointer_cast< glv::View3D >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
+            trajectory = boost::dynamic_pointer_cast< glv::View >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
 
             // We are not visible by default
             (*this) << *trajectory;
@@ -729,7 +733,8 @@ namespace Visualisers
 
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
 
-        boost::shared_ptr< glv::View3D > trajectory;
+        //boost::shared_ptr< glv::View3D > trajectory;
+        boost::shared_ptr< glv::View > trajectory;
 
         glv::Label label;
 

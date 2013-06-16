@@ -62,8 +62,6 @@ namespace ScanMatching
     { 
         Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
             windower(windower),
-            previous_update(0.0),
-            current_update(0.0),
             matcher( new ICP() ),
             current_transformation( Eigen::Matrix4f::Identity() )
         {
@@ -79,11 +77,7 @@ namespace ScanMatching
 
         std::deque< std::pair< double, boost::shared_ptr<L3::LMS151> > > window;
 
-        std::deque< std::pair< double, Eigen::Matrix4f > > trajectory;
-
         L3::ConstantTimeIterator<L3::LMS151>* windower;
-        
-        double previous_update, current_update;
         
         boost::shared_ptr< ScanMatcher > matcher;
         

@@ -203,7 +203,7 @@ namespace L3
             // Scan-matching scan renderer
             scan_matching_renderer = boost::make_shared< L3::Visualisers::ScanMatchingScanRenderer >( glv::Rect( 180,180 ), boost::shared_ptr< L3::ScanMatching::Engine >() );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( scan_matching_renderer.get() ) ) );
-            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( scan_matching_renderer->trajectory.get() ) );
+            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View3D* >(scan_matching_renderer->trajectory.get() ) ) );
             *ancillary_1 << *scan_matching_renderer;
        
             /*
@@ -535,7 +535,7 @@ namespace L3
             /*
              *  Cost visualisation
              */
-            //algorithm_costs_renderer = boost::make_shared< L3::Visualisers::AlgorithmCostRendererLeaf >( boost::shared_ptr< L3::Estimator::Algorithm<double> >() );
+            algorithm_costs_renderer = boost::make_shared< L3::Visualisers::AlgorithmCostRendererLeaf >( boost::shared_ptr< L3::Estimator::Algorithm<double> >() );
 
             /*
              *  Experience histogram voxel
@@ -582,13 +582,6 @@ namespace L3
             histogram_voxel_renderer_experience_leaf->hist = (*experience->experience_pyramid)[0];
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(histogram_voxel_renderer_experience_leaf.get() ))); 
             experience_voxel_toggle->leaf = histogram_voxel_renderer_experience_leaf; 
-            
-            /*
-             *  Predicted estimates
-             */
-            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( algorithm_costs_renderer.get() ) );
-            //algorithm_costs_renderer->algorithm = runner->algorithm;
-            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(algorithm_costs_renderer.get() ))); 
             
             /*
              *  Experience overview
