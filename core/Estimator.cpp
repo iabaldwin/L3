@@ -199,8 +199,6 @@ namespace L3
                 std::for_each( diff, diff+size, std::bind2nd( std::ptr_fun( pow ), 2 ) );
                 double retval = std::accumulate( diff, diff+size, 0.0  );
 
-                std::cout << retval << std::endl;
-
                 return -1*retval;
 
             }
@@ -367,23 +365,17 @@ namespace L3
                 //predicted = estimate;
                 //DBG
 
+                int _pyramid_index = this->pyramid_index;
+
                 timer.begin();
 
                 L3::WriteLock master( this->mutex );
-                L3::ReadLock  histogram_lock( (*this->pyramid)[this->pyramid_index]->mutex );
+                L3::ReadLock  histogram_lock( (*this->pyramid)[_pyramid_index]->mutex );
 
                 _cost_function = this->cost_function.get();
 
                 boost::scoped_ptr< L3::PointCloud<double> > sampled_cloud( new L3::PointCloud<double>() );
-
-                //if( this->current_swathe->num_points > 20000  )
-                //{
-                    //L3::sample( swathe, sampled_cloud.get(), 20000 );
-                    //current_swathe = sampled_cloud.get();
-                //}
-                //else
-                    current_swathe = swathe;
-
+                current_swathe = swathe;
 
                 gsl_vector_set (x, 0, estimate.X() );
                 gsl_vector_set (x, 1, estimate.Y() );

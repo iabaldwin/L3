@@ -241,25 +241,14 @@ namespace L3
 
             (*L3_controls) << *scale_factor;
 
-            // Dataset window duration
-                window_duration = boost::make_shared < glv::Slider >(glv::Rect(window.width()-155,window.height()-20,150, 10) );
-                //{
-                    //boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "Window distance (m)" );
-                    //label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
-                    //*window_duration << *label ;
-                    //this->labels.push_back( label ); 
-                //}
-
-            //}
-                //window_duration = boost::make_shared < glv::Slider >(glv::Rect(window.width()-155,window.height()-20,150, 10) );
-
-                //{
-                    //boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "Window duration (s)" );
-                    //label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
-                    //*window_duration << *label ;
-                    //this->labels.push_back( label ); 
-                //}
-            //}
+            // Dataset duration
+            window_duration = boost::make_shared < glv::Slider >(glv::Rect(window.width()-155,window.height()-20,150, 10) );
+            {
+                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "LHLV duration (s)" );
+                label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+                *window_duration << *label ;
+                this->labels.push_back( label ); 
+            }
 
             (*L3_controls) << *window_duration;
 

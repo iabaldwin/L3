@@ -21,9 +21,10 @@ namespace L3
             }
 
             Updater* updater ;
-            std::deque < boost::shared_ptr< glv::View > > views;
-            std::deque < boost::shared_ptr< glv::Label > > labels;
-            std::vector< boost::shared_ptr< glv::Slider > >  variables;
+            std::deque < boost::shared_ptr< glv::View > >       views;
+            std::deque < boost::shared_ptr< glv::Label > >      labels;
+            std::vector< boost::shared_ptr< glv::Widget > >     widgets;
+            std::vector< boost::shared_ptr< glv::Slider > >     variables;
             
             virtual void onDraw( glv::GLV& g ){};
         };

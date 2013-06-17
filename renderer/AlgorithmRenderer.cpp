@@ -164,6 +164,11 @@ namespace L3
             *this  << *iterations;
             variables.push_back( iterations );
 
+            // Pyramid selector
+            //boost::shared_ptr< glv::Buttons > pyramid_select = boost::make_shared< glv::Buttons >( glv::Rect(120, 20), 3, 1 );
+            //pyramid_select->attachVariable( algorithm->pyramid_index, 0 );
+            //*this << *pyramid_select;
+            //widgets.push_back( pyramid_select );
 
             /*
              *3D components
