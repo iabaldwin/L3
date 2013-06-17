@@ -268,8 +268,7 @@ namespace Visualisers
             far( 1000 );
 
             // Appropriate view-point
-            //position.translateZ( -250 );
-            position.translateZ( -50 );
+            position.translateZ( -250 );
 
             this->enable( glv::Property::AlwaysBubble );
         }
