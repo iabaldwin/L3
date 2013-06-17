@@ -119,7 +119,7 @@ namespace Visualisers
           
             boost::shared_ptr< glv::Slider >  scale_factor;
             boost::shared_ptr< glv::Slider >  window_duration_INS;
-            boost::shared_ptr< glv::Slider >  window_duration_LIDAR;
+            boost::shared_ptr< glv::Slider >  window_duration;
             boost::shared_ptr< glv::Slider >  point_cloud_downsample;
             boost::shared_ptr< glv::Slider >  experience_window;
             

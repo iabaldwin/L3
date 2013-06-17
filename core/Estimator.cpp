@@ -360,8 +360,8 @@ namespace L3
         template < typename T >
             SE3 Minimisation<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
-                if( timer.elapsed() < 1.0/this->fundamental_frequency )
-                    return estimate;
+                //if( timer.elapsed() < 1.0/this->fundamental_frequency )
+                    //return estimate;
 
                 //DBG
                 //predicted = estimate;

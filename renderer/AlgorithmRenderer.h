@@ -23,7 +23,8 @@ namespace L3
             Updater* updater ;
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
-
+            std::vector< boost::shared_ptr< glv::Slider > >  variables;
+            
             virtual void onDraw( glv::GLV& g ){};
         };
 
@@ -145,7 +146,6 @@ namespace L3
             std::list< Leaf* > leafs;
             std::list< Updateable* > updateables;
             
-            std::vector< boost::shared_ptr< glv::Slider > >  variables;
         };
 
         /*

@@ -71,7 +71,6 @@ namespace Visualisers
 
         const glv::Keyboard& k = g.keyboard();
         int key = k.key();
-        float mx = g.mouse().xRel();
 
         // Intercept switch
         switch(e){
@@ -146,7 +145,6 @@ namespace Visualisers
 
         const glv::Keyboard& k = g.keyboard();
         int key = k.key();
-        float mx = g.mouse().xRel();
 
         
         switch(e){

@@ -148,6 +148,27 @@ namespace L3
 
             (*this) << *traversal_view;
 
+            // Controls
+            //1. Tolerance
+            boost::shared_ptr< glv::Slider > tolerance = boost::make_shared< glv::Slider > ();
+            tolerance->interval( .001, .5 );
+            tolerance->attachVariable( algorithm->tolerance );
+            *this  << *tolerance;
+            variables.push_back( tolerance );
+
+
+            //2. Iterations
+            boost::shared_ptr< glv::Slider > iterations = boost::make_shared< glv::Slider > ();
+            iterations->interval( 1, 100 );
+            iterations->attachVariable( algorithm->max_iterations );
+            *this  << *iterations;
+            variables.push_back( iterations );
+
+
+            /*
+             *3D components
+             */
+
             // Estimation traversals : Leaf
             boost::shared_ptr< Composite > composite_ptr = this->composite.lock();
 
@@ -164,6 +185,10 @@ namespace L3
             }
             else
                 std::cerr << "No composite pointer passed!" << std::endl;
+
+           
+
+
 
             this->fit();
             this->arrange();
