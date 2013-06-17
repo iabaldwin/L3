@@ -26,8 +26,6 @@ namespace L3
 
                 ColorInterpolator interpolator;
 
-                glv::draw::translate( -1*evaluations.back().X(), -1*evaluations.back().Y(), -5 );
-
                 glv::Point3 vertices[evaluations.size()];
                 glv::Color  colors[evaluations.size()];
 
@@ -81,6 +79,9 @@ namespace L3
             void onDraw3D( glv::GLV& g )
             {
                 far(150);
+
+                if( !evaluations.empty() )
+                    glv::draw::translate( -1*evaluations.back().X(), -1*evaluations.back().Y(), -5 );
 
                 TraversalVisualiser::onDraw3D(g);
             }            
