@@ -89,7 +89,7 @@ namespace L3
 
             std::list< Leaf* > leafs;
             std::list< Updateable* > updateables;
-            boost::shared_ptr< Leaf > traversal_renderer; 
+            boost::shared_ptr< Leaf > traversal_leaf; 
             
             boost::weak_ptr< L3::Estimator::Minimisation<double> > algorithm;
 

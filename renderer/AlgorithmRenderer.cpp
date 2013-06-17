@@ -80,40 +80,9 @@ namespace L3
 
             void onDraw3D( glv::GLV& g )
             {
-                boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm_ptr = algorithm.lock();
-
-                if( !algorithm_ptr)
-                    return;
-
-                ColorInterpolator interpolator;
-
-                std::vector< L3::SE3 > evaluations( algorithm_ptr->evaluations.begin(), algorithm_ptr->evaluations.end() );
-
                 far(150);
 
-                glv::draw::translate( -1*evaluations.back().X(), -1*evaluations.back().Y(), -5 );
-
-                glv::Point3 vertices[evaluations.size()];
-                glv::Color  colors[evaluations.size()];
-
-                int counter=0;
-                for( std::vector< L3::SE3 >::iterator it = evaluations.begin();
-                        it != evaluations.end();
-                        it++ )
-                {
-                    vertices[counter](it->X(), it->Y(), 0.0 );
-                    colors[counter].set( interpolator( double(counter)/evaluations.size() ) );
-                    counter++;
-                }
-
-                glv::draw::pointSize(3);
-                glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-                glv::draw::pointSize(1);
-                glv::draw::lineWidth(.1);
-                glv::draw::paint( glv::draw::LineStrip, vertices, colors, counter );
-
-                CoordinateSystem( evaluations.front(), 1 ).onDraw3D(g);
-                CoordinateSystem( evaluations.back(), 1 ).onDraw3D(g);
+                TraversalVisualiser::onDraw3D(g);
             }            
 
         };
@@ -171,23 +140,25 @@ namespace L3
             views.push_back( plot );
 
             // Estimation traversals
-            boost::shared_ptr< glv::View > ptr = boost::dynamic_pointer_cast<glv::View>( boost::make_shared< TraversalVisualiserView >( algorithm ) );
-            views.push_back( ptr );
+            boost::shared_ptr< glv::View > traversal_view = boost::dynamic_pointer_cast<glv::View>( boost::make_shared< TraversalVisualiserView >( algorithm ) );
+            updater->operator<< (dynamic_cast< Updateable* >(traversal_view.get() ) );
+            updateables.push_back(dynamic_cast< Updateable* >(traversal_view.get() ) ); 
+            views.push_back( traversal_view );
 
-            (*this) << *ptr;
+            (*this) << *traversal_view;
 
             // Estimation traversals : Leaf
             boost::shared_ptr< Composite > composite_ptr = this->composite.lock();
 
             if( composite_ptr )
             {
-                traversal_renderer = boost::make_shared< TraversalVisualiserLeaf >( algorithm );
+                traversal_leaf = boost::make_shared< TraversalVisualiserLeaf >( algorithm );
 
-                composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(traversal_renderer.get() ))); 
-                leafs.push_back( dynamic_cast<L3::Visualisers::Leaf*>(traversal_renderer.get() ) );
+                composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(traversal_leaf.get() ))); 
+                leafs.push_back( dynamic_cast<L3::Visualisers::Leaf*>(traversal_leaf.get() ) );
 
-                updater->operator<<( dynamic_cast< Updateable* >(traversal_renderer.get() ) );
-                updateables.push_back(dynamic_cast< Updateable* >(traversal_renderer.get() ) ); 
+                updater->operator<<( dynamic_cast< Updateable* >(traversal_leaf.get() ) );
+                updateables.push_back(dynamic_cast< Updateable* >(traversal_leaf.get() ) ); 
 
             }
             else
