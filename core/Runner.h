@@ -174,15 +174,15 @@ struct EstimatorRunner : DatasetRunner, Lockable
 
     bool update( double time );
 
-    EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
+    EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algo )
     {
-        this->algorithm = algorithm;
-     
         // Remove it if it exista
-        std::list< TemporalObserver* >::iterator it = std::find( observers.begin(), observers.end(), dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) ); 
+        std::list< TemporalObserver* >::iterator it = std::find( observers.begin(), observers.end(), dynamic_cast< L3::TemporalObserver* >( this->algorithm.get() ) ); 
         if(  it != observers.end() )
             observers.erase( it );
 
+        this->algorithm = algo;
+     
         // Is it updateable
         if( L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) )
             (*this) << observer;

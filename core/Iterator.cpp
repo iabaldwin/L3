@@ -39,13 +39,12 @@ bool ConstantTimeIterator<T>::update( double time )
         return false; 
     }
 
-    //it = ( fabs(( it-1 )->first - time)  ) < ( fabs(( it )->first - time)  ) ? ( it-1) : it;
-
     double data_swathe_length = 0;
 
     typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it_back_iterator = it;
 
     L3::WriteLock lock( this->mutex );
+    
     this->window.clear();
 
     // Copy, as we alter the swathe_length variable
@@ -67,7 +66,7 @@ bool ConstantTimeIterator<T>::update( double time )
         it_back_iterator--;
     }
     
-#ifdef NDEBUG
+#ifndef NDEBUG
     if( !this->window.empty() )
         if( time - this->window.back().first > 1.0/50.0 )
             std::cerr << "WHAT" <<  time - this->window.back().first << std::endl;

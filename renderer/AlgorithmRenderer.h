@@ -31,7 +31,6 @@ namespace L3
         /*
          *  Component visualisation types
          */
-
         struct DiscreteEstimatorVisualiser 
         {
             DiscreteEstimatorVisualiser( boost::shared_ptr< L3::Estimator::DiscreteEstimator<double> > estimator, Updater* updater = NULL ) 
@@ -67,88 +66,31 @@ namespace L3
             {
             }
 
-
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i);
             void update();
         };
 
 
-        struct TraversalVisualiser : glv::View3D
-        {
-
-            TraversalVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm  ) : algorithm(algorithm), glv::View3D( glv::Rect( 250,250 ))
-            {
-                *this  << label;
-                label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
-                label.setValue( "Cost-function evaluations");
-            }
-
-            glv::Label label;
-
-            void onDraw3D( glv::GLV& g );
-
-            boost::weak_ptr< L3::Estimator::Minimisation<double> > algorithm;
-
-        };
-
+        
         /*
          *  Algorithm Visualisation types
          */
         struct MinimisationVisualiser : AlgorithmVisualiser
         {
-            MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm, Updater* updater = NULL )  
-                : algorithm(algorithm)
-            {
-                // Estimation traversals
-                boost::shared_ptr< glv::View > ptr = boost::dynamic_pointer_cast<glv::View>( boost::make_shared< TraversalVisualiser >( algorithm ) );
-                views.push_back( ptr );
+            MinimisationVisualiser( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm, Updater* updater, boost::shared_ptr< Composite> composite )  ;
 
-                this->updater = updater;
-
-                (*this) << *ptr;
-
-                // Number of iterations of the algorithm
-                boost::shared_ptr< StatisticsPlottable<int> > plottable( new StatisticsPlottable<int>() ); 
-                plottable->setVariable( algorithm->algorithm_iterations );
-
-                plottables.push_back( plottable );
-
-                if( updater )
-                    updater->operator<<( plottable.get() );
-
-                boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottable ) );
-       
-                plot->disable( glv::Controllable );
-
-                plot->range(0,100,0);
-                plot->range(0,50*10,1);
-               
-                *plot << iterations_label;
-                iterations_label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
-                iterations_label.setValue( "Algorithm iterations");
-
-                (*this) << *plot;
-
-                views.push_back( plot );
-            }
-
+            ~MinimisationVisualiser();
+            
             glv::Label iterations_label;
-
-            ~MinimisationVisualiser()
-            {
-                if( updater )
-                {
-                    // Remove myself from the updates list  
-                    std::list < Updateable* >::iterator it = std::find( updater->updateables.begin(), updater->updateables.end(), dynamic_cast< L3::Updateable*>(plottables.front().get() ) );
-
-                    if( it != updater->updateables.end() )
-                        updater->updateables.erase( it );
-                }
-            }
                 
+            boost::weak_ptr< Composite > composite;
             std::deque< boost::shared_ptr< glv::View > > views;
             std::deque< boost::shared_ptr< glv::Plottable > > plottables;
 
+            std::list< Leaf* > leafs;
+            std::list< Updateable* > updateables;
+            boost::shared_ptr< Leaf > traversal_renderer; 
+            
             boost::weak_ptr< L3::Estimator::Minimisation<double> > algorithm;
 
         };
@@ -219,7 +161,7 @@ namespace L3
 
                 // Optimisation
                 if( boost::shared_ptr< L3::Estimator::Minimisation<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::Minimisation<double> >( algorithm ) )
-                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< MinimisationVisualiser >( ptr, updater ) );
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< MinimisationVisualiser >( ptr, updater, composite ) );
 
                 // Hybrid
                 if( boost::shared_ptr< L3::Estimator::Hybrid<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::Hybrid<double> >( algorithm ) )
