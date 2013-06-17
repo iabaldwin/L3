@@ -42,7 +42,14 @@ namespace L3
             plot_region->disable( glv::Controllable );
             plot_region->range( 0, 10, 0 );         // 10 s
             plot_region->range( -1, 10 , 1 );       // 10 m/s
+            
             plot_region->showNumbering(true);
+            plot_region->numbering(true,1);
+            plot_region->numbering(false,0);
+
+            //plot_region->major( .2, 0 );
+            //plot_region->minor( 5, 0 );
+
 
             plots.push_front( plot_region );
 
@@ -93,11 +100,11 @@ namespace L3
             plot_region->range( -1, 1, 1 );
 
             plot_region->showNumbering(true);
-            plot_region->numbering(true,0);
             plot_region->numbering(true,1);
+            plot_region->numbering(false,0);
 
-            plot_region->minor( .05, 1 );
-            plot_region->major( .1, 1);
+            //plot_region->minor( .05, 1 );
+            //plot_region->major( .1, 1);
 
             plots.push_front( plot_region );
 
@@ -344,8 +351,6 @@ namespace L3
 
             (*ancillary_2) << *statistics;
 
-            ancillary_2->enable( glv::DrawBorder );
-
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->fit();
             dynamic_cast< glv::Table* >(ancillary_1.get())->arrange();
@@ -353,8 +358,10 @@ namespace L3
             dynamic_cast< glv::Table* >(ancillary_2.get())->fit();
             dynamic_cast< glv::Table* >(ancillary_2.get())->arrange();
 
+            ancillary_2->fit();
+
             (*tables[0]  ) << ancillary_1.get();
-       
+     
             boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
             (*table) << ancillary_2.get();
             tables.push_back( table );

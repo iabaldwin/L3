@@ -280,7 +280,6 @@ namespace L3
 
             void onDraw3D( glv::GLV& g )
             {
-
                 L3::ReadLock lock( this->mutex );
                 std::vector< L3::SE3> _hypotheses( hypotheses.begin(), hypotheses.end() );
                 lock.unlock();
@@ -418,8 +417,6 @@ namespace L3
                     plot->showNumbering(true);
                     plot->range( -2, 2, 0 );
                     plot->range( 0, 1, 1 );
-                    
-
                 }
 
                 {
@@ -515,90 +512,125 @@ namespace L3
             this->updater = updater;
 
             if( !updater )
-            {
-                std::cerr << "No updater!" << std::endl;
                 throw std::exception();
-            }
 
             /*
              *  Stand-alone components
              */
-            weight_visualiser = boost::make_shared< ParticleWeightOverview >( algorithm, updater );
-            *this << *weight_visualiser;
-            updater->operator<<( (boost::dynamic_pointer_cast< Updateable >(weight_visualiser)).get() );
-            updateables.push_back(dynamic_cast< Updateable* >(weight_visualiser.get() ) ); 
+            // Weight visualiser 
+            //weight_visualiser = boost::make_shared< ParticleWeightOverview >( algorithm, updater );
+            //*this << *weight_visualiser;
+            //updater->operator<<( (boost::dynamic_pointer_cast< Updateable >(weight_visualiser)).get() );
+            //updateables.push_back(dynamic_cast< Updateable* >(weight_visualiser.get() ) ); 
 
-            views.push_back( weight_visualiser );
+            //views.push_back( weight_visualiser );
 
             // Overhead visualiser
-            //boost::shared_ptr< ParticleVisualiser > visualiser = boost::make_shared< ParticleVisualiser >( algorithm );
-            //views.push_back( boost::dynamic_pointer_cast< glv::View >( visualiser ) );
-            //*this << *visualiser;
+            //boost::shared_ptr< ParticleVisualiser > particle_visualiser = boost::make_shared< ParticleVisualiser >( algorithm );
+            //views.push_back( boost::dynamic_pointer_cast< glv::View >( particle_visualiser ) );
+            //*this << *particle_visualiser;
+            
+            //views.push_back( particle_visualiser );
+      
+            // Controls
+            //1. Num particles 
+            //boost::shared_ptr< glv::Slider > num_particles = boost::make_shared< glv::Slider > ();
+            //num_particles->interval( 50, 1000 );
+            //num_particles->attachVariable( algorithm->num_particles );
+            //*this  << *num_particles;
+            //variables.push_back( num_particles );
 
-            this->fit();
-            this->arrange();
-       
+            //boost::shared_ptr< glv::Label > num_particles_label = boost::make_shared< glv::Label >( "#Particles" );
+            //num_particles_label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+            //*num_particles << *num_particles_label ;
+            //this->labels.push_back( num_particles_label ); 
+
+            ////2. Linear process noise
+            //boost::shared_ptr< glv::Slider > linear_uncertainty = boost::make_shared< glv::Slider > ();
+            //linear_uncertainty->interval( 0, 3 );
+            //linear_uncertainty->attachVariable( algorithm->linear_uncertainty );
+            //*this  << *linear_uncertainty;
+            //variables.push_back( linear_uncertainty );
+
+            //boost::shared_ptr< glv::Label > linear_uncertainty_label = boost::make_shared< glv::Label >( "Lin. Vel. uncertainty (m2/s2)" );
+            //linear_uncertainty_label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+            //*linear_uncertainty << *linear_uncertainty_label ;
+            //this->labels.push_back( linear_uncertainty_label ); 
+
+            ////3. Rotational process noise
+            //boost::shared_ptr< glv::Slider > rotational_uncertainty = boost::make_shared< glv::Slider > ();
+            //rotational_uncertainty->interval( 0, 1 );
+            //rotational_uncertainty->attachVariable( algorithm->rotational_uncertainty );
+            //*this  << *rotational_uncertainty;
+            //variables.push_back( rotational_uncertainty );
+
+            //boost::shared_ptr< glv::Label > rotational_uncertainty_label = boost::make_shared< glv::Label >( "Rot. Vel. uncertainty (rad2/s2)" );
+            //rotational_uncertainty_label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+            //*rotational_uncertainty << *rotational_uncertainty_label ;
+            //this->labels.push_back( rotational_uncertainty_label ); 
+
+
             /*
              *  3D components
              */
-            boost::shared_ptr< Composite > composite_ptr = this->composite.lock();
+            //boost::shared_ptr< Composite > composite_ptr = this->composite.lock();
 
-            if( composite_ptr )
-            {
-                //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
-                particle_filter_renderer = boost::make_shared< ParticleFilterRendererLeaf >( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >( algorithm ) );
+            //if( composite_ptr )
+            //{
+                ////composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( particle_filter_renderer.get() ) );
+                //particle_filter_renderer = boost::make_shared< ParticleFilterRendererLeaf >( boost::dynamic_pointer_cast< L3::Estimator::ParticleFilter<double> >( algorithm ) );
                 
-                composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
-                leafs.push_back( dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ) );
+                //composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ))); 
+                //leafs.push_back( dynamic_cast<L3::Visualisers::Leaf*>(particle_filter_renderer.get() ) );
                     
-                updater->operator<<( dynamic_cast< Updateable* >(particle_filter_renderer.get() ) );
-                updateables.push_back(dynamic_cast< Updateable* >(particle_filter_renderer.get() ) ); 
+                //updater->operator<<( dynamic_cast< Updateable* >(particle_filter_renderer.get() ) );
+                //updateables.push_back(dynamic_cast< Updateable* >(particle_filter_renderer.get() ) ); 
             
-            }
-            else
-                std::cerr << "No composite pointer passed!" << std::endl;
+            //}
+            //else
+                //std::cerr << "No composite pointer passed!" << std::endl;
+                       
+            /*
+             *  Finalize
+             */
+            
+            this->arrange();
+            this->fit();
         }
 
         ParticleFilterVisualiser::~ParticleFilterVisualiser()
         {
             // Remove children from the updates list  
-            if ( updater )
-            {
-                for( std::list< Updateable* >::iterator updateable_it =  updateables.begin();
-                        updateable_it != updateables.end();
-                        updateable_it++ )
-                {
-                    std::list < Updateable* >::iterator it 
-                        = std::find( updater->updateables.begin(), 
-                                updater->updateables.end(), 
-                                *updateable_it 
-                                );
+            //if ( updater )
+            //{
+                //for( std::list< Updateable* >::iterator updateable_it =  updateables.begin();
+                        //updateable_it != updateables.end();
+                        //updateable_it++ )
+                //{
+                    //updater->remove( *updateable_it );
+                //}
 
-                    if( it != updater->updateables.end() )
-                        updater->updateables.erase( it );
-                }
-
-            }
+            //}
             
-            boost::shared_ptr< Composite > composite_ptr = this->composite.lock();
+            //boost::shared_ptr< Composite > composite_ptr = this->composite.lock();
 
-            if( composite_ptr )
-            {
-                for( std::list< Leaf* >::iterator leaf_it =  leafs.begin();
-                        leaf_it != leafs.end();
-                        leaf_it++ )
-                {
-                    std::list < Leaf* >::iterator it 
-                        = std::find( composite_ptr->components.begin(), 
-                                composite_ptr->components.end(), 
-                                *leaf_it
-                                );
+            //if( composite_ptr )
+            //{
+                //for( std::list< Leaf* >::iterator leaf_it =  leafs.begin();
+                        //leaf_it != leafs.end();
+                        //leaf_it++ )
+                //{
+                    //std::list < Leaf* >::iterator it 
+                        //= std::find( composite_ptr->components.begin(), 
+                                //composite_ptr->components.end(), 
+                                //*leaf_it
+                                //);
 
-                    if( it != composite_ptr->components.end() )
-                        composite_ptr->components.erase( it );
+                    //if( it != composite_ptr->components.end() )
+                        //composite_ptr->components.erase( it );
 
-                }
-            }
+                //}
+            //}
         }
     }
 }

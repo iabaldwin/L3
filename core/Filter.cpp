@@ -9,6 +9,14 @@ namespace L3
             {
                 boost::shared_ptr< L3::VelocityProvider > velocity_provider = this->iterator.lock();
 
+                
+                int _num_particles = this->num_particles;
+
+                double _linear_uncertainty = this->linear_uncertainty;
+                double _rotational_uncertainty = this->rotational_uncertainty;
+
+                hypotheses.resize( _num_particles );
+
                 if ( !initialised && !(estimate == L3::SE3::ZERO() ) )
                 {
                     // Generate the initial spread of particles
@@ -62,7 +70,7 @@ namespace L3
                 mean_linear_velocity /= _window_delta_buffer.size();
                 mean_rotational_velocity /= _window_delta_buffer.size();
 
-                std::vector<double> results( this->num_particles ); 
+                std::vector<double> results( _num_particles ); 
                 std::vector<double>::iterator result_iterator = results.begin();
 
                 int pyramid_index = 0;
@@ -71,14 +79,12 @@ namespace L3
 
                 double q, x_vel, y_vel, velocity_delta, x, y;
 
-                //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .05 );
-                //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .005 );
+                //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, 3 );
+                //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .2 );
 
-                //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, .5 );
-                //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .1 );
+                boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, _linear_uncertainty);
+                boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, _rotational_uncertainty );
 
-                boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, 3 );
-                boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .2 );
 
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
@@ -144,7 +150,7 @@ namespace L3
                 resampled.reserve( hypotheses.size() );
 
                 //Sample
-                for( int i=0; i<num_particles; i++ )
+                for( int i=0; i<_num_particles; i++ )
                 {
                     double d = uniform( rng );
 

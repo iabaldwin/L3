@@ -195,6 +195,11 @@ namespace Visualisers
 
         }
 
+          void select(int v){};
+          void selectAll(){};
+          void deselect(){};
+   
+          bool onEvent( glv::Event::t e, glv::GLV& g){return false;};
     };
 
 

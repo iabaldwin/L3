@@ -1667,7 +1667,9 @@ namespace Visualisers
         //observer_update->enable( glv::DrawBorder );
         //swathe_generation->enable( glv::DrawBorder );
 
-        observer_update->paddingY( 7 );
+        observer_update->paddingY( 12 );
+        observer_update->paddingX( 5 );
+        
         swathe_generation->paddingY( 7 );
         points_per_second->paddingY( 7 );
         estimation->paddingY( 7 );
@@ -1738,6 +1740,8 @@ namespace Visualisers
         }
 
         this->arrange();
+   
+        this->enable( glv::DrawBorder );
     }
 
     /*

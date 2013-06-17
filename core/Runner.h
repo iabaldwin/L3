@@ -87,7 +87,6 @@ struct DatasetRunner : ThreadedRunner
     bool            stand_alone;
    
     std::list < Updater* > updaters;
-    std::list < Dumpable* > dumps;
     
     boost::shared_ptr< L3::SE3 > current;
     
@@ -127,22 +126,23 @@ struct DatasetRunner : ThreadedRunner
 
     DatasetRunner& operator<<( L3::TemporalObserver* observer)
     {
-        if ( observer )
-            observers.push_front( observer ); 
-        return *this;
-    }
-
-    DatasetRunner& operator<<( L3::Dumpable* dumpable)
-    {
-        if ( dumpable )
-            dumps.push_front( dumpable ); 
+        if ( !observer )
+        {
+            std::cout << "Erroneouse observer passed!" << std::endl;
+            exit(-1);
+        }
+        observers.push_back( observer ); 
         return *this;
     }
 
     DatasetRunner& operator<<( L3::Updater* updater )
     {
-        if( updater )
-            updaters.push_front( updater );
+        if ( !updater)
+        {
+            std::cout << "Erroneouse updater passed!" << std::endl;
+            exit(-1);
+        }
+        updaters.push_back( updater ); 
         return *this;
     }
 

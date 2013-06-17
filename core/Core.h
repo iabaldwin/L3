@@ -11,6 +11,15 @@
 namespace L3
 {
 
+typedef boost::shared_lock<boost::shared_mutex> ReadLock;
+typedef boost::unique_lock<boost::shared_mutex> WriteLock;
+
+struct Lockable
+{
+    boost::shared_mutex mutex;
+};
+
+
 struct Observer
 {
     virtual ~Observer()
@@ -24,7 +33,7 @@ struct Updateable
     virtual void update() = 0;
 };
 
-struct Updater
+struct Updater : Lockable
 {
     std::list < Updateable* > updateables;
 
@@ -32,11 +41,14 @@ struct Updater
 
     Updater& operator<<( Updateable* updateable )
     {
-        updateables.push_back( updateable );
+        L3::WriteLock lock( this->mutex );
+        updateables.push_front( updateable );
+        lock.unlock();
 
         return *this;
     }
 
+    void remove( Updateable* updateable );
 };
 
 struct TemporalObserver : Observer
@@ -79,21 +91,6 @@ struct Comparator
         //return ( t.first < f);
     //}
 
-};
-
-
-//typedef boost::shared_mutex Mutex;
-typedef boost::shared_lock<boost::shared_mutex> ReadLock;
-typedef boost::unique_lock<boost::shared_mutex> WriteLock;
-
-struct Lockable
-{
-    boost::shared_mutex mutex;
-};
-
-struct Dumpable
-{
-    virtual void dump() = 0;
 };
 
 

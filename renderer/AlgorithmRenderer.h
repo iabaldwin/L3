@@ -202,6 +202,8 @@ namespace L3
     
             std::list< Leaf* > leafs;
             std::list< Updateable* > updateables;
+            
+            std::vector< boost::shared_ptr< glv::Slider > >  variables;
         };
 
         /*

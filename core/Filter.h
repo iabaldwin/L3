@@ -36,7 +36,7 @@ namespace Estimator
         ParticleFilter( boost::shared_ptr<CostFunction<T> > cost_function,  
                 boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
                 boost::shared_ptr< L3::VelocityProvider > iterator, 
-                int num_particles = 550 ) 
+                int num_particles = 800 ) 
             : Filter<T>(iterator), 
             Algorithm<T>(cost_function), 
             previous_time(0.0), 
@@ -44,20 +44,22 @@ namespace Estimator
             initialised(false),
             num_particles(num_particles)
         {
-            hypotheses.resize( num_particles );
-
             sampled_swathe = boost::make_shared< PointCloud<T> >();
 
             L3::allocate( sampled_swathe.get(), 4*1000 );
+       
+            linear_uncertainty = 2;
+            rotational_uncertainty = .2;
         }
 
-        boost::shared_ptr< PointCloud<T> > sampled_swathe;
-        
         bool initialised;
 
         int num_particles;
 
         double previous_time, current_time;
+        double linear_uncertainty, rotational_uncertainty;
+        
+        boost::shared_ptr< PointCloud<T> > sampled_swathe;
 
         tbb::task_group group;
 
@@ -72,7 +74,6 @@ namespace Estimator
         typedef std::vector< L3::SE3 >::iterator PARTICLE_ITERATOR; 
 
         // Search structure
-        //Comparator< std::pair< double, boost::shared_ptr<L3::LHLV> > > comparator;
         Comparator< VELOCITY_WINDOW::value_type > comparator;
 
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );

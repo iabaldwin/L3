@@ -155,6 +155,7 @@ namespace L3
                  */
 
                 std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
+            
             }
             else
                 usleep( .5*1e6 );

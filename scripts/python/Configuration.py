@@ -46,7 +46,6 @@ class Mission(Configuration):
             self.y = 5745105.147059
             self.z = 73.0
 
-
         else:
             self.locale = ''
 
