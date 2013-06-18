@@ -154,12 +154,11 @@ struct DatasetRunner : ThreadedRunner
  */
 struct EstimatorRunner : DatasetRunner, Lockable
 {
-    EstimatorRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, L3::Experience* experience, float speedup=5.0 ) 
+    EstimatorRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, L3::Experience* experience, float speedup=2.0 ) 
         : DatasetRunner( dataset, mission, speedup ),
             experience(experience)
     {
     }
-
 
     ~EstimatorRunner()
     {

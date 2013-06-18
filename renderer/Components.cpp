@@ -1667,13 +1667,13 @@ namespace Visualisers
         //observer_update->enable( glv::DrawBorder );
         //swathe_generation->enable( glv::DrawBorder );
 
-        observer_update->paddingY( 12 );
         observer_update->paddingX( 5 );
+        observer_update->paddingY( 2 );
         
-        swathe_generation->paddingY( 7 );
-        points_per_second->paddingY( 7 );
-        estimation->paddingY( 7 );
-        memory_statistics->paddingY( 10 );
+        //swathe_generation->paddingX( 5 );
+        //points_per_second->paddingY( 7 );
+        //estimation->paddingY( 7 );
+        //memory_statistics->paddingY( 10 );
 
         (*this) << dynamic_cast< glv::View* >(observer_update.get()) <<
             dynamic_cast< glv::View* >(swathe_generation.get()) <<
@@ -1717,7 +1717,7 @@ namespace Visualisers
             // Create the plottable
             boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
             // Create the plot
-            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 540, 80), *plottable ) );
+            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 550, 80), *plottable ) );
 
             // Label
             boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( history_labels[i] );

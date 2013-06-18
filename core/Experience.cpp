@@ -279,7 +279,8 @@ namespace L3
         sections(sections), 
         policy(policy),
         running(true),
-        _x(0.0), _y(0.0)
+        _x(0.0), _y(0.0),
+        resident_point_cloud( new L3::PointCloud<double>() )
 
     {
         // Open 
@@ -288,30 +289,11 @@ namespace L3
         // Allocate
         std::vector<double> densities;
 
-        /*
-         *Working
-         */
-        //densities.push_back( .5 );
-        //densities.push_back( .75 );
-        //densities.push_back( 1 );
-        /*
-         *  /Working
-         */
-
-        /*
-         *Minimization
-         */
-        //densities.push_back( .9 );
-        //densities.push_back( 1.1 );
-        //densities.push_back( 1.5 );
-
-
         densities.push_back( 1 );
         densities.push_back( 2 );
         densities.push_back( 4 );
 
-        experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
-        resident_point_cloud.reset( new L3::PointCloud<double>() );
+        createHistograms( densities );
 
         // Go
         thread.start( *this );
@@ -325,12 +307,18 @@ namespace L3
         if( thread.isRunning() )
             thread.join();          
     }
-
+    
+    void Experience::createHistograms( const std::vector< double >& densities  )
+    {
+        experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
+    }
 
     void Experience::run()
     {
         while( running )
         {
+            L3::ReadLock master( this->mutex );
+
             /*
              *  Choose the sections required according to some policy
              */
@@ -412,10 +400,6 @@ namespace L3
                 if ( resident_point_cloud->num_points != 0 )
                 {
                     // Compute histogram
-                    //std::pair<double,double> min_bound = L3::min<double>( &*resident_point_cloud );
-                    //std::pair<double,double> max_bound = L3::max<double>( &*resident_point_cloud );
-                    //std::pair<double,double> means     = L3::mean( &*resident_point_cloud );
-
                     boost::tuple<double,double,double> min_bound = L3::min<double>( &*resident_point_cloud );
                     boost::tuple<double,double,double> max_bound = L3::max<double>( &*resident_point_cloud );
                     boost::tuple<double,double,double> means     = L3::mean( &*resident_point_cloud );
@@ -429,7 +413,8 @@ namespace L3
                             it++ )
                     {
 
-                        boost::shared_ptr<L3::HistogramUniformDistance<double> > current_histogram = boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(*it);
+                        boost::shared_ptr<L3::HistogramUniformDistance<double> > current_histogram 
+                            = boost::dynamic_pointer_cast<L3::HistogramUniformDistance<double> >(*it);
 
                         WriteLock lock( current_histogram->mutex );
 
@@ -449,8 +434,11 @@ namespace L3
                 }
             }
 
+            master.unlock();
+
             // Play nice
             usleep( .2*1e6 );
+        
         }
     }
 

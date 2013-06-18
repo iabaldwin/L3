@@ -63,7 +63,7 @@ struct RetrospectiveWithLookaheadPolicy: SelectionPolicy
 /*
  *Core experience
  */
-struct Experience : SpatialObserver, Poco::Runnable
+struct Experience : SpatialObserver, Poco::Runnable, Lockable
 {
     Experience( std::deque<experience_section> sections, std::string& fname, boost::shared_ptr< SelectionPolicy > policy, int WINDOW=2 );
     
@@ -82,9 +82,10 @@ struct Experience : SpatialObserver, Poco::Runnable
 
     ~Experience();
 
-    void            initialise();
     virtual void    run();
+    void            initialise();
     bool            update( double x, double y );
+    void            createHistograms( const std::vector< double >& densities  );
     
     std::pair< long unsigned int, L3::Point<double>* > load( unsigned int id );
     

@@ -169,7 +169,7 @@ namespace Visualisers
     template <typename T> 
         struct TextRenderer : glv::TextView
     {
-        explicit TextRenderer() : glv::TextView( glv::Rect(150,25 ) )
+        explicit TextRenderer() : glv::TextView( glv::Rect(150, 15) )
         {
             this->disable( glv::DrawBorder );
         }

@@ -22,8 +22,10 @@ namespace L3
         member_function_map.insert( std::make_pair( "_quit",            std::make_pair( &CommandInterface::quit,                "Leave" ) ) );
         member_function_map.insert( std::make_pair( "_script",          std::make_pair( &CommandInterface::script,              "Execute a script" ) ) );
         member_function_map.insert( std::make_pair( "_?",               std::make_pair( &CommandInterface::print,               "Print this help" ) ) );
-        member_function_map.insert( std::make_pair( "_history",         std::make_pair( &CommandInterface::print,               "Print (successful) history" ) ) );
-        
+        member_function_map.insert( std::make_pair( "_history",         std::make_pair( &CommandInterface::history,             "Print (successful) history" ) ) );
+       
+        member_function_map.insert( std::make_pair( "_exp_density",     std::make_pair( &CommandInterface::experience_density,  "Set experience density" ) ) );
+
         member_function_map.insert( std::make_pair( "_stop",            std::make_pair( &CommandInterface::stop,                "Stop running" ) ) );
         member_function_map.insert( std::make_pair( "_start",           std::make_pair( &CommandInterface::start,               "Start running" ) ) );
         
@@ -269,6 +271,25 @@ namespace L3
         return std::make_pair( false, "CI::Failed to load< " + cost_function_target + " >" );
     }
 
+    std::pair< bool, std::string > CommandInterface::experience_density( const std::string& command )
+    {
+        if (!container)
+            return std::make_pair( false, "CI::No associated container: " + command ); 
+
+        L3::WriteLock lock( container->experience->mutex );
+
+        if ( boost::shared_ptr< L3::HistogramUniformDistance<double> > ptr = 
+                boost::dynamic_pointer_cast< L3::HistogramUniformDistance<double> >( container->experience->experience_pyramid->histograms.front() ) )
+        {
+            ptr->bins_per_metre = 0.1;
+        }
+
+        lock.unlock();
+
+        return std::make_pair( true, "CI::Density" ); 
+
+
+    }
 
     std::pair< bool, std::string> CommandInterface::print( const std::string& load_command )
     {

@@ -216,17 +216,17 @@ namespace L3
             /*
              *  Second page table
              */
-            ancillary_2 = boost::make_shared< glv::Table >("x ,");
+            ancillary_2 = boost::make_shared< glv::Table >("x ,", 0, 5);
 
             /*
              * Text & controls
              */
-            text_and_controls = boost::make_shared< glv::Table> ("x x,");
+            text_and_controls = boost::make_shared< glv::Table> ("x x,", 0, 0 );
             
-            holder_1 = boost::make_shared< glv::View >( glv::Rect( 350, 100) );
-            holder_2 = boost::make_shared< glv::View >( glv::Rect( 175, 100) );
+            holder_1 = boost::make_shared< glv::View >( glv::Rect( 380, 100) );
+            holder_2 = boost::make_shared< glv::View >( glv::Rect( 170, 100) );
 
-            L3_controls = boost::make_shared< glv::Table >("<,", 2, 4 );
+            L3_controls = boost::make_shared< glv::Table >("<,", 2, 5 );
           
             // Dataset scaling factor
             scale_factor = boost::make_shared< glv::Slider > (glv::Rect(window.width()-155,window.height()-20,150, 10) );
@@ -362,8 +362,8 @@ namespace L3
      
             boost::shared_ptr< glv::Table > table = boost::make_shared< glv::Table >( "x,", 0, 0 );
             (*table) << ancillary_2.get();
-            tables.push_back( table );
             
+            tables.push_back( table );
             top << *table;
         }
 

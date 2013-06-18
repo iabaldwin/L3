@@ -5,7 +5,7 @@ import numpy as np
 
 class dataset:
 
-    def __init__(self,path, limit='inf'):
+    def __init__(self, path, limit='inf'):
     
         # Exists?
         if not os.path.exists( path ):

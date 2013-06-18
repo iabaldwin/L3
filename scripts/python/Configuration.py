@@ -3,6 +3,8 @@ import sys
 import pprint 
 import random
 
+from pylibconfig import Config
+
 class Parser:
 
     def __init__(self):
@@ -23,6 +25,7 @@ class Configuration(Parser):
 class Mission(Configuration):
     
     def __init__(self, dataset_name ):
+      
         Configuration.__init__(self) 
      
         self.x = 0
@@ -30,24 +33,42 @@ class Mission(Configuration):
         self.z = 0
         self.name = dataset_name
 
-        data = Parser.read( dataset_name )
+        mission_config = Config()
 
-        npos = ' '.join(data).find( 'Begbroke' ) 
+        mission_config.readFile( dataset_name )
 
-        if ( npos != -1 ):
-            self.locale = 'Begbroke'
-            self.x = 616648.701255
-            self.y = 5742069.101970
-            self.z = 73.0
+        locale_data = mission_config.value( 'mission.locale' )
 
-        elif ' '.join(data).find( 'Woodstock'  ):
-            self.locale = 'Woodstock'
-            self.x = 613210.368664
-            self.y = 5745105.147059
-            self.z = 73.0
-
+        if not locale_data[1]:
+            raise Exception('No locale data for %s' % dataset_name )
         else:
-            self.locale = ''
+            locale = locale_data[0]
+
+        # Load all the sessions
+        counter = 0 
+      
+        self.sessions = set()
+
+        while True:
+      
+            start_pair = mission_config.value( 'results.sessions.[%d].start' % counter )
+            end_pair = mission_config.value( 'results.sessions.[%d].end' % counter )
+
+            if not start_pair[1]:
+                break
+            else:
+                self.sessions.add( (start_pair[0], end_pair[0] )  )
+                counter += 1
+
+        # Load the locale data
+        locale_config = Config()
+
+        locale_config.readFile( os.path.join( os.path.expanduser( '~/code/datasets/configuration/datums/%s_datum.config' % locale.lower() ) ) ) 
+
+        self.x = locale_config.value( 'datum.X.lower' )[0]
+        self.y = locale_config.value( 'datum.Y.lower' )[0]
+        self.z = 73.0
+
 
     def __repr__( self ):
         return self.name
@@ -65,5 +86,9 @@ if __name__=="__main__":
     for dataset in dataset_listing:
 
         if not os.path.isdir( os.path.join( c.configuration_directory, dataset ) ):
-            m = Mission( os.path.join( c.configuration_directory, dataset ) )
-            print m.locale + ':' + m.name 
+            
+            try:
+                m = Mission( os.path.join( c.configuration_directory, dataset ) )
+                print m.locale + ':' + m.name 
+            except:
+                pass

@@ -210,9 +210,9 @@ namespace L3
     template <typename T>
         struct HistogramPyramid : Lockable
         {
-            HistogramPyramid( std::vector<T> densities )
+            HistogramPyramid( const std::vector<T> densities )
             {
-                for( typename std::vector<T>::iterator it=densities.begin(); 
+                for( typename std::vector<T>::const_iterator it=densities.begin(); 
                         it !=densities.end();
                         it++) 
                     this->histograms.push_back( 

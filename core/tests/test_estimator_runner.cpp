@@ -62,10 +62,9 @@ int main( int argc, char* argv[] )
     runner->setAlgorithm( algo );
     runner->start();
 
-
     while( true )
     {
-        usleep( 1.0*1e6 );
+        usleep( 10.0*1e6 );
     }
 }
 

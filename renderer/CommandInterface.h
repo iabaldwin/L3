@@ -45,6 +45,8 @@ namespace L3
         std::pair< bool, std::string > quit( const std::string& command );
         std::pair< bool, std::string > script( const std::string& command );
         
+        std::pair< bool, std::string > experience_density( const std::string& command );
+        
         std::pair< bool, std::string > stop( const std::string& command );
         std::pair< bool, std::string > start( const std::string& command );
         
