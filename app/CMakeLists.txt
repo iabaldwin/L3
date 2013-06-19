@@ -2,6 +2,8 @@
 ## App
 ##==========
 
+include_directories( "/Users/ian/code/thirdparty/dlib-18.2/" )
+
 find_package( GLUT REQUIRED )                                    # Rendering
 include_directories( ${GLUT_INCLUDE_DIR} )
 

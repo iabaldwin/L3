@@ -111,14 +111,6 @@ class INS(Parser):
         y -= self.mission.y
         z -= self.mission.z
 
-        #print self.mission.x
-        #print self.mission.y
-        #print self.mission.z
-
-        #x -= 616648.701255
-        #y -= 5742069.101970
-        #z -= 73
-
         data = np.concatenate( (t, x, y, z, r, p, q), 0 ).transpose();
 
         if self._binary:
@@ -211,13 +203,16 @@ class LIDAR(Parser):
                 LIDAR_name = Parser.hdf5ArrayToString( data['name'].value )
 
                 # Add in here, reflectances
-                self._data.append( (LIDAR_name,data['ranges'].value.transpose()) )
+                #self._data.append( (LIDAR_name,data['ranges'].value.transpose()) )
+                #print data['reflectances'].value
+                
+                #self._data.append( (LIDAR_name, np.concatenate( data['ranges'].value.transpose(), data['reflectances'].value.transpose()  ) ) )
+                self._data.append( (LIDAR_name, np.concatenate( (data['ranges'].value, data['reflectances'].value), 0  ).transpose() ) )
 
         return self
 
     def duration( self, limit ):
-        #self._limit = 50*limit     # Approx 50Hz
-        self._limit = (50*limit[0], 50*limit[1])
+        self._limit = (50*limit[0], 50*limit[1]) # Approx 50Hz
         return self
 
     def write( self, directory ):

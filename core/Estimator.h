@@ -8,6 +8,9 @@
 #include <boost/bind.hpp>
 #include <boost/math/distributions/normal.hpp>
 
+#include "dlib/optimization.h"
+
+
 #include "Smoother.h"
 #include "Experience.h"
 #include "Histogram.h"
@@ -416,12 +419,13 @@ namespace Estimator
 
             L3::SE3 predicted;
             std::vector< L3::SE3 > evaluations;
+            
+            CostFunction<T>* _cost_function;
 
             SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
       
             double getHypothesisCost( const gsl_vector* hypothesis );
 
-            CostFunction<T>* _cost_function;
         };
 
     template <typename T>
@@ -451,6 +455,42 @@ namespace Estimator
 
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
+
+    };
+
+    double dlib_minimisation_function( const dlib::matrix<double,0,1>& input );
+
+    struct DLIBParameters
+    {
+        static Algorithm<double>* global_minimiser; 
+    };
+
+    template <typename T>
+        struct BFGS : Algorithm<T>
+    {
+        BFGS( boost::shared_ptr< CostFunction<T> > cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid ) 
+            : Algorithm<T>(cost_function),
+            pyramid(experience_pyramid),
+            pyramid_index(2)
+        {
+            DLIBParameters::global_minimiser = this;
+        }
+
+        boost::shared_ptr< Minimisation<T> >                    minimisation;
+        std::deque< boost::shared_ptr< DiscreteEstimator<T> > > discrete_estimators;
+            
+        int pyramid_index;
+        std::vector< L3::SE3 > evaluations;
+
+        PointCloud<T>* current_swathe;
+            
+        CostFunction<T>* _cost_function;
+            
+        boost::shared_ptr< HistogramPyramid<T> > pyramid;
+        
+        SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
+        
+        double getHypothesisCost( const dlib::matrix<double,0,1>& x  );
 
     };
 

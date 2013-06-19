@@ -1,3 +1,5 @@
+include_directories( "/Users/ian/code/thirdparty/dlib-18.2/" )
+
 add_library( L3 
     Core.cpp
     Dataset.cpp 

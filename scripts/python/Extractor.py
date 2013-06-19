@@ -31,3 +31,23 @@ class Dataset:
 
         return self
 
+def printUsage():
+    return "Usage: %s <dataset_name> <double:start> <double:end>" % sys.argv[0]
+
+if __name__=="__main__":
+
+    if len( sys.argv ) < 4:
+        sys.exit( printUsage() )
+
+    #Start
+    start = float(sys.argv[2])
+
+    # End
+    limit = float(sys.argv[3])
+
+    if( limit  < start ):
+        sys.exit( "%f seconds requested..." % ( limit - start  ) )
+
+    Dataset( sys.argv[1] ).Parse( start, limit )
+
+

@@ -84,13 +84,6 @@ namespace L3
 
 
         /*
-         *  Cost Functions
-         *  1.  KL divergence, smoothed
-         *  2.  MI smoothed
-         */
-
-
-        /*
          *  KL divergence
          */
         template <typename T>
@@ -348,7 +341,7 @@ namespace L3
 
         double global_minimisation_function( const gsl_vector * x, void * params)
         {
-            Minimisation<double>* minimiser = static_cast< Minimisation<double>* >(MinimisationParameters::global_minimiser);
+            Minimisation<double>* minimiser = static_cast< Minimisation<double>* >( MinimisationParameters::global_minimiser );
 
             return minimiser->getHypothesisCost( x );
         }
@@ -358,8 +351,8 @@ namespace L3
         template < typename T >
             SE3 Minimisation<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
-                //if( timer.elapsed() < 1.0/this->fundamental_frequency )
-                    //return estimate;
+                if( timer.elapsed() < 1.0/this->fundamental_frequency )
+                    return estimate;
 
                 //DBG
                 //predicted = estimate;
@@ -374,7 +367,6 @@ namespace L3
 
                 _cost_function = this->cost_function.get();
 
-                boost::scoped_ptr< L3::PointCloud<double> > sampled_cloud( new L3::PointCloud<double>() );
                 current_swathe = swathe;
 
                 gsl_vector_set (x, 0, estimate.X() );
@@ -470,6 +462,72 @@ namespace L3
             return this->minimisation->operator()( swathe, refined );
         
         }
+
+
+    double dlib_minimisation_function( const dlib::matrix<double,0,1>& x )
+    {
+        BFGS<double>* minimiser = static_cast< BFGS<double>* >( DLIBParameters::global_minimiser );
+  
+        double cost = minimiser->getHypothesisCost( x );
+        
+        return cost;
+    }   
+        
+    L3::Estimator::Algorithm<double>* L3::Estimator::DLIBParameters::global_minimiser = NULL;
+
+    template <typename T>
+        SE3 BFGS<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+        {
+            int _pyramid_index = this->pyramid_index;
+
+            L3::WriteLock master( this->mutex );
+            L3::ReadLock  histogram_lock( (*this->pyramid)[_pyramid_index]->mutex );
+
+            _cost_function = this->cost_function.get();
+
+            current_swathe = swathe;
+
+            dlib::matrix<double,0,1> starting_point;
+            starting_point.set_size(3);
+
+            starting_point(0) = estimate.X();
+            starting_point(1) = estimate.Y();
+            starting_point(2) = estimate.Q();
+
+            //dlib::find_min_using_approximate_derivatives( dlib::bfgs_search_strategy(),
+            dlib::find_max_using_approximate_derivatives( dlib::cg_search_strategy(),
+                    dlib::objective_delta_stop_strategy(1e-8).be_verbose(),
+                    &dlib_minimisation_function, 
+                    starting_point, 
+                    -std::numeric_limits<double>::infinity() );
+
+            std::cout << "--------------" << std::endl;
+
+            return L3::SE3( starting_point(0), starting_point(1), 0.0, 0.0, 0.0, starting_point(2) );
+        }
+
+
+    template <typename T>
+        double BFGS<T>::getHypothesisCost( const dlib::matrix<double,0,1>& hypothesis )
+        {
+            std::vector<double> cost( 1 );
+
+            //Construct pose from hypothesis
+            L3::SE3 pose_estimate( hypothesis( 0 ), hypothesis( 1 ), 0.0, 0.0, 0.0, hypothesis( 2 ) );
+
+            std::cout.precision(12);
+            std::cout << pose_estimate << std::endl;
+
+            evaluations.push_back( pose_estimate );
+
+            // Estimate, here
+            Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[this->pyramid_index].get() , this->_cost_function, cost.begin() )();
+
+            return cost[0];
+        }
+
+    
+    
     }   // Estimator
 }       // L3
 
@@ -479,9 +537,11 @@ template double L3::Estimator::RenyiMICostFunction<double>::operator()(L3::Histo
 template double L3::Estimator::NMICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template double L3::Estimator::MICostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
 template double L3::Estimator::SSDCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
+
 template bool L3::Estimator::DiscreteEstimator<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 
 template L3::SE3 L3::Estimator::PassThrough<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::Minimisation<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::Hybrid<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template L3::SE3 L3::Estimator::BFGS<double>::operator()(L3::PointCloud<double>*, L3::SE3);

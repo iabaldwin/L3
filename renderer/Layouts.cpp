@@ -47,10 +47,6 @@ namespace L3
             plot_region->numbering(true,1);
             plot_region->numbering(false,0);
 
-            //plot_region->major( .2, 0 );
-            //plot_region->minor( 5, 0 );
-
-
             plots.push_front( plot_region );
 
             // Add rendererable
@@ -102,9 +98,6 @@ namespace L3
             plot_region->showNumbering(true);
             plot_region->numbering(true,1);
             plot_region->numbering(false,0);
-
-            //plot_region->minor( .05, 1 );
-            //plot_region->major( .1, 1);
 
             plots.push_front( plot_region );
 
@@ -348,6 +341,13 @@ namespace L3
                 temporal_updater->operator<<( it->get() );
 
             (*ancillary_2) << *statistics;
+
+            /*
+             *  Fundamental controls
+             */
+
+            //fundamental_controls = boost::make_shared< FundamentalControls >();
+            //(*ancillary_2) << *fundamental_controls;
 
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->fit();
@@ -620,6 +620,17 @@ namespace L3
                 if ( it != tables.end() )
                     tables.erase( it );
             }
+
+            /*
+             *  Experience-specific controls
+             */
+
+            //for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = experience->experience_pyramid->begin();
+                    //it != experience->experience_pyramid->end();
+                    //it++ )
+            //{
+                //fundamental_controls->attachHistogram( *it );
+            //}
 
             return true;
         }

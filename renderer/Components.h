@@ -16,6 +16,7 @@
 #include "L3.h"
 #include "RenderingUtils.h"
 #include "ViewController.h"
+#include "Widgets.h"
 
 /*
  *Octree specific
@@ -1155,16 +1156,29 @@ namespace Visualisers
                 (*this) << renderer.get();
             }
 
+            // Add a second row of controllers
+            for( int i=0; i< num_pyramids; i++ )
+            {
+                boost::shared_ptr< DensityController > controller = boost::make_shared< DensityController >();
+
+                *this << *controller;
+
+                density_controllers.push_back( controller );
+            }
+             
+
+            // We may not be passed the pointer in the constructor
             if( histogram_pyramid )
                 loadPyramid( histogram_pyramid );
 
+            this->fit();
             this->arrange();
         }
 
         int num_pyramids;
-        std::deque< boost::shared_ptr< HistogramDensityRenderer > > renderers;
-
         std::deque < boost::shared_ptr< glv::View > > labels;
+        std::deque < boost::shared_ptr< HistogramDensityRenderer > > renderers;
+        std::deque < boost::shared_ptr< DensityController > > density_controllers;
 
         void loadPyramid( boost::shared_ptr<L3::HistogramPyramid<double> > histogram_pyramid )
         {
@@ -1185,7 +1199,10 @@ namespace Visualisers
             for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = pyramid_ptr->begin();
                     it != pyramid_ptr->end();
                     it++ )
-                renderers[counter++]->hist = *it;
+            {
+                renderers[counter]->hist = *it;
+                density_controllers[counter++]->attachHistogram( *it );
+            }
         }
 
         void update();

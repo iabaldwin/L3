@@ -1,3 +1,5 @@
+include_directories( "/Users/ian/code/thirdparty/dlib-18.2/" )
+
 find_package( Freetype REQUIRED )
 
 find_package( GLUT REQUIRED )                                    # Rendering
@@ -29,6 +31,7 @@ add_library( L3Vis
                 RenderingUtils.cpp
                 CommandInterface.cpp
                 LogCapture.cpp
+                Widgets.cpp
                 )
             
                 #QueryInterface.cpp

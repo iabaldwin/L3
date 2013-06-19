@@ -147,7 +147,7 @@ struct LMS151 : LIDAR
         angle_spacing = (angle_end - angle_start ) / (double)num_scans;
             
         ranges.resize( num_scans, 0 );
-   
+        reflectances.resize( num_scans, 0 );
     }
 
     LMS151( std::vector<double> vec )  : LIDAR( -1*M_PI/4, M_PI+(M_PI/4)) 
@@ -157,7 +157,11 @@ struct LMS151 : LIDAR
         angle_spacing = (angle_end - angle_start ) / (double)num_scans;
 
         ranges.resize( num_scans );
-        ranges.assign( vec.begin(), vec.end() );
+        //ranges.assign( vec.begin(), vec.end() );
+        ranges.assign( vec.begin(), vec.begin()+(541+1) );
+        
+        reflectances.resize( num_scans, 0 );
+        reflectances.assign( vec.begin()+(541+1), vec.end() );
     }
 
     void print( std::ostream& o ) const {
@@ -168,6 +172,8 @@ struct LMS151 : LIDAR
     }
     
 };
+
+
 
 struct SMVelocity  
 {
@@ -196,7 +202,7 @@ struct Sizes<L3::SE3>
 template <>
 struct Sizes<L3::LMS151>
 {
-    const static int elements = 541+1;
+    const static int elements = (2*541)+1;
 };
 
 template <>

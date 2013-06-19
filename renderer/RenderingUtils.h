@@ -79,7 +79,6 @@ namespace Visualisers
 
         virtual std::pair< glv::Color, glv::Color> getBounds( float value ) 
         {
-
             float* lower_ptr = std::lower_bound( interpolant_values, interpolant_values+3, value );
             float* upper_ptr = std::upper_bound( interpolant_values, interpolant_values+3, value );
 

@@ -6,7 +6,7 @@ namespace L3
     namespace Visualisers
     {
 
-        struct TraversalVisualiser : Updateable
+        struct TraversalVisualiser : Updateable, Lockable
         {
             /*
              *  Minimisation::Traversals
@@ -23,6 +23,7 @@ namespace L3
             {
                 if( evaluations.empty() )
                     return;
+                L3::ReadLock lock( this->mutex );
 
                 ColorInterpolator interpolator;
 
@@ -47,16 +48,19 @@ namespace L3
 
                 CoordinateSystem( evaluations.front(), 1 ).onDraw3D(g);
                 CoordinateSystem( evaluations.back(), 1 ).onDraw3D(g);
+                lock.unlock(); 
             }            
 
             virtual void update()
             {
+                L3::WriteLock lock( this->mutex );
                 boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm_ptr = algorithm.lock();
 
                 if( !algorithm_ptr)
                     return;
                 
                 evaluations.assign( algorithm_ptr->evaluations.begin(), algorithm_ptr->evaluations.end() );
+                lock.unlock(); 
             }
         };
 
@@ -69,9 +73,9 @@ namespace L3
             TraversalVisualiserView( boost::shared_ptr< L3::Estimator::Minimisation<double> > algorithm  ) 
                 : TraversalVisualiser( algorithm ), glv::View3D( glv::Rect( 250,250 ))
             {
-                *this  << label;
-                label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
                 label.setValue( "Cost-function evaluations");
+                label.pos( glv::Place::TL, 0, 0 ).anchor( glv::Place::TL ); 
+                *this  << label;
             }
 
             glv::Label label;
@@ -237,7 +241,6 @@ namespace L3
         IterativeDescentVisualiser::IterativeDescentVisualiser( boost::shared_ptr< L3::Estimator::IterativeDescent<double> > algorithm, Updater* updater ) 
             : AlgorithmVisualiser( "x x,", 2, 2), algorithm(algorithm)
         {
-
             for( int i=0; i< algorithm->discrete_estimators.size(); i++ )
             {
 
