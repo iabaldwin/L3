@@ -216,8 +216,8 @@ namespace L3
              */
             text_and_controls = boost::make_shared< glv::Table> ("x x,", 0, 0 );
             
-            holder_1 = boost::make_shared< glv::View >( glv::Rect( 380, 100) );
-            holder_2 = boost::make_shared< glv::View >( glv::Rect( 170, 100) );
+            holder_1 = boost::make_shared< glv::View >( glv::Rect( 385, 100) );
+            holder_2 = boost::make_shared< glv::View >( glv::Rect( 165, 100) );
 
             L3_controls = boost::make_shared< glv::Table >("<,", 2, 5 );
           
@@ -308,8 +308,11 @@ namespace L3
             experience_bounds_toggle        = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), "Experience bounds",  glv::Rect(width, height));
 
             *visualisation_controls << *point_cloud_visualiser_toggle << *point_cloud_bounds_toggle << *iterator_renderer_toggle << *experience_voxel_toggle << *experience_bounds_toggle;
-            visualisation_controls->enable( glv::DrawBorder );
-          
+            //visualisation_controls->enable( glv::DrawBorder );
+            visualisation_controls->disable( glv::DrawBorder );
+        
+
+
             // Default values
             iterator_renderer_toggle->setValue( true ); 
 
@@ -346,8 +349,8 @@ namespace L3
              *  Fundamental controls
              */
 
-            //fundamental_controls = boost::make_shared< FundamentalControls >();
-            //(*ancillary_2) << *fundamental_controls;
+            fundamental_controls = boost::make_shared< FundamentalControls >();
+            (*ancillary_2) << *fundamental_controls;
 
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->fit();
@@ -516,7 +519,14 @@ namespace L3
              *  Statistics
              */
             statistics->load( runner );
-            
+         
+            /*
+             *  Fundamental controls
+             */
+            // This is an issue when the algorithm is reset
+            if( boost::shared_ptr< FilteredScanMatchingVelocityProvider  > ptr = boost::dynamic_pointer_cast< FilteredScanMatchingVelocityProvider >( runner->ics_velocity_provider ) )
+                fundamental_controls->addFilter( ptr ); 
+
             /*
              *  Update view
              */
@@ -524,7 +534,9 @@ namespace L3
 
             composite->position.x = -1*start_pose.X();
             composite->position.y = -1*start_pose.Y();
-       
+     
+
+
             return true;
         }
 

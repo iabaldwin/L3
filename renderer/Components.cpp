@@ -1585,8 +1585,7 @@ namespace Visualisers
 
     struct MemoryStatistics : glv::TextView
     {
-
-        explicit MemoryStatistics() : glv::TextView( glv::Rect(150,25 ) )
+        explicit MemoryStatistics() : glv::TextView( glv::Rect(150,15 ) )
         {
             this->disable( glv::DrawBorder );
         }
@@ -1653,7 +1652,7 @@ namespace Visualisers
     };
 
 
-    Statistics::Statistics() : glv::Table( "<,", 0, 0 )
+    Statistics::Statistics() : glv::Table( "<,", 2, 5 )
     {
         observer_update.reset(      new TextRenderer<double>() );
         swathe_generation.reset(    new TextRenderer<double>() );
@@ -1667,8 +1666,8 @@ namespace Visualisers
         //observer_update->enable( glv::DrawBorder );
         //swathe_generation->enable( glv::DrawBorder );
 
-        observer_update->paddingX( 5 );
-        observer_update->paddingY( 2 );
+        //observer_update->paddingX( 5 );
+        //observer_update->paddingY( 2 );
         
         //swathe_generation->paddingX( 5 );
         //points_per_second->paddingY( 7 );

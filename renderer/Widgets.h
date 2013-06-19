@@ -28,6 +28,18 @@ namespace Visualisers
 
     };
 
+    struct FundamentalControls : glv::Table
+    {
+        FundamentalControls();
+
+        boost::shared_ptr< glv::Table > _table;
+
+        std::deque< boost::shared_ptr< glv::Label> > labels;
+        std::deque< boost::shared_ptr< glv::Widget > > widgets;
+   
+        void addFilter( boost::shared_ptr< FilteredScanMatchingVelocityProvider> ptr);
+
+    };
 }
 }
 
