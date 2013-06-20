@@ -18,6 +18,9 @@ namespace L3
                 return;
             }
 
+            double _alpha = this->alpha;
+            double _beta  = this->beta;
+            
             state _current_state;
 
             _current_state.x = _state.x + dt *_state.v;
@@ -28,8 +31,8 @@ namespace L3
              */
             double residual = measurement - _current_state.x ;
             
-            _current_state.x = _current_state.x  + alpha*residual;
-            _current_state.v = _current_state.v  + (beta/dt)*residual;
+            _current_state.x = _current_state.x  + _alpha*residual;
+            _current_state.v = _current_state.v  + (_beta/dt)*residual;
        
             _state = _current_state;
      

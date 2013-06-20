@@ -2,6 +2,7 @@
 #define L3_TRACKING_H
 
 #include <iostream>
+#include "Core.h"
 
 namespace L3
 {
@@ -43,6 +44,24 @@ namespace L3
 
 
         std::ostream& operator<<( std::ostream& out, const AlphaBetaFilter::state& state );
+
+        struct KalmanFilter : Updateable
+        {
+            KalmanFilter()
+            {
+
+            }
+       
+            virtual void update( double ) = 0;
+        };
+
+        struct EKF
+        {
+
+
+
+
+        };
 
     }
 

@@ -36,11 +36,11 @@ namespace L3
         double distance;
 
         // 2. Isolate from here to the end of the chain
-        L3::trajectoryAccumulate( index, 
-                                    LHLV_iterator->window.end(), 
-                                    window.begin(), 
-                                    distance, 
-                                    std::numeric_limits<double>::infinity() );
+        //L3::trajectoryAccumulate( index, 
+                                    //LHLV_iterator->window.end(), 
+                                    //window.begin(), 
+                                    //distance, 
+                                    //std::numeric_limits<double>::infinity() );
         
         previous_update = t;
     }

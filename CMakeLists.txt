@@ -36,6 +36,8 @@ include_directories( ${GSL_INCLUDE_DIRS} )
 find_package( IPP REQUIRED )                                    # Math,statistics
 link_directories( "/opt/intel/ipp/lib/" )
 
+include_directories( "/Users/ian/code/thirdparty/Bayes++/" )
+link_directories( "/Users/ian/code/thirdparty/Bayes++/target/BayesFilter/darwin-4.2.1/release/link-static/" )
 
 #PCL
 #include_directories( "/Users/ian/code/build/include/pcl-1.5/" )

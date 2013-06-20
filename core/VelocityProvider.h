@@ -41,7 +41,9 @@ struct VelocityProvider : Lockable, TemporalObserver
     VELOCITY_WINDOW filtered_velocities;
 
     typedef VELOCITY_WINDOW::iterator VELOCITY_ITERATOR;
-    
+
+    typedef Comparator< VELOCITY_WINDOW::value_type > VELOCITY_COMPARATOR;
+
     double previous_update;
 };
 

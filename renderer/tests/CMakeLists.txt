@@ -46,8 +46,8 @@ target_link_libraries( test_iterator_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRA
 add_executable( test_swathe_builder_INS_visual test_swathe_builder_INS.cpp )
 target_link_libraries( test_swathe_builder_INS_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
-add_executable( test_swathe_builder_LHLV_visual test_swathe_builder_LHLV.cpp )
-target_link_libraries( test_swathe_builder_LHLV_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+#add_executable( test_swathe_builder_LHLV_visual test_swathe_builder_LHLV.cpp )
+#target_link_libraries( test_swathe_builder_LHLV_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 #add_executable( test_swathe_builder_LHLV_constant_distance_visual test_swathe_builder_LHLV_constant_distance.cpp )
 #target_link_libraries( test_swathe_builder_LHLV_constant_distance_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
@@ -82,8 +82,8 @@ target_link_libraries( test_estimator_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBR
 #add_executable( test_algorithm_visual test_algorithm.cpp )
 #target_link_libraries( test_algorithm_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
-add_executable( test_pose_windower test_pose_windower.cpp )
-target_link_libraries( test_pose_windower GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+#add_executable( test_pose_windower test_pose_windower.cpp )
+#target_link_libraries( test_pose_windower GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 #add_executable( test_scan_projection test_scan_projection.cpp )
 #target_link_libraries( test_scan_projection GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})

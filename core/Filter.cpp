@@ -1,9 +1,132 @@
 #include "Filter.h"
 
+#include "Integrator.h"
+#include "Utils.h"
+
 namespace L3
 {
     namespace Estimator
     {
+
+        const Bayesian_filter_matrix::Vec& PredictionModel::f (const Bayesian_filter_matrix::Vec &x) const
+        {
+
+            boost::shared_ptr< L3::VelocityProvider > iterator_ptr =  iterator.lock();
+
+            if (!iterator_ptr )
+                return x;
+
+            if ( last_update == 0 )
+            {
+                // Not initialised
+                last_update = iterator_ptr->filtered_velocities.back().first;
+                return x;
+            }
+
+            L3::VelocityProvider::VELOCITY_COMPARATOR c;
+
+            L3::VelocityProvider::VELOCITY_ITERATOR index = std::lower_bound( iterator_ptr->filtered_velocities.begin(),
+                    iterator_ptr->filtered_velocities.end(),
+                    last_update,
+                    c );
+
+            std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > _window( std::distance( index, iterator_ptr->filtered_velocities.end() ) );
+
+            // No data
+            if ( _window.size() <= 1 )
+                return x;
+
+            double distance;
+
+            trajectoryAccumulate( index, 
+                    iterator_ptr->filtered_velocities.end(),
+                    _window.begin(),
+                    distance,
+                    std::numeric_limits<double>::infinity()
+                    );
+
+            if( !_window.empty() )
+                std::cout << *(_window.back().second) <<  std::endl;
+
+            L3::SE3 previous_pose( x[0], x[1], 0, 0, 0, x[2] );
+
+            Eigen::Matrix4f tmp(  previous_pose.getHomogeneous() );
+            tmp *= _window.back().second->getHomogeneous();
+
+            L3::SE3 prediction = L3::Utils::Math::poseFromRotation( tmp );
+
+            Bayesian_filter_matrix::Vec estimate(3);
+            estimate[0] = prediction.X();
+            estimate[1] = prediction.Y();
+            estimate[2] = prediction.Q();
+            Fx->assign( estimate );
+
+            // Update times
+            last_update = iterator_ptr->filtered_velocities.back().first;
+            
+            return *Fx;
+        }
+
+        ObservationModel::ObservationModel () : Bayesian_filter::Linear_uncorrelated_observe_model(3,3)
+        {
+            // Linear model
+            //Hx(0,0) = 1;
+            // Constant Observation Noise model with variance of one
+            //Zv[0] = 1.;
+        }
+
+        template <typename T>
+            EKF<T>::EKF( boost::shared_ptr<CostFunction<T> > cost_function,  
+                    boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
+                    boost::shared_ptr< L3::VelocityProvider > iterator )
+            : Filter<T>(iterator), 
+            Algorithm<T>(cost_function),
+            initialised(false)
+        {
+            ukf.reset( new Bayesian_filter::Unscented_scheme(3) );
+      
+            x_init.reset( new Bayesian_filter_matrix::Vec(3) );
+            X_init.reset( new Bayesian_filter_matrix::SymMatrix(3,3) );
+	
+            prediction_model  = boost::make_shared< PredictionModel >(  iterator );
+            observation_model = boost::make_shared< ObservationModel >();
+        }
+
+        template <typename T>
+            SE3 EKF<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+            {
+                if( !initialised )
+                {
+                    (*x_init)[0]= estimate.X();
+                    (*x_init)[1]= estimate.Y();
+                    (*x_init)[2]= estimate.Q();
+               
+                    ukf->init_kalman (*x_init, *X_init);
+      
+                    initialised = true;
+                }
+
+                ukf->predict( *prediction_model);
+                ukf->update();
+            }
+
+        template <typename T>
+            bool EKF<T>::update( double time )
+            {
+                if ( initialised )
+                {
+
+                    current_time = time;
+
+                    prediction_model->update( current_time );
+
+                    return true;
+                }
+                return false;
+            }
+
+
+
         template <typename T>
             SE3 ParticleFilter<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
@@ -220,4 +343,10 @@ namespace L3
 }
 
 template L3::SE3 L3::Estimator::ParticleFilter<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template L3::SE3 L3::Estimator::EKF<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+
 template bool L3::Estimator::ParticleFilter<double>::update(double);
+template bool L3::Estimator::EKF<double>::update(double);
+
+template L3::Estimator::EKF<double>::EKF(boost::shared_ptr<L3::Estimator::CostFunction<double> >, boost::shared_ptr<L3::HistogramPyramid<double> >, boost::shared_ptr<L3::VelocityProvider>);
+

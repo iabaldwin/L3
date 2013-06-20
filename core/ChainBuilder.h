@@ -5,10 +5,11 @@
 #include <numeric>
 #include <iterator>
 
-#include "Datatypes.h"
 #include "Core.h"
 #include "Iterator.h"
+#include "Datatypes.h"
 #include "Integrator.h"
+#include "VelocityProvider.h"
 
 namespace L3
 {
@@ -16,7 +17,7 @@ namespace L3
     {
         public:
 
-            ChainBuilder( L3::Iterator<L3::LHLV>* iterator ) : LHLV_iterator(iterator)
+            ChainBuilder( L3::VelocityProvider* provider ) : velocity_provider(provider)
             {
             }
 
@@ -26,15 +27,15 @@ namespace L3
                 window.clear();
 
                 // Allocate
-                window.resize( LHLV_iterator->window.size() );
+                window.resize( velocity_provider->filtered_velocities.size() );
 
-                _incremental_distances.resize( window.size() );
+                _incremental_distances.resize( velocity_provider->filtered_velocities.size() );
 
                 double distance;
 
                 // Accumulate 
-                L3::trajectoryAccumulate( LHLV_iterator->window.begin(), 
-                                            LHLV_iterator->window.end(), 
+                L3::trajectoryAccumulate( velocity_provider->filtered_velocities.begin(), 
+                                            velocity_provider->filtered_velocities.end(), 
                                             window.begin(), 
                                             distance, 
                                             std::numeric_limits<double>::infinity() );
@@ -48,7 +49,7 @@ namespace L3
 
             std::deque < double > _incremental_distances;
 
-            L3::Iterator<L3::LHLV>* LHLV_iterator;
+            L3::VelocityProvider* velocity_provider;
 
     };
 

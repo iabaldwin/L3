@@ -78,7 +78,6 @@ namespace L3
         double rotational_velocity = velocity_provider_ptr->window.back().second->data[3];
         
         _linear_velocity_filter->update( velocity_provider_ptr->window.back().first, linear_velocity );
-        _rotational_velocity_filter->update( velocity_provider_ptr->window.back().first, rotational_velocity );
 
         raw_velocity_data.first = velocity_provider_ptr->window.back().first;
         raw_velocity_data.second[0] = linear_velocity;
@@ -86,7 +85,6 @@ namespace L3
 
         filtered_velocity_data.first = velocity_provider_ptr->window.back().first;
         filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
-        //filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
         filtered_velocity_data.second[3] = rotational_velocity;
 
         raw_velocities.push_back( raw_velocity_data );
@@ -98,23 +96,6 @@ namespace L3
         while( raw_velocities.back().first - raw_velocities.front().first > 10.0 )
                 raw_velocities.pop_front();
         
-        //filtered_velocities.clear();
-
-        //sm_zipper zipper;
-
-        //std::transform( velocity_provider_ptr->window.begin(), 
-                //velocity_provider_ptr->window.end(),
-                //std::back_inserter( filtered_velocities ),
-                //zipper );
-
-        //if( !filtered_velocities.empty()  )
-        //{
-            //while( filtered_velocities.back().first - filtered_velocities.front().first > 10.0 )
-                //filtered_velocities.pop_front();
-        //}
-
-        //return ( !filtered_velocities.empty() );
-   
         return true;
     };
     
@@ -127,38 +108,6 @@ namespace L3
                 std::back_inserter( filtered_velocities ),
                 z );
 
-        //if( !iterator->window.empty())
-        //{
-            //std::cout << time << std::endl;
-            //std::cout << iterator->window.front().first << ':' << iterator->window.back().first << std::endl;
-            //std::cout << iterator->window.back().first - time << std::endl; 
-            //std::cout << "--------------" << std::endl;
-
-            ////std::cout << filtered_velocities.front().first << ':' << filtered_velocities.back().first << std::endl;
-            ////std::cout << time - filtered_velocities.front().first << ':' << filtered_velocities.back().first - time<< std::endl;
-
-        //}
-        
-        //LHLV_ITERATOR it = std::lower_bound(
-                //iterator->window.begin(),
-                //iterator->window.end(),
-                //previous_update,
-                //comparator
-                //);
-
-        //std::transform( it, 
-                //iterator->window.end(),
-                //std::back_inserter( filtered_velocities ),
-                //z );
-
-        //if( !filtered_velocities.empty() )
-        //{
-            //while( filtered_velocities.front().first - filtered_velocities.back().first > 10.0 )
-                //filtered_velocities.pop_front();
-
-            //previous_update = iterator->window.back().first;
-        //}
-        
         return ( !filtered_velocities.empty() );
     }
 }
