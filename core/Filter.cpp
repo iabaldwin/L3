@@ -20,6 +20,16 @@ namespace L3
             return ret_val;
 
         }
+        
+        L3::SE3 adapt( const Bayesian_filter_matrix::Vec&  pose )
+        {
+            L3::SE3 ret_val;
+            ret_val.X( pose[0] );
+            ret_val.Y( pose[1] );
+            ret_val.Q( pose[2] );
+       
+            return ret_val;
+        }
 
         PredictionModel::PredictionModel( boost::shared_ptr< L3::VelocityProvider > iterator ) 
             :  Bayesian_filter::Additive_predict_model(3,3),
@@ -148,8 +158,6 @@ namespace L3
 
         ObservationModel::ObservationModel () : Bayesian_filter::Linear_uncorrelated_observe_model(3,3)
         {
-            std::cout << Hx.size1() << ',' << Hx.size2() << std::endl;
-            std::cout << Zv.size() << std::endl;
             Hx(0,0) = 1.;
             Hx(1,1) = 1.;
             Hx(2,2) = 1.;
@@ -165,7 +173,7 @@ namespace L3
                     boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
                     boost::shared_ptr< L3::VelocityProvider > iterator )
             : Filter<T>(iterator), 
-            Algorithm<T>(cost_function),
+            Algorithm<T>(cost_function, 2 ),
             initialised(false)
         {
             ukf.reset( new Bayesian_filter::Unscented_scheme(3) );
@@ -179,6 +187,8 @@ namespace L3
             minimiser = boost::make_shared< Minimisation<T> >( cost_function, experience_pyramid );
 
             sigma_points.resize( (2*3 + 1)*3 );
+                
+            timer.begin();
         }
 
         template <typename T>
@@ -200,24 +210,28 @@ namespace L3
                     return estimate;
                 }
 
+                // Always predict 
                 ukf->predict( *prediction_model);
                 ukf->update();
 
-                // Produce measurement
-                L3::SE3 z = minimiser->operator()( swathe, estimate );
+                // Sometimes update
+                if( timer.elapsed() > 1.0/this->fundamental_frequency )
+                {
+                    // Produce measurement
+                    L3::SE3 z = minimiser->operator()( swathe, estimate );
 
-                Bayesian_filter_matrix::Vec z_vec = adapt(z);
+                    Bayesian_filter_matrix::Vec z_vec = adapt(z);
 
-                ukf->observe( *observation_model, z_vec );
-                ukf->update();
+                    ukf->observe( *observation_model, z_vec );
+                    ukf->update();
+                }
 
                 double* ptr = &sigma_points[0];
                 for( int j=0; j< ukf->XX.size2(); j++ )
                     for( int i=0; i< ukf->XX.size1(); i++ )
                         *ptr++ = ukf->XX(i,j);
-                
-                return z;
 
+                return adapt( ukf->x );
             }
 
         template <typename T>

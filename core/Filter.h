@@ -69,6 +69,8 @@ namespace Estimator
 
         boost::shared_ptr< PredictionModel >    prediction_model;
         boost::shared_ptr< ObservationModel >   observation_model;
+            
+        L3::Timing::ChronoTimer timer;
 
         bool initialised;
         double previous_time, current_time;
@@ -104,6 +106,7 @@ namespace Estimator
             linear_uncertainty = 2;
             rotational_uncertainty = .2;
         }
+            
 
         bool initialised;
         int num_particles;
