@@ -89,9 +89,7 @@ namespace L3
 
                 TraversalVisualiser::onDraw3D(g);
             }            
-
         };
-
 
         struct TraversalVisualiserLeaf : TraversalVisualiser, Leaf
         {
@@ -904,12 +902,27 @@ namespace L3
 
             composite->operator<<( *sigma_points );
             this->leafs.push_back( sigma_points );
-        
+
+
+            boost::shared_ptr< TraversalVisualiserView > minimisation_visualiser = boost::make_shared< TraversalVisualiserView >( algorithm->minimiser );
+            views.push_back( minimisation_visualiser );
+
+            updater->operator<<( minimisation_visualiser.get() );
+            updateables.push_back( minimisation_visualiser.get() );
+
+            this->operator<<( *minimisation_visualiser );
+
         }
     
         UKFVisualiser::~UKFVisualiser()
         {
 
+            for( std::list< Updateable* >::iterator updateable_it =  updateables.begin();
+                    updateable_it != updateables.end();
+                    updateable_it++ )
+            {
+                updater->remove( *updateable_it );
+            }
 
             boost::shared_ptr < Composite > composite_ptr = composite.lock();
 
