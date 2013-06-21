@@ -875,9 +875,7 @@ namespace L3
 
                     vertices[i](x1, y1, z1 );
                
-                    //std::cout << x1 << ',' << y1 << ',' << z1 << std::endl;
                 }
-                //std::cout << "----------" << std::endl;
                
                 glv::draw::pointSize( 10 );
                 glv::draw::paint( glv::draw::Points, vertices, colors, num_sigma_points );
@@ -911,6 +909,24 @@ namespace L3
     
         UKFVisualiser::~UKFVisualiser()
         {
+
+
+            boost::shared_ptr < Composite > composite_ptr = composite.lock();
+
+            for( std::list< boost::shared_ptr< Leaf > >::iterator leaf_it =  leafs.begin();
+                        leaf_it != leafs.end();
+                        leaf_it++ )
+                {
+                    std::list < Leaf* >::iterator it 
+                        = std::find( composite_ptr->components.begin(), 
+                                composite_ptr->components.end(), 
+                                leaf_it->get()
+                                );
+
+                    if( it != composite_ptr->components.end() )
+                        composite_ptr->components.erase( it );
+
+                }
 
 
         }

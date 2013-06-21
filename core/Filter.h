@@ -24,13 +24,11 @@ namespace Estimator
         Filter( boost::shared_ptr< L3::VelocityProvider > iterator ) 
             : iterator(iterator)
         {
-
-
         }
 
         L3::SE3 current_prediction;
         
-        boost::weak_ptr < L3::VelocityProvider >  iterator ;
+        boost::weak_ptr < L3::VelocityProvider > iterator ;
         
     };
 
@@ -38,7 +36,6 @@ namespace Estimator
     struct PredictionModel : Bayesian_filter::Additive_predict_model, TemporalObserver
     {
         PredictionModel( boost::shared_ptr< L3::VelocityProvider > iterator ) ;
-        
         
         mutable double last_update, current_update;
 
@@ -53,18 +50,10 @@ namespace Estimator
         const Bayesian_filter_matrix::Vec& f (const Bayesian_filter_matrix::Vec &x) const;
     };
     
-    struct ObservationModel : Bayesian_filter::Linear_uncorrelated_observe_model
+    struct ObservationModel : Bayesian_filter:: Linear_uncorrelated_observe_model
     {
         ObservationModel ();
     };
-
-    struct LinearPredictionModel : Bayesian_filter::Linear_predict_model
-    {
-        LinearPredictionModel();
-        
-        L3::SE3 prediction;
-    };
-
 
     template <typename T>
         struct UKF : Filter<T>, Algorithm<T>, L3::TemporalObserver
@@ -79,7 +68,6 @@ namespace Estimator
         boost::shared_ptr< Bayesian_filter_matrix::SymMatrix>  X_init;
 
         boost::shared_ptr< PredictionModel >    prediction_model;
-        //boost::shared_ptr< LinearPredictionModel >    prediction_model;
         boost::shared_ptr< ObservationModel >   observation_model;
 
         bool initialised;
@@ -87,10 +75,12 @@ namespace Estimator
        
         std::vector< double > sigma_points;
 
+        boost::shared_ptr< Minimisation<T> > minimiser;
+
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
-       
 
         bool update( double time);
+    
     };
 
     template <typename T>

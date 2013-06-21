@@ -5,8 +5,21 @@
 
 namespace L3
 {
+
     namespace Estimator
     {
+
+        Bayesian_filter_matrix::Vec adapt( const L3::SE3& pose )
+        {
+            Bayesian_filter_matrix::Vec ret_val(3);
+
+            ret_val[0] = pose.X();
+            ret_val[1] = pose.Y();
+            ret_val[2] = pose.Q();
+
+            return ret_val;
+
+        }
 
         PredictionModel::PredictionModel( boost::shared_ptr< L3::VelocityProvider > iterator ) 
             :  Bayesian_filter::Additive_predict_model(3,3),
@@ -19,42 +32,20 @@ namespace L3
             q[0] = 2;
             q[1] = 2;
             q[2] = .2;
-          
-            std::cout << G.size1() << "," << G.size2() << std::endl;
 
-            G(0,0) = .1;
-            G(1,1) = .1;
-            G(2,2) = .0001;
-        }
-
-        LinearPredictionModel::LinearPredictionModel() : Linear_predict_model(3,3)
-        {
-            // Stationary Prediction model (Identity)
-            Fx(0,0) = 1.1;
-            Fx(1,1) = 1.1;
-            Fx(2,2) = 1.05;
-
-            // Constant Noise model with a large variance
-            G(0,0) = 1.;
-            G(1,1) = 1.;
-            G(2,2) = 1.;
-
-            q[0] = .1;
-            q[1] = .2;
-            q[2] = .01;
+            G(0,0) = .01;
+            G(1,1) = .01;
+            G(2,2) = .001;
         }
 
         const Bayesian_filter_matrix::Vec& PredictionModel::f (const Bayesian_filter_matrix::Vec &x) const
         {
 
             if( delta == L3::SE3::ZERO() )
-            {
-                // Update
                 return x;
-            }
 
             L3::SE3 pose( x[0], x[1], 0, 0, 0, x[2] );
-          
+
             Eigen::Matrix4f tmp1( pose.getHomogeneous() );
             Eigen::Matrix4f tmp2( delta.getHomogeneous() );
             tmp1 *= tmp2;
@@ -62,7 +53,7 @@ namespace L3
             prediction = L3::Utils::Math::poseFromRotation( tmp1 );
 
             Bayesian_filter_matrix::Vec estimate(3);
-      
+
             estimate[0] = prediction.X();
             estimate[1] = prediction.Y();
             estimate[2] = prediction.Q();
@@ -74,14 +65,11 @@ namespace L3
 
         }
 
-
         bool PredictionModel::update( double time )
         {
-
             if ( last_update == 0 )
             {
                 last_update = time;  
-                
                 return false;
             }
 
@@ -107,16 +95,18 @@ namespace L3
 
             std::deque < std::pair< double, boost::shared_ptr< L3::SE3 > > > _window;
 
+            // Origin start
             _window.push_back( std::make_pair( index->first, boost::make_shared< L3::SE3 > () ) );
 
             std::deque < std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator _window_iterator = _window.begin();
-
+            
             boost::shared_ptr< L3::SE3 > previous_pose = _window_iterator->second, current_pose;
 
+            // Integrate
             while( index != iterator_ptr->filtered_velocities.end() )
             {
                 double dt = index->first - (index-1)->first;
- 
+
                 w1 = index->second[1];
                 w2 = index->second[2];
                 w3 = index->second[3];
@@ -148,16 +138,27 @@ namespace L3
                 delta = *current_pose;
             else
             {
+                // No update
                 delta = L3::SE3::ZERO();
                 return false;
             }
-  
+
             last_update = iterator_ptr->filtered_velocities.back().first;
         }
 
         ObservationModel::ObservationModel () : Bayesian_filter::Linear_uncorrelated_observe_model(3,3)
         {
+            std::cout << Hx.size1() << ',' << Hx.size2() << std::endl;
+            std::cout << Zv.size() << std::endl;
+            Hx(0,0) = 1.;
+            Hx(1,1) = 1.;
+            Hx(2,2) = 1.;
+            
+            Zv[0] = .01;
+            Zv[1] = .01;
+            Zv[2] = .001;
         }
+
 
         template <typename T>
             UKF<T>::UKF( boost::shared_ptr<CostFunction<T> > cost_function,  
@@ -168,13 +169,15 @@ namespace L3
             initialised(false)
         {
             ukf.reset( new Bayesian_filter::Unscented_scheme(3) );
-      
+
             x_init.reset( new Bayesian_filter_matrix::Vec(3) );
             X_init.reset( new Bayesian_filter_matrix::SymMatrix(3,3) );
-	
+
             prediction_model  = boost::make_shared< PredictionModel >(  iterator );
             observation_model = boost::make_shared< ObservationModel >();
-       
+
+            minimiser = boost::make_shared< Minimisation<T> >( cost_function, experience_pyramid );
+
             sigma_points.resize( (2*3 + 1)*3 );
         }
 
@@ -193,27 +196,28 @@ namespace L3
                     prediction_model->last_update = iterator_ptr->filtered_velocities.back().first;
 
                     initialised = true;
-               
+
                     return estimate;
                 }
 
                 ukf->predict( *prediction_model);
                 ukf->update();
 
-                //boost::shared_ptr< L3::VelocityProvider >  iterator_ptr = this->iterator.lock() ;
-                //prediction_model->last_update = iterator_ptr->filtered_velocities.back().first;
+                // Produce measurement
+                L3::SE3 z = minimiser->operator()( swathe, estimate );
+
+                Bayesian_filter_matrix::Vec z_vec = adapt(z);
+
+                ukf->observe( *observation_model, z_vec );
+                ukf->update();
 
                 double* ptr = &sigma_points[0];
                 for( int j=0; j< ukf->XX.size2(); j++ )
-                {
                     for( int i=0; i< ukf->XX.size1(); i++ )
-                    {
                         *ptr++ = ukf->XX(i,j);
-                        std::cout << ukf->XX(i,j) << " "; 
-                    }
-                    std::cout << std::endl;
-                }
-                std::cout << "--------" << std::endl;
+                
+                return z;
+
             }
 
         template <typename T>
@@ -229,7 +233,7 @@ namespace L3
             {
                 boost::shared_ptr< L3::VelocityProvider > velocity_provider = this->iterator.lock();
 
-                
+
                 int _num_particles = this->num_particles;
 
                 double _linear_uncertainty = this->linear_uncertainty;
@@ -254,7 +258,7 @@ namespace L3
                         *it = L3::SE3( x_generator()+estimate.X(), y_generator()+estimate.Y(), 0, 0, 0, theta_generator()+estimate.Q() );
 
                     initialised = true;
-                    
+
                     return estimate;
                 }
 
@@ -273,7 +277,7 @@ namespace L3
                 if ( _window_delta_buffer.empty() )
                     return estimate;
 
-              
+
                 double mean_linear_velocity = 0.0;
                 double mean_rotational_velocity = 0.0;
 
@@ -297,14 +301,11 @@ namespace L3
 
                 L3::ReadLock histogram_lock( (*this->pyramid)[pyramid_index]->mutex );
 
-                double q, x_vel, y_vel, velocity_delta, x, y;
-
-                //boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, 3 );
-                //boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, .2 );
-
+                /*
+                 *Uncertainty generators
+                 */
                 boost::normal_distribution<> linear_velocity_plant_uncertainty(0.0, _linear_uncertainty);
                 boost::normal_distribution<> rotational_velocity_plant_uncertainty(0.0, _rotational_uncertainty );
-
 
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > linear_velocity_uncertainty_generator(rng, linear_velocity_plant_uncertainty );
                 boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > rotational_velocity_uncertainty_generator(rng, rotational_velocity_plant_uncertainty );
@@ -322,6 +323,8 @@ namespace L3
 
                 if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
                     throw std::exception();
+
+                double q, x_vel, y_vel, velocity_delta, x, y;
 
                 // Apply the constant average velocities to the particles
                 for( PARTICLE_ITERATOR it = hypotheses.begin();
@@ -341,7 +344,6 @@ namespace L3
                     delta.push_back( L3::SE3( x, y, 0, 0, 0, q ) );
 
                     group.run( Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[pyramid_index].get(), this->cost_function.get(), result_iterator++ ) );
-                    //Hypothesis( this->sampled_swathe.get(), &*it, (*this->pyramid)[pyramid_index].get(), this->cost_function.get(), result_iterator++ )();
                 }
 
                 group.wait();
@@ -378,9 +380,8 @@ namespace L3
                 }
 
                 hypotheses.swap( resampled );
-                
+
                 return this->current_prediction;
-           
             }
 
         template <typename T>
@@ -390,9 +391,6 @@ namespace L3
 
                 return true;
             }
-
-
-
     }
 
     L3::SE3 operator+( const L3::SE3& lhs,  const L3::SE3& rhs )
@@ -435,8 +433,6 @@ namespace L3
 
         return retval;
     }
-
-
 }
 
 template L3::SE3 L3::Estimator::ParticleFilter<double>::operator()(L3::PointCloud<double>*, L3::SE3);
