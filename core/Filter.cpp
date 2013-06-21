@@ -22,9 +22,9 @@ namespace L3
           
             std::cout << G.size1() << "," << G.size2() << std::endl;
 
-            G(0,0) = .01;
-            //G(1,1) = .01;
-            //G(2,2) = .01;
+            G(0,0) = .1;
+            G(1,1) = .1;
+            G(2,2) = .0001;
         }
 
         LinearPredictionModel::LinearPredictionModel() : Linear_predict_model(3,3)
