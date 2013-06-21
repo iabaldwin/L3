@@ -149,6 +149,23 @@ namespace L3
             
         };
 
+        struct UKFVisualiser : AlgorithmVisualiser
+        {
+            UKFVisualiser( boost::shared_ptr< L3::Estimator::UKF<double> > algorithm, Updater* updater, boost::shared_ptr< Composite> composite );
+            ~UKFVisualiser();
+
+            boost::weak_ptr< Composite > composite;
+            boost::shared_ptr< Leaf > estimate_visualiser; 
+
+            std::deque < boost::shared_ptr< glv::View > > views;
+            std::deque < boost::shared_ptr< glv::Label > > labels;
+    
+            std::list< boost::shared_ptr< Leaf > > leafs;
+            //std::list< Leaf* > leafs;
+            std::list< Updateable* > updateables;
+            
+        };
+
         /*
          *  Factory
          */
@@ -171,6 +188,11 @@ namespace L3
                 // PF
                 if( boost::shared_ptr< L3::Estimator::ParticleFilter<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::ParticleFilter<double> >( algorithm ) )
                     return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< ParticleFilterVisualiser>( ptr, updater, composite ) );
+
+                // UKF
+                if( boost::shared_ptr< L3::Estimator::UKF<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::UKF<double> >( algorithm ) )
+                    return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< UKFVisualiser >( ptr, updater, composite ) );
+
 
                 return boost::shared_ptr<AlgorithmVisualiser>();
 

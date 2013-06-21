@@ -224,9 +224,9 @@ namespace L3
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
 
-                L3::LogisticSmoother<double> smoother;
+                //L3::LogisticSmoother<double> smoother;
                 //L3::GaussianSmoother<double> smoother;
-                smoother.smooth( &swathe_histogram );
+                //smoother.smooth( &swathe_histogram );
 
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }

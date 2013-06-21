@@ -78,14 +78,18 @@ int main()
 
 	cout << "Initial  " << my_filter.x << my_filter.X << endl;
 
-	// Predict the filter forward
-	my_filter.predict (my_predict);
-	my_filter.update();		// Update the filter, so state and covariance are available
+    for( int i=0; i< 100; i++ )
+    {
+        // Predict the filter forward
+        my_filter.predict (my_predict);
+        my_filter.update();		// Update the filter, so state and covariance are available
 
-	cout << "Predict  " << my_filter.x << my_filter.X << endl;
 
-	// Make an observation
-	Vec z(1);
+        cout << "Predict  " << my_filter.x << my_filter.X << endl;
+
+    }
+    // Make an observation
+    Vec z(1);
 	z[0] = 11.;				// Observe that we should be at 11
 	my_filter.observe (my_observe, z);
 	my_filter.update();		// Update the filter to state and covariance are available

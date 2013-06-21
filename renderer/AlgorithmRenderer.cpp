@@ -816,5 +816,104 @@ namespace L3
                 }
             }
         }
+
+
+        /*
+         *  UKF visualiser
+         */
+       
+        struct UKFPoseEstimate : Leaf
+        {
+
+            UKFPoseEstimate( const L3::SE3& pose ) : pose(pose)
+            {
+
+            }
+            
+            const L3::SE3& pose;
+
+            void onDraw3D( glv::GLV& g )
+            {
+                CoordinateSystem( const_cast< L3::SE3& >(pose), 10 ).onDraw3D( g );
+            }
+        };
+
+        struct UKFSigmaPoints : Leaf
+        {
+            UKFSigmaPoints(  boost::shared_ptr< L3::Estimator::UKF<double> > algorithm ) 
+                : algorithm(algorithm)
+            {
+
+            }
+
+            boost::weak_ptr< L3::Estimator::UKF<double> > algorithm ;
+
+            void onDraw3D( glv::GLV& g )
+            {
+            
+                boost::shared_ptr< L3::Estimator::UKF<double> > algorithm_ptr = algorithm.lock();
+
+                if ( !algorithm_ptr )
+                    return;
+
+                std::vector< double > sigma_points( algorithm_ptr->sigma_points.begin(),
+                        algorithm_ptr->sigma_points.end() );
+
+
+                double* ptr = &sigma_points[0];
+
+                int num_sigma_points = (2*3)+1;
+
+                glv::Point3 vertices[num_sigma_points];
+                glv::Color  colors[num_sigma_points];
+
+                for( int i=0; i<num_sigma_points; i++ )
+                {
+                    double x1 = *ptr++;
+                    double y1 = *ptr++;
+                    double z1 = *ptr++;
+
+                    vertices[i](x1, y1, z1 );
+               
+                    //std::cout << x1 << ',' << y1 << ',' << z1 << std::endl;
+                }
+                //std::cout << "----------" << std::endl;
+               
+                glv::draw::pointSize( 10 );
+                glv::draw::paint( glv::draw::Points, vertices, colors, num_sigma_points );
+
+            }
+
+        };
+
+        
+        UKFVisualiser::UKFVisualiser( boost::shared_ptr< L3::Estimator::UKF<double> > algorithm, Updater* updater, boost::shared_ptr< Composite> composite )
+            : composite(composite)
+        {
+            if( !updater )
+                throw std::exception();
+
+            this->updater = updater;
+
+            boost::shared_ptr< Leaf > pose_renderer = 
+                boost::make_shared< UKFPoseEstimate >( algorithm->prediction_model->prediction );
+
+            composite->operator<<( *pose_renderer );
+            this->leafs.push_back( pose_renderer );
+        
+            boost::shared_ptr< Leaf > sigma_points = 
+                boost::make_shared< UKFSigmaPoints >( algorithm );
+
+            composite->operator<<( *sigma_points );
+            this->leafs.push_back( sigma_points );
+        
+        }
+    
+        UKFVisualiser::~UKFVisualiser()
+        {
+
+
+        }
+    
     }
 }

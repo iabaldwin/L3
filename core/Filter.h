@@ -35,38 +35,22 @@ namespace Estimator
     };
 
         
-    struct PredictionModel : Bayesian_filter::Unscented_predict_model, TemporalObserver
+    struct PredictionModel : Bayesian_filter::Additive_predict_model, TemporalObserver
     {
-        PredictionModel( boost::shared_ptr< L3::VelocityProvider > iterator ) 
-            : Bayesian_filter::Unscented_predict_model(3),
-            iterator(iterator),
-            last_update(0.0),
-            current_update(0.0)
-        {
-            _Q.reset( new Bayesian_filter_matrix::SymMatrix(3,3) );
-            _x.reset( new Bayesian_filter_matrix::Vec(3) );
-            Fx.reset( new Bayesian_filter_matrix::Vec(3) );
-        }
+        PredictionModel( boost::shared_ptr< L3::VelocityProvider > iterator ) ;
+        
         
         mutable double last_update, current_update;
 
         boost::weak_ptr< L3::VelocityProvider > iterator ;
 
-        boost::shared_ptr< Bayesian_filter_matrix::Vec > Fx;
         boost::shared_ptr< Bayesian_filter_matrix::Vec > _x;
-        boost::shared_ptr< Bayesian_filter_matrix::SymMatrix > _Q;
+        
+        mutable L3::SE3 prediction, delta;
 
-        bool update( double time )
-        {
-            current_update = time;
-        }
+        bool update( double time );
 
         const Bayesian_filter_matrix::Vec& f (const Bayesian_filter_matrix::Vec &x) const;
-       
-        const Bayesian_filter_matrix::SymMatrix& Q(const Bayesian_filter_matrix::Vec& x) const
-        {
-            return *_Q;
-        }
     };
     
     struct ObservationModel : Bayesian_filter::Linear_uncorrelated_observe_model
@@ -74,11 +58,18 @@ namespace Estimator
         ObservationModel ();
     };
 
+    struct LinearPredictionModel : Bayesian_filter::Linear_predict_model
+    {
+        LinearPredictionModel();
+        
+        L3::SE3 prediction;
+    };
+
 
     template <typename T>
-        struct EKF : Filter<T>, Algorithm<T>, L3::TemporalObserver
+        struct UKF : Filter<T>, Algorithm<T>, L3::TemporalObserver
     {
-        EKF( boost::shared_ptr<CostFunction<T> > cost_function,  
+        UKF( boost::shared_ptr<CostFunction<T> > cost_function,  
                 boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
                 boost::shared_ptr< L3::VelocityProvider > iterator );
                     
@@ -88,13 +79,17 @@ namespace Estimator
         boost::shared_ptr< Bayesian_filter_matrix::SymMatrix>  X_init;
 
         boost::shared_ptr< PredictionModel >    prediction_model;
+        //boost::shared_ptr< LinearPredictionModel >    prediction_model;
         boost::shared_ptr< ObservationModel >   observation_model;
 
         bool initialised;
         double previous_time, current_time;
+       
+        std::vector< double > sigma_points;
 
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
-        
+       
+
         bool update( double time);
     };
 

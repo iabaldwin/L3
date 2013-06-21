@@ -8,20 +8,84 @@ namespace L3
     namespace Estimator
     {
 
+        PredictionModel::PredictionModel( boost::shared_ptr< L3::VelocityProvider > iterator ) 
+            :  Bayesian_filter::Additive_predict_model(3,3),
+            iterator(iterator),
+            last_update(0.0),
+            current_update(0.0)
+        {
+            _x.reset( new Bayesian_filter_matrix::Vec(3) );
+
+            q[0] = 2;
+            q[1] = 2;
+            q[2] = .2;
+          
+            std::cout << G.size1() << "," << G.size2() << std::endl;
+
+            G(0,0) = .01;
+            //G(1,1) = .01;
+            //G(2,2) = .01;
+        }
+
+        LinearPredictionModel::LinearPredictionModel() : Linear_predict_model(3,3)
+        {
+            // Stationary Prediction model (Identity)
+            Fx(0,0) = 1.1;
+            Fx(1,1) = 1.1;
+            Fx(2,2) = 1.05;
+
+            // Constant Noise model with a large variance
+            G(0,0) = 1.;
+            G(1,1) = 1.;
+            G(2,2) = 1.;
+
+            q[0] = .1;
+            q[1] = .2;
+            q[2] = .01;
+        }
+
         const Bayesian_filter_matrix::Vec& PredictionModel::f (const Bayesian_filter_matrix::Vec &x) const
         {
 
-            boost::shared_ptr< L3::VelocityProvider > iterator_ptr =  iterator.lock();
-
-            if (!iterator_ptr )
+            if( delta == L3::SE3::ZERO() )
+            {
+                // Update
                 return x;
+            }
+
+            L3::SE3 pose( x[0], x[1], 0, 0, 0, x[2] );
+          
+            Eigen::Matrix4f tmp1( pose.getHomogeneous() );
+            Eigen::Matrix4f tmp2( delta.getHomogeneous() );
+            tmp1 *= tmp2;
+
+            prediction = L3::Utils::Math::poseFromRotation( tmp1 );
+
+            Bayesian_filter_matrix::Vec estimate(3);
+      
+            estimate[0] = prediction.X();
+            estimate[1] = prediction.Y();
+            estimate[2] = prediction.Q();
+
+            _x->assign( estimate );
+
+            return *_x;
+
+
+        }
+
+
+        bool PredictionModel::update( double time )
+        {
 
             if ( last_update == 0 )
             {
-                // Not initialised
-                last_update = iterator_ptr->filtered_velocities.back().first;
-                return x;
+                last_update = time;  
+                
+                return false;
             }
+
+            boost::shared_ptr< L3::VelocityProvider > iterator_ptr = this->iterator.lock();
 
             L3::VelocityProvider::VELOCITY_COMPARATOR c;
 
@@ -30,53 +94,73 @@ namespace L3
                     last_update,
                     c );
 
-            std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > _window( std::distance( index, iterator_ptr->filtered_velocities.end() ) );
+            if( index->first == last_update )
+                index++;
 
-            // No data
-            if ( _window.size() <= 1 )
-                return x;
+            L3::SE3 _delta;
 
-            double distance;
+            double x=0, y=0, z=0;
+            double r=0, p=0, q=0;
 
-            trajectoryAccumulate( index, 
-                    iterator_ptr->filtered_velocities.end(),
-                    _window.begin(),
-                    distance,
-                    std::numeric_limits<double>::infinity()
-                    );
+            double w1=0, w2=0, w3=0;
+            double lin_vel=0, x_vel=0, y_vel=0, z_vel=0;
 
-            if( !_window.empty() )
-                std::cout << *(_window.back().second) <<  std::endl;
+            std::deque < std::pair< double, boost::shared_ptr< L3::SE3 > > > _window;
 
-            L3::SE3 previous_pose( x[0], x[1], 0, 0, 0, x[2] );
+            _window.push_back( std::make_pair( index->first, boost::make_shared< L3::SE3 > () ) );
 
-            Eigen::Matrix4f tmp(  previous_pose.getHomogeneous() );
-            tmp *= _window.back().second->getHomogeneous();
+            std::deque < std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator _window_iterator = _window.begin();
 
-            L3::SE3 prediction = L3::Utils::Math::poseFromRotation( tmp );
+            boost::shared_ptr< L3::SE3 > previous_pose = _window_iterator->second, current_pose;
 
-            Bayesian_filter_matrix::Vec estimate(3);
-            estimate[0] = prediction.X();
-            estimate[1] = prediction.Y();
-            estimate[2] = prediction.Q();
-            Fx->assign( estimate );
+            while( index != iterator_ptr->filtered_velocities.end() )
+            {
+                double dt = index->first - (index-1)->first;
+ 
+                w1 = index->second[1];
+                w2 = index->second[2];
+                w3 = index->second[3];
 
-            // Update times
+                r = previous_pose->R() + w1*dt;
+                p = previous_pose->P() + w2*dt;
+                q = previous_pose->Q() + (-1*w3)*dt;
+
+                lin_vel = index->second[0];
+
+                x_vel = lin_vel * sin(q);  
+                y_vel = lin_vel * cos(q);  
+                z_vel = lin_vel * sin(p);  
+
+
+                x = previous_pose->X() + -1*x_vel*dt;
+                y = previous_pose->Y() + y_vel*dt;
+                z = previous_pose->Z() + z_vel*dt;
+
+                // Log
+                current_pose =  boost::make_shared<L3::SE3>( x, y, z, r, p, q );
+
+                previous_pose = current_pose;
+
+                index++;
+            }
+
+            if( current_pose ) 
+                delta = *current_pose;
+            else
+            {
+                delta = L3::SE3::ZERO();
+                return false;
+            }
+  
             last_update = iterator_ptr->filtered_velocities.back().first;
-            
-            return *Fx;
         }
 
         ObservationModel::ObservationModel () : Bayesian_filter::Linear_uncorrelated_observe_model(3,3)
         {
-            // Linear model
-            //Hx(0,0) = 1;
-            // Constant Observation Noise model with variance of one
-            //Zv[0] = 1.;
         }
 
         template <typename T>
-            EKF<T>::EKF( boost::shared_ptr<CostFunction<T> > cost_function,  
+            UKF<T>::UKF( boost::shared_ptr<CostFunction<T> > cost_function,  
                     boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
                     boost::shared_ptr< L3::VelocityProvider > iterator )
             : Filter<T>(iterator), 
@@ -90,42 +174,55 @@ namespace L3
 	
             prediction_model  = boost::make_shared< PredictionModel >(  iterator );
             observation_model = boost::make_shared< ObservationModel >();
+       
+            sigma_points.resize( (2*3 + 1)*3 );
         }
 
         template <typename T>
-            SE3 EKF<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
+            SE3 UKF<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
             {
                 if( !initialised )
                 {
                     (*x_init)[0]= estimate.X();
                     (*x_init)[1]= estimate.Y();
                     (*x_init)[2]= estimate.Q();
-               
+
                     ukf->init_kalman (*x_init, *X_init);
-      
+
+                    boost::shared_ptr< L3::VelocityProvider > iterator_ptr = this->iterator.lock() ;
+                    prediction_model->last_update = iterator_ptr->filtered_velocities.back().first;
+
                     initialised = true;
+               
+                    return estimate;
                 }
 
                 ukf->predict( *prediction_model);
                 ukf->update();
+
+                //boost::shared_ptr< L3::VelocityProvider >  iterator_ptr = this->iterator.lock() ;
+                //prediction_model->last_update = iterator_ptr->filtered_velocities.back().first;
+
+                double* ptr = &sigma_points[0];
+                for( int j=0; j< ukf->XX.size2(); j++ )
+                {
+                    for( int i=0; i< ukf->XX.size1(); i++ )
+                    {
+                        *ptr++ = ukf->XX(i,j);
+                        std::cout << ukf->XX(i,j) << " "; 
+                    }
+                    std::cout << std::endl;
+                }
+                std::cout << "--------" << std::endl;
             }
 
         template <typename T>
-            bool EKF<T>::update( double time )
+            bool UKF<T>::update( double time )
             {
-                if ( initialised )
-                {
+                prediction_model->update( time );
 
-                    current_time = time;
-
-                    prediction_model->update( current_time );
-
-                    return true;
-                }
-                return false;
+                return true;
             }
-
-
 
         template <typename T>
             SE3 ParticleFilter<T>::operator()( PointCloud<T>* swathe, SE3 estimate )
@@ -343,10 +440,10 @@ namespace L3
 }
 
 template L3::SE3 L3::Estimator::ParticleFilter<double>::operator()(L3::PointCloud<double>*, L3::SE3);
-template L3::SE3 L3::Estimator::EKF<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+template L3::SE3 L3::Estimator::UKF<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 
 template bool L3::Estimator::ParticleFilter<double>::update(double);
-template bool L3::Estimator::EKF<double>::update(double);
+template bool L3::Estimator::UKF<double>::update(double);
 
-template L3::Estimator::EKF<double>::EKF(boost::shared_ptr<L3::Estimator::CostFunction<double> >, boost::shared_ptr<L3::HistogramPyramid<double> >, boost::shared_ptr<L3::VelocityProvider>);
+template L3::Estimator::UKF<double>::UKF(boost::shared_ptr<L3::Estimator::CostFunction<double> >, boost::shared_ptr<L3::HistogramPyramid<double> >, boost::shared_ptr<L3::VelocityProvider>);
 

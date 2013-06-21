@@ -5,10 +5,17 @@
 namespace L3
 {
     template <typename InputIterator, typename OutputIterator >
-        OutputIterator trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double& distance, double required_distance )
+        OutputIterator trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double& distance, double required_distance, L3::SE3 start_pose )
     {
         if( std::distance( begin, end) == 0 )
             return output;
+        
+
+        // Distance
+        distance = 0.0; 
+
+        // Initialise
+        double dt = 0.0;
 
         // Input copy
         InputIterator current_in = begin;
@@ -16,13 +23,9 @@ namespace L3
         // Compute current time
         double current_time = current_in++->first;
 
-        // Distance
-        distance = 0.0; 
-
-        // Initialise
-        double dt = 0.0;
-        *output++ = std::make_pair( current_time, boost::make_shared<L3::SE3>( 0,0,0,0,0,0 ) );
-
+        //*output++ = std::make_pair( current_time, boost::make_shared<L3::SE3>( 0,0,0,0,0,0 ) );
+        *output++ = std::make_pair( current_time, boost::make_shared<L3::SE3>( start_pose ) );
+        
         double x=0, y=0, z=0;
         double r=0, p=0, q=0;
 
@@ -38,16 +41,9 @@ namespace L3
             current_time = current_in->first;
 
             // Compute roll, pitch, yaw
-            //w1 = current_in->second->data[5];
-            //w2 = current_in->second->data[4];
-            //w3 = current_in->second->data[3];
-
             w1 = current_in->second[1];
             w2 = current_in->second[2];
             w3 = current_in->second[3];
-
-
-
 
             // Get the SE3 pose
             previous_pose = boost::dynamic_pointer_cast< L3::SE3 >( (output-1)->second );
@@ -175,6 +171,5 @@ namespace L3
         }
 }
 
-//template std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> L3::trajectoryAccumulate<std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> >(std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LHLV> >, std::pair<double, boost::shared_ptr<L3::LHLV> >&, std::pair<double, boost::shared_ptr<L3::LHLV> >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*>, double&, double);
-template std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> L3::trajectoryAccumulate<std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> >(std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*>, std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*>, double&, double);
 template void L3::reverseTrajectoryAccumulate<std::reverse_iterator<std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*> >, std::back_insert_iterator<std::deque<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > > > >(std::reverse_iterator<std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*> >, std::reverse_iterator<std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*> >, std::back_insert_iterator<std::deque<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > > >, double, double, int&);
+template std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> L3::trajectoryAccumulate<std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*> >(std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*>, std::_Deque_iterator<std::pair<double, std::vector<double, std::allocator<double> > >, std::pair<double, std::vector<double, std::allocator<double> > >&, std::pair<double, std::vector<double, std::allocator<double> > >*>, std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::SE3> >, std::pair<double, boost::shared_ptr<L3::SE3> >&, std::pair<double, boost::shared_ptr<L3::SE3> >*>, double&, double, L3::SE3);
