@@ -1118,6 +1118,7 @@ namespace Visualisers
         L3::SE3 zero;
         CoordinateSystem( zero ).onDraw3D(g);
 
+        L3::ReadLock lock( this->mutex );
         if( enabled( glv::Maximized ) )
             Composite::onDraw3D(g);
         else
@@ -1140,11 +1141,14 @@ namespace Visualisers
             CoordinateSystem( pose, 10 ).onDraw3D(g);
         }
 
+        lock.unlock();
     }
 
     void ScanMatchingTrajectoryRenderer::update()
     {
         boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
+
+        L3::WriteLock master( this->mutex );
 
         if( engine_ptr )
         {
@@ -1158,6 +1162,7 @@ namespace Visualisers
 
             lock.unlock();
         }
+        master.unlock();
     }
 
     void ScanMatchingScanRenderer::onDraw3D( glv::GLV& g )

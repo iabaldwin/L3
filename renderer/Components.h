@@ -688,7 +688,7 @@ namespace Visualisers
     /*
      *  Scan matching renderers
      */
-    struct ScanMatchingTrajectoryRenderer : Composite, Updateable
+    struct ScanMatchingTrajectoryRenderer : Composite, Updateable, Lockable
     {
         ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) 
             : Composite( glv::Rect(175, 175)), 
