@@ -80,10 +80,12 @@ namespace L3
             if ( last_update == 0 )
             {
                 last_update = time;  
+              
                 return false;
             }
 
             boost::shared_ptr< L3::VelocityProvider > iterator_ptr = this->iterator.lock();
+
 
             L3::VelocityProvider::VELOCITY_COMPARATOR c;
 
@@ -94,6 +96,9 @@ namespace L3
 
             if( index->first == last_update )
                 index++;
+
+            if ( index == iterator_ptr->filtered_velocities.begin() )
+                return false;
 
             L3::SE3 _delta;
 
@@ -109,8 +114,9 @@ namespace L3
             _window.push_back( std::make_pair( index->first, boost::make_shared< L3::SE3 > () ) );
 
             std::deque < std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator _window_iterator = _window.begin();
-            
+
             boost::shared_ptr< L3::SE3 > previous_pose = _window_iterator->second, current_pose;
+
 
             // Integrate
             while( index != iterator_ptr->filtered_velocities.end() )
@@ -222,8 +228,12 @@ namespace L3
 
                     Bayesian_filter_matrix::Vec z_vec = adapt(z);
 
+                    //std::cout << "Observe: " << z;
                     ukf->observe( *observation_model, z_vec );
+                    //std::cout << ", update, ";
+                        
                     ukf->update();
+                    //std::cout << "Done. " << std::endl;
                 }
 
                 double* ptr = &sigma_points[0];

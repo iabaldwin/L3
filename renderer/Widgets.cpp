@@ -6,6 +6,34 @@ namespace L3
 namespace Visualisers
 {
 
+    template <typename T>
+    struct Resetter : glv::View
+    {
+        Resetter( T& val ) 
+            : glv::View( glv::Rect(20,20) ),
+                val(val)
+        {
+            initial_val = val;
+       
+            //this->disable( glv::Visible );
+        }
+
+        T& val;
+        T initial_val;
+
+        bool reset;
+
+        void onDraw( glv::GLV& g )
+        {
+            if ( reset )
+            {
+                std::cout << "resetting" << std::endl;
+                val = initial_val;
+                reset = !reset;
+            }
+        }
+    };
+
     void DensityController::attachHistogram( boost::shared_ptr< L3::Histogram<double> > histogram )
     {
 
@@ -24,8 +52,6 @@ namespace Visualisers
             labels.push_back( label);
 
             experience_densities->attachVariable( hist_ptr->bins_per_metre );
-
-
             experience_densities->fit();
 
             widgets.push_back( experience_densities );
@@ -44,33 +70,59 @@ namespace Visualisers
         *this << *alpha_control;
 
         boost::shared_ptr< glv::Label > alpha_label = boost::make_shared< glv::Label >("Alpha" );
-        alpha_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
+        alpha_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR );
         *alpha_control << *alpha_label;
 
         widgets.push_back( alpha_control );
         this->labels.push_front( alpha_label );
 
+        // Beta control
         boost::shared_ptr< glv::Widget > beta_control = boost::make_shared< glv::Slider >();
         *this << *beta_control;
 
         boost::shared_ptr< glv::Label > beta_label = boost::make_shared< glv::Label >("Beta" );
-        beta_label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR );
+        beta_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR );
         *beta_control << *beta_label;
 
         widgets.push_back( beta_control );
         this->labels.push_front( beta_label );
 
+        // Velocity bias
+        boost::shared_ptr< glv::Widget > velocity_bias = boost::make_shared< glv::Slider >();
+        *this << *velocity_bias;
 
+        velocity_bias->interval( .1,2 );
+        
+        boost::shared_ptr< glv::Label > velocity_bias_label = boost::make_shared< glv::Label >("Velocity bias" );
+        velocity_bias_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR );
+        *velocity_bias << *velocity_bias_label;
+
+        widgets.push_back( velocity_bias );
+        this->labels.push_front( velocity_bias_label );
+
+        // Velocity bias reset
+        boost::shared_ptr< glv::Button > velocity_bias_reset = boost::make_shared< glv::Button >( glv::Rect(20), false );
+        *this << *velocity_bias_reset;
+
+        widgets.push_back( velocity_bias_reset );
 
         this->fit();
         this->arrange();
 
     }
 
-    void FundamentalControls::addFilter( boost::shared_ptr< FilteredScanMatchingVelocityProvider> ptr)
+    void FundamentalControls::associateVelocitySource( boost::shared_ptr< FilteredScanMatchingVelocityProvider> ptr)
     {
         widgets[0]->attachVariable( ptr->_linear_velocity_filter->alpha );
         widgets[1]->attachVariable( ptr->_linear_velocity_filter->beta );
+        widgets[2]->attachVariable( ptr->scaling_bias );
+ 
+        boost::shared_ptr< Resetter<float> > r = boost::make_shared< Resetter< float > >( boost::ref( ptr->scaling_bias ) ); 
+
+        *widgets[2] << *r ;
+        views.push_back( r );
+        widgets[3]->attachVariable( r->reset );
     }
+
 }
 }

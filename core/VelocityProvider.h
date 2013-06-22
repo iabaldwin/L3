@@ -33,12 +33,14 @@ namespace L3
 struct VelocityProvider : Lockable, TemporalObserver
 {
 
-    VelocityProvider() : previous_update(0.0)
+    VelocityProvider() : previous_update(0.0), scaling_bias(1.)
     {
     }
 
     VELOCITY_WINDOW raw_velocities;
     VELOCITY_WINDOW filtered_velocities;
+
+    float scaling_bias;
 
     typedef VELOCITY_WINDOW::iterator VELOCITY_ITERATOR;
 

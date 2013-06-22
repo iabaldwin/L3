@@ -9,7 +9,7 @@ namespace L3
     {
         //Rebuild swathe completely
         swathe.clear();
-        
+      
         if( LIDAR_iterator->window.size() < pose_windower->window->size() )
         {
             L3::Iterator<L3::LMS151>::WINDOW_ITERATOR it = LIDAR_iterator->window.begin() ;
@@ -46,7 +46,6 @@ namespace L3
                         LIDAR_comparator );
 
                 if ((index->first - it->first) == 0)
-                    //swathe.push_back( std::make_pair( index->second, it->second ) );
                     swathe.push_back( std::make_pair( it->second, index->second ) );
 
                 it++;
@@ -78,26 +77,26 @@ namespace L3
         _window_buffer.insert( _window_buffer.end(), index, LIDAR_iterator->window.end() );
 
 //DBG
-        for( std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > >::iterator it = (_window_buffer.begin()+1);
-                it != _window_buffer.end(); 
-                it++ )
-        {
-            double previous = (it-1)->first;
-            double current = it->first;
+        //for( std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > >::iterator it = (_window_buffer.begin()+1);
+                //it != _window_buffer.end(); 
+                //it++ )
+        //{
+            //double previous = (it-1)->first;
+            //double current = it->first;
 
-            if( (current-previous) > .2 ) 
-            {
-                std::cout << "BIG gap" << std::endl;
-                exit(-1);
-            }
-            if ((current-previous) < .001 )
-            {
-                std::cout << current-previous << std::endl;
-                std::cout << "SMALL gap" << std::endl;
-                exit(-1);
-            }
+            //if( (current-previous) > .2 ) 
+            //{
+                //std::cout << "BIG gap" << std::endl;
+                //exit(-1);
+            //}
+            //if ((current-previous) < .001 )
+            //{
+                //std::cout << current-previous << std::endl;
+                //std::cout << "SMALL gap" << std::endl;
+                //exit(-1);
+            //}
 
-        }
+        //}
 //DBG
 
         L3::Iterator<L3::SE3>::WINDOW_ITERATOR it = pose_windower->window->begin() ;

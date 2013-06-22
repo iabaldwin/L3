@@ -15,7 +15,7 @@ namespace L3
     {
         // Constant time iterator over poses
         pose_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::SE3> >( dataset->pose_reader );
-        LHLV_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::LHLV> >( dataset->LHLV_reader );  
+        //LHLV_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::LHLV> >( dataset->LHLV_reader );  
        
         // LIDAR iterators
         horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->horizontal] );
@@ -38,7 +38,7 @@ namespace L3
         engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
 
         // Velocity providers
-        lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
+        //lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider>( LHLV_iterator.get() );
         icp_velocity_provider  = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
         ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );
 
@@ -48,13 +48,14 @@ namespace L3
         pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
        
         // Swathe generator
-        swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
+        swathe_builder = boost::make_shared< L3::RawSwatheBuilder>( pose_windower.get(), vertical_LIDAR.get() );
+        //swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
    
         // INS pose
         oracle = boost::make_shared< L3::ConstantTimeWindower< L3::SE3 > > ( pose_iterator.get() );
         
         // Predictor
-        predictor = boost::make_shared< L3::Predictor >( LHLV_iterator.get() );
+        //predictor = boost::make_shared< L3::Predictor >( LHLV_iterator.get() );
         
         //  Zero-th pose
         current = boost::make_shared< L3::SE3 >();
@@ -66,17 +67,17 @@ namespace L3
          *Note: order is important here
          */
         (*this) << pose_iterator.get() 
-                << LHLV_iterator.get() 
+                //<< LHLV_iterator.get() 
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
-                << lhlv_velocity_provider.get()
+                //<< lhlv_velocity_provider.get()
                 << ics_velocity_provider.get() 
                 << icp_velocity_provider.get() 
                 << velocity_source.get()
                 << engine.get() 
                 << pose_windower.get() 
-                << swathe_builder.get() 
-                << predictor.get();
+                << swathe_builder.get();
+                //<< predictor.get();
     }
 
     /*
@@ -107,6 +108,7 @@ namespace L3
 
                 real_time_elapsed = t.elapsed(); 
 
+                
                 /*
                  *  Update all watchers
                  */

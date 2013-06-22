@@ -87,14 +87,20 @@ namespace L3
         filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
         filtered_velocity_data.second[3] = rotational_velocity;
 
+        if( scaling_bias != 1. )
+            filtered_velocity_data.second[0] *= scaling_bias;
+
+        // Log
         raw_velocities.push_back( raw_velocity_data );
         filtered_velocities.push_back( filtered_velocity_data );
 
+        // Cull
         while( filtered_velocities.back().first - filtered_velocities.front().first > 10.0 )
                 filtered_velocities.pop_front();
 
         while( raw_velocities.back().first - raw_velocities.front().first > 10.0 )
                 raw_velocities.pop_front();
+   
         
         return true;
     };
