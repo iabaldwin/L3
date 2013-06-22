@@ -79,6 +79,8 @@ namespace Estimator
 
         boost::shared_ptr< Minimisation<T> > minimiser;
 
+        SE3 current_estimate;
+
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
         bool update( double time);

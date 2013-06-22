@@ -7,33 +7,21 @@
 namespace L3
 {
 
-    bool ParticleFilter::update( double t )
-    {
-
-        return true;
-    }
-
-    bool ParticleFilter::predict( const L3::SE3& current )
-    {
-
-        return true;
-    }
-
     bool Predictor::update( double t )
     {
         // 1. Find the element closest to the last upate
         
         std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > window;
-        Comparator< std::pair< double, boost::shared_ptr<L3::LHLV> > > comparator;
+        //Comparator< std::pair< double, boost::shared_ptr<L3::LHLV> > > comparator;
         
-        L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( LHLV_iterator->window.begin(), 
-                                                                                        LHLV_iterator->window.end(), 
-                                                                                        previous_update,
-                                                                                        comparator );
+        //L3::Iterator<L3::LHLV>::WINDOW_ITERATOR index = std::lower_bound( LHLV_iterator->window.begin(), 
+                                                                                        //LHLV_iterator->window.end(), 
+                                                                                        //previous_update,
+                                                                                        //comparator );
     
-        window.resize( std::distance( index, LHLV_iterator->window.end() ) );
+        //window.resize( std::distance( index, LHLV_iterator->window.end() ) );
         
-        double distance;
+        //double distance;
 
         // 2. Isolate from here to the end of the chain
         //L3::trajectoryAccumulate( index, 

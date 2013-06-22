@@ -836,19 +836,17 @@ namespace L3
             }
         };
 
-        struct UKFSigmaPoints : Leaf
+        struct UKFSigmaPoints 
         {
             UKFSigmaPoints(  boost::shared_ptr< L3::Estimator::UKF<double> > algorithm ) 
                 : algorithm(algorithm)
             {
-
             }
 
             boost::weak_ptr< L3::Estimator::UKF<double> > algorithm ;
 
             void onDraw3D( glv::GLV& g )
             {
-            
                 boost::shared_ptr< L3::Estimator::UKF<double> > algorithm_ptr = algorithm.lock();
 
                 if ( !algorithm_ptr )
@@ -882,35 +880,83 @@ namespace L3
 
         };
 
+        struct UKFSigmaPointsLeaf : UKFSigmaPoints, Leaf
+        {
+            UKFSigmaPointsLeaf(  boost::shared_ptr< L3::Estimator::UKF<double> > algorithm ) 
+                : UKFSigmaPoints( algorithm )
+            {
+            }
+            
+            void onDraw3D( glv::GLV& g )
+            {
+                UKFSigmaPoints::onDraw3D(g);
+            }
+        };
+
+
+        struct UKFSigmaPointsView : UKFSigmaPoints, glv::View3D
+        {
+            UKFSigmaPointsView(  boost::shared_ptr< L3::Estimator::UKF<double> > algorithm, const L3::SE3& pose  ) 
+                : UKFSigmaPoints( algorithm ),
+                glv::View3D( glv::Rect (250, 250 ) ),
+                pose(pose) 
+            {
+            }
+            
+            const L3::SE3& pose;
+        
+            void onDraw3D( glv::GLV& g )
+            {
+                glv::draw::translate( -1*pose.X(), -1*pose.Y(), -10 );
+                
+                UKFSigmaPoints::onDraw3D(g);
+
+            }
+
+        };
         
         UKFVisualiser::UKFVisualiser( boost::shared_ptr< L3::Estimator::UKF<double> > algorithm, Updater* updater, boost::shared_ptr< Composite> composite )
             : composite(composite)
         {
+            /*
+             *  Associate updater
+             */
             if( !updater )
                 throw std::exception();
 
             this->updater = updater;
 
             boost::shared_ptr< Leaf > pose_renderer = 
-                boost::make_shared< UKFPoseEstimate >( algorithm->prediction_model->prediction );
+                boost::make_shared< UKFPoseEstimate >( algorithm->current_estimate );
 
             composite->operator<<( *pose_renderer );
             this->leafs.push_back( pose_renderer );
         
             boost::shared_ptr< Leaf > sigma_points = 
-                boost::make_shared< UKFSigmaPoints >( algorithm );
+                boost::make_shared< UKFSigmaPointsLeaf >( algorithm );
 
             composite->operator<<( *sigma_points );
             this->leafs.push_back( sigma_points );
 
-
-            boost::shared_ptr< TraversalVisualiserView > minimisation_visualiser = boost::make_shared< TraversalVisualiserView >( algorithm->minimiser );
+            boost::shared_ptr< TraversalVisualiserView > minimisation_visualiser = 
+                boost::make_shared< TraversalVisualiserView >( algorithm->minimiser );
             views.push_back( minimisation_visualiser );
 
             updater->operator<<( minimisation_visualiser.get() );
             updateables.push_back( minimisation_visualiser.get() );
 
             this->operator<<( *minimisation_visualiser );
+
+            /*
+             *  Weight stand-alone view
+             */
+            boost::shared_ptr< glv::View > sigma_points_viewer = 
+                boost::make_shared< UKFSigmaPointsView >( algorithm, algorithm->current_estimate );
+
+            views.push_back( sigma_points_viewer );
+
+            this->operator<<( *sigma_points_viewer );
+
 
         }
     

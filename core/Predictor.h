@@ -3,6 +3,7 @@
 
 #include "Iterator.h"
 #include "Integrator.h"
+#include "VelocityProvider.h"
 #include "Datatypes.h"
 
 namespace L3
@@ -13,8 +14,8 @@ namespace L3
 
         public:
 
-            Predictor( L3::Iterator<L3::LHLV>* iterator ) 
-                : LHLV_iterator(iterator),
+            Predictor( L3::VelocityProvider* provider ) 
+                : provider(provider),
                     previous_update(0.0)
             {
             }
@@ -25,34 +26,11 @@ namespace L3
 
         protected:
 
-            L3::Iterator<L3::LHLV>*      LHLV_iterator;
+            L3::VelocityProvider*      provider;
 
             double previous_update;
     
             std::deque< double > sink;
-    };
-
-
-    class ParticleFilter : public Predictor
-    {
-
-        public:
-            ParticleFilter( L3::Iterator<L3::LHLV>* iterator, int num_particles = 100 ) 
-                : Predictor(iterator), num_particles(num_particles)
-            {
-                particles.resize( num_particles ); 
-            
-            }
-
-            int num_particles;
-
-            std::vector< L3::SE3 > particles;
-
-            bool predict( const L3::SE3& current );
-
-            bool update( double t );
-
-            
     };
 
 }

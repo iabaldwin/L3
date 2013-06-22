@@ -11,8 +11,8 @@ namespace L3
             /*
              *  Linear Velocity
              */
-            //linear_velocity_plotter_lhlv = boost::make_shared< LinearVelocityPlotter >();
-            //linear_velocity_plotter_lhlv->stroke( 2.0 );
+            linear_velocity_plotter_lhlv = boost::make_shared< LinearVelocityPlotter >();
+            linear_velocity_plotter_lhlv->stroke( 2.0 );
 
             linear_velocity_plotter_ics = boost::make_shared< LinearVelocityPlotter >();
             linear_velocity_plotter_ics->stroke( 1.0 );
@@ -32,12 +32,12 @@ namespace L3
                 = boost::make_shared< glv::Plot >( glv::Rect( 0, 500+5, .6*window.width(), 150-5)
                         );
                         
-            //plot_region->add( boost::ref( *linear_velocity_plotter_lhlv ) );
+            plot_region->add( boost::ref( *linear_velocity_plotter_lhlv ) );
             plot_region->add( boost::ref( *linear_velocity_plotter_ics) );
             plot_region->add( boost::ref( *linear_velocity_plotter_icp ) );
             plot_region->add( boost::ref( *linear_velocity_plotter_ics_unfiltered ) );
 
-            //linear_velocity_plotter_lhlv->plot_parent = plot_region;
+            linear_velocity_plotter_lhlv->plot_parent = plot_region;
 
             plot_region->disable( glv::Controllable );
             plot_region->range( 0, 10, 0 );         // 10 s
@@ -53,7 +53,7 @@ namespace L3
             this->renderables.push_front( plot_region.get() );
 
             // Mark as updateable
-            //temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_lhlv.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_lhlv.get()) );
             temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_ics.get()) );
             temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_icp.get()) );
             temporal_updater->operator<<( dynamic_cast<Updateable*>(linear_velocity_plotter_ics_unfiltered.get()) );
@@ -73,8 +73,8 @@ namespace L3
              */
 
             // Add plotter
-            //rotational_velocity_plotter_lhlv = boost::make_shared< RotationalVelocityPlotter>();
-            //rotational_velocity_plotter_lhlv->stroke( 2.0 );
+            rotational_velocity_plotter_lhlv = boost::make_shared< RotationalVelocityPlotter>();
+            rotational_velocity_plotter_lhlv->stroke( 2.0 );
 
             glv::Color c( 119.0/255.0, 221.0/255.0, 119.0/255.0 );
             rotational_velocity_plotter_ics = boost::make_shared< RotationalVelocityPlotter>();
@@ -85,10 +85,10 @@ namespace L3
                 = boost::make_shared< glv::Plot >( glv::Rect( 0, 650+5, .6*window.width(), 150-5)
                         );
 
-            //plot_region->add( boost::ref( *rotational_velocity_plotter_lhlv ) );
+            plot_region->add( boost::ref( *rotational_velocity_plotter_lhlv ) );
             plot_region->add( boost::ref( *rotational_velocity_plotter_ics ) );
 
-            //rotational_velocity_plotter_lhlv->plot_parent = plot_region;
+            rotational_velocity_plotter_lhlv->plot_parent = plot_region;
 
             // Scaling
             plot_region->disable( glv::Controllable );
@@ -105,7 +105,7 @@ namespace L3
             this->renderables.push_front( plot_region.get() );
 
             // Mark as updateable
-            //temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter_lhlv.get()) );
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter_lhlv.get()) );
             temporal_updater->operator<<( dynamic_cast<Updateable*>(rotational_velocity_plotter_ics.get()) );
 
             boost::shared_ptr< glv::View > velocity_label = boost::make_shared< glv::Label >("Rotational velocity. (rad/s)" );
@@ -308,10 +308,7 @@ namespace L3
             experience_bounds_toggle        = boost::make_shared< CompositeLeafViewToggle >( boost::shared_ptr< L3::Visualisers::Leaf >(), "Experience bounds",  glv::Rect(width, height));
 
             *visualisation_controls << *point_cloud_visualiser_toggle << *point_cloud_bounds_toggle << *iterator_renderer_toggle << *experience_voxel_toggle << *experience_bounds_toggle;
-            //visualisation_controls->enable( glv::DrawBorder );
             visualisation_controls->disable( glv::DrawBorder );
-        
-
 
             // Default values
             iterator_renderer_toggle->setValue( true ); 
@@ -380,21 +377,21 @@ namespace L3
             /*
              *  Velocity plots
              */
-            //linear_velocity_plotter_lhlv->iterator            = runner->lhlv_velocity_provider;    
+            linear_velocity_plotter_lhlv->iterator            = runner->lhlv_velocity_provider;    
             linear_velocity_plotter_icp->iterator             = runner->icp_velocity_provider;       
             linear_velocity_plotter_ics_unfiltered->iterator  = runner->ics_velocity_provider; 
             linear_velocity_plotter_ics->iterator             = runner->ics_velocity_provider;    
             
             rotational_velocity_plotter_ics->iterator         = runner->ics_velocity_provider;       
-            //rotational_velocity_plotter_lhlv->iterator        = runner->lhlv_velocity_provider;     
+            rotational_velocity_plotter_lhlv->iterator        = runner->lhlv_velocity_provider;     
 
             // Bind times
-            //linear_velocity_plotter_lhlv->setTime(            runner->current_time );
+            linear_velocity_plotter_lhlv->setTime(            runner->current_time );
             linear_velocity_plotter_ics->setTime(             runner->current_time );
             linear_velocity_plotter_icp->setTime(             runner->current_time );
             linear_velocity_plotter_ics_unfiltered->setTime(  runner->current_time );
             
-            //rotational_velocity_plotter_lhlv->setTime(        runner->current_time );
+            rotational_velocity_plotter_lhlv->setTime(        runner->current_time );
             rotational_velocity_plotter_ics->setTime(         runner->current_time );
 
             /*
@@ -411,15 +408,15 @@ namespace L3
                 window_duration->attachVariable( windower->swathe_length );
                 window_duration->interval( 10, 100 );
             }
-            //else if( boost::shared_ptr< L3::ConstantTimeWindower<L3::LHLV> > windower = boost::dynamic_pointer_cast< L3::ConstantTimeWindower<L3::LHLV> >( runner->pose_windower ) )
-            //{
-                //window_duration->interval( 1, 30);
-                ////window_duration->attachVariable( runner->vertical_LIDAR->swathe_length );
-            //}
-            //else
-                //throw std::exception();
+            else if( boost::shared_ptr< L3::ConstantTimeWindower<L3::LHLV> > windower = boost::dynamic_pointer_cast< L3::ConstantTimeWindower<L3::LHLV> >( runner->pose_windower ) )
+            {
+                window_duration->interval( 1, 30);
+                window_duration->attachVariable( runner->vertical_LIDAR->swathe_length );
+            }
+            else
+                throw std::exception();
 
-            //window_duration_INS->attachVariable( runner->LHLV_iterator->swathe_length );
+            window_duration_INS->attachVariable( runner->LHLV_iterator->swathe_length );
             point_cloud_downsample->attachVariable( runner->projector->skip );
 
             /*
@@ -478,8 +475,9 @@ namespace L3
              * Run-time swathe bounds
              */
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( point_cloud_bounds_renderer.get() ) );
-            point_cloud_bounds_renderer = boost::make_shared< L3::Visualisers::PointCloudBoundsRenderer >( runtime_cloud_renderer_leaf->plot_cloud );
+            point_cloud_bounds_renderer = boost::make_shared< L3::Visualisers::PointCloudBoundsRenderer >( runner->point_cloud ) ;
             this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(point_cloud_bounds_renderer.get() ) ) );
+            //Toggle
             point_cloud_bounds_toggle->leaf = point_cloud_bounds_renderer;
 
             /*
@@ -527,17 +525,16 @@ namespace L3
             if( boost::shared_ptr< FilteredScanMatchingVelocityProvider  > ptr = boost::dynamic_pointer_cast< FilteredScanMatchingVelocityProvider >( runner->ics_velocity_provider ) )
                 fundamental_controls->associateVelocitySource( ptr ); 
 
-
-
             /*
              *  Update view
              */
             L3::SE3 start_pose = runner->oracle->operator()();
 
+            /*
+             *Init
+             */
             composite->position.x = -1*start_pose.X();
             composite->position.y = -1*start_pose.Y();
-     
-
 
             return true;
         }
@@ -634,17 +631,6 @@ namespace L3
                 if ( it != tables.end() )
                     tables.erase( it );
             }
-
-            /*
-             *  Experience-specific controls
-             */
-
-            //for( L3::HistogramPyramid<double>::PYRAMID_ITERATOR it = experience->experience_pyramid->begin();
-                    //it != experience->experience_pyramid->end();
-                    //it++ )
-            //{
-                //fundamental_controls->attachHistogram( *it );
-            //}
 
             return true;
         }

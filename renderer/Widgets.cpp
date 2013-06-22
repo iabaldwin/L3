@@ -14,8 +14,6 @@ namespace Visualisers
                 val(val)
         {
             initial_val = val;
-       
-            //this->disable( glv::Visible );
         }
 
         T& val;
@@ -27,7 +25,6 @@ namespace Visualisers
         {
             if ( reset )
             {
-                std::cout << "resetting" << std::endl;
                 val = initial_val;
                 reset = !reset;
             }

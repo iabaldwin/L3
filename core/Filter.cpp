@@ -43,15 +43,14 @@ namespace L3
             q[1] = 2;
             q[2] = .2;
 
-            G(0,0) = .01;
-            G(1,1) = .01;
-            G(2,2) = .001;
+            G(0,0) = .1;
+            G(1,1) = .1;
+            G(2,2) = .01;
         }
 
         const Bayesian_filter_matrix::Vec& PredictionModel::f (const Bayesian_filter_matrix::Vec &x) const
         {
-
-            if( delta == L3::SE3::ZERO() )
+            if( delta == L3::SE3::ZERO() )  // No update
                 return x;
 
             L3::SE3 pose( x[0], x[1], 0, 0, 0, x[2] );
@@ -228,12 +227,9 @@ namespace L3
 
                     Bayesian_filter_matrix::Vec z_vec = adapt(z);
 
-                    //std::cout << "Observe: " << z;
                     ukf->observe( *observation_model, z_vec );
-                    //std::cout << ", update, ";
                         
                     ukf->update();
-                    //std::cout << "Done. " << std::endl;
                 }
 
                 double* ptr = &sigma_points[0];
@@ -241,7 +237,9 @@ namespace L3
                     for( int i=0; i< ukf->XX.size1(); i++ )
                         *ptr++ = ukf->XX(i,j);
 
-                return adapt( ukf->x );
+                current_estimate = adapt( ukf->x );
+
+                return current_estimate;
             }
 
         template <typename T>
