@@ -39,12 +39,12 @@ namespace L3
         {
             _x.reset( new Bayesian_filter_matrix::Vec(3) );
 
-            q[0] = 2;
-            q[1] = 2;
+            q[0] = 3;
+            q[1] = 1;
             q[2] = .2;
 
-            G(0,0) = .1;
-            G(1,1) = .1;
+            G(0,0) = 1;
+            G(1,1) = 1;
             G(2,2) = .01;
         }
 
@@ -220,15 +220,20 @@ namespace L3
                 ukf->update();
 
                 // Sometimes update
+                this->fundamental_frequency = .1;
                 if( timer.elapsed() > 1.0/this->fundamental_frequency )
                 {
+                    timer.begin();
+                    
                     // Produce measurement
                     L3::SE3 z = minimiser->operator()( swathe, estimate );
 
                     Bayesian_filter_matrix::Vec z_vec = adapt(z);
 
+                    // Observe
                     ukf->observe( *observation_model, z_vec );
-                        
+                       
+                    // Produce uncertainty
                     ukf->update();
                 }
 

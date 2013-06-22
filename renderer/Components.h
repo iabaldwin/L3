@@ -688,16 +688,19 @@ namespace Visualisers
     /*
      *  Scan matching renderers
      */
-    struct ScanMatchingTrajectoryRenderer : Composite
+    struct ScanMatchingTrajectoryRenderer : Composite, Updateable
     {
-        ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) : Composite( glv::Rect(175, 175)), engine(engine)
+        ScanMatchingTrajectoryRenderer( boost::shared_ptr< L3::ScanMatching::Engine > engine ) 
+            : Composite( glv::Rect(175, 175)), 
+            engine(engine),
+            current( Eigen::Matrix4f::Identity() )
         {
             this->operator<< ( grid );
 
-            *(dynamic_cast< glv::View3D* >(this)) << label;
-            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
             label.setValue( "Open-loop trajectory");
-
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            *(dynamic_cast< glv::View3D* >(this)) << label;
+            
             this->disable( glv::Property::AlwaysBubble );
            
             //controller = boost::make_shared< L3::Visualisers::CompositeController >( dynamic_cast< glv::View3D* >(this), boost::ref( this->position ) );
@@ -717,6 +720,8 @@ namespace Visualisers
 
         void onDraw3D( glv::GLV& g );
 
+        void update();
+        
     };
 
     struct ScanMatchingScanRenderer : glv::View3D
@@ -729,8 +734,7 @@ namespace Visualisers
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
             (*this) << label;
 
-            //trajectory = boost::dynamic_pointer_cast< glv::View3D >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
-            trajectory = boost::dynamic_pointer_cast< glv::View >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
+            trajectory = boost::dynamic_pointer_cast< glv::View3D >( boost::make_shared<ScanMatchingTrajectoryRenderer>( engine ) ) ;
 
             // We are not visible by default
             (*this) << *trajectory;
@@ -739,8 +743,7 @@ namespace Visualisers
 
         boost::weak_ptr< L3::ScanMatching::Engine > engine;
 
-        //boost::shared_ptr< glv::View3D > trajectory;
-        boost::shared_ptr< glv::View > trajectory;
+        boost::shared_ptr< glv::View3D > trajectory;
 
         glv::Label label;
 

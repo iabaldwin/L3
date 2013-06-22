@@ -496,6 +496,7 @@ namespace L3
              *  Scan matcher
              */
             scan_matching_renderer->engine = runner->engine;
+            temporal_updater->operator<< (boost::dynamic_pointer_cast< Updateable >(scan_matching_renderer->trajectory).get() );
 
             /*
              *  Oracle

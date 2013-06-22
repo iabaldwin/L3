@@ -1115,22 +1115,6 @@ namespace Visualisers
 
     void ScanMatchingTrajectoryRenderer::onDraw3D( glv::GLV& g )
     {
-        boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
-
-        if( engine_ptr )
-        {
-            L3::ReadLock lock( engine_ptr->mutex );
-            
-            current *= engine_ptr->current_transformation ;
-
-            trajectory.push_back( current );
-
-            if( trajectory.size() > 200 )
-                trajectory.pop_front();
-
-            lock.unlock();
-        }
-
         L3::SE3 zero;
         CoordinateSystem( zero ).onDraw3D(g);
 
@@ -1143,7 +1127,6 @@ namespace Visualisers
             if( !trajectory.empty() )
             {
                 Eigen::Matrix4f start_pose = trajectory.back();
-
                 glv::draw::translate( -1*start_pose(0,3), -1*start_pose(1,3), 0.0 );
             }
         }
@@ -1157,6 +1140,24 @@ namespace Visualisers
             CoordinateSystem( pose, 10 ).onDraw3D(g);
         }
 
+    }
+
+    void ScanMatchingTrajectoryRenderer::update()
+    {
+        boost::shared_ptr< L3::ScanMatching::Engine > engine_ptr = engine.lock();
+
+        if( engine_ptr )
+        {
+            L3::ReadLock lock( engine_ptr->mutex );
+
+            trajectory.push_back( engine_ptr->current_transformation );
+
+            // Render 200 poses by default
+            if( trajectory.size() > 200 )
+                trajectory.pop_front();
+
+            lock.unlock();
+        }
     }
 
     void ScanMatchingScanRenderer::onDraw3D( glv::GLV& g )
@@ -1232,12 +1233,11 @@ namespace Visualisers
         // Are we maximised?
         if (enabled( glv::Maximized ))
         {
-            trajectory->enable( glv::Visible );
             boost::dynamic_pointer_cast< ScanMatchingTrajectoryRenderer >(trajectory)->engine = engine;
+            trajectory->enable( glv::Visible );
         }
         else
             trajectory->disable( glv::Visible );
-
     }
 
     /*
