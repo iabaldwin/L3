@@ -50,9 +50,11 @@ namespace Estimator
         const Bayesian_filter_matrix::Vec& f (const Bayesian_filter_matrix::Vec &x) const;
     };
     
-    struct ObservationModel : Bayesian_filter:: Linear_uncorrelated_observe_model
+    struct ObservationModel : Bayesian_filter::Uncorrelated_additive_observe_model 
     {
         ObservationModel ();
+   
+        const Bayesian_filter_matrix::Vec& h(const Bayesian_filter_matrix::Vec& x) const;
     };
 
     template <typename T>

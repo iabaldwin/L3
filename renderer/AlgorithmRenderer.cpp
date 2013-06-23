@@ -5,7 +5,6 @@ namespace L3
 {
     namespace Visualisers
     {
-
         struct TraversalVisualiser : Updateable, Lockable
         {
             /*
@@ -957,6 +956,12 @@ namespace L3
 
             this->operator<<( *sigma_points_viewer );
 
+            // Frequency controller
+            boost::shared_ptr< glv::Slider > frequency = boost::make_shared< glv::Slider > ();
+            frequency->interval( .1, 40 );
+            frequency->attachVariable( algorithm->fundamental_frequency );
+            *this  << *frequency;
+            variables.push_back( frequency );
 
         }
     

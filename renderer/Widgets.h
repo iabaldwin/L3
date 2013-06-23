@@ -37,7 +37,9 @@ namespace Visualisers
         std::deque< boost::shared_ptr< glv::View> > views;
         std::deque< boost::shared_ptr< glv::Label > > labels;
         std::deque< boost::shared_ptr< glv::Widget > > widgets;
-   
+
+        glv::Label widget_label;
+
         void associateVelocitySource( boost::shared_ptr< FilteredScanMatchingVelocityProvider> ptr);
 
     };

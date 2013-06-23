@@ -60,8 +60,10 @@ namespace Visualisers
 
     }
 
-    FundamentalControls::FundamentalControls() : glv::Table( "x," )
+    FundamentalControls::FundamentalControls() : glv::Table( "x x,", 5, 5  )
     {
+
+
         // Alpha control
         boost::shared_ptr< glv::Widget > alpha_control = boost::make_shared< glv::Slider >();
         *this << *alpha_control;

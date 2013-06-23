@@ -20,7 +20,6 @@ boost::shared_ptr<L3::LMS151> MaskPolicy<L3::LMS151>::operator()( boost::shared_
 }
 
 
-
 /*
  *  Base type
  */
@@ -49,74 +48,6 @@ std::pair< double, boost::shared_ptr<T> > AbstractFactory<T>::produce( std::vect
     return std::make_pair( time, mask_policy( boost::make_shared<T>( elements ) ) );
 }
 
-/*
- *  SE3
- */
-//std::pair< double, boost::shared_ptr<L3::SE3> > AbstractFactory<L3::SE3>::produce( std::string& str )
-//{
-    //std::stringstream ss( str );
-    //std::vector< double > elements;
-    
-    //double tmp;
-    
-    //while ( ss >> tmp )
-        //elements.push_back( tmp ); 
-
-
-    //return AbstractFactory<L3::SE3>::produce( elements );
-//}
-        
-//std::pair< double, boost::shared_ptr<L3::SE3> >  AbstractFactory<L3::SE3>::produce( std::vector<double> elements )
-//{
-    //assert( elements.size() > 0 );
-
-    //double time = elements[0];
-    //elements.erase( elements.begin() );
-
-    //return std::make_pair( time, boost::make_shared<L3::SE3>( elements ) );
-//}
-
-/*
- *  LIDAR
- */
-        
-//std::pair< double, boost::shared_ptr<L3::LIDAR> > AbstractFactory<L3::LIDAR>::produce( std::string& str, MaskPolicy<double>* mask )
-//{
-    //std::stringstream ss( str );
-    //std::vector< double > elements;
-
-    //double tmp;
-    
-    //while ( ss >> tmp )
-        //elements.push_back( tmp ); 
-    
-    //return AbstractFactory<L3::LIDAR>::produce( elements, mask );
-//}
-
-//std::pair< double, boost::shared_ptr<L3::LIDAR> > AbstractFactory<L3::LIDAR>::produce( std::vector<double> elements, MaskPolicy<double>* mask )
-//{
-    //assert( elements.size() > 0 );
-
-    //double time = elements[0];
-   
-    //// Offset by time
-    //elements.erase( elements.begin() );
-
-    //// Mask
-    //mask->operator()( elements );
-
-    //switch (elements.size())
-    //{
-        //case 541:
-            //throw std::exception();
-            ////return std::make_pair( time, boost::make_shared<L3::LMS151>( elements ) );
-
-        //default:
-            //throw std::exception();
-
-    //}
-
-//}
 
 /*
  *  Pose
