@@ -198,6 +198,8 @@ namespace Visualisers
             boost::shared_ptr< CompositeLeafViewToggle > experience_voxel_toggle;
             boost::shared_ptr< CompositeLeafViewToggle > experience_bounds_toggle;
 
+            std::deque< boost::shared_ptr< Leaf > > composite_extras;
+
             /*
              *  Load/reload function
              */

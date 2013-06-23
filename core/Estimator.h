@@ -183,6 +183,14 @@ namespace Estimator
             double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
         };
 
+    template < typename T >  
+        struct BattacharyaCostFunction : CostFunction<T>
+        {
+            double operator()( const Histogram<T>& experience, const Histogram<T>& swathe );
+        };
+
+
+
     /*
      *Discrete hypothesis
      */

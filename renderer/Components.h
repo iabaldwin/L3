@@ -160,8 +160,8 @@ namespace Visualisers
         virtual void onDraw3D( glv::GLV& g ) = 0;
 
         void drawBounds();
-
     };
+
 
 
     /*
@@ -291,6 +291,48 @@ namespace Visualisers
         }
 
     };
+
+    struct ViewAwareLeaf : Leaf
+    {
+        ViewAwareLeaf( Composite* composite ) : composite(composite)
+        {
+            composite->operator<<( *this );
+        }
+        
+        Composite* composite ;
+
+        bool isVisible()
+        {
+            return !composite->enabled( glv::Maximized );
+        }
+    };
+
+    struct VelocityData : ViewAwareLeaf
+    {
+        VelocityData( Composite* composite, boost::shared_ptr< L3::VelocityProvider > provider ) 
+            : ViewAwareLeaf( composite ), 
+            provider(provider)
+        {
+              
+        }
+ 
+        void onDraw3D( glv::GLV& g )
+        {
+            if (!isVisible())
+                return;
+
+            std::cout << "HI" << std::endl;
+
+            boost::shared_ptr< L3::VelocityProvider > provider_ptr = provider.lock();
+            if (!provider_ptr)
+                return;
+        }
+
+        boost::weak_ptr< L3::VelocityProvider > provider;
+    };
+
+
+
 
     /*
      *  Coordinate System 
@@ -703,7 +745,7 @@ namespace Visualisers
             
             this->disable( glv::Property::AlwaysBubble );
            
-            //controller = boost::make_shared< L3::Visualisers::CompositeController >( dynamic_cast< glv::View3D* >(this), boost::ref( this->position ) );
+            controller = boost::make_shared< L3::Visualisers::CompositeController >( dynamic_cast< glv::View3D* >(this), boost::ref( this->position ) );
         }
 
         boost::weak_ptr< L3::ScanMatching::Engine > engine;

@@ -60,13 +60,25 @@ namespace Visualisers
 
     }
 
-    FundamentalControls::FundamentalControls() : glv::Table( "x x,", 5, 5  )
+    FundamentalControls::FundamentalControls() : glv::Table( "x,", 0, 0  )
     {
+        // Border visibility
+        this->enable( glv::DrawBorder );
 
+        // Master holder
+        boost::shared_ptr< glv::View > view_sizer = boost::make_shared< glv::View >( glv::Rect( 555, 120 ) );
+
+        *this << *view_sizer;
+        views.push_back(view_sizer);
+
+        // Sub-table
+        boost::shared_ptr< glv::Table > sub_table = boost::make_shared< glv::Table >( "x," );
+
+        *view_sizer  << *sub_table;
 
         // Alpha control
         boost::shared_ptr< glv::Widget > alpha_control = boost::make_shared< glv::Slider >();
-        *this << *alpha_control;
+        *sub_table<< *alpha_control;
 
         boost::shared_ptr< glv::Label > alpha_label = boost::make_shared< glv::Label >("Alpha" );
         alpha_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR );
@@ -77,7 +89,7 @@ namespace Visualisers
 
         // Beta control
         boost::shared_ptr< glv::Widget > beta_control = boost::make_shared< glv::Slider >();
-        *this << *beta_control;
+        *sub_table<< *beta_control;
 
         boost::shared_ptr< glv::Label > beta_label = boost::make_shared< glv::Label >("Beta" );
         beta_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR );
@@ -88,7 +100,7 @@ namespace Visualisers
 
         // Velocity bias
         boost::shared_ptr< glv::Widget > velocity_bias = boost::make_shared< glv::Slider >();
-        *this << *velocity_bias;
+        *sub_table << *velocity_bias;
 
         velocity_bias->interval( .1,2 );
         
@@ -101,20 +113,25 @@ namespace Visualisers
 
         // Velocity bias reset
         boost::shared_ptr< glv::Button > velocity_bias_reset = boost::make_shared< glv::Button >( glv::Rect(20), false );
-        *this << *velocity_bias_reset;
+        *sub_table << *velocity_bias_reset;
 
         widgets.push_back( velocity_bias_reset );
 
         this->fit();
         this->arrange();
 
+        sub_table->fit();
+        sub_table->arrange();
+
+        views.push_back( sub_table );
     }
 
     void FundamentalControls::associateVelocitySource( boost::shared_ptr< FilteredScanMatchingVelocityProvider> ptr)
     {
-        widgets[0]->attachVariable( ptr->_linear_velocity_filter->alpha );
-        widgets[1]->attachVariable( ptr->_linear_velocity_filter->beta );
-        widgets[2]->attachVariable( ptr->scaling_bias );
+        widgets[0]->attachVariable( ptr->_linear_velocity_filter->alpha );      // Alpha
+        widgets[1]->attachVariable( ptr->_linear_velocity_filter->beta );       // Beta
+        
+        widgets[2]->attachVariable( ptr->scaling_bias );                        // Bias
  
         boost::shared_ptr< Resetter<float> > r = boost::make_shared< Resetter< float > >( boost::ref( ptr->scaling_bias ) ); 
 

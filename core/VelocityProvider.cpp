@@ -45,7 +45,7 @@ namespace L3
         : velocity_provider(velocity_provider)
     {
         _linear_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.1, .01);
-        _rotational_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.05,0.01);
+        _rotational_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.5,0.1);
     
         raw_velocity_data.second.resize( 4);
         filtered_velocity_data.second.resize( 4);
@@ -78,6 +78,7 @@ namespace L3
         double rotational_velocity = velocity_provider_ptr->window.back().second->data[3];
         
         _linear_velocity_filter->update( velocity_provider_ptr->window.back().first, linear_velocity );
+        _rotational_velocity_filter->update( velocity_provider_ptr->window.back().first, rotational_velocity );
 
         raw_velocity_data.first = velocity_provider_ptr->window.back().first;
         raw_velocity_data.second[0] = linear_velocity;
@@ -85,7 +86,8 @@ namespace L3
 
         filtered_velocity_data.first = velocity_provider_ptr->window.back().first;
         filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
-        filtered_velocity_data.second[3] = rotational_velocity;
+        //filtered_velocity_data.second[3] = rotational_velocity;
+        filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
 
         if( scaling_bias != 1. )
             filtered_velocity_data.second[0] *= scaling_bias;

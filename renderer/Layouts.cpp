@@ -365,6 +365,15 @@ namespace L3
             
             tables.push_back( table );
             top << *table;
+        
+       
+            /*
+             *  View - aware leaf, HUD essentially
+             */
+            boost::shared_ptr< Leaf >  velocity_data = boost::make_shared< VelocityData > ( composite.get(), boost::shared_ptr< L3::VelocityProvider >() );
+            composite_extras.push_back( velocity_data );
+       
+
         }
 
         bool DatasetLayout::load( L3::DatasetRunner* runner )

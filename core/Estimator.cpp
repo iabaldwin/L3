@@ -196,6 +196,27 @@ namespace L3
 
             }
 
+        template < typename T >
+            double BattacharyaCostFunction<T>::operator()( const Histogram<T>& experience, const Histogram<T>& swathe )
+            {
+                if ( experience.empty() || swathe.empty() )
+                    return std::numeric_limits<T>::infinity();
+
+                int size = experience.hist->nx*experience.hist->ny;
+
+                // Compute distance
+                double distance[size];
+
+                //std::inner_product( 
+                // etc... 
+
+                return -1;
+
+            }
+
+
+
+
         /*
          *  Hypothesis Builder
          */

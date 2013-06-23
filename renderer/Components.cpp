@@ -137,18 +137,21 @@ namespace Visualisers
      */
     void Composite::onDraw3D( glv::GLV& g )
     {
+        // Rotate the camera
         glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
 
-        glGetDoublev(GL_PROJECTION_MATRIX, projection );
-        glGetDoublev(GL_MODELVIEW_MATRIX, model );
-        glGetIntegerv(GL_VIEWPORT,viewport);
+        //glGetDoublev(GL_PROJECTION_MATRIX, projection );
+        //glGetDoublev(GL_MODELVIEW_MATRIX, model );
+        //glGetIntegerv(GL_VIEWPORT,viewport);
 
+        // Draw all the components
         std::list<Leaf*>::iterator leaf_iterator = components.begin();
 
         L3::SE3 origin = L3::SE3::ZERO();
         CoordinateSystem( origin, 20.0 ).onDraw3D(g);
 
+        // Draw all the children
         while( leaf_iterator != components.end() )
         {
             if( (*leaf_iterator)->visible )
