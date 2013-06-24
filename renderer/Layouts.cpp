@@ -373,8 +373,13 @@ namespace L3
             // HOW?
             //boost::shared_ptr< glv::View > velocity_data = boost::make_shared< VelocityData > ( main_view.get(), boost::shared_ptr< L3::VelocityProvider >() );
             //main_view_extras.push_back( velocity_data );
-       
-
+     
+            /*
+             *  Dataset controller
+             */
+            dataset_controller = boost::make_shared< DatasetController >();
+            main_view->addHandler( glv::Event::KeyDown, *dataset_controller );
+            handlers.push_back( dataset_controller );
         }
 
         bool DatasetLayout::load( L3::DatasetRunner* runner )
@@ -536,6 +541,12 @@ namespace L3
             if( boost::shared_ptr< FilteredScanMatchingVelocityProvider  > ptr = boost::dynamic_pointer_cast< FilteredScanMatchingVelocityProvider >( runner->ics_velocity_provider ) )
                 fundamental_controls->associateVelocitySource( ptr ); 
 
+
+            /*
+             *  Associate dataset controller
+             */
+            dataset_controller->runner = runner;
+
             /*
              *  Update view
              */
@@ -546,6 +557,7 @@ namespace L3
              */
             composite->position.x = -1*start_pose.X();
             composite->position.y = -1*start_pose.Y();
+
 
             return true;
         }

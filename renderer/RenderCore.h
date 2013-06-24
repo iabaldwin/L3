@@ -35,8 +35,6 @@ enum CUSTOM_EVENT_TYPES
 
         }
 
-
-
         bool broadcast_enabled;
 
         bool onEvent( glv::Event::t e, glv::GLV& g)

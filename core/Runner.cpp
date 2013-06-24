@@ -106,8 +106,10 @@ namespace L3
 
                 switch( run_mode )
                 {
-                    case RunMode::Continuous: 
+                    case RunMode::Continuous:
+                        // Get the delta
                         current_time += ( system_timer.elapsed() - real_time_elapsed )*speedup;
+                        real_time_elapsed = system_timer.elapsed(); 
                         break;
 
                     case RunMode::Step: 
@@ -119,8 +121,6 @@ namespace L3
                         throw std::exception();
                 }
 
-                real_time_elapsed = system_timer.elapsed(); 
-                
                 /*
                  *  Update all watchers
                  */
@@ -169,10 +169,11 @@ namespace L3
                  */
 
                 std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
-
             }
             else
-                usleep( .5*1e6 );
+            {
+                usleep( .1*1e6 );
+            }
   
         }
         thread.join();

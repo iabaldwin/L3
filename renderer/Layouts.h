@@ -16,6 +16,8 @@
 #include "DebugAlgorithmRenderer.h"
 #include "AlgorithmRenderer.h"
 #include "Widgets.h"
+#include "DatasetController.h"
+
 
 namespace L3
 {
@@ -199,6 +201,10 @@ namespace Visualisers
             boost::shared_ptr< CompositeLeafViewToggle > experience_bounds_toggle;
 
             std::deque< boost::shared_ptr< glv::View > > main_view_extras;
+
+
+            boost::shared_ptr< DatasetController >  dataset_controller;
+            std::deque< boost::shared_ptr< glv::EventHandler > > handlers;
 
             /*
              *  Load/reload function
