@@ -49,6 +49,7 @@ namespace L3
         
         std::pair< bool, std::string > stop( const std::string& command );
         std::pair< bool, std::string > start( const std::string& command );
+        std::pair< bool, std::string > runMode( const std::string& command );
         
         std::pair< bool, std::string > addTrajectory( const std::string& command );
         std::pair< bool, std::string > removeTrajectory( const std::string& command );

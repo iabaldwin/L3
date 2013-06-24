@@ -19,6 +19,8 @@
 #include <Poco/Task.h>
 #include <Poco/TaskManager.h>
 
+
+
 namespace L3
 {
 
@@ -63,7 +65,16 @@ struct ThreadedRunner : TemporalRunner, Poco::Runnable
         thread.start( *this );
     }
     
+};
+
+namespace RunMode
+{
+    enum Mode
+    {
+        Continuous, 
+        Step 
     };
+}
 
 struct DatasetRunner : ThreadedRunner
 {
@@ -83,9 +94,11 @@ struct DatasetRunner : ThreadedRunner
     Dataset*                    dataset;
     
     float           speedup;
-    double          current_time, start_time;  
     bool            stand_alone;
-   
+    double          current_time, start_time;  
+ 
+    RunMode::Mode   run_mode;
+
     std::list < Updater* > updaters;
     
     boost::shared_ptr< L3::SE3 > current;
@@ -129,10 +142,9 @@ struct DatasetRunner : ThreadedRunner
         if ( !observer )
         {
             std::cout << "Erroneous observer passed!" << std::endl;
-            //exit(-1);
-       
-            return *this;
+            exit(-1);
         }
+
         observers.push_back( observer ); 
         return *this;
     }
@@ -144,6 +156,7 @@ struct DatasetRunner : ThreadedRunner
             std::cout << "Erroneous updater passed!" << std::endl;
             exit(-1);
         }
+
         updaters.push_back( updater ); 
         return *this;
     }

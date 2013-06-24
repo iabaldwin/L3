@@ -84,12 +84,10 @@ namespace L3
             if ( last_update == 0 )
             {
                 last_update = time;  
-              
                 return false;
             }
 
             boost::shared_ptr< L3::VelocityProvider > iterator_ptr = this->iterator.lock();
-
 
             L3::VelocityProvider::VELOCITY_COMPARATOR c;
 
@@ -120,7 +118,6 @@ namespace L3
             std::deque < std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator _window_iterator = _window.begin();
 
             boost::shared_ptr< L3::SE3 > previous_pose = _window_iterator->second, current_pose;
-
 
             // Integrate
             while( index != iterator_ptr->filtered_velocities.end() )
@@ -168,16 +165,15 @@ namespace L3
 
         ObservationModel::ObservationModel () : Bayesian_filter::Uncorrelated_additive_observe_model(3)
         {
-            Zv[0] = 10;
-            Zv[1] = 10;
-            Zv[2] = 1;
+            Zv[0] = 1;
+            Zv[1] = 1;
+            Zv[2] = .1;
         }
         
         const Bayesian_filter_matrix::Vec& ObservationModel::h(const Bayesian_filter_matrix::Vec& x)  const
         {
             return x;    
         }
-
 
         template <typename T>
             UKF<T>::UKF( boost::shared_ptr<CostFunction<T> > cost_function,  

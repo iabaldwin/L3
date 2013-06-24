@@ -17,8 +17,9 @@ namespace L3
     {
         struct GLVInterface : glv::TextView
         {
-            GLVInterface( glv::Rect rect ) ;
+            GLVInterface( L3GLV* master ) ;
 
+            L3GLV* master;
             bool visibility;
             std::list< L3::Interface* > interfaces;
             std::list < std::string > full_history;

@@ -74,6 +74,8 @@ namespace L3
         if( !velocity_provider_ptr || velocity_provider_ptr->window.empty()  )
             return false;
 
+        L3::WriteLock master( this->mutex );
+
         double linear_velocity     = velocity_provider_ptr->window.back().second->data[0];
         double rotational_velocity = velocity_provider_ptr->window.back().second->data[3];
         
@@ -102,19 +104,24 @@ namespace L3
 
         while( raw_velocities.back().first - raw_velocities.front().first > 10.0 )
                 raw_velocities.pop_front();
-   
+  
+        master.unlock();
         
         return true;
     };
     
     bool LHLVVelocityProvider::update( double time  )
     {
+        L3::WriteLock master( this->mutex );
+        
         filtered_velocities.clear();
 
         std::transform( iterator->window.begin(), 
                 iterator->window.end(),
                 std::back_inserter( filtered_velocities ),
                 z );
+
+        master.unlock();
 
         return ( !filtered_velocities.empty() );
     }

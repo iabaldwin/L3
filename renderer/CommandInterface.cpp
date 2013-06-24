@@ -28,6 +28,7 @@ namespace L3
 
         member_function_map.insert( std::make_pair( "_stop",            std::make_pair( &CommandInterface::stop,                "Stop running" ) ) );
         member_function_map.insert( std::make_pair( "_start",           std::make_pair( &CommandInterface::start,               "Start running" ) ) );
+        member_function_map.insert( std::make_pair( "_mode",            std::make_pair( &CommandInterface::runMode,             "Change run mode" ) ) );
         
         member_function_map.insert( std::make_pair( "_add_traj",        std::make_pair( &CommandInterface::addTrajectory,       "Add a visual trajectory" ) ) );
         member_function_map.insert( std::make_pair( "_add_path",        std::make_pair( &CommandInterface::addPath,             "Add a search path") ) );
@@ -518,6 +519,27 @@ namespace L3
         return std::make_pair( true, "CI::Started" );
     }
 
+
+    std::pair< bool, std::string > CommandInterface::runMode( const std::string& command )
+    {
+        container->runner->paused = true;
+
+        std::string command_copy(command);
+
+        ltrim(command_copy);
+
+        if( command_copy == "step" )
+            container->runner->run_mode = L3::RunMode::Step;
+        else if(  command_copy == "cont" )
+            container->runner->run_mode = L3::RunMode::Continuous;
+        else
+        {
+            container->runner->paused = false;
+            return std::make_pair( false, "CI::Unknown Mode <" + command_copy + ">"  );
+        }
+
+        return std::make_pair( true, "CI::Mode" );
+    }
 
     std::string CommandInterface::getState()
     {

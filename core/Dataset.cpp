@@ -69,9 +69,6 @@ bool Dataset::validate()
     while( it != boost::filesystem::directory_iterator() )
     {
 
-        std::cout << boost::filesystem::extension( *it ) << std::endl;
-        std::cout << lookup[boost::filesystem::extension( *it )] << std::endl;
-
         switch ( lookup[boost::filesystem::extension( *it )])
         {
             case INS_file:

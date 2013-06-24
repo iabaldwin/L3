@@ -10,10 +10,11 @@ namespace L3
 namespace Visualisers
 {
 
-    GLVInterface::GLVInterface( glv::Rect rect ) : glv::TextView( rect )
+    GLVInterface::GLVInterface( L3GLV* master )
+        : glv::TextView( glv::Rect() ),
+        master(master),
+        visibility(false)
     {
-        visibility = false;
-
         // Full screen, but not visible
         this->maximize(); 
         this->disable(glv::Visible);
@@ -56,6 +57,9 @@ namespace Visualisers
                 this->disable( glv::Focused );
                 this->disable( glv::DrawBack );
                 this->disable( glv::HitTest );
+               
+                // Enable master broadcast
+                master->broadcast_enabled = true;
                 return false;
             }
             else
@@ -66,6 +70,8 @@ namespace Visualisers
                 this->enable( glv::Focused );
                 this->enable( glv::DrawBack );
                 this->enable( glv::HitTest );
+                
+                master->broadcast_enabled = false;
             }
         }
 

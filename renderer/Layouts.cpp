@@ -121,7 +121,7 @@ namespace L3
             /*
              *  Lua interface
              */
-            scripting_interface = boost::make_shared< L3::Visualisers::GLVInterface >( glv::Rect(1200,800,200,150) );
+            scripting_interface = boost::make_shared< L3::Visualisers::GLVInterface >( &top );
             this->renderables.push_front( scripting_interface.get() );
 
             // Create the main view

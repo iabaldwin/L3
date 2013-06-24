@@ -29,6 +29,16 @@ enum CUSTOM_EVENT_TYPES
      */
     struct L3GLV : glv::GLV
     {
+
+        L3GLV() : broadcast_enabled(true)
+        {
+
+        }
+
+
+
+        bool broadcast_enabled;
+
         bool onEvent( glv::Event::t e, glv::GLV& g)
         {
             glv::space_t a =0.0f;
@@ -46,21 +56,17 @@ enum CUSTOM_EVENT_TYPES
                         // This is quite grim
                         this->setMouseDown(a, b, 1, 1);
                         this->setMouseUp(a, b, 1, 1);
-
                         break;
 
                     case glv::Key::Tab:
-                        this->broadcastEvent( static_cast< glv::Event::t>( TABLE_TOGGLE ) );
+                        if( broadcast_enabled )
+                            this->broadcastEvent( static_cast< glv::Event::t>( TABLE_TOGGLE ) );
                         break;
 
                     case '+':
-                        this->broadcastEvent( static_cast< glv::Event::t>( DBG_X ) );
+                        if( broadcast_enabled ) 
+                            this->broadcastEvent( static_cast< glv::Event::t>( DBG_X ) );
                         break;
-
-                    case '-':
-                        this->broadcastEvent( static_cast< glv::Event::t>( DBG_Y ) );
-                        break;
-
 
                     default:
                         break; 

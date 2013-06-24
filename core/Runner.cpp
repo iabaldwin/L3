@@ -11,12 +11,13 @@ namespace L3
             speedup(speedup),
             current_time(0.0),
             start_time(dataset->start_time),
-            stand_alone(false)
+            stand_alone(false),
+            run_mode( RunMode::Continuous )
     {
         // Constant time iterator over poses
         pose_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::SE3> >( dataset->pose_reader );
         LHLV_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::LHLV> >( dataset->LHLV_reader );  
-       
+     
         // LIDAR iterators
         horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->horizontal] );
         vertical_LIDAR   = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->declined] );
@@ -43,7 +44,8 @@ namespace L3
         ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );
 
         // Pose Provider
-        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
+        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( lhlv_velocity_provider.get(), 50 );
        
         // Swathe generator
         swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
@@ -61,20 +63,20 @@ namespace L3
         timings.resize(5);
       
         /*
-         *Note: order is important here
+         *  Note: order is important here
          */
         (*this) << pose_iterator.get() 
                 << LHLV_iterator.get() 
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
                 << lhlv_velocity_provider.get()
-                << ics_velocity_provider.get() 
+                //<< ics_velocity_provider.get() 
                 << icp_velocity_provider.get() 
                 << velocity_source.get()
                 << engine.get() 
                 << pose_windower.get() 
                 << swathe_builder.get()
-                << predictor.get()
+                //<< predictor.get()
                 ;
     }
 
@@ -83,11 +85,11 @@ namespace L3
      */
     void DatasetRunner::run()
     {
-        L3::Timing::ChronoTimer t;
+        L3::Timing::ChronoTimer system_timer;
 
-        t.begin();
+        system_timer.begin();
 
-        double real_time_elapsed = t.elapsed();
+        double real_time_elapsed = system_timer.elapsed();
 
         current_time = start_time;
             
@@ -95,16 +97,29 @@ namespace L3
 
         int performance_index;
            
-        while( running )
+        while( running ) // Main thread
         {
             if( !paused )
             {
                 performance_index = 0;
                 performance_timer.begin();
 
-                current_time += ( t.elapsed() - real_time_elapsed )*speedup;
+                switch( run_mode )
+                {
+                    case RunMode::Continuous: 
+                        current_time += ( system_timer.elapsed() - real_time_elapsed )*speedup;
+                        break;
 
-                real_time_elapsed = t.elapsed(); 
+                    case RunMode::Step: 
+                        current_time += .1;
+                        paused = true; 
+                        break;
+               
+                    default:
+                        throw std::exception();
+                }
+
+                real_time_elapsed = system_timer.elapsed(); 
                 
                 /*
                  *  Update all watchers
