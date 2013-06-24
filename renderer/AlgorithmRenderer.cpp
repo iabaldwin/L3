@@ -963,6 +963,9 @@ namespace L3
             *this  << *frequency;
             variables.push_back( frequency );
 
+
+            this->arrange();
+            this->fit();
         }
     
         UKFVisualiser::~UKFVisualiser()
