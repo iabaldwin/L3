@@ -58,8 +58,8 @@ target_link_libraries( test_estimator_runner config L3 ${Boost_LIBRARIES} )
 #add_executable( test_pose_homogeneous test_pose_homogeneous.cpp )
 #target_link_libraries( test_pose_homogeneous config L3 ${Boost_LIBRARIES}  )
 
-#add_executable( test_windower test_windower.cpp )
-#target_link_libraries( test_windower config L3 ${Boost_LIBRARIES}  )
+add_executable( test_windower test_windower.cpp )
+target_link_libraries( test_windower config L3 ${Boost_LIBRARIES}  )
 
 #add_executable( test_swathe_builder_INS test_swathe_builder_INS.cpp )
 #target_link_libraries( test_swathe_builder_INS config L3 ${Boost_LIBRARIES}  )

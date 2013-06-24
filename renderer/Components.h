@@ -292,41 +292,33 @@ namespace Visualisers
 
     };
 
-    struct ViewAwareLeaf : Leaf
+    struct SubView : glv::View
     {
-        ViewAwareLeaf( Composite* composite ) : composite(composite)
+        SubView( glv::View* parent) 
+            : glv::View( glv::Rect( 150,150) ),
+                parent(parent)
         {
-            composite->operator<<( *this );
+            *parent << *this;
         }
         
-        Composite* composite ;
+        glv::View* parent;
 
         bool isVisible()
         {
-            return !composite->enabled( glv::Maximized );
+            return parent->enabled( glv::Maximized );
         }
     };
 
-    struct VelocityData : ViewAwareLeaf
+    struct VelocityData : SubView
     {
-        VelocityData( Composite* composite, boost::shared_ptr< L3::VelocityProvider > provider ) 
-            : ViewAwareLeaf( composite ), 
+        VelocityData( glv::View* view, boost::shared_ptr< L3::VelocityProvider > provider ) 
+            : SubView( view ), 
             provider(provider)
         {
               
         }
  
-        void onDraw3D( glv::GLV& g )
-        {
-            if (!isVisible())
-                return;
-
-            std::cout << "HI" << std::endl;
-
-            boost::shared_ptr< L3::VelocityProvider > provider_ptr = provider.lock();
-            if (!provider_ptr)
-                return;
-        }
+        void onDraw( glv::GLV& g );
 
         boost::weak_ptr< L3::VelocityProvider > provider;
     };

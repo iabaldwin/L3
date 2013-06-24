@@ -128,8 +128,10 @@ struct DatasetRunner : ThreadedRunner
     {
         if ( !observer )
         {
-            std::cout << "Erroneouse observer passed!" << std::endl;
-            exit(-1);
+            std::cout << "Erroneous observer passed!" << std::endl;
+            //exit(-1);
+       
+            return *this;
         }
         observers.push_back( observer ); 
         return *this;
@@ -139,7 +141,7 @@ struct DatasetRunner : ThreadedRunner
     {
         if ( !updater)
         {
-            std::cout << "Erroneouse updater passed!" << std::endl;
+            std::cout << "Erroneous updater passed!" << std::endl;
             exit(-1);
         }
         updaters.push_back( updater ); 

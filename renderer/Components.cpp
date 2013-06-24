@@ -166,6 +166,26 @@ namespace Visualisers
         }
     }
 
+
+    void VelocityData::onDraw( glv::GLV& g )
+    {
+        std::cout << "xxxxxx" << std::endl;
+        if (!isVisible())
+        {
+            this->disable( glv::Visible );
+            return;
+        }
+        else
+        { 
+            this->enable( glv::Visible );
+            std::cout << "------------------" << std::endl;
+        }
+
+        boost::shared_ptr< L3::VelocityProvider > provider_ptr = provider.lock();
+        if (!provider_ptr)
+            return;
+    }
+
     /*
      *  Leaf
      */

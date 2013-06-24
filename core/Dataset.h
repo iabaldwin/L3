@@ -20,7 +20,7 @@
 namespace L3
 {
 
-enum extensionType { INS_file, LIDAR_file, LHLV_file, SM_FILE };
+enum extensionType { INS_file=1, LIDAR_file, LHLV_file, SM_file };
 
 class Dataset : private boost::noncopyable
 {

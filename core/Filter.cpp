@@ -49,16 +49,8 @@ namespace L3
             q[1] = .1;
             q[2] = .01;
 
-            std::cout << G.size1() << ',' << G.size2() << std::endl;
-
             Bayesian_filter_matrix::identity ( G );
 
-            std::cout << G << std::endl;
-
-            //G(0,0) = 1;
-            //G(1,1) = 1;
-            //G(2,2) = .1;
-            //G(2,2) = 1;
         }
 
         const Bayesian_filter_matrix::Vec& PredictionModel::f (const Bayesian_filter_matrix::Vec &x) const
@@ -176,13 +168,9 @@ namespace L3
 
         ObservationModel::ObservationModel () : Bayesian_filter::Uncorrelated_additive_observe_model(3)
         {
-            //Hx(0,0) = 1.;
-            //Hx(1,1) = 1.;
-            //Hx(2,2) = 1.;
-            
-            Zv[0] = 1;
-            Zv[1] = 1;
-            Zv[2] = .1;
+            Zv[0] = 10;
+            Zv[1] = 10;
+            Zv[2] = 1;
         }
         
         const Bayesian_filter_matrix::Vec& ObservationModel::h(const Bayesian_filter_matrix::Vec& x)  const
@@ -196,7 +184,7 @@ namespace L3
                     boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
                     boost::shared_ptr< L3::VelocityProvider > iterator )
             : Filter<T>(iterator), 
-            Algorithm<T>(cost_function, 2 ),
+            Algorithm<T>(cost_function, 10 ),
             initialised(false)
         {
             ukf.reset( new Bayesian_filter::Unscented_scheme(3) );
@@ -212,8 +200,6 @@ namespace L3
             sigma_points.resize( (2*3 + 1)*3 );
                 
             timer.begin();
-       
-            this->fundamental_frequency = 100;
         }
 
         template <typename T>
@@ -238,7 +224,6 @@ namespace L3
                 }
 
                 // Always predict 
-                std::cout << "Predict" << std::endl; 
                 ukf->predict( *prediction_model);
                 ukf->update();
 
@@ -253,10 +238,8 @@ namespace L3
                     Bayesian_filter_matrix::Vec z_vec = adapt(z);
 
                     // Observe
-                    std::cout << "Observe" << std::endl; 
                     ukf->observe( *observation_model, z_vec );
                        
-                    std::cout << "Update" << std::endl; 
                     // Produce uncertainty
                     ukf->update();
                 }

@@ -370,8 +370,9 @@ namespace L3
             /*
              *  View - aware leaf, HUD essentially
              */
-            boost::shared_ptr< Leaf >  velocity_data = boost::make_shared< VelocityData > ( composite.get(), boost::shared_ptr< L3::VelocityProvider >() );
-            composite_extras.push_back( velocity_data );
+            // HOW?
+            //boost::shared_ptr< glv::View > velocity_data = boost::make_shared< VelocityData > ( main_view.get(), boost::shared_ptr< L3::VelocityProvider >() );
+            //main_view_extras.push_back( velocity_data );
        
 
         }

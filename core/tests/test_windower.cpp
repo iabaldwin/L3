@@ -1,33 +1,57 @@
 #include "Windower.h"
-#include "WindowerFactory.h"
+#include "Dataset.h"
+#include "Iterator.h"
 #include "Datatypes.h"
 #include "Definitions.h"
-
-#include "Poco/Thread.h"
+#include "PoseWindower.h"
 
 int main()
 {
-    std::cout.precision( 12 );
+    std::cout.precision( 16 );
     
-    Poco::Thread thread;
+    /*
+     *Dataset 
+     */
+    boost::shared_ptr< L3::Dataset > dataset(  new L3::Dataset( "/Users/ian/code/datasets/2012-04-16-20-05-30NightWoodstock1/" ) );
+    dataset->validate(); 
+    dataset->load();
+    
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > > pose_iterator;
+    pose_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::SE3> >( dataset->pose_reader );
 
-    //boost::shared_ptr< L3::SlidingWindow<L3::SE3> > w = L3::WindowerFactory<L3::SE3>::constantTimeWindow( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins", 100  );
-    boost::shared_ptr< L3::SlidingWindow<L3::LMS151> > w = L3::WindowerFactory<L3::LMS151>::constantTimeWindow( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/LMS1xx_10420001_192.168.0.51.lidar", 100  );
+    double time = dataset->start_time;
 
-    w->initialise();
+    /*
+     *Manual
+     */
+    //boost::shared_ptr< L3::SlidingWindow<L3::SE3> >  pose_reader;
+    //pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow( "/Users/ian/code/datasets/2012-04-16-20-05-30NightWoodstock1/L3/OxTS.ins", 30 ) ;
+    //pose_reader->initialise(); 
+    
+    //Poco::Thread* thread = new Poco::Thread();
+    //thread->start( *pose_reader );
 
-    thread.start( *w );
+    //boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > > pose_iterator;
+    //pose_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::SE3> >( pose_reader );
+   
+    //double time = 1334608441.524997;
+  
+    //boost::shared_ptr< L3::ConstantTimeWindower< L3::SE3 > >    oracle;
+    //oracle = boost::make_shared< L3::ConstantTimeWindower< L3::SE3 > > ( pose_iterator.get() );
 
-    double time = 1328534146.40;
-
-    double increment = 1;
     while (true)
     {
-        //usleep( .1*1e06) ;
-        assert( w->update( time += increment ) );
-        std::cout << time << "-->" << (*w->window.begin()).first << ":" << (*(w->window.end()-1)).first << "(" << w->window.size() << ")" << std::endl;
+        pose_iterator->update( time );
+
+        std::cout << pose_iterator->window.size() << std::endl;
+
+        time +=.2;
+        std::cout << time << std::endl;
+
+        //std::cout << oracle->operator()() << std::endl;
+
+        usleep( .2*1e06) ;
     } 
     
-    thread.join();
 }
 

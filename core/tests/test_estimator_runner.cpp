@@ -58,9 +58,9 @@ int main( int argc, char* argv[] )
     runner->stand_alone = true;
     
     //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::UKF<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid, runner->lhlv_velocity_provider ) );
-    boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::ParticleFilter<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid, runner->lhlv_velocity_provider ) );
+    //boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::ParticleFilter<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid, runner->lhlv_velocity_provider ) );
     
-    runner->setAlgorithm( algo );
+    //runner->setAlgorithm( algo );
     runner->start();
 
     while( true )

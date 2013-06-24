@@ -43,13 +43,10 @@ namespace L3
         ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );
 
         // Pose Provider
-        //pose_windower = boost::make_shared< L3::ConstantTimeWindower < L3::LHLV> > ( LHLV_iterator.get() );
-        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( lhlv_velocity_provider.get(), 20 );
         pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
        
         // Swathe generator
-        swathe_builder = boost::make_shared< L3::RawSwatheBuilder>( pose_windower.get(), vertical_LIDAR.get() );
-        //swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
+        swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
    
         // INS pose
         oracle = boost::make_shared< L3::ConstantTimeWindower< L3::SE3 > > ( pose_iterator.get() );
@@ -77,7 +74,8 @@ namespace L3
                 << engine.get() 
                 << pose_windower.get() 
                 << swathe_builder.get()
-                << predictor.get();
+                << predictor.get()
+                ;
     }
 
     /*
@@ -156,7 +154,7 @@ namespace L3
                  */
 
                 std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
-            
+
             }
             else
                 usleep( .5*1e6 );
@@ -178,6 +176,9 @@ namespace L3
 
         static int counter = 0;
 
+        /*
+         *  Boot
+         */
         if( counter++ < 1000 )
             *current = oracle->operator()();
         else

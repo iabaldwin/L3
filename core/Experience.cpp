@@ -32,12 +32,17 @@ namespace L3
         // Pose reader
         pose_reader.reset( new L3::IO::BinaryReader<L3::SE3>() );
         if (!pose_reader->open( dataset.path() + "/OxTS.ins" ) )
+        {
+            std::cerr << "No poses available" << std::endl;
             throw std::exception();
-
+        }
         // Scan reader
         LIDAR_reader.reset( new L3::IO::SequentialBinaryReader<L3::LMS151>() );
         if (!LIDAR_reader->open( dataset.path() + "/LMS1xx_10420002_192.168.0.50.lidar" ) )
+        {
+            std::cerr << "No LIDAR available" << std::endl;
             throw std::exception();
+        }
 
         std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >      poses;
         std::vector< std::pair< double, boost::shared_ptr<L3::LMS151> > >   scans;
@@ -190,7 +195,6 @@ namespace L3
         {
             int load_val = i >=0 ? i : sections->size()-i;
             required_sections.push_front( load_val );
-
         }
 
         std::copy( required_sections.begin(),
@@ -240,7 +244,7 @@ namespace L3
     bool KNNPolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
     {
         /*
-         *  Initialise distances
+         *  Initialise distances to each section
          */
         std::vector< std::pair< double, unsigned int > > distances;
 
@@ -453,7 +457,9 @@ namespace L3
     std::pair< long unsigned int, L3::Point<double>* > Experience::load( unsigned int id )
     {
         if( id >= sections.size() )
+        {
             throw std::exception();
+        }
 
         // Seek
         data.seekg( sections[id].stream_position, std::ios_base::beg );

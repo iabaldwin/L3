@@ -28,7 +28,7 @@ Dataset::Dataset( const std::string& target )  : start_time(0)
     lookup[".ins"]   = INS_file;
     lookup[".lhlv"]  = LHLV_file;
     lookup[".lidar"] = LIDAR_file;
-    lookup[".sm"]    = SM_FILE;
+    lookup[".sm"]    = SM_file;
 }
 
 Dataset::~Dataset()
@@ -64,11 +64,14 @@ bool Dataset::validate()
      *  3.  N x LIDAR files 
      *
      */
-
     boost::filesystem::directory_iterator it( root_path );
 
     while( it != boost::filesystem::directory_iterator() )
     {
+
+        std::cout << boost::filesystem::extension( *it ) << std::endl;
+        std::cout << lookup[boost::filesystem::extension( *it )] << std::endl;
+
         switch ( lookup[boost::filesystem::extension( *it )])
         {
             case INS_file:
@@ -83,11 +86,12 @@ bool Dataset::validate()
                 OxTS_lhlv = *it;
                 break;
 
-            case SM_FILE:
+            case SM_file:
                 SM_vel= *it;
                 break;
 
             default:
+                std::cout << "Unknown type, " << *it << std::endl;
                 break;
         
         }
@@ -107,6 +111,7 @@ bool Dataset::validate()
 bool Dataset::load()
 {
     // Pose Reader
+    std::cout <<  OxTS_ins.path().string() << std::endl;
     pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
     pose_reader->initialise(); 
     runnables.push_back( pose_reader );
@@ -116,7 +121,7 @@ bool Dataset::load()
     LHLV_reader->initialise(); 
     runnables.push_back( LHLV_reader );
 
-    // Velocity reader
+    //Velocity reader
     velocity_reader = L3::WindowerFactory<L3::SMVelocity>::constantTimeWindow( SM_vel.path().string(), 30 ) ;
     velocity_reader->initialise(); 
     runnables.push_back( velocity_reader );
