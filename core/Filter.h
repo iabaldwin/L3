@@ -46,16 +46,20 @@ namespace Estimator
         
         mutable L3::SE3 prediction, delta;
 
+        // DBG
+        mutable SE3 check_pose;
+
         bool update( double time );
 
         const Bayesian_filter_matrix::Vec& f (const Bayesian_filter_matrix::Vec &x) const;
     };
     
-    struct ObservationModel : Bayesian_filter::Uncorrelated_additive_observe_model 
+    //struct ObservationModel : Bayesian_filter::Uncorrelated_additive_observe_model 
+    struct ObservationModel : Bayesian_filter::Linear_uncorrelated_observe_model
     {
         ObservationModel ();
    
-        const Bayesian_filter_matrix::Vec& h(const Bayesian_filter_matrix::Vec& x) const;
+        //const Bayesian_filter_matrix::Vec& h(const Bayesian_filter_matrix::Vec& x) const;
     };
 
     template <typename T>
@@ -83,6 +87,7 @@ namespace Estimator
         boost::shared_ptr< Minimisation<T> > minimiser;
 
         SE3 current_estimate;
+       
 
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 

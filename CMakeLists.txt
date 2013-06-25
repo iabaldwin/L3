@@ -62,6 +62,9 @@ add_subdirectory( core )
 #Visuals
 add_subdirectory( renderer )
 
+# Learning
+add_subdirectory( learning )
+
 # Utilities
 add_subdirectory( utils )
 

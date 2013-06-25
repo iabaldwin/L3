@@ -45,7 +45,7 @@ namespace L3
 
         // Pose Provider
         //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
-        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( lhlv_velocity_provider.get(), 50 );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 75 );
        
         // Swathe generator
         swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
@@ -70,13 +70,13 @@ namespace L3
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
                 << lhlv_velocity_provider.get()
-                //<< ics_velocity_provider.get() 
+                << ics_velocity_provider.get() 
                 << icp_velocity_provider.get() 
                 << velocity_source.get()
                 << engine.get() 
                 << pose_windower.get() 
                 << swathe_builder.get()
-                //<< predictor.get()
+                << predictor.get()
                 ;
     }
 

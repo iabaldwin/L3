@@ -41,16 +41,15 @@ namespace L3
         {
             _x.reset( new Bayesian_filter_matrix::Vec(3) );
 
-            //q[0] = 3;
-            //q[1] = 1;
-            //q[2] = .2;
-
-            q[0] = .1;
-            q[1] = .1;
-            q[2] = .01;
-
             Bayesian_filter_matrix::identity ( G );
+            
+            q[0] = 1;
+            q[1] = 1;
+            q[2] = .1;
 
+            G(0,0) = .1;
+            G(1,1) = .1;
+            G(2,2) = .01; 
         }
 
         const Bayesian_filter_matrix::Vec& PredictionModel::f (const Bayesian_filter_matrix::Vec &x) const
@@ -74,9 +73,17 @@ namespace L3
 
             _x->assign( estimate );
 
+            
+            // DBG
+            static int counter = 0;
+            if ((counter++ %7 )== 0)
+            {
+            Eigen::Matrix4f& check_pose_m = check_pose.getHomogeneous();
+            check_pose_m *= tmp2;
+            }
+            // DBG
+
             return *_x;
-
-
         }
 
         bool PredictionModel::update( double time )
@@ -87,22 +94,25 @@ namespace L3
                 return false;
             }
 
-            boost::shared_ptr< L3::VelocityProvider > iterator_ptr = this->iterator.lock();
+            boost::shared_ptr< L3::VelocityProvider > velocity_ptr = this->iterator.lock();
+
+            if (!velocity_ptr )
+                return false;
+          
+            L3::ReadLock master(  velocity_ptr->mutex );
 
             L3::VelocityProvider::VELOCITY_COMPARATOR c;
 
-            L3::VelocityProvider::VELOCITY_ITERATOR index = std::lower_bound( iterator_ptr->filtered_velocities.begin(),
-                    iterator_ptr->filtered_velocities.end(),
+            L3::VelocityProvider::VELOCITY_ITERATOR index = std::lower_bound( velocity_ptr->filtered_velocities.begin(),
+                    velocity_ptr->filtered_velocities.end(),
                     last_update,
                     c );
 
-            if( index->first == last_update )
+            if (index->first == last_update )
                 index++;
-
-            if ( index == iterator_ptr->filtered_velocities.begin() )
+            
+            if( index==velocity_ptr->filtered_velocities.begin() )
                 return false;
-
-            L3::SE3 _delta;
 
             double x=0, y=0, z=0;
             double r=0, p=0, q=0;
@@ -117,10 +127,13 @@ namespace L3
 
             std::deque < std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator _window_iterator = _window.begin();
 
-            boost::shared_ptr< L3::SE3 > previous_pose = _window_iterator->second, current_pose;
+            boost::shared_ptr< L3::SE3 > previous_pose = _window_iterator->second; 
+            boost::shared_ptr< L3::SE3 > current_pose;
+
+            static int counter = 0;
 
             // Integrate
-            while( index != iterator_ptr->filtered_velocities.end() )
+            while( index != velocity_ptr->filtered_velocities.end() )
             {
                 double dt = index->first - (index-1)->first;
 
@@ -150,30 +163,30 @@ namespace L3
 
                 index++;
             }
-
-            if( current_pose ) 
+          
+            if( current_pose )
                 delta = *current_pose;
-            else
-            {
-                // No update
-                delta = L3::SE3::ZERO();
-                return false;
-            }
 
-            last_update = iterator_ptr->filtered_velocities.back().first;
+            last_update = velocity_ptr->filtered_velocities.back().first;
+       
+            master.unlock();
         }
 
-        ObservationModel::ObservationModel () : Bayesian_filter::Uncorrelated_additive_observe_model(3)
+        //ObservationModel::ObservationModel () : Bayesian_filter::Uncorrelated_additive_observe_model(3)
+        ObservationModel::ObservationModel () : Bayesian_filter::Linear_uncorrelated_observe_model(3,3)
         {
+            Bayesian_filter_matrix::identity(  Hx );
+
             Zv[0] = 1;
             Zv[1] = 1;
-            Zv[2] = .1;
+            Zv[2] = .01;
+                    
         }
         
-        const Bayesian_filter_matrix::Vec& ObservationModel::h(const Bayesian_filter_matrix::Vec& x)  const
-        {
-            return x;    
-        }
+        //const Bayesian_filter_matrix::Vec& ObservationModel::h(const Bayesian_filter_matrix::Vec& x)  const
+        //{
+            //return x;    
+        //}
 
         template <typename T>
             UKF<T>::UKF( boost::shared_ptr<CostFunction<T> > cost_function,  
@@ -209,25 +222,32 @@ namespace L3
 
                     Bayesian_filter_matrix::identity(  *X_init );
 
+                    (*X_init)(0,0) = .1;
+                    (*X_init)(1,1) = .1;
+                    (*X_init)(2,2) = .1;
+
                     ukf->init_kalman (*x_init, *X_init);
 
-                    boost::shared_ptr< L3::VelocityProvider > iterator_ptr = this->iterator.lock() ;
-                    prediction_model->last_update = iterator_ptr->filtered_velocities.back().first;
+                    boost::shared_ptr< L3::VelocityProvider > velocity_ptr = this->iterator.lock() ;
+                   
+                    prediction_model->last_update = velocity_ptr->filtered_velocities.back().first;
 
                     initialised = true;
 
+                    //DBG
+                    prediction_model->check_pose = estimate;
+                    //DBG
+                    
                     return estimate;
                 }
 
-                // Always predict 
                 ukf->predict( *prediction_model);
                 ukf->update();
-
-                // Sometimes update
+                
                 if( timer.elapsed() > 1.0/this->fundamental_frequency )
                 {
                     timer.begin();
-                    
+
                     // Produce measurement
                     L3::SE3 z = minimiser->operator()( swathe, estimate );
 
@@ -235,8 +255,8 @@ namespace L3
 
                     // Observe
                     ukf->observe( *observation_model, z_vec );
-                       
-                    // Produce uncertainty
+                   
+                    // Produce estimate and uncertainty
                     ukf->update();
                 }
 
@@ -263,6 +283,7 @@ namespace L3
             {
                 boost::shared_ptr< L3::VelocityProvider > velocity_provider = this->iterator.lock();
 
+                L3::ReadLock master ( velocity_provider->mutex );
 
                 int _num_particles = this->num_particles;
 
@@ -327,6 +348,7 @@ namespace L3
                 std::vector<double> results( _num_particles ); 
                 std::vector<double>::iterator result_iterator = results.begin();
 
+                //int pyramid_index = 0;
                 int pyramid_index = 0;
 
                 L3::ReadLock histogram_lock( (*this->pyramid)[pyramid_index]->mutex );
@@ -410,6 +432,8 @@ namespace L3
                 }
 
                 hypotheses.swap( resampled );
+
+                master.unlock();
 
                 return this->current_prediction;
             }

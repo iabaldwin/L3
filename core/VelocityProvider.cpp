@@ -88,8 +88,14 @@ namespace L3
 
         filtered_velocity_data.first = velocity_provider_ptr->window.back().first;
         filtered_velocity_data.second[0] = _linear_velocity_filter->_state.x;
-        //filtered_velocity_data.second[3] = rotational_velocity;
-        filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
+        filtered_velocity_data.second[3] = rotational_velocity;
+        //filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
+
+        if( rotational_velocity > 1.4 || rotational_velocity < -1.4 )
+        {
+            std::cout << rotational_velocity << std::endl;
+            exit( -1 );
+        }
 
         if( scaling_bias != 1. )
             filtered_velocity_data.second[0] *= scaling_bias;

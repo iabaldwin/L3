@@ -822,16 +822,17 @@ namespace L3
         struct UKFPoseEstimate : Leaf
         {
 
-            UKFPoseEstimate( const L3::SE3& pose ) : pose(pose)
+            UKFPoseEstimate( const L3::SE3& pose, double size = 10.0 ) : pose(pose), size(size)
             {
 
             }
-            
+           
+            double size;
             const L3::SE3& pose;
 
             void onDraw3D( glv::GLV& g )
             {
-                CoordinateSystem( const_cast< L3::SE3& >(pose), 10 ).onDraw3D( g );
+                CoordinateSystem( const_cast< L3::SE3& >(pose), size ).onDraw3D( g );
             }
         };
 
@@ -925,12 +926,27 @@ namespace L3
 
             this->updater = updater;
 
+            /*
+             *Current estimate
+             */
             boost::shared_ptr< Leaf > pose_renderer = 
                 boost::make_shared< UKFPoseEstimate >( algorithm->current_estimate );
 
             composite->operator<<( *pose_renderer );
             this->leafs.push_back( pose_renderer );
-        
+      
+
+            /*
+             *  Integrated
+             */
+            boost::shared_ptr< Leaf > check_pose = 
+                boost::make_shared< UKFPoseEstimate >( algorithm->prediction_model->check_pose, 20  );
+            composite->operator<<( *check_pose );
+            this->leafs.push_back( check_pose ); 
+
+            /*
+             *Sigma points
+             */
             boost::shared_ptr< Leaf > sigma_points = 
                 boost::make_shared< UKFSigmaPointsLeaf >( algorithm );
 

@@ -293,7 +293,6 @@ namespace L3
         // Allocate
         std::vector<double> densities;
 
-
         densities.push_back( 1 );
         densities.push_back( 2 );
         densities.push_back( 4 );
