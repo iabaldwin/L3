@@ -19,7 +19,10 @@ namespace Visualisers
 
         void onDraw3D( glv::GLV& g )
         {
-            L3::TemporalRunner::update( time += .5 );
+            L3::TemporalRunner::update( time += 1.0/10.0 );
+      
+            std::cout.precision( 16 );
+            std::cout << time << std::endl;
         }
 
         VisualiserRunner& operator<<( L3::TemporalObserver* observer)

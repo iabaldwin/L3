@@ -35,15 +35,22 @@ namespace Visualisers
         
         //SelectableLeaf::onDraw3D(g);
 
-        std::deque< std::pair< double, boost::shared_ptr<T> > > window;
-        iterator_ptr->getWindow( window );
+        //std::deque< std::pair< double, boost::shared_ptr<T> > > window;
+        //iterator_ptr->getWindow( window );
 
-        if( window.empty() )
+        //if( window.empty() )
+            //return;
+
+        if( iterator_ptr->window.empty() )
             return;
 
-        typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
+        L3::ReadLock lock( iterator_ptr->mutex );
+
+        //typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
+        typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator_ptr->window.begin();
         
-        while( it < window.end() )
+        //while( it < window.end() )
+        while( it < iterator_ptr->window.end() )
         {
             //L3::Visualisers::CoordinateSystem( *(it++->second) ).onDraw3D( g );
             L3::Visualisers::CoordinateSystem( *(it->second) ).onDraw3D( g );

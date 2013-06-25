@@ -10,6 +10,29 @@
 
 #include <boost/scoped_ptr.hpp>
 
+
+struct Translator : L3::Visualisers::Leaf
+{
+
+    Translator( boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > > ptr ) : ptr(ptr)
+    {
+
+    }
+
+    boost::weak_ptr< L3::ConstantTimeIterator< L3::SE3 > > ptr;
+
+    void onDraw3D( glv::GLV& g )
+    {
+    
+        boost::shared_ptr< L3::ConstantTimeIterator< L3::SE3 > > it_ptr = ptr.lock();
+
+        glv::draw::translate( -1*it_ptr->window.back().second->X(),
+                                -1*it_ptr->window.back().second->Y(),
+                                -50 );
+    }
+
+};
+
 int main (int argc, char ** argv)
 {
 
@@ -42,12 +65,14 @@ int main (int argc, char ** argv)
     L3::Visualisers::IteratorRenderer<L3::SE3>  iterator_renderer( iterator  );
     L3::Visualisers::CompositeController        controller( &composite, composite.position );
 
+    Translator t( iterator );
+
     L3::Visualisers::VisualiserRunner runner( dataset->start_time );
     runner << iterator.get();
 
     composite.stretch(1,1);
     
-    //top << ( composite << grid << iterator_renderer << runner  );
+    top << ( composite << grid << runner << t << iterator_renderer );
 
     win.setGLV(top);
     glv::Application::run();

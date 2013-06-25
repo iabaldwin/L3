@@ -254,10 +254,10 @@ namespace L3
                     Bayesian_filter_matrix::Vec z_vec = adapt(z);
 
                     // Observe
-                    ukf->observe( *observation_model, z_vec );
+                    //ukf->observe( *observation_model, z_vec );
                    
                     // Produce estimate and uncertainty
-                    ukf->update();
+                    //ukf->update();
                 }
 
                 double* ptr = &sigma_points[0];

@@ -5,12 +5,12 @@ namespace L3
 {
 
 template <typename T>
-void Iterator<T>::getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window)  
+void Iterator<T>::getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& _window)  
 {
     L3::ReadLock lock( this->mutex );
 
-    window.resize( this->window.size() );
-    std::copy( this->window.begin(), this->window.end(), window.begin() );
+    _window.resize( this->window.size() );
+    std::copy( this->window.begin(), this->window.end(), _window.begin() );
    
     lock.unlock();
 }
