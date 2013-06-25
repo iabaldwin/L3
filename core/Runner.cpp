@@ -39,13 +39,13 @@ namespace L3
         engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );
 
         // Velocity providers
-        lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider >( LHLV_iterator.get() );
-        icp_velocity_provider  = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );
-        ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );
+        lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider >( LHLV_iterator.get() );                 // INS
+        icp_velocity_provider  = boost::make_shared< L3::ScanMatchingVelocityProvider >( engine.get() );                // ICP
+        ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );      // ICS
 
         // Pose Provider
-        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
-        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 75 );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
+        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 75 );
        
         // Swathe generator
         swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
@@ -66,13 +66,13 @@ namespace L3
          *  Note: order is important here
          */
         (*this) << pose_iterator.get() 
+                << velocity_source.get()
                 << LHLV_iterator.get() 
                 << vertical_LIDAR.get() 
                 << horizontal_LIDAR.get() 
                 << lhlv_velocity_provider.get()
                 << ics_velocity_provider.get() 
                 << icp_velocity_provider.get() 
-                << velocity_source.get()
                 << engine.get() 
                 << pose_windower.get() 
                 << swathe_builder.get()

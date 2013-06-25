@@ -4,16 +4,16 @@
 namespace L3
 {
 
-template <typename T>
-void Iterator<T>::getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& _window)  
-{
-    L3::ReadLock lock( this->mutex );
+//template <typename T>
+//void Iterator<T>::getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& _window)  
+//{
+    //L3::ReadLock lock( this->mutex );
 
-    _window.resize( this->window.size() );
-    std::copy( this->window.begin(), this->window.end(), _window.begin() );
+    //_window.resize( this->window.size() );
+    //std::copy( this->window.begin(), this->window.end(), _window.begin() );
    
-    lock.unlock();
-}
+    //lock.unlock();
+//}
 
 template <typename T>
 bool ConstantTimeIterator<T>::update( double time )
@@ -27,7 +27,8 @@ bool ConstantTimeIterator<T>::update( double time )
     windower_ptr->update( time );
 
     // Retrive the buffered window
-    this->buffered_window = windower_ptr->getWindow();
+    //this->buffered_window = windower_ptr->getWindow();
+    this->buffered_window = windower_ptr->window;
 
     // Find the element with the closest time to *now*
     typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it = std::lower_bound( this->buffered_window.begin(), this->buffered_window.end(), time, _pair_comparator );
@@ -44,7 +45,7 @@ bool ConstantTimeIterator<T>::update( double time )
     typename Iterator<T>::BUFFERED_WINDOW_ITERATOR it_back_iterator = it;
 
     L3::WriteLock lock( this->mutex );
-    
+        
     this->window.clear();
 
     // Copy, as we alter the swathe_length variable
@@ -72,7 +73,6 @@ bool ConstantTimeIterator<T>::update( double time )
             std::cerr << "WHAT" <<  time - this->window.back().first << std::endl;
 #endif
 
-
     lock.unlock();
     
     return true;
@@ -86,6 +86,6 @@ template class L3::ConstantTimeIterator<L3::SE3>;
 template class L3::ConstantTimeIterator<L3::LHLV>;
 template class L3::ConstantTimeIterator<L3::LMS151>;
 
-template void L3::Iterator<L3::LHLV>::getWindow( std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > >& window) ;
-template void L3::Iterator<L3::SE3>::getWindow(std::deque<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > >&);
-template void L3::Iterator<L3::LMS151>::getWindow(std::deque<std::pair<double, boost::shared_ptr<L3::LMS151> >, std::allocator<std::pair<double, boost::shared_ptr<L3::LMS151> > > >&);
+//template void L3::Iterator<L3::LHLV>::getWindow( std::deque< std::pair< double, boost::shared_ptr<L3::LHLV> > >& window) ;
+//template void L3::Iterator<L3::SE3>::getWindow(std::deque<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > >&);
+//template void L3::Iterator<L3::LMS151>::getWindow(std::deque<std::pair<double, boost::shared_ptr<L3::LMS151> >, std::allocator<std::pair<double, boost::shared_ptr<L3::LMS151> > > >&);

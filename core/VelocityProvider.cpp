@@ -91,6 +91,8 @@ namespace L3
         filtered_velocity_data.second[3] = rotational_velocity;
         //filtered_velocity_data.second[3] = _rotational_velocity_filter->_state.x;
 
+        std::cout << linear_velocity << "," << rotational_velocity << std::endl;
+
         if( rotational_velocity > 1.4 || rotational_velocity < -1.4 )
         {
             std::cout << rotational_velocity << std::endl;

@@ -26,41 +26,69 @@ namespace Visualisers
      *  Iterator
      */
     template <typename T>
-    void IteratorRenderer<T>::onDraw3D( glv::GLV& g )
-    {
-        boost::shared_ptr< L3::Iterator<T> > iterator_ptr = iterator.lock();
-
-        if( !iterator_ptr )
-            return;
-        
-        //SelectableLeaf::onDraw3D(g);
-
-        //std::deque< std::pair< double, boost::shared_ptr<T> > > window;
-        //iterator_ptr->getWindow( window );
-
-        //if( window.empty() )
-            //return;
-
-        if( iterator_ptr->window.empty() )
-            return;
-
-        L3::ReadLock lock( iterator_ptr->mutex );
-
-        //typename L3::Iterator<T>::WINDOW_ITERATOR it = window.begin();
-        typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator_ptr->window.begin();
-        
-        //while( it < window.end() )
-        while( it < iterator_ptr->window.end() )
+        void IteratorRenderer<T>::update()
         {
-            //L3::Visualisers::CoordinateSystem( *(it++->second) ).onDraw3D( g );
-            L3::Visualisers::CoordinateSystem( *(it->second) ).onDraw3D( g );
-            it+=10;
+
+            boost::shared_ptr< L3::Iterator<T> > iterator_ptr = iterator.lock();
+
+            if( !iterator_ptr )
+                return;
+
+            boost::shared_ptr< L3::Iterator<T> > iterator_ptr_cast 
+                = boost::dynamic_pointer_cast< L3::ConstantTimeIterator<T> >(iterator_ptr);
+
+            if( !iterator_ptr_cast )
+                return;
+
+            if( iterator_ptr_cast->window.empty() )
+                return;
+
+            L3::WriteLock lock(this->mutex);
+            
+            typename L3::Iterator<T>::WINDOW_ITERATOR it = iterator_ptr_cast->window.begin();
+
+            vertices.clear();
+
+            while( it < iterator_ptr_cast->window.end() )
+            {
+                vertices.push_back( *(it->second) );
+                it++;
+            }
+
+            lock.unlock();
         }
 
-        //current_x = window.back().second->X();
-        //current_y = window.back().second->Y();
-        //current_z = window.back().second->Z();
-    }
+    template <typename T>
+        void IteratorRenderer<T>::onDraw3D( glv::GLV& g )
+        {
+        
+            //SelectableLeaf::onDraw3D(g);
+
+            float alpha = 1.0;
+
+            int counter = 0;
+
+            L3::ReadLock lock(this->mutex);
+    
+            std::vector<L3::SE3>::iterator it =  vertices.begin();
+
+            while( it < vertices.end() )
+            {
+                glv::draw::enable( glv::draw::Blend );
+                L3::Visualisers::CoordinateSystem( *(it), 10.0, alpha ).onDraw3D( g );
+                glv::draw::disable( glv::draw::Blend );
+
+                alpha = exp( counter );
+
+                it+=10;
+            }
+
+            //current_x = window.back().second->X();
+            //current_y = window.back().second->Y();
+            //current_z = window.back().second->Z();
+
+            //lock.unlock();
+        }
 
     /*
      *  Swathe

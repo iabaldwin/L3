@@ -177,9 +177,9 @@ namespace L3
         {
             Bayesian_filter_matrix::identity(  Hx );
 
-            Zv[0] = 1;
-            Zv[1] = 1;
-            Zv[2] = .01;
+            Zv[0] = 10;
+            Zv[1] = 10;
+            Zv[2] = .1;
                     
         }
         
@@ -254,10 +254,10 @@ namespace L3
                     Bayesian_filter_matrix::Vec z_vec = adapt(z);
 
                     // Observe
-                    //ukf->observe( *observation_model, z_vec );
+                    ukf->observe( *observation_model, z_vec );
                    
                     // Produce estimate and uncertainty
-                    //ukf->update();
+                    ukf->update();
                 }
 
                 double* ptr = &sigma_points[0];

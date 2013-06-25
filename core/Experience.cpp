@@ -430,7 +430,7 @@ namespace L3
                                 max_bound.get<1>());
 
                         current_histogram->operator()( resident_point_cloud.get() );
-                        smoother.smooth( current_histogram.get() );
+                        //smoother.smooth( current_histogram.get() );
 
                         lock.unlock();
 

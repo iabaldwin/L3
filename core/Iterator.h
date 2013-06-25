@@ -28,11 +28,14 @@ class Iterator : public TemporalObserver, public Lockable
         virtual ~Iterator()
         {
         }
+        
+        Poco::Mutex m;
+
 
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator WINDOW_ITERATOR;
 
-        void getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window);
+        //void getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window);
 
     protected:
 

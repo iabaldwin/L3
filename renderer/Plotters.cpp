@@ -15,7 +15,7 @@ namespace L3
 
             VELOCITY_WINDOW window;
 
-            L3::ReadLock velocity_lock (iterator_ptr->mutex );
+            L3::ReadLock velocity_lock ( iterator_ptr->mutex );
 
             if (filtered)
                 window.assign( iterator_ptr->filtered_velocities.begin(), iterator_ptr->filtered_velocities.end() );
