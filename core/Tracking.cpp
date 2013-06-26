@@ -4,8 +4,7 @@ namespace L3
 {
     namespace Tracking
     {
-        
-        void AlphaBetaFilter::update( double time, double measurement )
+        void  AlphaBetaFilter::update( const double time, const double measurement )
         {
             /*
              *Predict

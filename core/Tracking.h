@@ -37,7 +37,7 @@ namespace L3
             float alpha, beta;
             double previous_update;
 
-            void update( double time, double measurement );
+            void update( const double time, const double measurement );
 
 
         };

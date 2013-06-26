@@ -229,8 +229,11 @@ namespace L3
                     ukf->init_kalman (*x_init, *X_init);
 
                     boost::shared_ptr< L3::VelocityProvider > velocity_ptr = this->iterator.lock() ;
-                   
-                    prediction_model->last_update = velocity_ptr->filtered_velocities.back().first;
+                  
+                    if( !velocity_ptr->filtered_velocities.empty() )
+                        prediction_model->last_update = velocity_ptr->filtered_velocities.back().first;
+                    else
+                        return estimate;
 
                     initialised = true;
 
@@ -243,7 +246,20 @@ namespace L3
 
                 ukf->predict( *prediction_model);
                 ukf->update();
-                
+
+                static int counter = 0;
+
+                double* ptr = &sigma_points[0];
+                for( int j=0; j< ukf->XX.size2(); j++ )
+                    for( int i=0; i< ukf->XX.size1(); i++ )
+                        *ptr++ = ukf->XX(i,j);
+
+                if( counter++ < 10 )
+                {
+                    current_estimate = adapt( ukf->x );
+                    return current_estimate;
+                }
+
                 if( timer.elapsed() > 1.0/this->fundamental_frequency )
                 {
                     timer.begin();
@@ -260,11 +276,7 @@ namespace L3
                     ukf->update();
                 }
 
-                double* ptr = &sigma_points[0];
-                for( int j=0; j< ukf->XX.size2(); j++ )
-                    for( int i=0; i< ukf->XX.size1(); i++ )
-                        *ptr++ = ukf->XX(i,j);
-
+                
                 current_estimate = adapt( ukf->x );
 
                 return current_estimate;

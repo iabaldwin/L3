@@ -26,6 +26,11 @@ class Bulk:
 
     def _parseDataset( self, dataset ):
 
+            if not dataset.startswith( '20' ):
+                print 'Unknown dataset %s' % dataset
+                return  
+
+
             target = os.path.join( os.path.expanduser( self._root ), dataset, 'L3' )  
 
             if not os.path.exists( target ):
@@ -59,6 +64,10 @@ class Bulk:
                 
                 # Run creator
                 Creator.Creator( e )
+
+            else:
+                print 'Dataset %s is valid' % dataset 
+
 
     def validate( self, dataset ):
 

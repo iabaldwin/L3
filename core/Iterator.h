@@ -35,12 +35,10 @@ class Iterator : public TemporalObserver, public Lockable
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
         typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator WINDOW_ITERATOR;
 
-        //void getWindow( typename std::deque< std::pair< double, boost::shared_ptr<T> > >& window);
-
     protected:
 
-        typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > buffered_window;
+        typedef typename std::deque< std::pair< double, boost::shared_ptr<T> > >::iterator BUFFERED_WINDOW_ITERATOR;
 
         boost::weak_ptr< L3::SlidingWindow<T> > windower;
 };
