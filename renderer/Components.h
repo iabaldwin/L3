@@ -613,10 +613,10 @@ namespace Visualisers
     /*
      *  Raw scan renderer
      */
-    struct ScanRenderer2D : Updateable
+    struct ScanRenderer : Updateable
     {
 
-        ScanRenderer2D( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, glv::Color color, float range_threshold=2.0  ) 
+        ScanRenderer( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, glv::Color color, float range_threshold=2.0  ) 
             : windower(windower),
             color(color),
             range_threshold(range_threshold)
@@ -624,7 +624,7 @@ namespace Visualisers
             scan = boost::make_shared< LMS151 >();
         }
 
-        virtual ~ScanRenderer2D()
+        virtual ~ScanRenderer()
         {
         }
 
@@ -642,12 +642,12 @@ namespace Visualisers
         void update();
     };
 
-    struct HorizontalScanRenderer2DView : glv::View3D, ScanRenderer2D
+    struct HorizontalScanRenderer2DView : glv::View3D, ScanRenderer
     {
 
         HorizontalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, const glv::Rect& rect )
             : glv::View3D( rect ),
-            ScanRenderer2D( windower, glv::Color(1,0,0), 5.0  )
+            ScanRenderer( windower, glv::Color(1,0,0), 5.0  )
 
         {
             rotate_z = 0;
@@ -659,16 +659,19 @@ namespace Visualisers
 
         void onDraw3D( glv::GLV& g )
         {
-            ScanRenderer2D::onDraw3D(g);
+            glv::draw::translateZ( -55 );
+            glv::draw::rotateZ( rotate_z );
+
+            ScanRenderer::onDraw3D(g);
         }
     };
 
-    struct VerticalScanRenderer2DView : glv::View3D, ScanRenderer2D
+    struct VerticalScanRenderer2DView : glv::View3D, ScanRenderer
     {
 
         VerticalScanRenderer2DView( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, const glv::Rect& rect )
             : glv::View3D( rect ),
-            ScanRenderer2D( windower, glv::Color(0,0,1),0 )
+            ScanRenderer( windower, glv::Color(0,0,1),0 )
         {
             rotate_z = 180;
 
@@ -679,10 +682,41 @@ namespace Visualisers
 
         void onDraw3D( glv::GLV& g )
         {
-            ScanRenderer2D::onDraw3D(g);
+            glv::draw::translateZ( -55 );
+            glv::draw::rotateZ( rotate_z );
+            ScanRenderer::onDraw3D(g);
         }
 
     };
+
+    struct HorizontalScanRendererLeaf : ScanRenderer, Leaf
+    {
+        HorizontalScanRendererLeaf( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, boost::shared_ptr<L3::PoseProvider> provider )
+        : ScanRenderer( windower, glv::Color(1,0,0) ),
+            provider(provider)
+        {
+
+        }
+
+        boost::weak_ptr< L3::PoseProvider > provider;
+    
+        void onDraw3D( glv::GLV& g )
+        {
+            boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
+
+            if( !provider_ptr )
+                return;
+
+            L3::SE3 current = provider_ptr->operator()();
+
+            glv::draw::push();
+            glMultMatrixf( current.getHomogeneous().data() );
+            ScanRenderer::onDraw3D(g);
+            glv::draw::pop();
+        }
+
+    };
+
 
     struct CombinedScanRenderer2D  : glv::View3D
     {
@@ -693,29 +727,24 @@ namespace Visualisers
             : glv::View3D(rect)
 
         {
-            scan_renderers.push_back( boost::make_shared<ScanRenderer2D>( windower_vertical, glv::Color(1,0,0) ) );
-            scan_renderers.push_back( boost::make_shared<ScanRenderer2D>( windower_vertical, glv::Color(0,0,1) ) );
+            scan_renderers.push_back( boost::make_shared<ScanRenderer>( windower_vertical, glv::Color(1,0,0) ) );
+            scan_renderers.push_back( boost::make_shared<ScanRenderer>( windower_vertical, glv::Color(0,0,1) ) );
         }
 
         void onDraw3D( glv::GLV& g )
         {
-            //REFERENCE TO REFERENCE
-            //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), g ) );
-            //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), boost::reference_wrapper<glv::GLV>(g) ) );
-            //std::for_each( scan_renderers.begin(), scan_renderers.end(), std::bind2nd( std::mem_fun( &ScanRenderer2D::onDraw3D ), std::reference_wrapper(g) ) );
-
             glv::draw::translateZ( -20 );
 
             Grid().onDraw3D(g);
 
-            for ( std::list< boost::shared_ptr< ScanRenderer2D > >::iterator it = scan_renderers.begin();
+            for ( std::list< boost::shared_ptr< ScanRenderer > >::iterator it = scan_renderers.begin();
                     it != scan_renderers.end();
                     it++ )
                 (*it)->onDraw3D(g);
 
         }
 
-        std::list< boost::shared_ptr< ScanRenderer2D > > scan_renderers;
+        std::list< boost::shared_ptr< ScanRenderer > > scan_renderers;
     };
 
 

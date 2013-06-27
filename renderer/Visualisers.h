@@ -144,12 +144,11 @@ struct PoseProviderRenderer : Leaf
 /*
  *Scan renderer
  */
-struct ScanRenderer : Leaf
+struct SwatheScanRenderer : Leaf
 {
 
-    ScanRenderer( L3::SwatheBuilder* builder ) : swathe_builder(builder)
+    SwatheScanRenderer( L3::SwatheBuilder* builder ) : swathe_builder(builder)
     {
-    
         point_colors   = boost::make_shared< glv::Color[]>(541);
         point_vertices = boost::make_shared< glv::Point3[] >( 541 );
   

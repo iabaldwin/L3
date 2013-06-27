@@ -223,7 +223,15 @@ namespace L3
     
             // Reset pose
             //*runner->current = runner->oracle->operator()(); 
-            *runner->current = runner->experience->getClosestPose( runner->oracle->operator()() ); 
+        
+            // Reset pose
+            L3::SE3 pose_estimate = runner->oracle->operator()();
+
+            L3::SE3 closest_pose = runner->experience->getClosestPose( pose_estimate );
+
+            closest_pose.Q( pose_estimate.Q() );
+
+            *runner->current = closest_pose;
 
             // Associate algorithm, visually
             dynamic_cast< L3::Visualisers::EstimatorLayout* >( layout )->algorithm( algo );

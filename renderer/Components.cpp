@@ -169,7 +169,6 @@ namespace Visualisers
 
     void VelocityData::onDraw( glv::GLV& g )
     {
-        std::cout << "xxxxxx" << std::endl;
         if (!isVisible())
         {
             this->disable( glv::Visible );
@@ -178,7 +177,6 @@ namespace Visualisers
         else
         { 
             this->enable( glv::Visible );
-            std::cout << "------------------" << std::endl;
         }
 
         boost::shared_ptr< L3::VelocityProvider > provider_ptr = provider.lock();
@@ -883,7 +881,7 @@ namespace Visualisers
      *  2D Scan renderer
      */
 
-    void ScanRenderer2D::onDraw3D( glv::GLV& g )
+    void ScanRenderer::onDraw3D( glv::GLV& g )
     {
         int draw_counter = 0;
 
@@ -919,9 +917,6 @@ namespace Visualisers
 
         }
 
-        glv::draw::translateZ( -55 );
-        glv::draw::rotateZ( rotate_z );
-
         glv::draw::blendTrans();
         glv::draw::lineWidth(1);
         glv::draw::paint( glv::draw::LineLoop, points, perimeter, draw_counter );
@@ -935,7 +930,7 @@ namespace Visualisers
 
     }
 
-    void ScanRenderer2D::update()
+    void ScanRenderer::update()
     {
         boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >  scan_ptr = windower.lock();
 

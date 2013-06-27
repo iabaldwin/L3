@@ -189,6 +189,12 @@ namespace L3
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >(vertical_scan_renderer.get() ) ) );
             (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
 
+            // Leaf scan renderer : Horizontal
+            horizontal_scan_renderer_leaf = boost::make_shared< L3::Visualisers::HorizontalScanRendererLeaf >( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(),  boost::shared_ptr<L3::PoseProvider>() );
+            temporal_updater->operator<<( horizontal_scan_renderer_leaf.get() );
+            *composite << *( dynamic_cast< Leaf* > (horizontal_scan_renderer_leaf.get())) ;
+
+
             // Stand-alone pose renderer
             oracle_renderer = boost::make_shared< L3::Visualisers::DedicatedPoseRenderer >( boost::shared_ptr<L3::PoseProvider>(), glv::Rect( 180,180 ), std::string("Estimate::INS" ) );
             temporal_updater->operator<<( oracle_renderer.get() );
@@ -507,6 +513,8 @@ namespace L3
              */
             horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
             vertical_scan_renderer->windower = runner->vertical_LIDAR;
+            horizontal_scan_renderer_leaf->windower = runner->horizontal_LIDAR;
+            boost::dynamic_pointer_cast< HorizontalScanRendererLeaf >( horizontal_scan_renderer_leaf) ->provider = runner->oracle;
 
             /*
              *  Scan matcher

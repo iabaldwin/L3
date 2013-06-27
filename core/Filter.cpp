@@ -247,18 +247,18 @@ namespace L3
                 ukf->predict( *prediction_model);
                 ukf->update();
 
-                static int counter = 0;
+                //static int counter = 0;
 
                 double* ptr = &sigma_points[0];
                 for( int j=0; j< ukf->XX.size2(); j++ )
                     for( int i=0; i< ukf->XX.size1(); i++ )
                         *ptr++ = ukf->XX(i,j);
 
-                if( counter++ < 10 )
-                {
-                    current_estimate = adapt( ukf->x );
-                    return current_estimate;
-                }
+                //if( counter++ < 10 )
+                //{
+                    //current_estimate = adapt( ukf->x );
+                    //return current_estimate;
+                //}
 
                 if( timer.elapsed() > 1.0/this->fundamental_frequency )
                 {
@@ -276,8 +276,9 @@ namespace L3
                     ukf->update();
                 }
 
-                
                 current_estimate = adapt( ukf->x );
+
+                std::cout << current_estimate << std::endl;
 
                 return current_estimate;
             }

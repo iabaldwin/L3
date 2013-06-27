@@ -173,8 +173,10 @@ namespace Visualisers
             
             boost::shared_ptr< HistogramPyramidRendererView  >              pyramid_renderer;
             boost::shared_ptr< PointCloudRendererView >                     runtime_cloud_renderer_view; 
-            boost::shared_ptr< ScanRenderer2D >                             horizontal_scan_renderer;
-            boost::shared_ptr< ScanRenderer2D >                             vertical_scan_renderer;
+            boost::shared_ptr< ScanRenderer >                               horizontal_scan_renderer;
+            boost::shared_ptr< ScanRenderer >                               vertical_scan_renderer;
+            boost::shared_ptr< ScanRenderer >                               horizontal_scan_renderer_leaf;
+            
             boost::shared_ptr< ScanMatchingScanRenderer >                   scan_matching_renderer;
             boost::shared_ptr< ExperienceOverviewView >                     experience_location;
             boost::shared_ptr< DedicatedPoseRenderer>                       oracle_renderer;

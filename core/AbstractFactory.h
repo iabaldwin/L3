@@ -23,7 +23,7 @@ struct MaskPolicy
 template <>
 struct MaskPolicy< L3::LMS151 >
 {
-    MaskPolicy( float cull = 5 ) : cull(cull)
+    MaskPolicy( float cull = 4 ) : cull(cull)
     {
 
     }

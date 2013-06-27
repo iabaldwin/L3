@@ -216,7 +216,7 @@ namespace Visualisers
     /*
      *  Scan renderer
      */
-    void ScanRenderer::onDraw3D( glv::GLV& g )
+    void SwatheScanRenderer::onDraw3D( glv::GLV& g )
     {
         // Project just 1 scan
         if ( swathe_builder->swathe.size() == 0 )
