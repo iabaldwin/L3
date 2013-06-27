@@ -27,13 +27,15 @@ namespace L3
 
         // Point-clouds
         point_cloud = boost::make_shared< L3::PointCloud<double> >();
-        projection = boost::make_shared< L3::SE3 >();
+        horizontal_projection = boost::make_shared< L3::SE3 >();
+        vertical_projection = boost::make_shared< L3::SE3 >();
 
         // Get the calibration
-        L3::Configuration::convert( mission->lidars[mission->declined], *projection );
+        L3::Configuration::convert( mission->lidars[mission->declined], *vertical_projection );
+        L3::Configuration::convert( mission->lidars[mission->horizontal], *horizontal_projection );
        
         // Point projector
-        projector = boost::make_shared< L3::Projector<double> >( projection.get(), point_cloud.get() );
+        projector = boost::make_shared< L3::Projector<double> >( vertical_projection.get(), point_cloud.get() );
       
         // Scan matching engine
         engine = boost::make_shared< L3::ScanMatching::Engine >( horizontal_LIDAR.get() );

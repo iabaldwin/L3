@@ -176,6 +176,7 @@ namespace Visualisers
             boost::shared_ptr< ScanRenderer >                               horizontal_scan_renderer;
             boost::shared_ptr< ScanRenderer >                               vertical_scan_renderer;
             boost::shared_ptr< ScanRenderer >                               horizontal_scan_renderer_leaf;
+            boost::shared_ptr< ScanRenderer >                               vertical_scan_renderer_leaf;
             
             boost::shared_ptr< ScanMatchingScanRenderer >                   scan_matching_renderer;
             boost::shared_ptr< ExperienceOverviewView >                     experience_location;

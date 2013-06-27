@@ -695,8 +695,44 @@ namespace Visualisers
         : ScanRenderer( windower, glv::Color(1,0,0) ),
             provider(provider)
         {
-
         }
+
+        L3::SE3 calibration;
+
+        boost::weak_ptr< L3::PoseProvider > provider;
+    
+        void onDraw3D( glv::GLV& g )
+        {
+            boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
+
+            if( !provider_ptr )
+                return;
+
+
+            L3::SE3 current = provider_ptr->operator()();
+
+            Eigen::Matrix4f proj = current.getHomogeneous();
+
+            proj *= calibration.getHomogeneous();
+
+            glv::draw::push();
+            glMultMatrixf( proj.data() );
+            ScanRenderer::onDraw3D(g);
+            glv::draw::pop();
+        }
+
+    };
+
+
+    struct VerticalScanRendererLeaf : ScanRenderer, Leaf
+    {
+        VerticalScanRendererLeaf( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > windower, boost::shared_ptr<L3::PoseProvider> provider )
+        : ScanRenderer( windower, glv::Color(0,0,1) ),
+            provider(provider)
+        {
+        }
+
+        L3::SE3 calibration;
 
         boost::weak_ptr< L3::PoseProvider > provider;
     
@@ -709,13 +745,19 @@ namespace Visualisers
 
             L3::SE3 current = provider_ptr->operator()();
 
+            Eigen::Matrix4f proj = current.getHomogeneous();
+
+            proj *= calibration.getHomogeneous();
+
             glv::draw::push();
-            glMultMatrixf( current.getHomogeneous().data() );
+            glMultMatrixf( proj.data() );
             ScanRenderer::onDraw3D(g);
             glv::draw::pop();
         }
 
     };
+
+
 
 
     struct CombinedScanRenderer2D  : glv::View3D

@@ -190,10 +190,14 @@ namespace L3
             (*ancillary_1) << dynamic_cast<glv::View*>(vertical_scan_renderer.get());
 
             // Leaf scan renderer : Horizontal
-            horizontal_scan_renderer_leaf = boost::make_shared< L3::Visualisers::HorizontalScanRendererLeaf >( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(),  boost::shared_ptr<L3::PoseProvider>() );
+            horizontal_scan_renderer_leaf = boost::make_shared< L3::Visualisers::HorizontalScanRendererLeaf >( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(),  boost::shared_ptr<L3::PoseProvider>()  );
             temporal_updater->operator<<( horizontal_scan_renderer_leaf.get() );
             *composite << *( dynamic_cast< Leaf* > (horizontal_scan_renderer_leaf.get())) ;
 
+            // Leaf scan renderer : Vertical
+            vertical_scan_renderer_leaf = boost::make_shared< L3::Visualisers::VerticalScanRendererLeaf >( boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > >(),  boost::shared_ptr<L3::PoseProvider>()  );
+            temporal_updater->operator<<( vertical_scan_renderer_leaf.get() );
+            *composite << *( dynamic_cast< Leaf* > (vertical_scan_renderer_leaf.get())) ;
 
             // Stand-alone pose renderer
             oracle_renderer = boost::make_shared< L3::Visualisers::DedicatedPoseRenderer >( boost::shared_ptr<L3::PoseProvider>(), glv::Rect( 180,180 ), std::string("Estimate::INS" ) );
@@ -513,8 +517,15 @@ namespace L3
              */
             horizontal_scan_renderer->windower = runner->horizontal_LIDAR;
             vertical_scan_renderer->windower = runner->vertical_LIDAR;
+            
             horizontal_scan_renderer_leaf->windower = runner->horizontal_LIDAR;
             boost::dynamic_pointer_cast< HorizontalScanRendererLeaf >( horizontal_scan_renderer_leaf) ->provider = runner->oracle;
+            boost::dynamic_pointer_cast< HorizontalScanRendererLeaf >( horizontal_scan_renderer_leaf)->calibration = *(runner->horizontal_projection);
+
+            //vertical_scan_renderer_leaf->windower = runner->vertical_LIDAR;
+            //boost::dynamic_pointer_cast< VerticalScanRendererLeaf >( vertical_scan_renderer_leaf) ->provider = runner->oracle;
+            //boost::dynamic_pointer_cast< VerticalScanRendererLeaf >( vertical_scan_renderer_leaf)->calibration = *(runner->vertical_projection);
+
 
             /*
              *  Scan matcher

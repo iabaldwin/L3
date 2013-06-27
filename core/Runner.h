@@ -104,7 +104,8 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::SE3 > current;
     
 
-    boost::shared_ptr< L3::SE3 >                projection;
+    boost::shared_ptr< L3::SE3 >                horizontal_projection;
+    boost::shared_ptr< L3::SE3 >                vertical_projection;
     boost::shared_ptr< L3::Projector<double> >  projector;
     boost::shared_ptr< L3::PointCloud<double> > point_cloud;
     boost::shared_ptr< L3::SwatheBuilder >      swathe_builder;
