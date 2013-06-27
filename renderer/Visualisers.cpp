@@ -53,7 +53,7 @@ namespace Visualisers
             {
                 vertices.push_back( *((it)->second) );
            
-                it += 10;
+                it += 50;
             }
             //vertices.push_back( *(iterator_ptr_cast->window.front().second) );
             //vertices.push_back( *(iterator_ptr_cast->window.back().second) );

@@ -1252,13 +1252,12 @@ namespace Visualisers
         glv::draw::paint( glv::draw::Points, scan_vertices, scan_colors, scan_points );
         glv::draw::paint( glv::draw::Points, putative_vertices, putative_colors, putative_points );
         glv::draw::disable( glv::draw::Blend );
+            
+        boost::dynamic_pointer_cast< ScanMatchingTrajectoryRenderer >(trajectory)->engine = engine;
 
         // Are we maximised?
         if (enabled( glv::Maximized ))
-        {
-            boost::dynamic_pointer_cast< ScanMatchingTrajectoryRenderer >(trajectory)->engine = engine;
             trajectory->enable( glv::Visible );
-        }
         else
             trajectory->disable( glv::Visible );
     }
