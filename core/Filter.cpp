@@ -7,6 +7,10 @@
 
 namespace L3
 {
+    double norm( const L3::SE3& a, const L3::SE3& b)
+    {
+        return sqrt( pow( a.X() - b.X(),2 )  + pow( a.Y() - b.Y(),2 ) );
+    }
 
     namespace Estimator
     {
@@ -63,7 +67,17 @@ namespace L3
             Eigen::Matrix4f tmp2( delta.getHomogeneous() );
             tmp1 *= tmp2;
 
+            // Is it here?
             prediction = L3::Utils::Math::poseFromRotation( tmp1 );
+
+            // Wrap
+            if ( fabs(prediction.Q() - pose.Q() ) > M_PI )
+            {
+                double q = prediction.Q();
+                q += 2*M_PI;
+           
+                prediction.Q( q );
+            }
 
             Bayesian_filter_matrix::Vec estimate(3);
 
@@ -73,13 +87,13 @@ namespace L3
 
             _x->assign( estimate );
 
-            
             // DBG
             static int counter = 0;
-            if ((counter++ %7 )== 0)
+            if ((++counter%7 )== 0)
             {
-            Eigen::Matrix4f& check_pose_m = check_pose.getHomogeneous();
-            check_pose_m *= tmp2;
+                Eigen::Matrix4f& check_pose_m = check_pose.getHomogeneous();
+                check_pose_m *= tmp2;
+           
             }
             // DBG
 
@@ -99,7 +113,7 @@ namespace L3
             if (!velocity_ptr )
                 return false;
           
-            L3::ReadLock master(  velocity_ptr->mutex );
+            L3::ReadLock master( velocity_ptr->mutex );
 
             L3::VelocityProvider::VELOCITY_COMPARATOR c;
 
@@ -177,9 +191,9 @@ namespace L3
         {
             Bayesian_filter_matrix::identity(  Hx );
 
-            Zv[0] = 10;
-            Zv[1] = 10;
-            Zv[2] = .1;
+            Zv[0] = 1;
+            Zv[1] = 1;
+            Zv[2] = 0.08;
                     
         }
         
@@ -193,7 +207,7 @@ namespace L3
                     boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 
                     boost::shared_ptr< L3::VelocityProvider > iterator )
             : Filter<T>(iterator), 
-            Algorithm<T>(cost_function, 10 ),
+            Algorithm<T>(cost_function, 25 ),
             initialised(false)
         {
             ukf.reset( new Bayesian_filter::Unscented_scheme(3) );
@@ -204,7 +218,7 @@ namespace L3
             prediction_model  = boost::make_shared< PredictionModel >(  iterator );
             observation_model = boost::make_shared< ObservationModel >();
 
-            minimiser = boost::make_shared< Minimisation<T> >( cost_function, experience_pyramid );
+            minimiser = boost::make_shared< Minimisation<T> >( cost_function, experience_pyramid, 1 , 40 );
 
             sigma_points.resize( (2*3 + 1)*3 );
                 
@@ -247,18 +261,10 @@ namespace L3
                 ukf->predict( *prediction_model);
                 ukf->update();
 
-                //static int counter = 0;
-
                 double* ptr = &sigma_points[0];
                 for( int j=0; j< ukf->XX.size2(); j++ )
                     for( int i=0; i< ukf->XX.size1(); i++ )
                         *ptr++ = ukf->XX(i,j);
-
-                //if( counter++ < 10 )
-                //{
-                    //current_estimate = adapt( ukf->x );
-                    //return current_estimate;
-                //}
 
                 if( timer.elapsed() > 1.0/this->fundamental_frequency )
                 {
@@ -269,16 +275,25 @@ namespace L3
 
                     Bayesian_filter_matrix::Vec z_vec = adapt(z);
 
+                    L3::SE3 predicted = adapt( ukf->x );
+
                     // Observe
                     ukf->observe( *observation_model, z_vec );
-                   
+
                     // Produce estimate and uncertainty
                     ukf->update();
+
+                    L3::SE3 estimated = adapt( ukf->x );
+                    
+                    if( fabs( predicted.Q() - estimated.Q() ) > .1 )
+                    {
+                        // Tracking failure
+                        exit(-1);
+                    }
+                
                 }
 
                 current_estimate = adapt( ukf->x );
-
-                std::cout << current_estimate << std::endl;
 
                 return current_estimate;
             }

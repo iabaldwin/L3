@@ -30,7 +30,6 @@ class Bulk:
                 print 'Unknown dataset %s' % dataset
                 return  
 
-
             target = os.path.join( os.path.expanduser( self._root ), dataset, 'L3' )  
 
             if not os.path.exists( target ):
@@ -79,6 +78,6 @@ class Bulk:
 
 if __name__=="__main__":
 
-    #Bulk().single( '2012-04-16-20-05-30NightWoodstock1' )
-    Bulk().all()
+    Bulk().single( '2012-04-16-20-05-30NightWoodstock1' )
+    #Bulk().all()
     

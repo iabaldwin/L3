@@ -16,6 +16,7 @@ namespace L3
 L3::SE3 operator/( const L3::SE3& lhs,  const double divisor );
 L3::SE3 operator+( const L3::SE3& lhs,  const L3::SE3& rhs );
 L3::SE3 operator*( const L3::SE3& lhs,  const double divisor );    
+double norm( const L3::SE3& a, const L3::SE3& b);
     
 namespace Estimator
 {
@@ -81,14 +82,13 @@ namespace Estimator
 
         bool initialised;
         double previous_time, current_time;
-       
+     
         std::vector< double > sigma_points;
 
         boost::shared_ptr< Minimisation<T> > minimiser;
 
         SE3 current_estimate;
-       
-
+      
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
         bool update( double time);

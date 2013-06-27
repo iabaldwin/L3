@@ -46,8 +46,8 @@ namespace L3
         ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );      // ICS
 
         // Pose Provider
-        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
-        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 75 );
+        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
+        pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 30 );
        
         // Swathe generator
         swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >( pose_windower.get(), vertical_LIDAR.get() );
@@ -126,27 +126,31 @@ namespace L3
                 /*
                  *  Update all watchers
                  */
+                performance_timer.begin();
                 TemporalRunner::update( current_time );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
                 /*
                  *Recompute swathe
                  */
+                performance_timer.begin();
                 swathe_builder->update( 0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
                 /*
                  *Point cloud generation, projection
                  */
-                L3::WriteLock point_cloud_lock( projector->cloud->mutex );
+                performance_timer.begin();
+                //L3::WriteLock point_cloud_lock( projector->cloud->mutex );
                 projector->project( swathe_builder->swathe );
-                point_cloud_lock.unlock();
+                //point_cloud_lock.unlock();
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
 
                 /*
                  *Update everything else
                  */
+                performance_timer.begin();
                 update( 0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 

@@ -6,16 +6,12 @@ namespace L3
     {
         void VelocityPlotter::update()
         {
-            L3::WriteLock writer( this->mutex );
-            
             boost::shared_ptr< L3::VelocityProvider > iterator_ptr = iterator.lock();
 
             if( !iterator_ptr)
                 return;
 
             VELOCITY_WINDOW window;
-
-            L3::ReadLock velocity_lock ( iterator_ptr->mutex );
 
             if (filtered)
                 window.assign( iterator_ptr->filtered_velocities.begin(), iterator_ptr->filtered_velocities.end() );
@@ -25,12 +21,11 @@ namespace L3
                 this->color ( glv::Color( .5, .5, .5 ) );
                 this->mPrim = glv::draw::Points;
             }
-
-            velocity_lock.unlock();
+            
+            L3::WriteLock writer( this->mutex );
 
             if ( window.size() > 0 )
             {
-
                 mData.resize( glv::Data::DOUBLE, 2, window.size() );
 
                 glv::Indexer i(mData.size(1));
@@ -62,6 +57,8 @@ namespace L3
 
 
             }
+            
+            writer.unlock();
 
             boost::shared_ptr< glv::View > parent = plot_parent.lock();
 
@@ -86,7 +83,6 @@ namespace L3
                 }
             }
         
-            writer.unlock();
         }
     }
 }

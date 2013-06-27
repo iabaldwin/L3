@@ -43,7 +43,7 @@ namespace L3
 
             void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
             {
-                L3::ReadLock reader( this->mutex );
+                L3::WriteLock writer( this->mutex );
                 int counter = 0; 
                 while(i()){
                     double x = d.at<double>(0, counter );
@@ -52,7 +52,7 @@ namespace L3
                     
                     g.addVertex(x, y);
                 }
-                reader.unlock();
+                writer.unlock();
             }
 
             void update();

@@ -29,6 +29,8 @@ namespace L3
 
     bool ScanMatchingVelocityProvider::update( double time )
     {
+        L3::WriteLock master( this->mutex );
+        
         raw_velocities.push_back(  engine->raw_velocity_data );
         filtered_velocities.push_back(  engine->filtered_velocity_data );
 
@@ -37,6 +39,8 @@ namespace L3
 
         if( filtered_velocities.back().first - filtered_velocities.front().first > 10.0 )
             filtered_velocities.pop_front();
+
+        master.unlock();
 
         return true;
     }

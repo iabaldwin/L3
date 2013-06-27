@@ -177,22 +177,8 @@ struct ExperienceLoader
         
         }
 
-        std::cout << pose_stream.size() << " pose elements, (" << pose_stream.size()/3 << " poses)" << std::endl;
-
         experience_poses.close();
 
-        //float speedup;
-        //struct FLANNParameters p;
-
-        //p = DEFAULT_FLANN_PARAMETERS;
-        //p.algorithm = FLANN_INDEX_KDTREE;
-        //p.trees = 8;
-        //p.log_level = FLANN_LOG_INFO;
-        //p.checks = 64;
-
-        //flann_index_t index_id = flann_build_index( &pose_stream[0], pose_stream.size()/3, 3, &speedup, &p);
-
-        //flann::Matrix<int> dataset(new int[query.rows*nn], query.rows, nn);
         flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/3, 3 );
 
         float* ptr = flann_dataset[0];

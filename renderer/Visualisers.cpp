@@ -51,9 +51,12 @@ namespace Visualisers
 
             while( it < iterator_ptr_cast->window.end() )
             {
-                vertices.push_back( *(it->second) );
-                it++;
+                vertices.push_back( *((it)->second) );
+           
+                it += 10;
             }
+            //vertices.push_back( *(iterator_ptr_cast->window.front().second) );
+            //vertices.push_back( *(iterator_ptr_cast->window.back().second) );
 
             lock.unlock();
         }
@@ -73,15 +76,7 @@ namespace Visualisers
             std::vector<L3::SE3>::iterator it =  vertices.begin();
 
             while( it < vertices.end() )
-            {
-                glv::draw::enable( glv::draw::Blend );
-                L3::Visualisers::CoordinateSystem( *(it), 10.0, alpha ).onDraw3D( g );
-                glv::draw::disable( glv::draw::Blend );
-
-                alpha = exp( counter );
-
-                it+=10;
-            }
+                L3::Visualisers::CoordinateSystem( *(it++), 10.0, alpha ).onDraw3D( g );
 
             //current_x = window.back().second->X();
             //current_y = window.back().second->Y();

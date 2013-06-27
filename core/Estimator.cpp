@@ -245,9 +245,9 @@ namespace L3
                 // Produce swathe histogram
                 swathe_histogram( hypothesis.get() );
 
-                //L3::LogisticSmoother<double> smoother;
+                L3::LogisticSmoother<double> smoother;
                 //L3::GaussianSmoother<double> smoother;
-                //smoother.smooth( &swathe_histogram );
+                smoother.smooth( &swathe_histogram );
 
                 *result_iterator = cost_function->operator()( *this->experience, swathe_histogram );
             }
@@ -374,14 +374,14 @@ namespace L3
             {
                 if( timer.elapsed() < 1.0/this->fundamental_frequency )
                     return estimate;
+                
+                timer.begin();
 
                 //DBG
                 //predicted = estimate;
                 //DBG
 
                 int _pyramid_index = this->pyramid_index;
-
-                timer.begin();
 
                 L3::WriteLock master( this->mutex );
                 L3::ReadLock  histogram_lock( (*this->pyramid)[_pyramid_index]->mutex );
@@ -405,10 +405,9 @@ namespace L3
                 else
                 {
                     gsl_vector_set_all (ss, 0.5);
-
                     gsl_vector_set( ss, 2, .05 );
                 }
-                gsl_vector_set( ss, 2, .05 );
+                //gsl_vector_set( ss, 2, .05 );
 
                 gsl_multimin_fminimizer_set (s, &minex_func, x, ss);
 
@@ -455,12 +454,12 @@ namespace L3
 
             evaluations.push_back( pose_estimate );
 
-            double dist = sqrt( pow( pose_estimate.X() - predicted.X(),2 ) + pow( pose_estimate.Y() - predicted.Y(),2 ) );
 
             // Estimate, here
             Hypothesis( this->current_swathe, &pose_estimate, (*this->pyramid)[this->pyramid_index].get() , this->_cost_function, cost.begin() )();
 
             //return cost[0]+dist/100.0;
+            //double dist = sqrt( pow( pose_estimate.X() - predicted.X(),2 ) + pow( pose_estimate.Y() - predicted.Y(),2 ) );
             return cost[0];
         }
 

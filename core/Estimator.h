@@ -339,6 +339,8 @@ namespace Estimator
                 float range = 2.0;
                 float granularity = .5;
 
+                int counter = 2;
+
                 for( typename L3::HistogramPyramid<T>::PYRAMID_ITERATOR it = pyramid->begin();
                         it != pyramid->end();
                         it++ )
@@ -361,6 +363,9 @@ namespace Estimator
                     granularity /= 1.8;
                     //granularity /= 1.5;
                     //granularity /= 2;
+               
+                    if (counter-- == 0 )
+                        break;
                 }
 
             }
@@ -386,12 +391,12 @@ namespace Estimator
     template <typename T>
         struct Minimisation : Algorithm<T>
         {
-            Minimisation( boost::shared_ptr< CostFunction<T> > cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, int max_iterations = 100, double tolerance = 0.075 ) 
+            Minimisation( boost::shared_ptr< CostFunction<T> > cost_function, boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, int pyramid_index = 1, int max_iterations = 100, double tolerance = 0.075 ) 
                 : Algorithm<T>(cost_function), 
                     pyramid(experience_pyramid),
                     max_iterations(max_iterations),
                     tolerance(tolerance),
-                    pyramid_index(1)
+                    pyramid_index(pyramid_index)
             {
                 const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2;
                 //const gsl_multimin_fminimizer_type* type = gsl_multimin_fminimizer_nmsimplex2rand;
