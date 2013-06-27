@@ -13,6 +13,8 @@
 #include "Histogram.h"
 #include "Smoother.h"
 
+#include <flann/flann.hpp>
+
 #include <map>
 
 struct LengthEstimatorInterface : L3::LengthEstimator
@@ -65,7 +67,12 @@ struct RetrospectiveWithLookaheadPolicy: SelectionPolicy
  */
 struct Experience : SpatialObserver, Poco::Runnable, Lockable
 {
-    Experience( std::deque<experience_section> sections, std::string& fname, boost::shared_ptr< SelectionPolicy > policy, int WINDOW=2 );
+    Experience( std::deque<experience_section> sections, 
+            std::string& fname, 
+            boost::shared_ptr< SelectionPolicy > policy, 
+            int WINDOW=2, 
+            boost::shared_ptr< flann::Index< flann::L2<float> > > index = boost::shared_ptr< flann::Index< flann::L2<float> > >(),
+            boost::shared_ptr< std::deque< L3::SE3 > > poses  = boost::shared_ptr< std::deque< L3::SE3 > >()) ;
     
     int                                     window;
     std::ifstream                           data;
@@ -74,6 +81,9 @@ struct Experience : SpatialObserver, Poco::Runnable, Lockable
     boost::shared_ptr< SelectionPolicy >    policy; 
     bool                                    running;
     double                                  _x,_y;
+
+    boost::shared_ptr< std::deque< L3::SE3 > > poses; 
+    boost::shared_ptr< flann::Index< flann::L2<float> > > pose_lookup;
 
     std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
   
@@ -86,7 +96,9 @@ struct Experience : SpatialObserver, Poco::Runnable, Lockable
     void            initialise();
     bool            update( double x, double y );
     void            createHistograms( const std::vector< double >& densities  );
-    
+  
+    L3::SE3         getClosestPose( const L3::SE3& input );
+
     std::pair< long unsigned int, L3::Point<double>* > load( unsigned int id );
     
 };
@@ -113,8 +125,6 @@ struct ExperienceLoader
 
     void load( const std::string& target )
     {
-        std::cout << target + "/experience.index" << std::endl;
-
         std::ifstream experience_index( (target + "/experience.index").c_str(), std::ios::binary );
 
         if ( !experience_index.good() )
@@ -137,10 +147,62 @@ struct ExperienceLoader
             else
                 break;
         }
-
         experience_index.close();
 
-        experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< KNNPolicy >() ), window_sections ) );
+
+        // Read experience poses
+        std::ifstream experience_poses( (target + "/experience.pose").c_str(), std::ios::binary );
+
+        boost::shared_ptr< std::deque< L3::SE3 > > poses = boost::make_shared< std::deque< L3::SE3 > >();  
+        std::vector<float> pose_stream;
+
+        int counter = 0;
+        std::vector<double> tmp(3);
+        while( experience_poses.good() )
+        {
+            double datum;
+
+            experience_poses.read( (char*)(&datum), sizeof(double) );
+
+            pose_stream.push_back( float(datum) );
+  
+            tmp[counter++] = datum; 
+
+            if( counter == 3 )
+            {
+                poses->push_back( L3::SE3( tmp[0], tmp[1], 0, 0, 0, tmp[2] ) );
+           
+                counter = 0;
+            }
+        
+        }
+
+        std::cout << pose_stream.size() << " pose elements, (" << pose_stream.size()/3 << " poses)" << std::endl;
+
+        experience_poses.close();
+
+        //float speedup;
+        //struct FLANNParameters p;
+
+        //p = DEFAULT_FLANN_PARAMETERS;
+        //p.algorithm = FLANN_INDEX_KDTREE;
+        //p.trees = 8;
+        //p.log_level = FLANN_LOG_INFO;
+        //p.checks = 64;
+
+        //flann_index_t index_id = flann_build_index( &pose_stream[0], pose_stream.size()/3, 3, &speedup, &p);
+
+        //flann::Matrix<int> dataset(new int[query.rows*nn], query.rows, nn);
+        flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/3, 3 );
+
+        float* ptr = flann_dataset[0];
+
+        std::copy( pose_stream.begin(), pose_stream.end(), ptr );
+
+        boost::shared_ptr< flann::Index< flann::L2<float> > > index = boost::make_shared< flann::Index< flann::L2<float> > >(flann_dataset, flann::KDTreeIndexParams(4));
+        index->buildIndex();
+
+        experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< KNNPolicy >() ), window_sections, index, poses ) );
         //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< StrictlyRetrospectivePolicy >() ), window_sections ) );
         //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< RetrospectiveWithLookaheadPolicy>() ), window_sections ) );
     }

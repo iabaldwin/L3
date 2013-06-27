@@ -209,7 +209,8 @@ namespace L3
             std::string algo_target( load_command );
             ltrim( algo_target );
 
-            boost::shared_ptr< L3::Estimator::Algorithm<double> > algo = L3::Estimator::AlgorithmFactory<double>::produce( algo_target, cost_function, container->experience->experience_pyramid, runner );
+            boost::shared_ptr< L3::Estimator::Algorithm<double> > algo 
+                = L3::Estimator::AlgorithmFactory<double>::produce( algo_target, cost_function, container->experience->experience_pyramid, runner );
 
             if( !algo )
                 return std::make_pair( false, "CI::Failed to load <" + algo_target + ">" );
@@ -221,7 +222,8 @@ namespace L3
             runner->setAlgorithm( algo );
     
             // Reset pose
-            *runner->current = runner->oracle->operator()(); 
+            //*runner->current = runner->oracle->operator()(); 
+            *runner->current = runner->experience->getClosestPose( runner->oracle->operator()() ); 
 
             // Associate algorithm, visually
             dynamic_cast< L3::Visualisers::EstimatorLayout* >( layout )->algorithm( algo );

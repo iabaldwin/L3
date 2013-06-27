@@ -195,8 +195,11 @@ namespace L3
         /*
          *  Boot
          */
-        if( counter++ < 1000 )
-            *current = oracle->operator()();
+        if( counter++ < 1500 )
+        {
+            //*current = oracle->operator()();
+            *current = experience->getClosestPose( oracle->operator()() );
+        }
         else
         {
             L3::ReadLock algo_lock( this->mutex ); 

@@ -71,6 +71,7 @@ namespace L3
         // Experience data
         std::ofstream experience_data( (dataset.path() + "/experience.dat").c_str(), std::ios::binary );
         std::ofstream experience_index( (dataset.path() + "/experience.index").c_str(), std::ios::binary );
+        std::ofstream experience_poses( (dataset.path() + "/experience.pose").c_str(), std::ios::binary );
 
         unsigned int stream_position = 0;
 
@@ -84,16 +85,18 @@ namespace L3
             // Extract scan
             LIDAR_reader->extract( scans );
 
+            // Initialisatino condition
             if (absolute_start_time == 0)
                 absolute_start_time = scans[0].first;
 
+            // Compute relative time
             double current_relative_time = scans[0].first - absolute_start_time;
 
-            // Still to go?
+            // Still to go, i.e. t_k < t_L?
             if ( current_relative_time < start_time )
                 continue;
 
-            // Done
+            // Done, i.e. t_k >= t_U?
             if ( current_relative_time > end_time )
                 break;
 
@@ -102,7 +105,19 @@ namespace L3
 
             L3::Utils::matcher< L3::SE3, L3::LMS151 > m( &poses, &matched );
 
+
             m = std::for_each( scans.begin(), scans.end(),  m );
+
+            // Log the pose, always
+            //experience_poses.write( (char*)(&matched[0]), sizeof(double)*Sizes<L3::SE3>::elements );
+            double val = matched[0].second->X();
+            experience_poses.write( (char*)(&val ), sizeof(double) );
+            val = matched[0].second->Y();
+            experience_poses.write( (char*)(&val ), sizeof(double) );
+            val = matched[0].second->Q();
+            experience_poses.write( (char*)(&val ), sizeof(double) );
+
+
 
             double increment = length_estimator( matched[0] );
 
@@ -278,14 +293,17 @@ namespace L3
     Experience::Experience( std::deque<experience_section> sections, 
             std::string& fname, 
             boost::shared_ptr< SelectionPolicy > policy,
-            int window ) 
+            int window, 
+            boost::shared_ptr< flann::Index< flann::L2<float> > > index ,
+            boost::shared_ptr< std::deque< L3::SE3 > > poses ) 
         : window(window),
         sections(sections), 
         policy(policy),
         running(true),
         _x(0.0), _y(0.0),
-        resident_point_cloud( new L3::PointCloud<double>() )
-
+        resident_point_cloud( new L3::PointCloud<double>() ),
+        pose_lookup( index ),
+        poses(poses)
     {
         // Open 
         data.open( fname.c_str(), std::ios::binary );
@@ -315,6 +333,29 @@ namespace L3
     void Experience::createHistograms( const std::vector< double >& densities  )
     {
         experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
+    }
+
+    L3::SE3 Experience::getClosestPose( const L3::SE3& input )
+    {
+        flann::Matrix<int> indices(new int[1*1], 1, 1 );
+        flann::Matrix<float> dists(new float[1*1], 1, 1);
+ 
+        flann::Matrix<float> query( new float[1*3], 1, 3 );
+
+        float* ptr = query[0];
+
+        *ptr++ = input.X();
+        *ptr++ = input.Y();
+        *ptr++ = input.Q();
+
+        pose_lookup->knnSearch( query, indices, dists, 1, flann::SearchParams(128));
+
+        L3::SE3 closest = (*poses)[*indices[0]];
+
+        delete [] indices.ptr();
+        delete [] dists.ptr();
+
+        return closest;
     }
 
     void Experience::run()

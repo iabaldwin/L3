@@ -360,7 +360,6 @@ namespace L3
                 std::vector<double> results( _num_particles ); 
                 std::vector<double>::iterator result_iterator = results.begin();
 
-                //int pyramid_index = 0;
                 int pyramid_index = 0;
 
                 L3::ReadLock histogram_lock( (*this->pyramid)[pyramid_index]->mutex );

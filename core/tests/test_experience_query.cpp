@@ -28,6 +28,13 @@ int main( int argc, char* argv[] )
         std::cout << (*experience->experience_pyramid)[0]->x_bins<< " x" 
             << (*experience->experience_pyramid)[0]->y_bins << " in " 
             << t.elapsed() << "s" << std::endl;
+    
+ 
+        double x = random()%100;
+        double y = random()%100;
+        double q = random()%100;
+
+        experience->getClosestPose( L3::SE3( x, y, 0, 0, 0, q ) );
     }
 
 }

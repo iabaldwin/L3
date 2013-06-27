@@ -12,4 +12,4 @@ include_directories( ${OPENGL_INCLUDE_DIR} )
 
 
 add_executable( app app.cpp )
-target_link_libraries( app GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis ${Boost_LIBRARIES} pcl_octree )
+target_link_libraries( app GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis ${Boost_LIBRARIES} pcl_octree flann_cpp )

@@ -44,7 +44,7 @@ add_executable( test_dataset_runner test_dataset_runner.cpp )
 target_link_libraries( test_dataset_runner L3 ${Boost_LIBRARIES} )
 
 add_executable( test_estimator_runner test_estimator_runner.cpp )
-target_link_libraries( test_estimator_runner config L3 ${Boost_LIBRARIES} )
+target_link_libraries( test_estimator_runner config L3 ${Boost_LIBRARIES} flann_cpp_s )
 
 #add_executable( test_libICP test_libICP.cpp )
 #target_link_libraries( test_libICP config L3 ${Boost_LIBRARIES} )
@@ -112,8 +112,8 @@ target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES}  )
 #add_executable( test_experience_builder test_experience_builder.cpp )
 #target_link_libraries( test_experience_builder config L3 ${Boost_LIBRARIES}  )
 
-#add_executable( test_experience_query test_experience_query.cpp )
-#target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES}  )
+add_executable( test_experience_query test_experience_query.cpp )
+target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES}  )
 
 #add_executable( test_experience_pipeline test_experience_pipeline.cpp )
 #target_link_libraries( test_experience_pipeline config L3 ${Boost_LIBRARIES}  )
