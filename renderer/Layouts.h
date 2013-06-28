@@ -11,12 +11,12 @@
 #include "Plotters.h"
 #include "Imagery.h"
 #include "GLVInterface.h"
-//#include "QueryInterface.h"
 #include "LogCapture.h"
 #include "DebugAlgorithmRenderer.h"
 #include "AlgorithmRenderer.h"
 #include "Widgets.h"
 #include "DatasetController.h"
+//#include "QueryInterface.h"
 
 
 namespace L3

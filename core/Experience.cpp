@@ -114,9 +114,10 @@ namespace L3
             experience_poses.write( (char*)(&val ), sizeof(double) );
             val = matched[0].second->Y();
             experience_poses.write( (char*)(&val ), sizeof(double) );
+             val = matched[0].second->Z();
+            experience_poses.write( (char*)(&val ), sizeof(double) );
             val = matched[0].second->Q();
             experience_poses.write( (char*)(&val ), sizeof(double) );
-
 
 
             double increment = length_estimator( matched[0] );

@@ -157,7 +157,7 @@ struct ExperienceLoader
         std::vector<float> pose_stream;
 
         int counter = 0;
-        std::vector<double> tmp(3);
+        std::vector<double> tmp(4);
         while( experience_poses.good() )
         {
             double datum;
@@ -168,9 +168,9 @@ struct ExperienceLoader
   
             tmp[counter++] = datum; 
 
-            if( counter == 3 )
+            if( counter == 4 )
             {
-                poses->push_back( L3::SE3( tmp[0], tmp[1], 0, 0, 0, tmp[2] ) );
+                poses->push_back( L3::SE3( tmp[0], tmp[1], tmp[2] , 0, 0, tmp[3] ) );
            
                 counter = 0;
             }
@@ -200,7 +200,7 @@ struct ExperienceLoader
  */
 struct ExperienceBuilder
 {
-    ExperienceBuilder( L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold=10.0, double scan_spacing_threshold=0.5  );
+    ExperienceBuilder( L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold=10.0, double scan_spacing_threshold=0.2  );
 
     boost::shared_ptr<L3::IO::BinaryReader< L3::SE3 > >                 pose_reader;
     boost::shared_ptr<L3::IO::SequentialBinaryReader< L3::LMS151 > >    LIDAR_reader;

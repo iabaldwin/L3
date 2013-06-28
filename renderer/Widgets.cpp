@@ -67,9 +67,18 @@ namespace Visualisers
 
         // Master holder
         boost::shared_ptr< glv::View > view_sizer = boost::make_shared< glv::View >( glv::Rect( 555, 120 ) );
+        
+        // Label
+        boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >();
+        label->setValue( "Filter controls" );
+        label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+        (*view_sizer) << *label;
+
+        labels.push_back( label );
 
         *this << *view_sizer;
         views.push_back(view_sizer);
+
 
         // Sub-table
         boost::shared_ptr< glv::Table > sub_table = boost::make_shared< glv::Table >( "x," );

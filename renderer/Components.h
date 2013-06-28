@@ -185,10 +185,10 @@ namespace Visualisers
         void onDraw(glv::GLV& g)
         {
             std::stringstream ss;
-            ss.precision( 8 );
+            ss.precision( 6 );
 
             if( lock )
-                ss << lock->t;
+                ss << fixed << lock->t;
 
             mText = ss.str();
 

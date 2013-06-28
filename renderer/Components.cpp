@@ -757,8 +757,12 @@ namespace Visualisers
     {
         far(500);
 
-        // Centering heuristic
-        glv::draw::translate( 0, 60, -200 );
+        if ( this->enabled( glv::Maximized ) )
+            // Centering heuristic
+            glv::draw::translate( 0, 10, -50 );
+        else
+            glv::draw::translate( 0, 20, -100 );
+
 
         L3::ReadLock lock( plot_cloud->mutex );
         PointCloudRenderer::onDraw3D(g);    
@@ -1466,8 +1470,15 @@ namespace Visualisers
         if( boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock() )
             current = provider_ptr->operator()();
 
+        boost::shared_ptr< L3::Experience > experience_ptr = experience.lock();
 
-        current.Z( current.Z() + 3.0);
+        L3::SE3 experience_pose;
+        if( experience_ptr )
+            experience_pose = experience_ptr->getClosestPose( current );
+
+        //current.Z( current.Z() + 3.0);
+        current.Z( experience_pose.Z() + 2.0 );
+        
         transformCameraToPose( current );
 
         glv::draw::enable( glv::draw::Blend );
@@ -1548,9 +1559,6 @@ namespace Visualisers
             pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
 
             int density = octree->getVoxelDensityAtPoint( pt ); 
-
-            //voxels.push_back( Cube( voxel_min.x(), voxel_min.y(), voxel_min.z(),
-            //voxel_max.x(), voxel_max.y(), voxel_max.z(), density ) );
 
             vertices.push_back( glv::Point3( pt.x, pt.y, pt.z ) );
             colors.push_back( glv::Color( .5, .5, .5, float(density)/10.0 ) );
