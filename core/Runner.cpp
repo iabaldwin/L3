@@ -201,7 +201,7 @@ namespace L3
         /*
          *  Boot
          */
-        if( counter++ < 1000 )
+        if( counter++ < 1500 )
         {
             //*current = experience->getClosestPose( oracle->operator()() );
             *current = oracle->operator()();
