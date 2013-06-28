@@ -719,41 +719,26 @@ namespace L3
              *Controls
              */
             //1. Num particles 
-            boost::shared_ptr< glv::Slider > num_particles = boost::make_shared< glv::Slider > ();
-            num_particles->interval( 50, 1000 );
-            num_particles->attachVariable( algorithm->num_particles );
+            boost::shared_ptr< ResettableSlider<int> > num_particles 
+                = boost::make_shared< ResettableSlider<int> > ( "# Particles", 50, 1000 );
+            num_particles->attach( algorithm->num_particles );
             *this  << *num_particles;
-            variables.push_back( num_particles );
+            views.push_back( num_particles );
 
-            boost::shared_ptr< glv::Label > num_particles_label = boost::make_shared< glv::Label >( "#Particles" );
-            num_particles_label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
-            *num_particles << *num_particles_label ;
-            this->labels.push_back( num_particles_label ); 
 
             //2. Linear process noise
-            boost::shared_ptr< glv::Slider > linear_uncertainty = boost::make_shared< glv::Slider > ();
-            linear_uncertainty->interval( 0, 3 );
-            linear_uncertainty->attachVariable( algorithm->linear_uncertainty );
+            boost::shared_ptr< ResettableSlider<double> > linear_uncertainty 
+                = boost::make_shared< ResettableSlider<double> > ( "Lin. Vel. uncertainty (m2/s2)", 0, 3 );
+            linear_uncertainty->attach( algorithm->linear_uncertainty );
             *this  << *linear_uncertainty;
-            variables.push_back( linear_uncertainty );
-
-            boost::shared_ptr< glv::Label > linear_uncertainty_label = boost::make_shared< glv::Label >( "Lin. Vel. uncertainty (m2/s2)" );
-            linear_uncertainty_label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
-            *linear_uncertainty << *linear_uncertainty_label ;
-            this->labels.push_back( linear_uncertainty_label ); 
+            views.push_back( linear_uncertainty );
 
             //3. Rotational process noise
-            boost::shared_ptr< glv::Slider > rotational_uncertainty = boost::make_shared< glv::Slider > ();
-            rotational_uncertainty->interval( 0, 1 );
-            rotational_uncertainty->attachVariable( algorithm->rotational_uncertainty );
+            boost::shared_ptr< ResettableSlider<double> > rotational_uncertainty 
+                = boost::make_shared< ResettableSlider<double> > ( "Rot. Vel. uncertainty (rad2/s2)" , 0, .5 );
+            rotational_uncertainty->attach( algorithm->rotational_uncertainty );
             *this  << *rotational_uncertainty;
-            variables.push_back( rotational_uncertainty );
-
-            boost::shared_ptr< glv::Label > rotational_uncertainty_label = boost::make_shared< glv::Label >( "Rot. Vel. uncertainty (rad2/s2)" );
-            rotational_uncertainty_label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
-            *rotational_uncertainty << *rotational_uncertainty_label ;
-            this->labels.push_back( rotational_uncertainty_label ); 
-
+            views.push_back( rotational_uncertainty );
 
             /*
              *3D components
@@ -973,12 +958,11 @@ namespace L3
             this->operator<<( *sigma_points_viewer );
 
             // Frequency controller
-            boost::shared_ptr< glv::Slider > frequency = boost::make_shared< glv::Slider > ();
-            frequency->interval( .1, 40 );
-            frequency->attachVariable( algorithm->fundamental_frequency );
-            *this  << *frequency;
-            variables.push_back( frequency );
-
+            boost::shared_ptr< ResettableSlider<float> > frequency_controller = 
+                boost::make_shared< ResettableSlider<float> >( "Frequency", .1, 40 ) ;
+            frequency_controller->attach( algorithm->fundamental_frequency );
+            *this  << *frequency_controller;
+            views.push_back( frequency_controller );
 
             this->arrange();
             this->fit();

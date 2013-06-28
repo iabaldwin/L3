@@ -5,62 +5,6 @@ namespace L3
 {
 namespace Visualisers
 {
-    template <typename T>
-        struct ResettableSlider : glv::View
-    {
-        ResettableSlider( const std::string& label_text, T lower=1, T upper=10 )  
-            : glv::View( glv::Rect(150,20) ),
-            reset( false )
-        {
-
-            table = boost::make_shared< glv::Table >( "x x x,", 5, 0 );
-
-            slider = boost::make_shared< glv::Slider >();
-    
-            slider->interval( upper, lower );
-
-            label = boost::make_shared< glv::Label >( label_text );
-            label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR );
-            
-            //reset_toggle = boost::make_shared< glv::Button >( glv::Rect(20), false );
-            reset_toggle = boost::make_shared< glv::Button >( glv::Rect(20), true );
-
-            *table <<  *slider;
-            *table <<  *reset_toggle;
-            *table <<  *label;
-  
-            table->arrange();
-            table->fit();
-
-            *this << *table;
-       
-            this->fit();
-       
-            this->disable( glv::DrawBorder );
-        }
-
-        T initial_val;
-
-        bool reset;
-
-        boost::shared_ptr< glv::Table > table;
-        boost::shared_ptr< glv::Label > label;
-        boost::shared_ptr< glv::Widget > slider;
-        boost::shared_ptr< glv::Button > reset_toggle;
-
-        void onDraw( glv::GLV& g )
-        {
-            if ( reset_toggle->getValue() )
-                slider->setValue( initial_val ); 
-        }
-
-        void attach( T& t )
-        {
-            this->initial_val = t;
-            slider->attachVariable( t ); 
-        }
-
-    };
 
     void DensityController::attachHistogram( boost::shared_ptr< L3::Histogram<double> > histogram )
     {
