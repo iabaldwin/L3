@@ -191,9 +191,13 @@ namespace L3
         {
             Bayesian_filter_matrix::identity(  Hx );
 
-            Zv[0] = 1;
-            Zv[1] = 1;
-            Zv[2] = 0.08;
+            //Zv[0] = 1;
+            //Zv[1] = 1;
+            //Zv[2] = 0.08;
+             
+            Zv[0] = 2;
+            Zv[1] = 2;
+            Zv[2] = 0.16;
                     
         }
         

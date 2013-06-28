@@ -78,7 +78,7 @@ namespace RunMode
 
 struct DatasetRunner : ThreadedRunner
 {
-    DatasetRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup=5.0 );
+    DatasetRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup=2.0 );
 
     ~DatasetRunner()
     {
