@@ -12,7 +12,8 @@ namespace L3
             current_time(0.0),
             start_time(dataset->start_time),
             stand_alone(false),
-            run_mode( RunMode::Continuous )
+            run_mode( RunMode::Continuous ),
+            frequency(0.0)
     {
         // Constant time iterator over poses
         pose_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::SE3> >( dataset->pose_reader );
@@ -98,7 +99,9 @@ namespace L3
         L3::Timing::SysTimer performance_timer, frequency_timer;
 
         int performance_index;
-           
+        
+        int counts = 0;
+
         while( running ) // Main thread
         {
             if( !paused )
@@ -155,8 +158,7 @@ namespace L3
                 update( 0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
-                frequency = 1.0/frequency_timer.elapsed();
-
+                
                 if( stand_alone )
                 {
 
@@ -171,6 +173,13 @@ namespace L3
                     std::cout << ss.str() << "------------" << std::endl;
 
                     output << *current << '\n';
+                }
+                else
+                {
+                    double _frequency = 1.0/frequency_timer.elapsed();
+
+                    if ( _frequency < 80.0 )
+                        frequency = (_frequency + counts*frequency)/(++counts);
                 }
 
                 /*

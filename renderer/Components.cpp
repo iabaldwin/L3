@@ -1691,20 +1691,6 @@ namespace Visualisers
         frequency.reset(            new TextRenderer<double>() );
         memory_statistics.reset(    new MemoryStatistics() );
 
-        /*
-         *DBG
-         */
-        //observer_update->enable( glv::DrawBorder );
-        //swathe_generation->enable( glv::DrawBorder );
-
-        //observer_update->paddingX( 5 );
-        //observer_update->paddingY( 2 );
-        
-        //swathe_generation->paddingX( 5 );
-        //points_per_second->paddingY( 7 );
-        //estimation->paddingY( 7 );
-        //memory_statistics->paddingY( 10 );
-
         (*this) << dynamic_cast< glv::View* >(observer_update.get()) <<
             dynamic_cast< glv::View* >(swathe_generation.get()) <<
             dynamic_cast< glv::View* >(points_per_second.get()) <<
@@ -1733,6 +1719,11 @@ namespace Visualisers
         labels.push_back( estimation_label );
         estimation_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
         (*estimation) << (*estimation_label );
+
+        boost::shared_ptr< glv::Label > frequency_label = boost::make_shared< glv::Label >( "Frequency (Hz)" );
+        labels.push_back( frequency_label );
+        frequency_label->pos( glv::Place::CL, 0, 0 ).anchor( glv::Place::CR ); 
+        (*frequency) << (*frequency_label );
 
         boost::shared_ptr< glv::Label > memory_label = boost::make_shared< glv::Label >( "Resource Usage" );
         labels.push_back( memory_label );
