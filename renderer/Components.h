@@ -1405,7 +1405,7 @@ namespace Visualisers
         boost::shared_ptr< TextRenderer<double> > swathe_generation;;
         boost::shared_ptr< TextRenderer<double> > points_per_second;
         boost::shared_ptr< TextRenderer<double> > estimation;
-        boost::shared_ptr< TextRenderer<double> > total;
+        boost::shared_ptr< TextRenderer<double> > frequency;
 
         boost::shared_ptr< glv::TextView > memory_statistics;
 
@@ -1415,6 +1415,7 @@ namespace Visualisers
             swathe_generation->setVariable( runner->timings[1] );
             points_per_second->setVariable( runner->timings[2] );
             estimation->setVariable(        runner->timings[3] );
+            frequency->setVariable(         runner->frequency );
 
             plottables[0]->setVariable( runner->timings[0] );
             plottables[1]->setVariable( runner->timings[1] );

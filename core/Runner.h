@@ -96,7 +96,8 @@ struct DatasetRunner : ThreadedRunner
     float           speedup;
     bool            stand_alone;
     double          current_time, start_time;  
- 
+    double          frequency;
+
     RunMode::Mode   run_mode;
 
     std::list < Updater* > updaters;

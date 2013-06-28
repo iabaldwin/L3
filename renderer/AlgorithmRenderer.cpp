@@ -151,19 +151,20 @@ namespace L3
 
             // Controls
             //1. Tolerance
-            boost::shared_ptr< glv::Slider > tolerance = boost::make_shared< glv::Slider > ();
-            tolerance->interval( .001, .5 );
-            tolerance->attachVariable( algorithm->tolerance );
+            boost::shared_ptr< ResettableSlider<double> > tolerance 
+                = boost::make_shared< ResettableSlider<double> > ( "Tolerance", .001, .1 );
+            tolerance->attach( algorithm->tolerance );
             *this  << *tolerance;
-            variables.push_back( tolerance );
+            views.push_back( tolerance );
+
 
 
             //2. Iterations
-            boost::shared_ptr< glv::Slider > iterations = boost::make_shared< glv::Slider > ();
-            iterations->interval( 1, 100 );
-            iterations->attachVariable( algorithm->max_iterations );
+            boost::shared_ptr< ResettableSlider<int> > iterations 
+                = boost::make_shared< ResettableSlider<int> > ( "Iterations", 1, 120 );
+            iterations->attach( algorithm->max_iterations );
             *this  << *iterations;
-            variables.push_back( iterations );
+            views.push_back( iterations );
 
             // Pyramid selector
             //boost::shared_ptr< glv::Buttons > pyramid_select = boost::make_shared< glv::Buttons >( glv::Rect(120, 20), 3, 1 );
@@ -191,10 +192,6 @@ namespace L3
             }
             else
                 std::cerr << "No composite pointer passed!" << std::endl;
-
-           
-
-
 
             this->fit();
             this->arrange();

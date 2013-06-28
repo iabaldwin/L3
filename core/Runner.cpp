@@ -95,7 +95,7 @@ namespace L3
 
         current_time = start_time;
             
-        L3::Timing::SysTimer performance_timer;
+        L3::Timing::SysTimer performance_timer, frequency_timer;
 
         int performance_index;
            
@@ -103,6 +103,7 @@ namespace L3
         {
             if( !paused )
             {
+                frequency_timer.begin();
                 performance_index = 0;
                 performance_timer.begin();
 
@@ -153,6 +154,8 @@ namespace L3
                 performance_timer.begin();
                 update( 0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
+
+                frequency = 1.0/frequency_timer.elapsed();
 
                 if( stand_alone )
                 {

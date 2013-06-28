@@ -1688,6 +1688,7 @@ namespace Visualisers
         swathe_generation.reset(    new TextRenderer<double>() );
         points_per_second.reset(    new TextRenderer<double>() );
         estimation.reset(           new TextRenderer<double>() );
+        frequency.reset(            new TextRenderer<double>() );
         memory_statistics.reset(    new MemoryStatistics() );
 
         /*
@@ -1708,7 +1709,10 @@ namespace Visualisers
             dynamic_cast< glv::View* >(swathe_generation.get()) <<
             dynamic_cast< glv::View* >(points_per_second.get()) <<
             dynamic_cast< glv::View* >(estimation.get()) <<
-            dynamic_cast< glv::View* >(memory_statistics.get());
+            dynamic_cast< glv::View* >(frequency.get()) << 
+            dynamic_cast< glv::View* >(memory_statistics.get())
+            
+            ;
 
         boost::shared_ptr< glv::Label > observer_label = boost::make_shared< glv::Label >( "Observer update" );
         labels.push_back( observer_label );
