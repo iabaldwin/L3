@@ -247,10 +247,9 @@ namespace L3
             // Dataset duration
             window_duration = boost::make_shared < glv::Slider >(glv::Rect(window.width()-155,window.height()-20,150, 10) );
             {
-                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "LHLV duration (s)" );
-                label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
-                *window_duration << *label ;
-                this->labels.push_back( label ); 
+                window_duration_label = boost::make_shared< glv::Label >( "LHLV duration (s)" );
+                window_duration_label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
+                *window_duration << *window_duration_label ;
             }
 
             (*L3_controls) << *window_duration;
@@ -260,7 +259,7 @@ namespace L3
             window_duration_INS->interval( 1, 30 );
  
             {
-                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "LHLV duration (s)" );
+                boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >( "INS duration (s)" );
                 label->pos( glv::Place::CL, 5, 0 ).anchor( glv::Place::CR ); 
                 *window_duration_INS << *label ;
                 this->labels.push_back( label ); 
@@ -432,11 +431,13 @@ namespace L3
             {
                 window_duration->attachVariable( windower->swathe_length );
                 window_duration->interval( 10, 100 );
+                window_duration_label->setValue( "Distance (m)" );
             }
             else if( boost::shared_ptr< L3::ConstantTimeWindower<L3::LHLV> > windower = boost::dynamic_pointer_cast< L3::ConstantTimeWindower<L3::LHLV> >( runner->pose_windower ) )
             {
                 window_duration->interval( 1, 30);
                 window_duration->attachVariable( runner->vertical_LIDAR->swathe_length );
+                window_duration_label->setValue( "Time (s)" );
             }
             else
                 throw std::exception();

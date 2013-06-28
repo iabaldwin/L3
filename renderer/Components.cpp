@@ -759,7 +759,7 @@ namespace Visualisers
 
         if ( this->enabled( glv::Maximized ) )
             // Centering heuristic
-            glv::draw::translate( 0, 10, -50 );
+            glv::draw::translate( 0, 10, -75 );
         else
             glv::draw::translate( 0, 20, -100 );
 
