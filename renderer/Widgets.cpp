@@ -41,12 +41,12 @@ namespace Visualisers
         this->enable( glv::DrawBorder );
 
         // Master holder
-        boost::shared_ptr< glv::View > view_sizer = boost::make_shared< glv::View >( glv::Rect( 555, 120 ) );
+        boost::shared_ptr< glv::View > view_sizer = boost::make_shared< glv::View >( glv::Rect( 555, 75 ) );
         
         // Label
         boost::shared_ptr< glv::Label > label = boost::make_shared< glv::Label >();
         label->setValue( "Filter controls" );
-        label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+        label->pos( glv::Place::BR, 0, 0 ).anchor( glv::Place::BR ); 
         (*view_sizer) << *label;
 
         labels.push_back( label );
@@ -75,8 +75,6 @@ namespace Visualisers
 
         sub_table->fit();
         sub_table->arrange();
-
-        view_sizer->fit();
 
         this->fit();
         this->arrange();
