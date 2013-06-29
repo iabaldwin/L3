@@ -45,6 +45,7 @@ namespace L3
             {
                 L3::WriteLock writer( this->mutex );
                 int counter = 0; 
+                
                 while(i()){
                     double x = d.at<double>(0, counter );
                     double y = d.at<double>(1, counter );
@@ -52,6 +53,7 @@ namespace L3
                     
                     g.addVertex(x, y);
                 }
+                
                 writer.unlock();
             }
 
