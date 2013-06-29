@@ -14,9 +14,12 @@ class INS( Sensor ):
     def Size():
         return (6)+1
 
+    @staticmethod
+    def Identity():
+        return INS( [0,0,0,0,0,0,0])
+
     def __init__(self, data ):
         Sensor.__init__( self )
-        #self.data = data
     
         self.time = data[0]
         self.x = data[1]

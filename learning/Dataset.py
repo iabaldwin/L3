@@ -12,9 +12,17 @@ import Sensors
 
 from matplotlib import pyplot
 
+class PointCloud:
+
+    def __init__(self, pts):
+        self.pts = numpy.array( pts )
+
+    def __iter__(self):
+        return iter(self.pts )
+
 class Dataset:
 
-    def __init__(self, path, **kwargs ):
+    def __init__( self, path, **kwargs ):
 
         try:
             start = kwargs.pop('start')
@@ -27,14 +35,17 @@ class Dataset:
             end = float('inf')
 
         self._horizontal_LIDAR = 'LMS1xx_10420001_192.168.0.51.lidar'
-        self._vertical_LIDAR    = 'LMS1xx_10420002_192.168.0.50.lidar'
+        self._vertical_LIDAR   = 'LMS1xx_10420002_192.168.0.50.lidar'
         self._INS              = 'OxTS.ins'
-        
-        if os.path.exists( '.dataset' ):
-            data = cPickle.load( open( '.dataset', 'r' ) )
+      
+        target = os.path.join( path, 'L3', '.dataset' )
+
+        if os.path.exists( target) :
+            data = cPickle.load( open( target, 'r' ) )
             self.horizontal_LIDAR_data = data[0] 
             self.vertical_LIDAR_data   = data[1] 
             self.INS_data              = data[2] 
+        
         else:
             self.horizontal_LIDAR_data = self.readLIDAR( path, self._horizontal_LIDAR, (start,end) )
             self.vertical_LIDAR_data   = self.readLIDAR( path, self._vertical_LIDAR, (start,end) )
@@ -45,7 +56,7 @@ class Dataset:
             data.append( self.vertical_LIDAR_data )
             data.append( self.INS_data )
 
-            cPickle.dump( data, open( '.dataset', 'w' ) )
+            cPickle.dump( data, open( target, 'w' ), protocol=cPickle.HIGHEST_PROTOCOL  )
 
     def readINS( self, path, fname, bounds ):
 
@@ -62,8 +73,6 @@ class Dataset:
         INS_frame = numpy.reshape( INS_frame, (num_elements, sensor_size ) ) 
 
         # Create LIDAR
-        #return [ Sensors.INS(frame) for frame in INS_frame]
-       
         frames = []
         for frame in INS_frame:
             
@@ -117,7 +126,8 @@ class Dataset:
 
 class Threader:
 
-    def Thread( self, LIDAR_frames, INS_frames ):
+    @staticmethod
+    def Thread( LIDAR_frames, INS_frames ):
 
         threaded = [] 
 
@@ -136,26 +146,27 @@ class Threader:
 
         return threaded
 
-class PointCloud:
+class Projector:
 
-    def __init__(self):
-        pass
+    @staticmethod
+    def Project( threaded ):
+     
+        pts = []
 
+        if isinstance( threaded, tuple ):
+            pts.extend( Math.projectScanAtPose( threaded[0], threaded[1] ) )
 
+        else:
+            for element in threaded:
+
+                pts.extend( Math.projectScanAtPose( element[0], element[1] ) )
+
+        return PointCloud( pts )
 
 if __name__=="__main__":
 
     #D = Dataset( '/Users/ian/code/datasets/2012-04-16-20-05-30NightWoodstock1/', start=0, end=float('inf') )
-    D = Dataset( '/Users/ian/code/datasets/2012-04-16-20-05-30NightWoodstock1/', start=100, end=120 )
+    D = Dataset( '/Users/ian/code/datasets/2012-04-16-20-05-30NightWoodstock1/', start=100, end=102 )
 
     threaded = Threader().Thread( D.horizontal_LIDAR_data, D.INS_data )
-
-    pts = []
-
-    for element in threaded:
-
-        pts.extend( Math.projectScanAtPose( element[0], element[1] ) )
-  
-    plot_pairs( pts )
-    
 
