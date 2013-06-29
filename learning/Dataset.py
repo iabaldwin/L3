@@ -136,33 +136,11 @@ class Threader:
 
         return threaded
 
-def plot( dataset ):
+class PointCloud:
 
-    poses = dataset.INS_data
+    def __init__(self):
+        pass
 
-    X = []
-    Y = []
-
-    for pose in poses:
-        X.append( pose.x )
-        Y.append( pose.y )
-    
-    pyplot.scatter( X, Y )
-    pyplot.show()
-
-
-def plot_pairs( pairs ):
-
-
-    X = []
-    Y = []
-
-    for element in pairs:
-        X.append( element[0] )
-        Y.append( element[1] )
-    
-    pyplot.scatter( X, Y )
-    pyplot.show()
 
 
 if __name__=="__main__":
@@ -180,8 +158,4 @@ if __name__=="__main__":
   
     plot_pairs( pts )
     
-
-
-
-    #plot(D)
 
