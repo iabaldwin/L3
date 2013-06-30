@@ -1697,7 +1697,6 @@ namespace Visualisers
             dynamic_cast< glv::View* >(estimation.get()) <<
             dynamic_cast< glv::View* >(frequency.get()) << 
             dynamic_cast< glv::View* >(memory_statistics.get())
-            
             ;
 
         boost::shared_ptr< glv::Label > observer_label = boost::make_shared< glv::Label >( "Observer update" );
@@ -1736,37 +1735,79 @@ namespace Visualisers
         history_labels.push_back( "Points (ms)");
         history_labels.push_back( "Estimation (ms)" );
 
-        for( int i=0; i<4; i++ )
+        // Create the plot
+        boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 550, 80) ) );
+
+        glv::Color colors[] = { glv::Color( 1, 0, 0 ), glv::Color( 0, 1, 0 ), glv::Color( 0, 1, 0 ) };
+
+        // Vanilla plottables
+        for( int i=0; i<3; i++ )
         {
             // Create the plottable
             boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
-            // Create the plot
-            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 550, 80), *plottable ) );
-
-            // Label
-            boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( history_labels[i] );
-            graph_label->pos( glv::Place::TR, 0, 0 ).anchor( glv::Place::TR ); 
-            *plot  << *graph_label;
-            labels.push_back( graph_label );
-
-            // Disable control (dragging)
-            plot->disable( glv::Controllable );
-            plot->showNumbering(true);
-            plot->numbering(false,0);
-            plot->range( 0, 100, 0 );
-            plot->range( 0, 1.1, 1 );
-
-            (*this) << *plot;
-
+            plot->add( *plottable );
+            plottable->color( colors[i] );
             plottables.push_back( plottable );
-            plots.push_back( plot );
+        }
+        
+        // Cumulative plottable
+        // TODO: Finish
+        //boost::shared_ptr< StatisticsPlottable<double> > plottable( new CumulativePlottable<double>() ); 
+        //plot->add( *plottable );
+        //plottable->color( colors[i] );
+        //plottables.push_back( plottable );
+
+
+        //Label
+        boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( "Engine update (ms)" );
+        graph_label->pos( glv::Place::TR, 0, 0 ).anchor( glv::Place::TR ); 
+        *plot  << *graph_label;
+        labels.push_back( graph_label );
+
+        //Disable control (dragging)
+        plot->disable( glv::Controllable );
+        plot->showNumbering(true);
+        plot->numbering(false,0);
+        plot->range( 0, 100, 0 );
+        plot->range( 0, 1.1, 1 );
+
+        (*this) << *plot;
+        plots.push_back( plot );
+       
+        // Estimator statistics
+        boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
+        boost::shared_ptr< glv::Plot > estimator_plot( new glv::Plot( glv::Rect( 550, 80), *plottable ) );
+        plottables.push_back( plottable );
+
+        boost::shared_ptr< glv::Label > estimator_label = boost::make_shared< glv::Label >( "Estimator update (ms)" );
+        estimator_label->pos( glv::Place::TR, 0, 0 ).anchor( glv::Place::TR ); 
+        *estimator_plot  << *estimator_label;
+        labels.push_back( estimator_label );
+
+        estimator_plot->disable( glv::Controllable );
+        estimator_plot->showNumbering(true);
+        estimator_plot->numbering(false,0);
+        estimator_plot->range( 0, 100, 0 );
+        estimator_plot->range( 0, 1.1, 1 );
+
+        (*this) << *estimator_plot;
+        plots.push_back( estimator_plot );
+       
+        this->arrange();
+        this->fit();
+        this->enable( glv::DrawBorder );
+    }
+
+    /*
+     *  Visual histogram
+     */
+
+    template <typename T>
+        VisualHistogram<T>::VisualHistogram()
+        {
 
         }
 
-        this->arrange();
-   
-        this->enable( glv::DrawBorder );
-    }
 
     /*
      *  Specific controllers

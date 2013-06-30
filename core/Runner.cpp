@@ -4,7 +4,6 @@
 
 namespace L3
 {
-
     DatasetRunner::DatasetRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup ) 
         : mission(mission),
             dataset(dataset), 
@@ -47,7 +46,6 @@ namespace L3
         ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>( velocity_source );      // ICS
 
         // Pose Provider
-        //pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 50 );
         pose_windower = boost::make_shared< L3::ConstantDistanceWindower > ( ics_velocity_provider.get(), 30 );
        
         // Swathe generator
@@ -81,6 +79,7 @@ namespace L3
                 << swathe_builder.get()
                 << predictor.get()
                 ;
+   
     }
 
     /*
@@ -145,11 +144,8 @@ namespace L3
                  *Point cloud generation, projection
                  */
                 performance_timer.begin();
-                //L3::WriteLock point_cloud_lock( projector->cloud->mutex );
                 projector->project( swathe_builder->swathe );
-                //point_cloud_lock.unlock();
                 timings[ performance_index++ ] = performance_timer.elapsed();
-
 
                 /*
                  *Update everything else
@@ -158,10 +154,8 @@ namespace L3
                 update( 0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
-                
                 if( stand_alone )
                 {
-
                     if( !output.is_open() )
                         output.open( "poses.dat", std::ios::out );
 
@@ -172,7 +166,7 @@ namespace L3
                     ss << "Estimation:"       << "\t\t" << timings[3] << std::endl;
                     std::cout << ss.str() << "------------" << std::endl;
 
-                    output << *current << '\n';
+                    output << *current << '\n';     // Buffer
                 }
                 else
                 {
@@ -182,11 +176,12 @@ namespace L3
                         frequency = (_frequency + counts*frequency)/(++counts);
                 }
 
-                /*
-                 * Perform post-update, don't care about how long this takes
+                /* 
+                 * Perform post-update, don't care about how long this takes. In headless mode,
+                 * there wouldn't be anything here except for a publisher. 
                  */
-
                 std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
+            
             }
             else
             {

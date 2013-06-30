@@ -1353,24 +1353,31 @@ namespace Visualisers
 
         void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
         {
+            L3::ReadLock master( this->mutex );
+            
             while(i()){
                 double x = i[0];
                 double y = d.at<double>(0, i[0]);
                 g.addVertex(x, y);
             }
+            
+            master.unlock();
+
         }
 
         boost::shared_ptr< variable_lock<T> > lock;
 
-        void setVariable( T& t )
+        virtual void setVariable( T& t )
         {
             lock = boost::make_shared< variable_lock<T> >( boost::ref( t ) );
         }
 
-        void update()
+        virtual void update()
         {
             if (!lock)
                 return;
+
+            L3::WriteLock master( this->mutex );
 
             this->plot_data.push_back( lock->t );
 
@@ -1388,8 +1395,65 @@ namespace Visualisers
                 this->mData.assign( this->plot_data[counter]*10, i[0], i[1] );
                 counter++;
             }
+            
+            master.unlock();
 
         }
+
+    };
+
+    template <typename T>
+        struct CumulativePlottable : StatisticsPlottable<T>
+    {
+
+        CumulativePlottable() 
+        {
+
+        }
+
+        std::deque< boost::shared_ptr< variable_lock<T> > > locks;
+
+        void setVariable( T& t )
+        {
+            boost::shared_ptr< variable_lock<T> > lock = boost::make_shared< variable_lock<T> >( boost::ref( t ) );
+
+            locks.push_back( lock );
+        }
+
+        void update()
+        {
+            L3::WriteLock master( this->mutex );
+
+            T accumulate(0);
+
+            for( typename std::deque< boost::shared_ptr< variable_lock<T> > >::iterator it =  locks.begin();
+                    it != locks.end();
+                    it++ )
+            {
+                accumulate += it->t;
+            }
+                 
+            this->plot_data.push_back( accumulate );
+
+            if ( this->plot_data.size() > 100 )
+                this->plot_data.pop_front();
+
+            this->mData.resize( glv::Data::DOUBLE, 1, this->plot_data.size() );
+
+            glv::Indexer i( this->mData.size(1));
+
+            int counter = 0;
+
+            while( i() && counter< this->plot_data.size() )
+            {
+                this->mData.assign( this->plot_data[counter]*10, i[0], i[1] );
+                counter++;
+            }
+            
+            master.unlock();
+
+        }
+
 
     };
 
@@ -1425,6 +1489,12 @@ namespace Visualisers
 
     };
 
+    template <typename T>
+        struct VisualHistogram : StatisticsPlottable<T>
+    {
+        VisualHistogram();
+    
+    };
     
     /*
      *  Chase

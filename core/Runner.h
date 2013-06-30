@@ -3,8 +3,8 @@
 
 #include <Poco/Runnable.h>
 #include <Poco/Thread.h>
-
-#include <boost/timer.hpp>
+//#include <Poco/Task.h>
+//#include <Poco/TaskManager.h>
 
 #include "Core.h"
 #include "Iterator.h"
@@ -15,10 +15,7 @@
 #include "ScanMatching.h"
 #include "Predictor.h"
 #include "VelocityProvider.h"
-
-#include <Poco/Task.h>
-#include <Poco/TaskManager.h>
-
+#include "Performance.h"
 
 
 namespace L3
@@ -90,8 +87,8 @@ struct DatasetRunner : ThreadedRunner
 
     std::ofstream   output;
 
-    Configuration::Mission*     mission;
     Dataset*                    dataset;
+    Configuration::Mission*     mission;
     
     float           speedup;
     bool            stand_alone;
@@ -175,6 +172,11 @@ struct EstimatorRunner : DatasetRunner, Lockable
         : DatasetRunner( dataset, mission, speedup ),
             experience(experience)
     {
+
+        // Add in the oracle performance
+        oracle_innovation = boost::make_shared< RelativeDisplacement >( experience, current );
+   
+        //*this << boost::dynamic_pointer_cast< Updateable >(oracle_innovation).get();
     }
 
     ~EstimatorRunner()
@@ -187,6 +189,7 @@ struct EstimatorRunner : DatasetRunner, Lockable
     
     L3::Experience*                                         experience;
     boost::shared_ptr< L3::Estimator::Algorithm<double> >   algorithm;
+    boost::shared_ptr< RelativeDisplacement > oracle_innovation, estimator_innovation;
 
     bool update( double time );
 
@@ -198,6 +201,8 @@ struct EstimatorRunner : DatasetRunner, Lockable
             observers.erase( it );
 
         this->algorithm = algo;
+        
+        //estimator_innovation = boost::make_shared< RelativeDisplacement >( experience, algorithm-> );
      
         // Is it updateable
         if( L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) )

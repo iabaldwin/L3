@@ -27,6 +27,7 @@ add_library( L3
     PoseWindower.cpp
     ScanMatching.cpp
     VelocityProvider.cpp
+    Performance.cpp
     Misc.cpp
     )
 
