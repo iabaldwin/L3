@@ -11,6 +11,8 @@ from matplotlib import animation
 
 from sklearn import cluster
 
+import matplotlib.cm as cm
+
 class Generator:
 
     def __init__(self, dataset ):
@@ -20,8 +22,8 @@ class Generator:
 
         self.threaded = Dataset.Threader.Thread( D.horizontal_LIDAR_data, D.INS_data )
 
+        self.poses  = []
         self.clouds = []
-        self.poses = []
  
     def BuildLocal( self ):
 
@@ -98,17 +100,18 @@ class Generator:
         
         #mins = (x_min, y_min)
         #maxs = (x_max, y_max)
-
         #self.axes.set_xlim( [mins[0], maxs[0] ] )
         #self.axes.set_ylim( [mins[1], maxs[1] ] )
  
-        dbscan = cluster.DBSCAN(eps=.2)
+        dbscan = cluster.DBSCAN(eps=2)
 
         dbscan.fit( dat )
 
         y_pred = dbscan.labels_.astype(numpy.int)
 
-        print numpy.amax( y_pred ) 
+        colors = cm.hot( y_pred ) 
+        
+        self.scatter.set_array( colors[ ::, 0] )
 
         self.axes.set_xlim( -25, 25 )
         self.axes.set_ylim( -20, 30 )
