@@ -9,6 +9,11 @@ namespace Math
     {
         return sqrt( pow(a.X() - b.X(), 2.0 ) + pow(a.Y() -b.Y(), 2.0 ) + pow(a.Z() -b.Z(), 2.0 ) );
     }
+
+    double SE2Metric( const L3::SE3& a, const L3::SE3& b )
+    {
+        return sqrt( pow(a.X() - b.X(), 2.0 ) + pow(a.Y() -b.Y(), 2.0 ) );
+    }
 }
 
 

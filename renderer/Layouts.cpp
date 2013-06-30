@@ -478,8 +478,8 @@ namespace L3
                 composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( it->get() ) );
             }
 
-            pose_renderers.push_back( boost::make_shared< L3::Visualisers::PoseRenderer>( boost::ref( *runner->current ) ) );
-            pose_renderers.push_back( boost::make_shared< L3::Visualisers::AnimatedPoseRenderer> ( boost::ref( *runner->current ) ) );
+            pose_renderers.push_back( boost::make_shared< L3::Visualisers::PoseRenderer>( boost::ref( *runner->estimated_pose ) ) );
+            pose_renderers.push_back( boost::make_shared< L3::Visualisers::AnimatedPoseRenderer> ( boost::ref( *runner->estimated_pose ) ) );
 
             for( std::deque< boost::shared_ptr< PoseRenderer > >::iterator it = pose_renderers.begin();
                     it != pose_renderers.end();
@@ -511,7 +511,7 @@ namespace L3
              *  Swathe cloud, separate view
              */
             runtime_cloud_renderer_view->cloud = runner->point_cloud;
-            runtime_cloud_renderer_view->current_estimate = runner->current;
+            runtime_cloud_renderer_view->current_estimate = runner->estimated_pose;
 
             /*
              *  Scan renderers

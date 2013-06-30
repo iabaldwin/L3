@@ -290,6 +290,8 @@ namespace Estimator
             {
 
             }
+        
+            L3::SE3 current_prediction;
 
             float fundamental_frequency;
             boost::shared_ptr< CostFunction<T> > cost_function;

@@ -222,9 +222,9 @@ namespace L3
             runner->setAlgorithm( algo );
     
             // Reset pose
-            *runner->current = runner->oracle->operator()(); 
+            *runner->estimated_pose = runner->oracle->operator()(); 
         
-            // Reset pose
+            // Reset pose ?Que
             //L3::SE3 pose_estimate = runner->oracle->operator()();
             //L3::SE3 closest_pose = runner->experience->getClosestPose( pose_estimate );
             //closest_pose.Q( pose_estimate.Q() );

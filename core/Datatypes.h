@@ -241,6 +241,7 @@ std::ostream& operator<<( std::ostream& o, const L3::LHLV& lhlv );
 namespace Math
 {
     double norm( const L3::SE3& a, const L3::SE3& b );
+    double SE2Metric( const L3::SE3& a, const L3::SE3& b );
 
 } //Math
 } //L3

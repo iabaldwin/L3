@@ -912,7 +912,7 @@ namespace L3
              *Current estimate
              */
             boost::shared_ptr< Leaf > pose_renderer = 
-                boost::make_shared< UKFPoseEstimate >( algorithm->current_estimate );
+                boost::make_shared< UKFPoseEstimate >( algorithm->current_prediction );
 
             composite->operator<<( *pose_renderer );
             this->leafs.push_back( pose_renderer );
@@ -948,7 +948,7 @@ namespace L3
              *  Weight stand-alone view
              */
             boost::shared_ptr< glv::View > sigma_points_viewer = 
-                boost::make_shared< UKFSigmaPointsView >( algorithm, algorithm->current_estimate );
+                boost::make_shared< UKFSigmaPointsView >( algorithm, algorithm->current_prediction );
 
             views.push_back( sigma_points_viewer );
 

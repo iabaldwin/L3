@@ -58,7 +58,8 @@ namespace L3
         predictor = boost::make_shared< L3::Predictor >( ics_velocity_provider.get() );
         
         //  Zero-th pose
-        current = boost::make_shared< L3::SE3 >();
+        estimated_pose = boost::make_shared< L3::SE3 >();
+        oracle_pose = boost::make_shared< L3::SE3 >();
         
         // Timing container
         timings.resize(5);
@@ -166,7 +167,7 @@ namespace L3
                     ss << "Estimation:"       << "\t\t" << timings[3] << std::endl;
                     std::cout << ss.str() << "------------" << std::endl;
 
-                    output << *current << '\n';     // Buffer
+                    output << *estimated_pose << '\n';     // Buffer
                 }
                 else
                 {
@@ -197,13 +198,14 @@ namespace L3
         /*
          *  Update the experience
          */
-        experience->update( current->X(), current->Y() );
+        experience->update( estimated_pose->X(), estimated_pose->Y() );
 
         /*
          *  Do estimation
          */
-
         static int counter = 0;
+
+        *oracle_pose = oracle->operator()();
 
         /*
          *  Boot
@@ -211,12 +213,12 @@ namespace L3
         if( counter++ < 1500 )
         {
             //*current = experience->getClosestPose( oracle->operator()() );
-            *current = oracle->operator()();
+            *estimated_pose = *oracle_pose;
         }
         else
         {
             L3::ReadLock algo_lock( this->mutex ); 
-            *current = algorithm->operator()( projector->cloud, *current );
+            *estimated_pose = algorithm->operator()( projector->cloud, *estimated_pose );
         }
 
         return true;

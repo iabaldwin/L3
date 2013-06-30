@@ -12,16 +12,14 @@ namespace L3
             boost::shared_ptr< SE3 > pose_ptr = pose.lock();
             
             if( pose_ptr )
-                displacement = L3::Math::norm( *pose_ptr, experience->getClosestPose( *pose_ptr ));
-            
+                displacement = L3::Math::SE2Metric( *pose_ptr, experience->getClosestPose( *pose_ptr ));
+
+            std::cout << displacement << std::endl;
+
             previous_update = current;
         }
 
     }
-
-
-
-
 }
 
 

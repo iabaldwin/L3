@@ -297,9 +297,9 @@ namespace L3
                 
                 }
 
-                current_estimate = adapt( ukf->x );
+                this->current_prediction = adapt( ukf->x );
 
-                return current_estimate;
+                return this->current_prediction;
             }
 
         template <typename T>

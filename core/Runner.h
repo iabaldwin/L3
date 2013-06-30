@@ -99,8 +99,8 @@ struct DatasetRunner : ThreadedRunner
 
     std::list < Updater* > updaters;
     
-    boost::shared_ptr< L3::SE3 > current;
-    
+    boost::shared_ptr< L3::SE3 > estimated_pose, oracle_pose;
+
 
     boost::shared_ptr< L3::SE3 >                horizontal_projection;
     boost::shared_ptr< L3::SE3 >                vertical_projection;
@@ -174,9 +174,11 @@ struct EstimatorRunner : DatasetRunner, Lockable
     {
 
         // Add in the oracle performance
-        oracle_innovation = boost::make_shared< RelativeDisplacement >( experience, current );
-   
-        //*this << boost::dynamic_pointer_cast< Updateable >(oracle_innovation).get();
+        oracle_innovation = boost::make_shared< RelativeDisplacement >( experience, oracle_pose );
+ 
+        performance_updater << boost::dynamic_pointer_cast< Updateable >(oracle_innovation).get();
+
+        *this << &performance_updater;
     }
 
     ~EstimatorRunner()
@@ -186,8 +188,9 @@ struct EstimatorRunner : DatasetRunner, Lockable
         if ( thread.isRunning() )
             thread.join();
     }
-    
-    L3::Experience*                                         experience;
+
+    L3::Updater         performance_updater;
+    L3::Experience*     experience;
     boost::shared_ptr< L3::Estimator::Algorithm<double> >   algorithm;
     boost::shared_ptr< RelativeDisplacement > oracle_innovation, estimator_innovation;
 
