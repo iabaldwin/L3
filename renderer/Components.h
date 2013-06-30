@@ -1493,7 +1493,6 @@ namespace Visualisers
         struct VisualHistogram : StatisticsPlottable<T>
     {
         VisualHistogram();
-    
     };
     
     /*

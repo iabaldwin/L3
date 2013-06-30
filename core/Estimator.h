@@ -296,6 +296,8 @@ namespace Estimator
             float fundamental_frequency;
             boost::shared_ptr< CostFunction<T> > cost_function;
 
+            virtual std::string name() = 0;
+
             virtual SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
         };
 
@@ -372,6 +374,11 @@ namespace Estimator
 
             }
             
+            std::string name() 
+            {
+                return "IterativeDescent";
+            }
+            
             boost::shared_ptr< HistogramPyramid<T> > pyramid;
        
             std::deque< boost::shared_ptr< DiscreteEstimator<T> > > discrete_estimators;
@@ -441,6 +448,11 @@ namespace Estimator
       
             double getHypothesisCost( const gsl_vector* hypothesis );
 
+            std::string name()
+            {
+                return "Minimisation";
+            }
+
         };
 
     template <typename T>
@@ -465,12 +477,17 @@ namespace Estimator
         }
 
 
+
         boost::shared_ptr< Minimisation<T> >                    minimisation;
         std::deque< boost::shared_ptr< DiscreteEstimator<T> > > discrete_estimators;
 
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
 
+        std::string name()
+        {
+            return "Hybrid";
+        }
     };
 
     double dlib_minimisation_function( const dlib::matrix<double,0,1>& input );
@@ -507,6 +524,10 @@ namespace Estimator
         
         double getHypothesisCost( const dlib::matrix<double,0,1>& x  );
 
+        std::string name()
+        {
+            return "BFGS";
+        }
     };
 
 }

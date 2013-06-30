@@ -102,6 +102,12 @@ namespace L3
         
         int counts = 0;
 
+        if( stand_alone )
+        {
+            std::string path = dataset->path() + "/poses.dat";
+            output.open( path.c_str(), std::ios::out );
+        }
+
         while( running ) // Main thread
         {
             if( !paused )
@@ -157,8 +163,7 @@ namespace L3
 
                 if( stand_alone )
                 {
-                    if( !output.is_open() )
-                        output.open( "poses.dat", std::ios::out );
+                    
 
                     std::stringstream ss;
                     ss << "Observer update:"  << "\t" << timings[0] << std::endl;

@@ -11,6 +11,8 @@
 #include <mach/mach_host.h>
 #include <mach/mach.h> 
 
+#include <gsl/gsl_histogram.h>
+
 namespace L3
 {
 namespace Visualisers
@@ -1808,6 +1810,7 @@ namespace Visualisers
 
         }
 
+    
 
     /*
      *  Specific controllers

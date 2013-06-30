@@ -88,7 +88,11 @@ namespace Estimator
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
         bool update( double time);
-    
+   
+        std::string name()
+        {
+            return "UKF";
+        }
     };
 
     template <typename T>
@@ -136,6 +140,11 @@ namespace Estimator
         SE3 operator()( PointCloud<T>* swathe, SE3 estimate );
 
         bool update( double time);
+   
+        std::string name()
+        {
+            return "ParticleFilter";
+        }
     };
 
 
