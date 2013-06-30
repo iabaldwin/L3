@@ -20,19 +20,13 @@ class PointCloud:
     def __iter__(self):
         return iter(self.pts )
 
+    def __repr__(self):
+        return self.pts.__repr__()
+
+
 class Dataset:
 
-    def __init__( self, path, **kwargs ):
-
-        try:
-            start = kwargs.pop('start')
-        except:
-            start = 0
-
-        try:
-            end = kwargs.pop('end')
-        except:
-            end = float('inf')
+    def __init__( self, path, start=0, end=float('inf'), regenerate=False, **kwargs ):
 
         self._horizontal_LIDAR = 'LMS1xx_10420001_192.168.0.51.lidar'
         self._vertical_LIDAR   = 'LMS1xx_10420002_192.168.0.50.lidar'
@@ -40,13 +34,15 @@ class Dataset:
       
         target = os.path.join( path, 'L3', '.dataset' )
 
-        if os.path.exists( target) :
+        if os.path.exists( target ) and not regenerate :
             data = cPickle.load( open( target, 'r' ) )
             self.horizontal_LIDAR_data = data[0] 
             self.vertical_LIDAR_data   = data[1] 
             self.INS_data              = data[2] 
         
         else:
+            print 'Regenerating...'
+            print (start,end)
             self.horizontal_LIDAR_data = self.readLIDAR( path, self._horizontal_LIDAR, (start,end) )
             self.vertical_LIDAR_data   = self.readLIDAR( path, self._vertical_LIDAR, (start,end) )
             self.INS_data              = self.readINS( path, self._INS, (start,end) )
@@ -158,15 +154,11 @@ class Projector:
 
         else:
             for element in threaded:
-
                 pts.extend( Math.projectScanAtPose( element[0], element[1] ) )
 
         return PointCloud( pts )
 
 if __name__=="__main__":
 
-    #D = Dataset( '/Users/ian/code/datasets/2012-04-16-20-05-30NightWoodstock1/', start=0, end=float('inf') )
     D = Dataset( '/Users/ian/code/datasets/2012-04-16-20-05-30NightWoodstock1/', start=100, end=102 )
-
-    threaded = Threader().Thread( D.horizontal_LIDAR_data, D.INS_data )
 

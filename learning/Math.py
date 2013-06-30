@@ -58,7 +58,9 @@ def projectScanAtPose( LIDAR, INS ):
         R[1,3] = x_y[1] 
    
         res = numpy.dot( mat, R )
+       
         projected.append( ( res[0,3], res[1,3], res[2,3] ) )
+    
 
     return projected
 

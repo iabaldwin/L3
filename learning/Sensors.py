@@ -29,6 +29,9 @@ class INS( Sensor ):
         self.p = data[5]
         self.q = data[6]
 
+    def __repr__(self):
+        return 'x=%f, y=%f, z=%f' % (self.x, self.y, self.z )
+
 class LIDAR( Sensor ):
 
     @staticmethod
@@ -43,8 +46,8 @@ class LIDAR( Sensor ):
     
         self.time = data[0]
         self.ranges = data[1:541+1]
-    
    
+       
 if __name__=="__main__":
 
     LIDAR()
