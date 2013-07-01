@@ -671,6 +671,9 @@ namespace L3
                     tables.erase( it );
             }
 
+            // Load estimator runner
+            statistics->load( runner );
+
             return true;
         }
 
@@ -683,8 +686,9 @@ namespace L3
             if ( it != tables.end() )
                 tables.erase( it );
 
+            // Produce algorithm renderer
             algorithm_renderer = AlgorithmRendererFactory::Produce( algorithm, temporal_updater.get(), composite );
-
+            
             if (algorithm_renderer)
             {
                 tables.push_back( algorithm_renderer );
@@ -698,7 +702,11 @@ namespace L3
                     else
                         algorithm_renderer->disable( glv::Visible );
                 }
+            
+                // Associate results
+                 
             }
+
        
             return true;
         }

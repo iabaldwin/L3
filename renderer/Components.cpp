@@ -1794,33 +1794,32 @@ namespace Visualisers
          */
         //1. Oracle 
         oracle_displacement.reset( new VisualHistogram<double>() ); 
-        boost::shared_ptr< glv::Plot > oracle_displacement_plot( new glv::Plot( glv::Rect( 550/2, 80*2), *oracle_displacement ) );
         this->updater->operator<<( oracle_displacement.get() );
-
-        oracle_displacement_plot->disable( glv::Controllable );
-        oracle_displacement_plot->showNumbering(true);
-        oracle_displacement_plot->numbering(false,0);
-        oracle_displacement_plot->range( 0, oracle_displacement->hist->n, 0 );
-        oracle_displacement_plot->range( 0, 1.1, 1 );
-
-
-        (*this) << *oracle_displacement_plot;
-        plots.push_back( oracle_displacement_plot );
       
-
         //2. Estimator
         estimator_displacement.reset( new VisualHistogram<double>() ); 
-        boost::shared_ptr< glv::Plot > estimator_displacement_plot( new glv::Plot( glv::Rect( 550/2, 80*2), *estimator_displacement ) );
         this->updater->operator<<( estimator_displacement.get() );
+        estimator_displacement->color( glv::Color( 0, 1, 0 ) );
+        
+        boost::shared_ptr< glv::Plot > displacement_plot( new glv::Plot( glv::Rect( 550, 80*2) ) );
 
+        displacement_plot->add( *oracle_displacement );
+        displacement_plot->add( *estimator_displacement );
 
+        displacement_plot->disable( glv::Controllable );
+        displacement_plot->showNumbering(true);
+        displacement_plot->numbering(false,0);
+        displacement_plot->range( 0, oracle_displacement->hist->n, 0 );
+        displacement_plot->range( 0, 1.1, 1 );
 
-        (*this) << *estimator_displacement_plot;
-        plots.push_back( estimator_displacement_plot );
+        (*this) << *displacement_plot;
+        plots.push_back( displacement_plot );
       
+        this->enable( glv::DrawBorder );
+        
         this->arrange();
         this->fit();
-        this->enable( glv::DrawBorder );
+        
     }
 
     /*
@@ -1828,11 +1827,12 @@ namespace Visualisers
      */
 
     template <typename T>
-        VisualHistogram<T>::VisualHistogram()
+        VisualHistogram<T>::VisualHistogram( double max, int num_bins ) : 
+            max(max), num_bins(num_bins)
         {
-            this->hist = gsl_histogram_alloc( 100 ); 
+            this->hist = gsl_histogram_alloc( num_bins ); 
 
-            gsl_histogram_set_ranges_uniform( this->hist, 0, 20 );
+            gsl_histogram_set_ranges_uniform( this->hist, 0, max );
 
             this->color( glv::Color( 1, 0, 0, .5 ) );
             this->stroke(2);

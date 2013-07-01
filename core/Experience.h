@@ -154,32 +154,36 @@ struct ExperienceLoader
         std::ifstream experience_poses( (target + "/experience.pose").c_str(), std::ios::binary );
 
         boost::shared_ptr< std::deque< L3::SE3 > > poses = boost::make_shared< std::deque< L3::SE3 > >();  
-        std::vector<float> pose_stream;
 
         int counter = 0;
         std::vector<double> tmp(4);
+        
+        std::vector<float> pose_stream;
+        
         while( experience_poses.good() )
         {
             double datum;
 
             experience_poses.read( (char*)(&datum), sizeof(double) );
 
-            pose_stream.push_back( float(datum) );
-  
             tmp[counter++] = datum; 
 
             if( counter == 4 )
             {
                 poses->push_back( L3::SE3( tmp[0], tmp[1], tmp[2] , 0, 0, tmp[3] ) );
-           
                 counter = 0;
+            
+                pose_stream.push_back( float(tmp[0] )  );   // Only search over x and y
+                pose_stream.push_back( float(tmp[1] )  );
+  
             }
         
         }
 
         experience_poses.close();
 
-        flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/4, 4 );
+        //flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/4, 4 );
+        flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/2, 2 );
 
         float* ptr = flann_dataset[0];
 
@@ -189,8 +193,6 @@ struct ExperienceLoader
         index->buildIndex();
 
         experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< KNNPolicy >() ), window_sections, index, poses ) );
-        //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< StrictlyRetrospectivePolicy >() ), window_sections ) );
-        //experience.reset( new Experience( sections, experience_name, boost::dynamic_pointer_cast< SelectionPolicy >( boost::make_shared< RetrospectiveWithLookaheadPolicy>() ), window_sections ) );
     }
         
 };

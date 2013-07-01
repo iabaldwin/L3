@@ -22,10 +22,12 @@ namespace L3
     void Updater::remove( Updateable* updateable )
     {
         L3::WriteLock lock( this->mutex );
-        updateables.erase( std::find( updateables.begin(), 
-                    updateables.end(), 
-                    updateable
-                    ) );
+
+        if( updateable )
+            updateables.erase( std::find( updateables.begin(), 
+                        updateables.end(), 
+                        updateable
+                        ) );
         lock.unlock();
     }
 

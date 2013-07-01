@@ -352,14 +352,15 @@ namespace L3
         flann::Matrix<int> indices(new int[1*1], 1, 1 );
         flann::Matrix<float> dists(new float[1*1], 1, 1);
  
-        flann::Matrix<float> query( new float[1*4], 1, 4 );
+        //flann::Matrix<float> query( new float[1*4], 1, 4 );
+        flann::Matrix<float> query( new float[1*2], 1, 2 );
 
         float* ptr = query[0];
 
         *ptr++ = input.X();
         *ptr++ = input.Y();
-        *ptr++ = input.Z();
-        *ptr++ = input.Q();
+        //*ptr++ = input.Z();
+        //*ptr++ = input.Q();
 
         pose_lookup->knnSearch( query, indices, dists, 1, flann::SearchParams(128));
 

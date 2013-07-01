@@ -13,7 +13,7 @@ namespace L3
             
             if( pose_ptr )
                 displacement = L3::Math::SE2Metric( *pose_ptr, experience->getClosestPose( *pose_ptr ));
-
+            
             previous_update = current;
         }
 

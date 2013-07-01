@@ -1460,8 +1460,11 @@ namespace Visualisers
     template <typename T>
         struct VisualHistogram : BasicPlottable<T>
     {
-        VisualHistogram();
-    
+        VisualHistogram( double max = 10.0, int num_bins = 50 );
+  
+        int num_bins;
+        double max;
+
         void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
         {
             L3::ReadLock master( this->mutex );
@@ -1518,13 +1521,13 @@ namespace Visualisers
             plottables[2]->setVariable( runner->timings[2] );
             plottables[3]->setVariable( runner->timings[3] );
        
-            if( L3::EstimatorRunner* runner_ptr = dynamic_cast<L3::EstimatorRunner*>( runner ) )
-            {
-                oracle_displacement->setVariable( runner_ptr->oracle_innovation->displacement );
-                //estimator_displacement->setVariable( runner_ptr->estimator_innovation->displacement );
-            }
         }
 
+        void load( L3::EstimatorRunner* runner )
+        {
+            oracle_displacement->setVariable( runner->oracle_innovation->displacement );
+            estimator_displacement->setVariable( runner->estimator_innovation->displacement );
+        }
     };
 
         

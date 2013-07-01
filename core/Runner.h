@@ -178,6 +178,7 @@ struct EstimatorRunner : DatasetRunner, Lockable
  
         performance_updater << boost::dynamic_pointer_cast< Updateable >(oracle_innovation).get();
 
+        // Add the performance updater
         *this << &performance_updater;
     }
 
@@ -198,16 +199,17 @@ struct EstimatorRunner : DatasetRunner, Lockable
 
     EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algo )
     {
-        // Remove it if it exista
+        // Remove it if it exists
         std::list< TemporalObserver* >::iterator it = std::find( observers.begin(), observers.end(), dynamic_cast< L3::TemporalObserver* >( this->algorithm.get() ) ); 
         if(  it != observers.end() )
             observers.erase( it );
 
         this->algorithm = algo;
-       
-
+  
         // Create/Re-create estimator innovation
+        performance_updater.remove( this->estimator_innovation.get() ); 
         estimator_innovation = boost::make_shared< RelativeDisplacement >( experience, algorithm->current_prediction );
+        performance_updater <<( this->estimator_innovation.get() ); 
      
         // Is it updateable
         if( L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) )
