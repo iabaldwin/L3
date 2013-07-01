@@ -508,7 +508,7 @@ namespace L3
                 lock.unlock();
 
                 //L3::SE3 first_particle = hypotheses.front();
-                L3::SE3 translation = algorithm_ptr->current_prediction;;
+                L3::SE3 translation = *(algorithm_ptr->current_prediction);
                 glv::draw::translate( -1*translation.X(), -1*translation.Y(), -10.0 );
 
                 int counter = 0;
@@ -642,7 +642,7 @@ namespace L3
                 L3::ReadLock master( this->mutex );
                 std::vector<double> weights( algorithm_ptr->weights.begin(), algorithm_ptr->weights.end() );
                 std::vector<L3::SE3> hypotheses( algorithm_ptr->hypotheses.begin(), algorithm_ptr->hypotheses.end() );
-                L3::SE3 current_prediction = algorithm_ptr->current_prediction;
+                L3::SE3 current_prediction = *(algorithm_ptr->current_prediction);
                 master.unlock();
 
                 x_weight->weights = weights;
@@ -912,7 +912,7 @@ namespace L3
              *Current estimate
              */
             boost::shared_ptr< Leaf > pose_renderer = 
-                boost::make_shared< UKFPoseEstimate >( algorithm->current_prediction );
+                boost::make_shared< UKFPoseEstimate >( *(algorithm->current_prediction ) );
 
             composite->operator<<( *pose_renderer );
             this->leafs.push_back( pose_renderer );
@@ -948,7 +948,7 @@ namespace L3
              *  Weight stand-alone view
              */
             boost::shared_ptr< glv::View > sigma_points_viewer = 
-                boost::make_shared< UKFSigmaPointsView >( algorithm, algorithm->current_prediction );
+                boost::make_shared< UKFSigmaPointsView >( algorithm, *(algorithm->current_prediction ) );
 
             views.push_back( sigma_points_viewer );
 

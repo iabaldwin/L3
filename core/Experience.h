@@ -179,7 +179,7 @@ struct ExperienceLoader
 
         experience_poses.close();
 
-        flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/3, 3 );
+        flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/4, 4 );
 
         float* ptr = flann_dataset[0];
 

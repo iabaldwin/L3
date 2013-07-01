@@ -1479,19 +1479,15 @@ namespace Visualisers
             experience_pose = experience_ptr->getClosestPose( current );
 
         //current.Z( current.Z() + 3.0);
-        current.Z( experience_pose.Z() + 2.0 );
-        
+        //current.Z( experience_pose.Z() + 2.0 );
+      
+        current = experience_pose;
+
         transformCameraToPose( current );
 
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
         glv::draw::disable( glv::draw::Blend );
-
-        //point_cloud_renderer_leaf->onDraw3D( g );
-        //for( std::deque< Cube >::iterator it = voxels.begin();
-        //it != voxels.end();
-        //it++ )
-        //renderCube( &*it ); 
 
         CoordinateSystem( current ).onDraw3D(g);
 
@@ -1684,7 +1680,7 @@ namespace Visualisers
     };
 
 
-    Statistics::Statistics() : glv::Table( "<,", 2, 5 )
+    Statistics::Statistics( Updater* updater) : glv::Table( "<,", 2, 5 ), updater(updater)
     {
         observer_update.reset(      new TextRenderer<double>() );
         swathe_generation.reset(    new TextRenderer<double>() );
@@ -1749,16 +1745,13 @@ namespace Visualisers
             boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
             plot->add( *plottable );
             plottable->color( colors[i] );
+           
+            this->updater->operator<<( plottable.get() );
             plottables.push_back( plottable );
         }
         
         // Cumulative plottable
         // TODO: Finish
-        //boost::shared_ptr< StatisticsPlottable<double> > plottable( new CumulativePlottable<double>() ); 
-        //plot->add( *plottable );
-        //plottable->color( colors[i] );
-        //plottables.push_back( plottable );
-
 
         //Label
         boost::shared_ptr< glv::Label > graph_label = boost::make_shared< glv::Label >( "Engine update (ms)" );
@@ -1779,6 +1772,7 @@ namespace Visualisers
         // Estimator statistics
         boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
         boost::shared_ptr< glv::Plot > estimator_plot( new glv::Plot( glv::Rect( 550, 80), *plottable ) );
+        this->updater->operator<<( plottable.get() );
         plottables.push_back( plottable );
 
         boost::shared_ptr< glv::Label > estimator_label = boost::make_shared< glv::Label >( "Estimator update (ms)" );
@@ -1794,7 +1788,36 @@ namespace Visualisers
 
         (*this) << *estimator_plot;
         plots.push_back( estimator_plot );
-       
+
+        /*
+         *Performance statistics
+         */
+        //1. Oracle 
+        oracle_displacement.reset( new VisualHistogram<double>() ); 
+        boost::shared_ptr< glv::Plot > oracle_displacement_plot( new glv::Plot( glv::Rect( 550/2, 80*2), *oracle_displacement ) );
+        this->updater->operator<<( oracle_displacement.get() );
+
+        oracle_displacement_plot->disable( glv::Controllable );
+        oracle_displacement_plot->showNumbering(true);
+        oracle_displacement_plot->numbering(false,0);
+        oracle_displacement_plot->range( 0, oracle_displacement->hist->n, 0 );
+        oracle_displacement_plot->range( 0, 1.1, 1 );
+
+
+        (*this) << *oracle_displacement_plot;
+        plots.push_back( oracle_displacement_plot );
+      
+
+        //2. Estimator
+        estimator_displacement.reset( new VisualHistogram<double>() ); 
+        boost::shared_ptr< glv::Plot > estimator_displacement_plot( new glv::Plot( glv::Rect( 550/2, 80*2), *estimator_displacement ) );
+        this->updater->operator<<( estimator_displacement.get() );
+
+
+
+        (*this) << *estimator_displacement_plot;
+        plots.push_back( estimator_displacement_plot );
+      
         this->arrange();
         this->fit();
         this->enable( glv::DrawBorder );
@@ -1807,9 +1830,57 @@ namespace Visualisers
     template <typename T>
         VisualHistogram<T>::VisualHistogram()
         {
+            this->hist = gsl_histogram_alloc( 100 ); 
 
+            gsl_histogram_set_ranges_uniform( this->hist, 0, 20 );
+
+            this->color( glv::Color( 1, 0, 0, .5 ) );
+            this->stroke(2);
         }
 
+    template <typename T>
+        void VisualHistogram<T>::setVariable( T& t )
+        {
+            this->lock = boost::make_shared< variable_lock<T> >( boost::ref( t ) );
+        }
+
+    template <typename T>
+        void VisualHistogram<T>::update()
+        {
+            if (!this->lock)
+                return;
+
+            L3::WriteLock master( this->mutex );
+
+            gsl_histogram_increment( hist, lock->t );
+
+            this->plot_data.clear();
+
+            double Z = gsl_histogram_max_val( this->hist );
+
+            for( int i=0; i<this->hist->n; i++ )
+            {
+                double val = this->hist->bin[i];
+                //this->plot_data.push_back( 0 );
+                //this->plot_data.push_back( (val-20/100)/Z );
+                //this->plot_data.push_back( (val+20/100)/Z );
+                //this->plot_data.push_back( 0 );
+                
+                this->plot_data.push_back( val/Z );
+            }
+
+            this->mData.resize( glv::Data::DOUBLE, 1, this->plot_data.size() );
+
+            glv::Indexer i( this->mData.size(1));
+
+            int counter = 0;
+
+            while( i() )
+                this->mData.assign( this->plot_data[counter++], i[0], i[1] );
+
+            master.unlock();
+
+        }
     
 
     /*
@@ -1824,3 +1895,5 @@ namespace Visualisers
 
 }
 }
+
+template void L3::Visualisers::VisualHistogram<double>::setVariable(double&);

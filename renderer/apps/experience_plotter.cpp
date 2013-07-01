@@ -123,12 +123,20 @@ struct ColoredExperienceRenderer : L3::Visualisers::Leaf
 
     void onDraw3D( glv::GLV& g )
     {
+        // Draw points
         for( std::vector< Section* >::iterator it = sections.begin(); 
                 it != sections.end();
                 it++ )
         {
             glv::draw::paint( glv::draw::Points, (*it)->vertices, (*it)->colors, (*it)->size );
         }
+        
+        // Draw poses
+        for( std::deque< L3::SE3 >::iterator it = experience->poses->begin();
+                it != experience->poses->end();
+                it++ )
+            L3::Visualisers::CoordinateSystem( *it ).onDraw3D( g );
+        
     }
 
     std::vector< Section* > sections;

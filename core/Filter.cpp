@@ -297,9 +297,9 @@ namespace L3
                 
                 }
 
-                this->current_prediction = adapt( ukf->x );
+                *(this->current_prediction) = adapt( ukf->x );
 
-                return this->current_prediction;
+                return *(this->current_prediction);
             }
 
         template <typename T>
@@ -444,7 +444,7 @@ namespace L3
                 weights.resize( _weights.size() );
                 std::transform( _weights.begin(), _weights.end(), weights.begin(), std::bind2nd( std::divides<double>(), sum ) );
 
-                this->current_prediction = std::inner_product( hypotheses.begin(), hypotheses.end(), weights.begin(), L3::SE3::ZERO() );
+                (*this->current_prediction) = std::inner_product( hypotheses.begin(), hypotheses.end(), weights.begin(), L3::SE3::ZERO() );
 
                 // Build CDF 
                 std::vector< double > cdf( weights.size() );
@@ -466,7 +466,7 @@ namespace L3
 
                 master.unlock();
 
-                return this->current_prediction;
+                return *(this->current_prediction);
             }
 
         template <typename T>

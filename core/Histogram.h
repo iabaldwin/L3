@@ -1,6 +1,8 @@
 #ifndef L3_HISTOGRAM_H
 #define L3_HISTOGRAM_H
 
+#include <numeric>
+
 #include <gsl/gsl_multimin.h>
 #include <gsl/gsl_histogram.h>
 #include <gsl/gsl_histogram2d.h>
@@ -8,8 +10,6 @@
 #include "PointCloud.h"
 
 #include <boost/math/special_functions/log1p.hpp>
-
-#include <numeric>
 
 namespace L3
 {

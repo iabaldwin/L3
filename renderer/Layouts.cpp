@@ -342,12 +342,7 @@ namespace L3
             /*
              *  Statistics
              */
-            statistics = boost::make_shared< Statistics >();
-            
-            for( std::vector< boost::shared_ptr< StatisticsPlottable<double> > >::iterator it = statistics-> plottables.begin();
-                    it != statistics->plottables.end();
-                    it++)
-                temporal_updater->operator<<( it->get() );
+            statistics = boost::make_shared< Statistics >( temporal_updater.get() );
 
             (*ancillary_2) << *statistics;
 

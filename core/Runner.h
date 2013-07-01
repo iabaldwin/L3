@@ -204,8 +204,10 @@ struct EstimatorRunner : DatasetRunner, Lockable
             observers.erase( it );
 
         this->algorithm = algo;
-        
-        //estimator_innovation = boost::make_shared< RelativeDisplacement >( experience, algorithm-> );
+       
+
+        // Create/Re-create estimator innovation
+        estimator_innovation = boost::make_shared< RelativeDisplacement >( experience, algorithm->current_prediction );
      
         // Is it updateable
         if( L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) )

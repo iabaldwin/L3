@@ -286,12 +286,13 @@ namespace Estimator
         {
             Algorithm( boost::shared_ptr< CostFunction<T> > cost_function, float fundamental_frequency=std::numeric_limits<float>::infinity() ) 
                 : cost_function(cost_function), 
-                fundamental_frequency(fundamental_frequency)
+                fundamental_frequency(fundamental_frequency),
+                current_prediction( new SE3() )
             {
 
             }
         
-            L3::SE3 current_prediction;
+            boost::shared_ptr< SE3 > current_prediction;
 
             float fundamental_frequency;
             boost::shared_ptr< CostFunction<T> > cost_function;

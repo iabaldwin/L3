@@ -109,15 +109,14 @@ namespace L3
             m = std::for_each( scans.begin(), scans.end(),  m );
 
             // Log the pose, always
-            //experience_poses.write( (char*)(&matched[0]), sizeof(double)*Sizes<L3::SE3>::elements );
-            double val = matched[0].second->X();
-            experience_poses.write( (char*)(&val ), sizeof(double) );
-            val = matched[0].second->Y();
-            experience_poses.write( (char*)(&val ), sizeof(double) );
-             val = matched[0].second->Z();
-            experience_poses.write( (char*)(&val ), sizeof(double) );
-            val = matched[0].second->Q();
-            experience_poses.write( (char*)(&val ), sizeof(double) );
+            //double val = matched[0].second->X();
+            //experience_poses.write( (char*)(&val ), sizeof(double) );
+            //val = matched[0].second->Y();
+            //experience_poses.write( (char*)(&val ), sizeof(double) );
+             //val = matched[0].second->Z();
+            //experience_poses.write( (char*)(&val ), sizeof(double) );
+            //val = matched[0].second->Q();
+            //experience_poses.write( (char*)(&val ), sizeof(double) );
 
 
             double increment = length_estimator( matched[0] );
@@ -132,6 +131,17 @@ namespace L3
             {
                 swathe.push_back( std::make_pair( matched[0].second, scans[0].second ) );
                 spacing = scan_spacing_threshold;
+
+                double val = matched[0].second->X();
+                experience_poses.write( (char*)(&val ), sizeof(double) );
+                val = matched[0].second->Y();
+                experience_poses.write( (char*)(&val ), sizeof(double) );
+                val = matched[0].second->Z();
+                experience_poses.write( (char*)(&val ), sizeof(double) );
+                val = matched[0].second->Q();
+                experience_poses.write( (char*)(&val ), sizeof(double) );
+
+
             }
 
             if ( accumulate > experience_section_threshold )
@@ -338,15 +348,17 @@ namespace L3
 
     L3::SE3 Experience::getClosestPose( const L3::SE3& input )
     {
+        // Get the single closest pose
         flann::Matrix<int> indices(new int[1*1], 1, 1 );
         flann::Matrix<float> dists(new float[1*1], 1, 1);
  
-        flann::Matrix<float> query( new float[1*3], 1, 3 );
+        flann::Matrix<float> query( new float[1*4], 1, 4 );
 
         float* ptr = query[0];
 
         *ptr++ = input.X();
         *ptr++ = input.Y();
+        *ptr++ = input.Z();
         *ptr++ = input.Q();
 
         pose_lookup->knnSearch( query, indices, dists, 1, flann::SearchParams(128));

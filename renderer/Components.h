@@ -1330,10 +1330,10 @@ namespace Visualisers
 
         }
 
-        virtual void update()
-        {
+        //virtual void update()
+        //{
 
-        }
+        //}
 
         std::deque<T> plot_data;
 
@@ -1343,7 +1343,7 @@ namespace Visualisers
      *  Statistics 
      */
     template <typename T>
-        struct StatisticsPlottable  : BasicPlottable<T>
+        struct StatisticsPlottable : BasicPlottable<T>
     {
         StatisticsPlottable() 
         {
@@ -1457,9 +1457,39 @@ namespace Visualisers
 
     };
 
+    template <typename T>
+        struct VisualHistogram : BasicPlottable<T>
+    {
+        VisualHistogram();
+    
+        void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
+        {
+            L3::ReadLock master( this->mutex );
+            
+            while(i()){
+                double x = i[0];
+                double y = d.at<double>(0, i[0]);
+                g.addVertex(x, y);
+            }
+            
+            master.unlock();
+
+        }
+   
+        gsl_histogram* hist;
+        boost::shared_ptr< variable_lock<T> > lock;
+
+        void setVariable( T& t );
+
+        void update();
+    };
+
+
     struct Statistics : glv::Table
     {
-        Statistics();
+        Statistics( Updater* updater );
+
+        Updater* updater;
 
         std::vector< boost::shared_ptr< glv::Plot > > plots;
         std::vector< boost::shared_ptr< glv::Label > > labels;
@@ -1473,6 +1503,8 @@ namespace Visualisers
 
         boost::shared_ptr< glv::TextView > memory_statistics;
 
+        boost::shared_ptr< VisualHistogram<double> > oracle_displacement, estimator_displacement;
+
         void load( L3::DatasetRunner* runner )
         {
             observer_update->setVariable(   runner->timings[0] );
@@ -1485,16 +1517,17 @@ namespace Visualisers
             plottables[1]->setVariable( runner->timings[1] );
             plottables[2]->setVariable( runner->timings[2] );
             plottables[3]->setVariable( runner->timings[3] );
+       
+            if( L3::EstimatorRunner* runner_ptr = dynamic_cast<L3::EstimatorRunner*>( runner ) )
+            {
+                oracle_displacement->setVariable( runner_ptr->oracle_innovation->displacement );
+                //estimator_displacement->setVariable( runner_ptr->estimator_innovation->displacement );
+            }
         }
 
     };
 
-    template <typename T>
-        struct VisualHistogram : StatisticsPlottable<T>
-    {
-        VisualHistogram();
-    };
-    
+        
     /*
      *  Chase
      */

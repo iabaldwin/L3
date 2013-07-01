@@ -1,5 +1,6 @@
 import numpy
 import math
+import itertools
 
 import Sensors
 
@@ -47,7 +48,12 @@ def projectScanAtPose( LIDAR, INS ):
 
     mat = poseToHomogeneous( INS )
 
+    # Do projection
     xy = projectScanToXY( LIDAR )
+   
+    # Remove close indices
+    indices = LIDAR.ranges > .5  
+    xy = itertools.compress( xy, indices )
 
     projected = []
 
