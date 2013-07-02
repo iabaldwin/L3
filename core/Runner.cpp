@@ -103,7 +103,7 @@ namespace L3
         
         int counts = 0;
 
-        int boot = 1200;
+        int boot = 1500;
 
         if( stand_alone )
         {
