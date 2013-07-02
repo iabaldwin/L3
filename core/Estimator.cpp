@@ -440,7 +440,9 @@ namespace L3
                 gsl_vector* res = gsl_multimin_fminimizer_x ( s );
 
                 L3::SE3 pose( gsl_vector_get(res, 0), gsl_vector_get(res, 1), 0.0, 0.0, 0.0, gsl_vector_get(res, 2) );
-              
+            
+                *(this->current_prediction) = pose;
+
                 return  pose;
             }
 

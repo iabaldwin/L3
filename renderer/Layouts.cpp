@@ -687,7 +687,7 @@ namespace L3
 
             if ( it != tables.end() )
                 tables.erase( it );
-
+            
             // Produce algorithm renderer
             algorithm_renderer = AlgorithmRendererFactory::Produce( algorithm, temporal_updater.get(), composite );
             

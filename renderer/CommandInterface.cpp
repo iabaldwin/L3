@@ -233,6 +233,8 @@ namespace L3
             // Associate algorithm, visually
             dynamic_cast< L3::Visualisers::EstimatorLayout* >( layout )->algorithm( algo );
 
+            layout->experience_location->setEstimator( runner->algorithm );
+
             algorithm_lock.unlock();
 
             return std::make_pair( true, "CI::Loaded< " + algo_target + ">" );

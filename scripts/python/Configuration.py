@@ -10,18 +10,15 @@ class Parser:
     def __init__(self):
         pass
 
-    @staticmethod
-    def read( fname ):
-        return open( fname ).read().split('\n' )
-
 class Configuration(Parser):
+        
+    configuration_directory = '/Users/ian/code/datasets/configuration/missions/' 
+        
 
     def __init__(self):
     
         Parser.__init__(self) 
 
-        self.configuration_directory = '/Users/ian/code/datasets/configuration/missions/' 
-        
 class Mission(Configuration):
     
     def __init__(self, dataset_name ):
@@ -35,6 +32,9 @@ class Mission(Configuration):
 
         mission_config = Config()
 
+        if not os.path.isfile( dataset_name ):
+            raise OSError(2, 'No such file or directory', dataset_name )
+
         mission_config.readFile( dataset_name )
 
         locale_data = mission_config.value( 'mission.locale' )
@@ -42,7 +42,7 @@ class Mission(Configuration):
         if not locale_data[1]:
             raise Exception('No locale data for %s' % dataset_name )
         else:
-            locale = locale_data[0]
+            self.locale = locale_data[0]
 
         # Load all the sessions
         counter = 0 
@@ -63,7 +63,7 @@ class Mission(Configuration):
         # Load the locale data
         locale_config = Config()
 
-        locale_config.readFile( os.path.join( os.path.expanduser( '~/code/datasets/configuration/datums/%s_datum.config' % locale.lower() ) ) ) 
+        locale_config.readFile( os.path.join( os.path.expanduser( '~/code/datasets/configuration/datums/%s_datum.config' % self.locale.lower() ) ) ) 
 
         self.x = locale_config.value( 'datum.X.lower' )[0]
         self.y = locale_config.value( 'datum.Y.lower' )[0]
