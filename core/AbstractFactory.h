@@ -31,10 +31,23 @@ struct MaskPolicy< L3::LMS151 >
     float cull;
 
     boost::shared_ptr<L3::LMS151> operator()( boost::shared_ptr<L3::LMS151> t ) ;
-    
 
 };
-    
+ 
+template < typename T > 
+struct RoadMaskPolicy : MaskPolicy< T > 
+{
+    RoadMaskPolicy( float cull = 4 ) : cull(cull)
+    {
+
+    }
+
+    float cull;
+
+    boost::shared_ptr<T> operator()( boost::shared_ptr<T> t ) ;
+
+};
+
 
 template <typename T>
 class AbstractFactory
@@ -43,22 +56,6 @@ class AbstractFactory
         static std::pair< double, boost::shared_ptr<T> > produce( std::string& str, MaskPolicy<T> policy = MaskPolicy<T>() );
         static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double> elements, MaskPolicy<T> policy = MaskPolicy<T>());
 };
-
-//template <>
-//class AbstractFactory<L3::SE3>
-//{
-    //public:
-        //static std::pair< double, boost::shared_ptr<L3::SE3> > produce( std::string& str );
-        //static std::pair< double, boost::shared_ptr<L3::SE3> > produce( std::vector<double> elements );
-//};
-
-//template <>
-//class AbstractFactory<L3::LIDAR>
-//{
-    //public:
-        //static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::string& str );
-        //static std::pair< double, boost::shared_ptr<L3::LIDAR> > produce( std::vector<double> elements );
-//};
 
 template <>
 class AbstractFactory<L3::Pose>

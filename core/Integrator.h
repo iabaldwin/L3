@@ -34,12 +34,26 @@ namespace L3
 
         }
     };
+struct LengthEstimatorInterface : L3::LengthEstimator
+{
+    L3::LengthEstimator estimator;
+
+    double operator()( std::pair< double, boost::shared_ptr<L3::SE3> > element )
+    {
+        return estimator( *element.second );
+    }
+
+};
+
+
+
 
     template <typename InputIterator, typename OutputIterator >
         OutputIterator trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double& distance, double required_distance, L3::SE3 start_pose = L3::SE3::ZERO() );
 
     template <typename InputIterator, typename OutputIterator >
         void reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written );
+
 
 }
 

@@ -19,6 +19,26 @@ boost::shared_ptr<L3::LMS151> MaskPolicy<L3::LMS151>::operator()( boost::shared_
     return t;
 }
 
+template < typename T>
+//boost::shared_ptr<L3::LMS151> RoadMaskPolicy<L3::LMS151>::operator()( boost::shared_ptr<L3::LMS151> t ) 
+boost::shared_ptr<T> RoadMaskPolicy<T>::operator()( boost::shared_ptr<T> t ) 
+{
+    //int counter = 0;
+    //for( std::vector<float>::iterator it = t->ranges.begin(); 
+            //it != t->ranges.end();
+            //it++ )
+    //{
+
+        //if( counter < 200 || counter > 400 )
+            //*it = 0.0;
+   
+        //counter++;
+    //}
+
+    //return t;
+}
+
+
 
 /*
  *  Base type

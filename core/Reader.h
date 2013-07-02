@@ -37,7 +37,7 @@ struct BinaryExtractor
 {
     std::vector< std::pair< double, boost::shared_ptr<T> > > elements;
 
-    BinaryExtractor() : counter(0)
+    BinaryExtractor( MaskPolicy<T> policy = MaskPolicy<T>() ) : counter(0)
     {
         buffer.resize( L3::Sizes<T>::elements, 0 );
     }
@@ -98,14 +98,14 @@ class BinaryReader : public Reader
             return bytes.size();
         }
 
-        virtual bool extract( std::vector< std::pair< double, boost::shared_ptr<T> > >& poses ) 
+        virtual bool extract( std::vector< std::pair< double, boost::shared_ptr<T> > >& poses, MaskPolicy<T> policy = MaskPolicy<T>() ) 
         {
             // How many elements?
             size_t numels = bytes.size()/sizeof(double);
             
             double* ptr = reinterpret_cast<double*>(&bytes[0]);
 
-            BinaryExtractor<T> extractor;
+            BinaryExtractor<T> extractor( policy );
       
             // Extract
             extractor = std::for_each( ptr, ptr+numels, extractor );

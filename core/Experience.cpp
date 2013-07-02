@@ -76,7 +76,7 @@ namespace L3
         unsigned int stream_position = 0;
 
         double absolute_start_time = 0;
-            
+
         double spacing = scan_spacing_threshold;
 
         // Read LIDAR data, element at a time
@@ -113,7 +113,7 @@ namespace L3
             //experience_poses.write( (char*)(&val ), sizeof(double) );
             //val = matched[0].second->Y();
             //experience_poses.write( (char*)(&val ), sizeof(double) );
-             //val = matched[0].second->Z();
+            //val = matched[0].second->Z();
             //experience_poses.write( (char*)(&val ), sizeof(double) );
             //val = matched[0].second->Q();
             //experience_poses.write( (char*)(&val ), sizeof(double) );
@@ -340,7 +340,7 @@ namespace L3
         if( thread.isRunning() )
             thread.join();          
     }
-    
+
     void Experience::createHistograms( const std::vector< double >& densities  )
     {
         experience_pyramid.reset( new L3::HistogramPyramid<double>( densities ) );
@@ -351,7 +351,7 @@ namespace L3
         // Get the single closest pose
         flann::Matrix<int> indices(new int[1*1], 1, 1 );
         flann::Matrix<float> dists(new float[1*1], 1, 1);
- 
+
         //flann::Matrix<float> query( new float[1*4], 1, 4 );
         flann::Matrix<float> query( new float[1*2], 1, 2 );
 
@@ -497,7 +497,7 @@ namespace L3
 
             // Play nice
             usleep( .2*1e6 );
-        
+
         }
     }
 

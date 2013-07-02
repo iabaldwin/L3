@@ -3,7 +3,6 @@
 
 #include <Poco/Thread.h>
 
-#include "ChainBuilder.h"
 #include "Datatypes.h"
 #include "PointCloud.h"
 #include "Dataset.h"
@@ -12,21 +11,11 @@
 #include "Configuration.h"
 #include "Histogram.h"
 #include "Smoother.h"
+#include "ChainBuilder.h"
 
 #include <flann/flann.hpp>
 
 #include <map>
-
-struct LengthEstimatorInterface : L3::LengthEstimator
-{
-    L3::LengthEstimator estimator;
-
-    double operator()( std::pair< double, boost::shared_ptr<L3::SE3> > element )
-    {
-        return estimator( *element.second );
-    }
-
-};
 
 namespace L3
 {
@@ -200,6 +189,7 @@ struct ExperienceLoader
 /*
  *  Build an experience from a dataset
  */
+
 struct ExperienceBuilder
 {
     ExperienceBuilder( L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold=10.0, double scan_spacing_threshold=0.2  );

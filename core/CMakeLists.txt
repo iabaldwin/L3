@@ -29,6 +29,7 @@ add_library( L3
     VelocityProvider.cpp
     Performance.cpp
     Misc.cpp
+    RoadBuilder.cpp
     )
 
 target_link_libraries( L3 config++ gsl PocoFoundation tbb ICP pcl_common pcl_kdtree pcl_search pcl_features MIToolBox fftw3 lapack blas itpp_static BayesFilter flann_s )

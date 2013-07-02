@@ -5,13 +5,13 @@ namespace L3
 namespace IO
 {
     template <typename T>
-        void BinaryExtractor<T>::operator()( double d )
+        void BinaryExtractor<T>::operator()( double datum )
         {
             index = (counter % L3::Sizes<T>::elements );
 
             counter++;
                 
-            buffer[index] = d;
+            buffer[index] = datum;
 
             if ( index == L3::Sizes<T>::elements -1 ) 
                 elements.push_back( AbstractFactory<T>::produce( buffer ) );

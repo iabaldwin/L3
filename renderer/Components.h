@@ -986,8 +986,8 @@ namespace Visualisers
 
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
-        std::vector< glv::Point3 >  vertices;
         std::vector< glv::Color  >  colors;
+        std::vector< glv::Point3 >  vertices;
 
         boost::shared_ptr< PointCloud<double> > master;
 

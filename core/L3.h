@@ -29,6 +29,7 @@
 #include "Estimator.h"          // Pose estimation
 #include "Filter.h"             // Pose filter
 #include "Simulator.h"          // Artificial data provider
+#include "RoadBuilder.h"        // 
 #include "Misc.h"               // Everything else...
 
 #endif
