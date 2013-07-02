@@ -1502,7 +1502,7 @@ namespace Visualisers
             master.unlock();
 
         }
-   
+  
         gsl_histogram* hist;
         boost::shared_ptr< variable_lock<T> > lock;
 

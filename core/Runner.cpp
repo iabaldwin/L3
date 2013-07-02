@@ -11,6 +11,7 @@ namespace L3
             current_time(0.0),
             start_time(dataset->start_time),
             stand_alone(false),
+            booted(false),
             run_mode( RunMode::Continuous ),
             frequency(0.0)
     {
@@ -102,8 +103,11 @@ namespace L3
         
         int counts = 0;
 
+        int boot = 1200;
+
         if( stand_alone )
         {
+            boot = 2000;
             std::string path = dataset->path() + "/poses.dat";
             output.open( path.c_str(), std::ios::out );
         }
@@ -141,21 +145,21 @@ namespace L3
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
                 /*
-                 *Recompute swathe
+                 *  Recompute swathe
                  */
                 performance_timer.begin();
                 swathe_builder->update( 0 );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
                 /*
-                 *Point cloud generation, projection
+                 *  Point cloud generation, projection
                  */
                 performance_timer.begin();
                 projector->project( swathe_builder->swathe );
                 timings[ performance_index++ ] = performance_timer.elapsed();
 
                 /*
-                 *Update everything else
+                 *  Update everything else
                  */
                 performance_timer.begin();
                 update( 0 );
@@ -187,7 +191,11 @@ namespace L3
                  * there wouldn't be anything here except for a publisher. 
                  */
                 std::for_each( updaters.begin(), updaters.end(), std::mem_fun( &Updater::update ) );
-            
+           
+                boot--;
+
+                if( boot == 0 )
+                    booted = true;
             }
             else
             {
@@ -215,7 +223,7 @@ namespace L3
         /*
          *  Boot
          */
-        if( counter++ < 1500 )
+        if( !booted )
         {
             //*current = experience->getClosestPose( oracle->operator()() );
             *estimated_pose = *oracle_pose;

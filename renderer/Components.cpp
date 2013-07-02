@@ -1823,6 +1823,14 @@ namespace Visualisers
         displacement_plot->range( 0, oracle_displacement->hist->n, 0 );
         displacement_plot->range( 0, 1.1, 1 );
 
+        //boost::shared_ptr< glv::Label > displacement_label = boost::make_shared< glv::Label >( "Estimator performance ( \u0394 m)" );
+        boost::shared_ptr< glv::Label > displacement_label = boost::make_shared< glv::Label >( "Estimator performance ( d.m)" );
+        displacement_label->pos( glv::Place::TR, 0, 0 ).anchor( glv::Place::TR ); 
+        *displacement_plot << *displacement_label;
+        labels.push_back( displacement_label );
+
+
+
         (*this) << *displacement_plot;
         plots.push_back( displacement_plot );
       
@@ -1847,6 +1855,7 @@ namespace Visualisers
 
             this->color( glv::Color( 1, 0, 0, .5 ) );
             this->stroke(2);
+        
         }
 
     template <typename T>

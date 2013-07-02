@@ -195,10 +195,15 @@ namespace L3
             //Zv[1] = 1;
             //Zv[2] = 0.08;
              
-            Zv[0] = 2;
-            Zv[1] = 2;
-            Zv[2] = 0.16;
-                    
+            //Zv[0] = 2;
+            //Zv[1] = 2;
+            //Zv[2] = 0.16;
+          
+
+            Zv[0] = 10*1;
+            Zv[1] = 10*1;
+            Zv[2] = 10*0.08;
+
         }
         
         //const Bayesian_filter_matrix::Vec& ObservationModel::h(const Bayesian_filter_matrix::Vec& x)  const

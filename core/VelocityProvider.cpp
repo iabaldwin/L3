@@ -84,8 +84,8 @@ namespace L3
         double linear_velocity     = velocity_provider_ptr->window.back().second->data[0];
         double rotational_velocity = velocity_provider_ptr->window.back().second->data[3];
       
-        if ( rotational_velocity < -1.6 || rotational_velocity > 1.6 )
-            rotational_velocity = 0.0;
+        //if ( rotational_velocity < -1.6 || rotational_velocity > 1.6 )
+            //rotational_velocity = 0.0;
 
         _linear_velocity_filter->update( velocity_provider_ptr->window.back().first, linear_velocity );
         _rotational_velocity_filter->update( velocity_provider_ptr->window.back().first, rotational_velocity );

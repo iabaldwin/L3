@@ -91,7 +91,7 @@ struct DatasetRunner : ThreadedRunner
     Configuration::Mission*     mission;
     
     float           speedup;
-    bool            stand_alone;
+    bool            stand_alone, booted;
     double          current_time, start_time;  
     double          frequency;
 
