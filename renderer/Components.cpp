@@ -1454,11 +1454,13 @@ namespace Visualisers
 
         if( enabled( glv::Maximized ) )
         {
-            boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud)->experience = experience;
-            experience_point_cloud->enable( glv::Visible );
+            boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->experience = experience;
+            boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_estimator)->experience = experience;
+            
+            sub_view->enable( glv::Visible );
         }
         else
-            experience_point_cloud->disable( glv::Visible );
+            sub_view->disable( glv::Visible );
     }
 
     /*
@@ -1466,7 +1468,8 @@ namespace Visualisers
      */
     void ExperienceCloudView::onDraw3D( glv::GLV& g)
     {
-        far( 1000 );
+        //far( 1000 );
+        far( 100 );
 
         L3::SE3 current;
         if( boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock() )
@@ -1479,18 +1482,25 @@ namespace Visualisers
             experience_pose = experience_ptr->getClosestPose( current );
 
         //current.Z( current.Z() + 3.0);
-        //current.Z( experience_pose.Z() + 2.0 );
+        current.Z( experience_pose.Z() + 4.0  );
       
-        current = experience_pose;
-
         transformCameraToPose( current );
 
         glv::draw::enable( glv::draw::Blend );
         glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
-        glv::draw::disable( glv::draw::Blend );
 
         CoordinateSystem( current ).onDraw3D(g);
 
+        // Render poses
+        for ( std::deque< L3::SE3 >::iterator it = experience_ptr->poses->begin();
+                it < experience_ptr->poses->end();
+                it += 10  )
+            CoordinateSystem( *it, 2.0, 0.7 ).onDraw3D( g );
+
+        glv::draw::disable( glv::draw::Blend );
+   
+
+    
     }
 
     void ExperienceCloudView::load(  boost::shared_ptr< L3::Experience > experience )
@@ -1561,6 +1571,7 @@ namespace Visualisers
             vertices.push_back( glv::Point3( pt.x, pt.y, pt.z ) );
             colors.push_back( glv::Color( .5, .5, .5, float(density)/10.0 ) );
         }
+
     }
 
 

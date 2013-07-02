@@ -5,7 +5,6 @@
 
 #include "Iterator.h"
 #include "Estimator.h"
-#include "PoseProvider.h"
 #include "VelocityProvider.h"
 
 #include "BayesFilter/unsFlt.hpp"
@@ -62,7 +61,7 @@ namespace Estimator
     };
 
     template <typename T>
-        struct UKF : Filter<T>, Algorithm<T>, L3::TemporalObserver, PoseProvider
+        struct UKF : Filter<T>, Algorithm<T>, L3::TemporalObserver
     {
         UKF( boost::shared_ptr<CostFunction<T> > cost_function,  
                 boost::shared_ptr< L3::HistogramPyramid<T> > experience_pyramid, 

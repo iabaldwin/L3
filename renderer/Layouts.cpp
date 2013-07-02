@@ -207,7 +207,8 @@ namespace L3
             // Experience renderer
             experience_location = boost::make_shared< ExperienceOverviewView >( glv::Rect(180,180), boost::shared_ptr<L3::Experience>() );
             window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( experience_location.get() ) );
-            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( experience_location->experience_point_cloud.get() ) ) );
+            //window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( experience_location->experience_point_cloud.get() ) ) );
+            window_controllers.push_back( boost::make_shared< DoubleClickMaximiseToggle >( dynamic_cast< glv::View* >( experience_location->sub_view.get() ) ) );
             *ancillary_1 << *experience_location;
 
             // Scan-matching scan renderer
@@ -627,7 +628,8 @@ namespace L3
              *  Experience & location
              */
             experience_location->setExperience( experience );
-            experience_location->setProvider( runner->oracle );
+            experience_location->setOracle( runner->oracle );
+            experience_location->setEstimator( runner->algorithm );
 
             /*
              *  Stand-alone pyramid renderer

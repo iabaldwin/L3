@@ -10,11 +10,11 @@
 
 #include "dlib/optimization.h"
 
-
-#include "Smoother.h"
-#include "Experience.h"
-#include "Histogram.h"
 #include "Timing.h"
+#include "Smoother.h"
+#include "Histogram.h"
+#include "Experience.h"
+#include "PoseProvider.h"
 
 namespace L3
 {
@@ -282,7 +282,7 @@ namespace Estimator
         };
 
     template < typename T>
-        struct Algorithm : Lockable
+        struct Algorithm : Lockable, PoseProvider
         {
             Algorithm( boost::shared_ptr< CostFunction<T> > cost_function, float fundamental_frequency=std::numeric_limits<float>::infinity() ) 
                 : cost_function(cost_function), 
@@ -300,6 +300,11 @@ namespace Estimator
             virtual std::string name() = 0;
 
             virtual SE3 operator()( PointCloud<T>* swathe, SE3 estimate ) = 0;
+       
+            L3::SE3 operator()()
+            {
+                return *current_prediction;
+            }
         };
 
     template < typename T>

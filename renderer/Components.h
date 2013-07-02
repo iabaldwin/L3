@@ -989,8 +989,6 @@ namespace Visualisers
         std::vector< glv::Point3 >  vertices;
         std::vector< glv::Color  >  colors;
 
-        //std::deque< Cube > voxels;
-
         boost::shared_ptr< PointCloud<double> > master;
 
         std::list< boost::shared_ptr< PointCloud<double> > > clouds;
@@ -1008,8 +1006,10 @@ namespace Visualisers
     {
         ExperienceOverviewView( const glv::Rect& rect, 
                 boost::shared_ptr<L3::Experience> experience, 
-                boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr<L3::PoseProvider>() ) 
-            : ExperienceView( experience, provider ), 
+                boost::shared_ptr< L3::PoseProvider > oracle_provider = boost::shared_ptr<L3::PoseProvider>(),
+                boost::shared_ptr< L3::PoseProvider > estimator_provider = boost::shared_ptr<L3::PoseProvider>()
+                ) 
+            : ExperienceView( experience, oracle_provider ), 
             glv::View3D(rect)
         {
 
@@ -1021,32 +1021,56 @@ namespace Visualisers
 
             animation = boost::make_shared< AnimatedPoseRenderer >( boost::ref( *current ) );
 
-            experience_point_cloud = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, provider );
+            holder = boost::make_shared< glv::Table >( "x x,", 0, 0 );
 
-            this->enable( glv::Controllable );
+            experience_point_cloud_oracle = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, oracle_provider );
+            experience_point_cloud_estimator = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, estimator_provider );
 
-            *this << *experience_point_cloud;
-            experience_point_cloud->disable( glv::Visible );
+            *holder << *experience_point_cloud_oracle << *experience_point_cloud_estimator;
+
+            holder->arrange();
+            holder->fit();
+
+            sub_view = boost::make_shared< glv::View >( glv::Rect(50, 50));
+
+            *sub_view << *holder;
+            sub_view->fit();
+
+            //*this << *holder;
+            *this << *sub_view;
+
+            sub_view->disable( glv::Visible );
         }
+
+        glv::Label label;
+        
+        boost::shared_ptr< L3::SE3 > current;
+      
+        boost::shared_ptr< glv::View > sub_view;
+        boost::shared_ptr< glv::Table > holder;
 
         boost::shared_ptr< AnimatedPoseRenderer > animation;
-        boost::shared_ptr< ExperienceCloudView > experience_point_cloud;
-        boost::shared_ptr< L3::SE3 > current;
-        glv::Label label;
+        boost::shared_ptr< ExperienceCloudView > experience_point_cloud_oracle, experience_point_cloud_estimator;
 
-
-        void setProvider( boost::shared_ptr< L3::PoseProvider > provider )
-        {
-            this->provider = provider;
-            this->experience_point_cloud->provider = provider;
-        }
 
         void setExperience( boost::shared_ptr< L3::Experience > experience )
         {
             this->experience = experience;
-            this->experience_point_cloud->load( experience );
+            this->experience_point_cloud_oracle->load( experience );
+            this->experience_point_cloud_estimator->load( experience );
         }
 
+        void setOracle( boost::shared_ptr< L3::PoseProvider > provider )
+        {
+            this->provider = provider;
+            this->experience_point_cloud_oracle->provider = provider;
+        }
+
+        void setEstimator( boost::shared_ptr< L3::PoseProvider > provider )
+        {
+            this->experience_point_cloud_estimator->provider = provider;
+        }
+        
         void onDraw3D(glv::GLV& g);
 
     };
