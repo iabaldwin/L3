@@ -446,7 +446,8 @@ namespace Visualisers
         L3::Histogram<double> tmp;
 
         L3::ReadLock lock( hist_ptr->mutex );
-        L3::clone( hist_ptr.get(), &tmp );
+        if (! L3::clone( hist_ptr.get(), &tmp ) )
+            return;
         lock.unlock();   
 
         glv::Point3     vertices[ tmp.x_bins*tmp.y_bins];
@@ -485,7 +486,8 @@ namespace Visualisers
         L3::ReadLock rlock( hist_ptr->mutex );
         L3::WriteLock wlock( render_histogram->mutex );
         if( !hist_ptr->empty() ) 
-            L3::clone( hist_ptr.get(), render_histogram.get() );
+            if( !L3::clone( hist_ptr.get(), render_histogram.get() ))
+                return;
         rlock.unlock();   
         wlock.unlock();   
     }
@@ -498,7 +500,8 @@ namespace Visualisers
             return;
 
         L3::ReadLock lock( render_histogram->mutex );
-        L3::clone( render_histogram.get(), &tmp ); 
+        if( !L3::clone( render_histogram.get(), &tmp ) )
+            return;
         lock.unlock();
 
         mTex.magFilter(GL_NEAREST);
@@ -1829,7 +1832,7 @@ namespace Visualisers
         history_labels.push_back( "Points (ms)");
         history_labels.push_back( "Estimation (ms)" );
 
-        // Create the plot
+        // Plot
         boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 550, 80) ) );
 
         glv::Color colors[] = { glv::Color( 1, 0, 0 ), glv::Color( 0, 1, 0 ), glv::Color( 0, 1, 0 ) };
@@ -1837,7 +1840,7 @@ namespace Visualisers
         // Vanilla plottables
         for( int i=0; i<3; i++ )
         {
-            // Create the plottable
+            // Plottable
             boost::shared_ptr< StatisticsPlottable<double> > plottable( new StatisticsPlottable<double>() ); 
             plot->add( *plottable );
             plottable->color( colors[i] );

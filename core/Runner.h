@@ -206,7 +206,7 @@ struct EstimatorRunner : DatasetRunner, Lockable
 
         this->algorithm = algo;
   
-        // Create/Re-create estimator innovation
+        // Estimator innovation
         performance_updater.remove( this->estimator_innovation.get() ); 
         estimator_innovation = boost::make_shared< RelativeDisplacement >( experience, algorithm->current_prediction );
         performance_updater <<( this->estimator_innovation.get() ); 

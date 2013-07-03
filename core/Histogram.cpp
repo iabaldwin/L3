@@ -29,10 +29,11 @@ namespace L3
         }
 
     template <typename T>
-        void clone( Histogram<T>* src, Histogram<T> * dest )
+        bool clone( Histogram<T>* src, Histogram<T> * dest )
         {
+            bool retval;
             // Parameter copy
-            dest->create( src->x_centre,     
+            retval = dest->create( src->x_centre,     
                     src->x_lower,
                     src->x_upper,
                     src->y_centre,
@@ -45,6 +46,8 @@ namespace L3
 
             // Data copy
             gsl_histogram2d_memcpy( dest->hist, src->hist );
+       
+            return retval;
         }
 
     template<typename T>
@@ -98,4 +101,4 @@ namespace L3
 }
 
 template std::ostream& L3::operator<<( std::ostream& o, const Histogram<double>& h );
-template void L3::clone<double>(L3::Histogram<double>*, L3::Histogram<double>*);
+template bool L3::clone<double>(L3::Histogram<double>*, L3::Histogram<double>*);

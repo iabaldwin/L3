@@ -124,7 +124,7 @@ namespace L3
             scripting_interface = boost::make_shared< L3::Visualisers::GLVInterface >( &top );
             this->renderables.push_front( scripting_interface.get() );
 
-            // Create the main view
+            // Main view
             main_view = boost::make_shared< glv::View >( glv::Rect(0,0, .6*window.width(),500) );
             this->renderables.push_front( main_view.get() );
 

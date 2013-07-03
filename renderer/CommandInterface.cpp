@@ -443,7 +443,7 @@ namespace L3
             // Read all the poses
             pose_reader->read();
 
-            // Create pose sequence
+            // Pose sequence
             boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > > poses( new std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > () );
             
             // And extract them

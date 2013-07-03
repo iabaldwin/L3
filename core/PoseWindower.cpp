@@ -48,7 +48,7 @@ namespace L3
         if ( index->first == previous_update )
             index++;
 
-        // Create a delta buffer
+        // Delta buffer
         VELOCITY_WINDOW _window_delta_buffer;
         _window_delta_buffer.assign( index, velocity_provider->filtered_velocities.end() );
         

@@ -39,7 +39,7 @@ namespace L3
 
             hit_results.clear();
 
-            // Create query
+            // Query
             from = btVector3(x1, y1, z1);
             to = btVector3( x2, y2, z2 );
 

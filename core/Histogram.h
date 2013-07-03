@@ -59,7 +59,7 @@ namespace L3
                         this->y_bins<< std::endl;
             }
 
-            virtual void create( float x_centre,
+            virtual bool create( float x_centre,
                     float x_lower,
                     float x_upper,
                     float y_centre,
@@ -71,7 +71,7 @@ namespace L3
                 if ( ( x_bins == 0 ) || (y_bins == 0 ) )
                 {
                     std::cerr << "Erroneous parameters! " << std::endl;
-                    exit(-1); 
+                    return false;
                 }
 
                 if ( hist ) // Re-create
@@ -103,6 +103,7 @@ namespace L3
                 x_delta = (x_upper - x_lower)/x_bins;
                 y_delta = (y_upper - y_lower)/y_bins;
 
+                return true;
             }
 
             void clear()
@@ -205,7 +206,7 @@ namespace L3
         std::ostream& operator<<( std::ostream& o, const Histogram<T>& h );
 
     template <typename T>
-        void clone( Histogram<T>* src, Histogram<T> * dest );
+        bool clone( Histogram<T>* src, Histogram<T> * dest );
 
     template <typename T>
         struct HistogramPyramid : Lockable

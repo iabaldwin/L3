@@ -342,15 +342,7 @@ namespace L3
                 Hypothesis h( swathe, &estimate, (*pyramid)[1].get() , this->algorithm->cost_function.get(), costs.begin() );
                 h();
 
-                //if( h.swathe_histogram->empty() )
-                //return L3::SE3::ZERO(); 
-
-                //L3::WriteLock ( this->data.swathe_histogram->mutex ); 
-                //L3::clone( h.swathe_histogram.get(), this->data.swathe_histogram.get() );
-
-                //L3::WriteLock ( this->data.experience_histogram->mutex ); 
-                //L3::clone( (*pyramid)[0].get(), this->data.experience_histogram.get() );
-
+                
                 return L3::SE3::ZERO();
             }
 
