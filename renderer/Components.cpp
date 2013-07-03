@@ -138,6 +138,7 @@ namespace Visualisers
      */
     void Composite::onDraw3D( glv::GLV& g )
     {
+        
         // Rotate the camera
         glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
@@ -158,6 +159,13 @@ namespace Visualisers
 
             leaf_iterator++;
         }
+    
+        if( parent->enabled( glv::Maximized ) )
+        {
+            //std::string s( "Is this the real\t world");
+            //glv::draw::text(s.c_str(), 0, 0, 100 );
+        }
+
     }
 
 
@@ -1281,7 +1289,8 @@ namespace Visualisers
             glv::draw::enable( glv::draw::Blend );
             while( it < pose_sequence->end() )
             {
-                float alpha = 0.3;
+                //float alpha = 0.3;
+                float alpha = 0.6;
 
                 int diff = (counter - highlighted_position );
                 if ( diff > -10  && diff  < 10 ) 
