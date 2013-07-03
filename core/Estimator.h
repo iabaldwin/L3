@@ -355,7 +355,7 @@ namespace Estimator
                         it != pyramid->end();
                         it++ )
                 {
-                    L3::ReadLock( (*it)->mutex );
+                    L3::ReadLock lock( (*it)->mutex );
                            
                     // Grid 
                     discrete_estimators.push_back( 

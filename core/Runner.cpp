@@ -225,8 +225,9 @@ namespace L3
          */
         if( !booted )
         {
-            //*current = experience->getClosestPose( oracle->operator()() );
-            *estimated_pose = *oracle_pose;
+            *estimated_pose = experience->getClosestPose( oracle->operator()() );
+            estimated_pose->Q( oracle_pose->Q() ); 
+            //*estimated_pose = *oracle_pose;
         }
         else
         {

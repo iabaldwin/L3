@@ -187,7 +187,7 @@ namespace L3
             if ( src->empty() )
                 return false;
             
-            L3::WriteLock(dest->mutex);
+            L3::WriteLock lock(dest->mutex);
             dest->create( src->x_centre,     
                     src->x_lower,
                     src->x_upper,
@@ -251,7 +251,7 @@ namespace L3
                         it != this->end();
                         it++ )
                 {
-                    L3::ReadLock( (*it)->mutex );
+                    L3::ReadLock lock( (*it)->mutex );
                     (*it)->print();
                 }
             }

@@ -71,10 +71,18 @@ namespace L3
             prediction = L3::Utils::Math::poseFromRotation( tmp1 );
 
             // Wrap
-            if ( fabs(prediction.Q() - pose.Q() ) > M_PI )
+            if ( pose.Q() - prediction.Q() > M_PI )
             {
                 double q = prediction.Q();
                 q += 2*M_PI;
+           
+                prediction.Q( q );
+            }
+
+            if ( pose.Q() - prediction.Q() < -1*M_PI )
+            {
+                double q = prediction.Q();
+                q -= 2*M_PI;
            
                 prediction.Q( q );
             }
@@ -191,18 +199,21 @@ namespace L3
         {
             Bayesian_filter_matrix::identity(  Hx );
 
-            //Zv[0] = 1;
-            //Zv[1] = 1;
-            //Zv[2] = 0.08;
+            Zv[0] = 1;
+            Zv[1] = 1;
+            Zv[2] = 0.08;
              
             //Zv[0] = 2;
             //Zv[1] = 2;
             //Zv[2] = 0.16;
-          
 
-            Zv[0] = 10*1;
-            Zv[1] = 10*1;
-            Zv[2] = 10*0.08;
+            //Zv[0] = 4*1;
+            //Zv[1] = 4*1;
+            //Zv[2] = 4*0.08;
+            
+            //Zv[0] = 10*1;
+            //Zv[1] = 10*1;
+            //Zv[2] = 10*0.08;
 
         }
         
@@ -286,20 +297,28 @@ namespace L3
 
                     L3::SE3 predicted = adapt( ukf->x );
 
-                    // Observe
-                    ukf->observe( *observation_model, z_vec );
+                    double innov = norm( predicted, z );
 
-                    // Produce estimate and uncertainty
-                    ukf->update();
-
-                    L3::SE3 estimated = adapt( ukf->x );
-                    
-                    if( fabs( predicted.Q() - estimated.Q() ) > .1 )
+                    if (innov < 2 )
                     {
-                        // Tracking failure
-                        exit(-1);
+
+                        // Observe
+                        ukf->observe( *observation_model, z_vec );
+
+                        // Produce estimate and uncertainty
+                        ukf->update();
+
+                        L3::SE3 estimated = adapt( ukf->x );
+
+                        if( fabs( predicted.Q() - estimated.Q() ) > M_PI/2.0)
+                        {
+                            // Tracking failure
+
+                            std::cout << "Tracking failure" << std::endl;
+                            exit(-1);
+                        }
+
                     }
-                
                 }
 
                 *(this->current_prediction) = adapt( ukf->x );

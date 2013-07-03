@@ -186,6 +186,7 @@ namespace L3
                 swathe.clear();
             }
         }
+        std::cout << "Done. Wrote " <<  scans.back().first - absolute_start_time << "s" << std::endl;
     }
 
     /*

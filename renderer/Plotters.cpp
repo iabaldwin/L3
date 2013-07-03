@@ -22,13 +22,13 @@ namespace L3
                 this->mPrim = glv::draw::Points;
             }
             
-            L3::WriteLock writer( this->mutex );
-
+            glv::Data tmp;
+            
             if ( window.size() > 0 )
             {
-                mData.resize( glv::Data::DOUBLE, 2, window.size() );
+                tmp.resize( glv::Data::DOUBLE, 2, window.size() );
 
-                glv::Indexer i(mData.size(1));
+                glv::Indexer i(tmp.size(1));
 
                 int counter = 0;
 
@@ -44,8 +44,8 @@ namespace L3
                     double dt = window[counter].first - zero_time;
                     double variable = window[counter].second[index];
 
-                    mData.assign( dt, 0, counter );
-                    mData.assign( variable, 1, counter );
+                    tmp.assign( dt, 0, counter );
+                    tmp.assign( variable, 1, counter );
 
                     counter++;
                 }
@@ -58,12 +58,12 @@ namespace L3
 
             }
             
+            L3::WriteLock writer( this->mutex );
+            mData = tmp; 
             writer.unlock();
 
             boost::shared_ptr< glv::View > parent = plot_parent.lock();
 
-            //static int counter = 0;
-            //static int minor_counter = 0;
             if( parent )
             {
                 boost::shared_ptr< glv::Plot > parent_plot = boost::dynamic_pointer_cast< glv::Plot >( parent );
@@ -72,17 +72,8 @@ namespace L3
                 {
                     parent_plot->range( 0, x_limit + 0.5 , 0 );
                     parent_plot->range( -1, y_centroid + 2.0 , 1 );
-
-                    //if( (counter++ % 20 ) == 0 )
-                    //{
-                        ////parent_plot->minor( double(minor_counter++)/100.0, 0 );
-                        //parent_plot->minor( minor_counter++, 0 );
-                        //parent_plot->major( double(minor_counter)/1000.0, 0 );
-                        //std::cout << minor_counter << std::endl;
-                    //}
                 }
             }
-        
         }
     }
 }
