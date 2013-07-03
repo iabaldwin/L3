@@ -3,7 +3,6 @@
 
 #include "RenderCore.h"
 #include "Components.h"
-//#include "QueryInterface.h"
 
 #include <set>
 

@@ -19,6 +19,7 @@ namespace L3
         // Scan reader
         LIDAR_reader.reset( new L3::IO::SequentialBinaryReader<L3::LMS151>() );
         //LIDAR_reader.reset( new L3::IO::SequentialBinaryReader<L3::LMS151>( RoadMaskPolicy<L3::LMS151>() ) );
+        
         if (!LIDAR_reader->open( dataset.path() + "/LMS1xx_10420002_192.168.0.50.lidar" ) )
         {
             std::cerr << "No LIDAR available" << std::endl;

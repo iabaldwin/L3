@@ -975,8 +975,6 @@ namespace Visualisers
             glv::View3D(rect)
         {
 
-            octree = boost::make_shared< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> >( 0.5f ); 
-            
             label.setValue( "Experience <octree>");
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
             *this  << label;
@@ -984,22 +982,38 @@ namespace Visualisers
 
         glv::Label label;
 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+        std::vector< glv::Color  >*  colors;
+        std::vector< glv::Point3 >* vertices;
 
-        std::vector< glv::Color  >  colors;
-        std::vector< glv::Point3 >  vertices;
+        void load( std::vector< glv::Color  >*  colors, std::vector< glv::Point3 >* vertices)
+        {
+            this->colors = colors;
+            this->vertices = vertices;
+        }
 
-        boost::shared_ptr< PointCloud<double> > master;
-
-        std::list< boost::shared_ptr< PointCloud<double> > > clouds;
-
-        boost::shared_ptr< PointCloudRendererLeaf > point_cloud_renderer_leaf;
-
-        boost::shared_ptr< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> > octree;
-
-        void load( boost::shared_ptr< L3::Experience > experience );
 
         void onDraw3D( glv::GLV& g );
+    };
+
+    struct ExperienceCloudCollection : glv::View
+    {
+
+        ExperienceCloudCollection() : glv::View( glv::Rect( 50,50) )
+        {
+
+        }
+
+        glv::Table* table;
+        std::list< ExperienceCloudView* > views ;
+
+        void add( ExperienceCloudView * view )
+        {
+            assert( view );
+            views.push_back( view );
+        }
+
+        void onDraw( glv::GLV& g );
+        
     };
 
     struct ExperienceOverviewView : ExperienceView, glv::View3D
@@ -1008,56 +1022,30 @@ namespace Visualisers
                 boost::shared_ptr<L3::Experience> experience, 
                 boost::shared_ptr< L3::PoseProvider > oracle_provider = boost::shared_ptr<L3::PoseProvider>(),
                 boost::shared_ptr< L3::PoseProvider > estimator_provider = boost::shared_ptr<L3::PoseProvider>()
-                ) 
-            : ExperienceView( experience, oracle_provider ), 
-            glv::View3D(rect)
-        {
-
-            label.setValue( "Experience" );
-            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
-            (*this) << label;
-
-            current = boost::make_shared< L3::SE3 >();
-
-            animation = boost::make_shared< AnimatedPoseRenderer >( boost::ref( *current ) );
-
-            holder = boost::make_shared< glv::Table >( "x x,", 0, 0 );
-
-            experience_point_cloud_oracle = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, oracle_provider );
-            experience_point_cloud_estimator = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, estimator_provider );
-
-            *holder << *experience_point_cloud_oracle << *experience_point_cloud_estimator;
-
-            holder->arrange();
-            holder->fit();
-
-            sub_view = boost::make_shared< glv::View >( glv::Rect(50, 50));
-
-            *sub_view << *holder;
-            sub_view->fit();
-
-            //*this << *holder;
-            *this << *sub_view;
-
-            sub_view->disable( glv::Visible );
-        }
-
-        glv::Label label;
+                ) ;
         
+        glv::Label label;
+
         boost::shared_ptr< L3::SE3 > current;
       
-        boost::shared_ptr< glv::View > sub_view;
         boost::shared_ptr< glv::Table > holder;
+        boost::shared_ptr< ExperienceCloudCollection > sub_view;
 
         boost::shared_ptr< AnimatedPoseRenderer > animation;
         boost::shared_ptr< ExperienceCloudView > experience_point_cloud_oracle, experience_point_cloud_estimator;
 
+        std::vector< glv::Color  >  colors;
+        std::vector< glv::Point3 > vertices;
+
+
+        boost::shared_ptr< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> > octree;
 
         void setExperience( boost::shared_ptr< L3::Experience > experience )
         {
             this->experience = experience;
-            this->experience_point_cloud_oracle->load( experience );
-            this->experience_point_cloud_estimator->load( experience );
+            load( experience );
+            this->experience_point_cloud_oracle->load( &colors, &vertices );
+            this->experience_point_cloud_estimator->load( &colors, &vertices );
         }
 
         void setOracle( boost::shared_ptr< L3::PoseProvider > provider )
@@ -1072,6 +1060,8 @@ namespace Visualisers
         }
         
         void onDraw3D(glv::GLV& g);
+
+        void load( boost::shared_ptr< L3::Experience > experience );
 
     };
 

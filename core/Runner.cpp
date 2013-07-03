@@ -200,6 +200,7 @@ namespace L3
             else
             {
                 usleep( .1*1e6 );
+                real_time_elapsed = system_timer.elapsed();
             }
   
         }

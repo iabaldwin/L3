@@ -1,9 +1,8 @@
 #include "Components.h"
+#include "RenderingUtils.h"
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/scoped_array.hpp>
-
-#include "RenderingUtils.h"
 
 #include <mach/vm_statistics.h>
 #include <mach/mach_types.h> 
@@ -143,15 +142,8 @@ namespace Visualisers
         glv::draw::rotate( position.r, position.p, position.q ); 
         glv::draw::translate( position.x, position.y, position.z );
 
-        //glGetDoublev(GL_PROJECTION_MATRIX, projection );
-        //glGetDoublev(GL_MODELVIEW_MATRIX, model );
-        //glGetIntegerv(GL_VIEWPORT,viewport);
-
         // Draw all the components
         std::list<Leaf*>::iterator leaf_iterator = components.begin();
-
-        L3::SE3 origin = L3::SE3::ZERO();
-        CoordinateSystem( origin, 20.0 ).onDraw3D(g);
 
         // Draw all the children
         while( leaf_iterator != components.end() )
@@ -1422,8 +1414,6 @@ namespace Visualisers
 
         std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
 
-        GLfloat ctrlpoints[ptr->sections.size()][3];
-
         int counter =0;
 
         ColorInterpolator interpolator;
@@ -1434,10 +1424,6 @@ namespace Visualisers
             experience_nodes_vertices[ counter ]( it->x, it->y, 0 );
             experience_nodes_colors[ counter++ ].set( interpolator( double(counter)/ptr->sections.size() ) ); 
 
-            ctrlpoints[counter][0]= it->x;
-            ctrlpoints[counter][1]= it->y;
-            ctrlpoints[counter][2]= 0.0;
-
             it++;
         }
 
@@ -1446,6 +1432,7 @@ namespace Visualisers
         glv::draw::pointSize( point_size );
         glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
         glv::draw::lineWidth( .05 );
+        
         std::fill( experience_nodes_colors.get(), experience_nodes_colors.get()+ptr->sections.size(), glv::Color( .7, .7, .7 ) );
         glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
 
@@ -1468,7 +1455,6 @@ namespace Visualisers
      */
     void ExperienceCloudView::onDraw3D( glv::GLV& g)
     {
-        //far( 1000 );
         far( 100 );
 
         L3::SE3 current;
@@ -1481,13 +1467,13 @@ namespace Visualisers
         if( experience_ptr )
             experience_pose = experience_ptr->getClosestPose( current );
 
-        //current.Z( current.Z() + 3.0);
         current.Z( experience_pose.Z() + 4.0  );
       
         transformCameraToPose( current );
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
+        //glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
+        glv::draw::paint( glv::draw::Points, &(*vertices)[0], &(*colors)[0], vertices->size() );
 
         CoordinateSystem( current ).onDraw3D(g);
 
@@ -1498,14 +1484,15 @@ namespace Visualisers
             CoordinateSystem( *it, 2.0, 0.7 ).onDraw3D( g );
 
         glv::draw::disable( glv::draw::Blend );
-   
-
-    
     }
 
-    void ExperienceCloudView::load(  boost::shared_ptr< L3::Experience > experience )
+    void ExperienceOverviewView::load(  boost::shared_ptr< L3::Experience > experience )
     {
         int section_counter = 0;
+
+        std::list< boost::shared_ptr< PointCloud<double> > > clouds;
+        
+        boost::shared_ptr< PointCloud<double> > master;
 
         while( true )
         {
@@ -1531,7 +1518,7 @@ namespace Visualisers
 
         join( clouds, master );
 
-        point_cloud_renderer_leaf = boost::make_shared< PointCloudRendererLeaf >( master );
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
         cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -1573,6 +1560,79 @@ namespace Visualisers
         }
 
     }
+
+    void ExperienceCloudCollection::onDraw( glv::GLV& g )
+    {
+        if ( this->enabled( glv::Maximized ) )
+        {
+            double height = parent->height();
+            double width = parent->width();
+
+            std::cout << "HI" << std::endl;
+
+            table->enable( glv::Maximized );
+
+            dynamic_cast< glv::Table* >(child)->arrangement( "x," );
+
+            //for( std::list< ExperienceCloudView* >::iterator it =  views.begin() ;
+                    //it != views.end();
+                    //it++ )
+            //{
+                //dynamic_cast< glv::View3D*>(*it)->enable( glv::Maximized );
+            //}
+        }
+
+    }
+
+    ExperienceOverviewView::ExperienceOverviewView( const glv::Rect& rect, 
+                boost::shared_ptr<L3::Experience> experience, 
+                boost::shared_ptr< L3::PoseProvider > oracle_provider,
+                boost::shared_ptr< L3::PoseProvider > estimator_provider 
+                ) 
+            : ExperienceView( experience, oracle_provider ), 
+            glv::View3D(rect)
+        {
+
+            label.setValue( "Experience" );
+            label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
+            (*this) << label;
+
+            // Load octree
+            octree = boost::make_shared< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> >( 0.5f ); 
+            
+            current = boost::make_shared< L3::SE3 >();
+
+            animation = boost::make_shared< AnimatedPoseRenderer >( boost::ref( *current ) );
+
+            sub_view = boost::make_shared< ExperienceCloudCollection >();
+            
+            holder = boost::make_shared< glv::Table >( "x x,", 0, 0 );
+
+            experience_point_cloud_oracle = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, oracle_provider );
+            experience_point_cloud_estimator = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, estimator_provider );
+
+            *holder << *experience_point_cloud_oracle << *experience_point_cloud_estimator;
+
+            holder->arrange();
+            holder->fit();
+
+            // This is crap
+            //sub_view->add( experience_point_cloud_oracle.get() );
+            //sub_view->add( experience_point_cloud_estimator.get() );
+
+            //sub_view->table = holder.get();
+
+            //*sub_view << *holder;
+            //sub_view->fit();
+
+            *sub_view << *holder;
+
+            *this << *sub_view;
+
+            sub_view->disable( glv::Visible );
+        }
+
+
 
 
     /*

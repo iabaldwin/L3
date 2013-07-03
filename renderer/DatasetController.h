@@ -12,17 +12,12 @@ namespace Visualisers
         {
         }
 
-        //boost::weak_ptr< L3::DatasetRunner > runner;
         L3::DatasetRunner* runner;
 
         bool onEvent( glv::View& v, glv::GLV& g)
         {
-            //boost::shared_ptr< L3::DatasetRunner > runner_ptr = runner.lock();
-            //if( !runner_ptr )
-                //return false;
-
             const glv::Keyboard& k = g.keyboard();
-            
+
             switch (k.key())
             {
                 case ' ':

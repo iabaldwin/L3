@@ -26,7 +26,7 @@ namespace L3
        
         member_function_map.insert( std::make_pair( "_exp_density",     std::make_pair( &CommandInterface::experience_density,  "Set experience density" ) ) );
 
-        member_function_map.insert( std::make_pair( "_stop",            std::make_pair( &CommandInterface::stop,                "Stop running" ) ) );
+        member_function_map.insert( std::make_pair( "_pause",           std::make_pair( &CommandInterface::pause,               "Pause execution" ) ) );
         member_function_map.insert( std::make_pair( "_start",           std::make_pair( &CommandInterface::start,               "Start running" ) ) );
         member_function_map.insert( std::make_pair( "_mode",            std::make_pair( &CommandInterface::runMode,             "Change run mode" ) ) );
         
@@ -516,18 +516,18 @@ namespace L3
         return std::make_pair( true, "CI::Clear" );
     }
 
-    std::pair< bool, std::string > CommandInterface::stop( const std::string& command )
-    {
-        container->runner->paused = true;
-        return std::make_pair( true, "CI::Stopped" );
-    }
-
     std::pair< bool, std::string > CommandInterface::start( const std::string& command )
     {
-        container->runner->paused = false;
+        container->runner->start();
         return std::make_pair( true, "CI::Started" );
     }
 
+    std::pair< bool, std::string > CommandInterface::pause( const std::string& command )
+    {
+        container->runner->paused = !container->runner->paused;
+        std::string status = container->runner->paused ? "CI:Paused" : "CI:Resumed";
+        return std::make_pair( true, status );
+    }
 
     std::pair< bool, std::string > CommandInterface::runMode( const std::string& command )
     {
