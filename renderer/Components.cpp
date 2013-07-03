@@ -1563,23 +1563,42 @@ namespace Visualisers
 
     void ExperienceCloudCollection::onDraw( glv::GLV& g )
     {
+        glv::Table* table = dynamic_cast< glv::Table* >(child);
+
         if ( this->enabled( glv::Maximized ) )
         {
             double height = parent->height();
             double width = parent->width();
 
-            std::cout << "HI" << std::endl;
+            table->maximize();
+            
+            _oracle->width( width );
+            _oracle->height( height/2.0 );
+            _oracle->left( 0 );
+            _oracle->top( 0 );
 
-            table->enable( glv::Maximized );
 
-            dynamic_cast< glv::Table* >(child)->arrangement( "x," );
+            _estimator->width( width );
+            _estimator->height( height/2.0 );
+            _estimator->left( 0 );
+            _estimator->top( height/2.0 );
 
-            //for( std::list< ExperienceCloudView* >::iterator it =  views.begin() ;
-                    //it != views.end();
-                    //it++ )
-            //{
-                //dynamic_cast< glv::View3D*>(*it)->enable( glv::Maximized );
-            //}
+        }
+        else
+        {
+            table->restore();
+            
+            _oracle->width( oracle_parameters.first.first );
+            _oracle->height( oracle_parameters.first.second );
+            _oracle->left( oracle_parameters.second.first );
+            _oracle->top( oracle_parameters.second.second );
+        
+            _estimator->width( estimator_parameters.first.first );
+            _estimator->height( estimator_parameters.first.second );
+            _estimator->left( estimator_parameters.second.first );
+            _estimator->top( estimator_parameters.second.second );
+
+        
         }
 
     }
@@ -1608,31 +1627,28 @@ namespace Visualisers
             
             holder = boost::make_shared< glv::Table >( "x x,", 0, 0 );
 
-            experience_point_cloud_oracle = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, oracle_provider );
-            experience_point_cloud_estimator = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), experience, estimator_provider );
+            experience_point_cloud_oracle = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), "INS", experience, oracle_provider );
+            experience_point_cloud_estimator = boost::make_shared< ExperienceCloudView >( glv::Rect( 175, 175 ), "L3", experience, estimator_provider );
 
             *holder << *experience_point_cloud_oracle << *experience_point_cloud_estimator;
 
             holder->arrange();
             holder->fit();
 
-            // This is crap
-            //sub_view->add( experience_point_cloud_oracle.get() );
-            //sub_view->add( experience_point_cloud_estimator.get() );
-
-            //sub_view->table = holder.get();
-
-            //*sub_view << *holder;
-            //sub_view->fit();
-
             *sub_view << *holder;
+         
+            sub_view->oracle( experience_point_cloud_oracle.get() );
+            sub_view->estimator( experience_point_cloud_estimator.get() );
 
+            // Fit to to the holder
+            sub_view->fit();
+
+            // Add
             *this << *sub_view;
 
+            // By default, not visible
             sub_view->disable( glv::Visible );
         }
-
-
 
 
     /*

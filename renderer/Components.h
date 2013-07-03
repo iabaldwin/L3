@@ -35,6 +35,7 @@ namespace Visualisers
      */
     void transformCameraToPose( L3::SE3& pose );
 
+    
     struct Cube
     {
         Cube( float x_lower, float y_lower, float z_lower, 
@@ -162,6 +163,35 @@ namespace Visualisers
         void drawBounds();
     };
 
+
+    struct BootController : Leaf
+    {
+
+        BootController( bool& booted ) : booted(booted)
+        { 
+
+        }
+
+        bool& booted;
+
+        std::list< Leaf* > controlled_leafs;
+
+        void control( Leaf* leaf )
+        {
+            assert( leaf );
+            controlled_leafs.push_back( leaf );
+
+        }
+
+
+        void onDraw3D( glv::GLV& g )
+        {
+            for (std::list< Leaf* >::iterator it =  controlled_leafs.begin();
+                    it != controlled_leafs.end();
+                    it++ )
+                (*it)->visible = booted;
+        }
+    };
 
 
     /*
@@ -969,13 +999,14 @@ namespace Visualisers
     {
 
         ExperienceCloudView( const glv::Rect& rect, 
+                std::string name, 
                 boost::shared_ptr<L3::Experience> experience, 
                 boost::shared_ptr< L3::PoseProvider > provider = boost::shared_ptr<L3::PoseProvider>() ) 
             : ExperienceView( experience, provider ), 
             glv::View3D(rect)
         {
 
-            label.setValue( "Experience <octree>");
+            label.setValue( name );
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
             *this  << label;
        }
@@ -1004,13 +1035,40 @@ namespace Visualisers
         }
 
         glv::Table* table;
-        std::list< ExperienceCloudView* > views ;
 
-        void add( ExperienceCloudView * view )
+        ExperienceCloudView * _oracle;
+        ExperienceCloudView * _estimator;
+        
+        std::pair< std::pair< double, double>, std::pair<double, double > > oracle_parameters, estimator_parameters;
+
+        void oracle( ExperienceCloudView * view )
         {
             assert( view );
-            views.push_back( view );
+            _oracle = view;
+       
+            oracle_parameters.first.first = _oracle->width();
+            oracle_parameters.first.second = _oracle->height();
+      
+
+            oracle_parameters.second.first = _oracle->left();
+            oracle_parameters.second.second = _oracle->top();
+      
+
         }
+
+        void estimator( ExperienceCloudView * view )
+        {
+            assert( view );
+            _estimator = view;
+        
+            estimator_parameters.first.first = _estimator->width();
+            estimator_parameters.first.second = _estimator->height();
+      
+            estimator_parameters.second.first = _estimator->left();
+            estimator_parameters.second.second = _estimator->top();
+        }
+
+
 
         void onDraw( glv::GLV& g );
         

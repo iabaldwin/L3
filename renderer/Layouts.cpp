@@ -473,6 +473,8 @@ namespace L3
                 composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( it->get() ) );
             }
 
+            
+
             pose_renderers.push_back( boost::make_shared< L3::Visualisers::PoseRenderer>( boost::ref( *runner->estimated_pose ) ) );
             pose_renderers.push_back( boost::make_shared< L3::Visualisers::AnimatedPoseRenderer> ( boost::ref( *runner->estimated_pose ) ) );
 
@@ -483,6 +485,19 @@ namespace L3
                 this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(it->get() ))); 
             }
 
+            /*
+             *  Add in boot controller
+             */
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( boot_controller.get() ) );
+            boot_controller = boost::make_shared< BootController >( boost::ref( runner->booted ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(boot_controller.get() ) ) );
+
+            for( std::deque< boost::shared_ptr< PoseRenderer > >::iterator it = pose_renderers.begin();
+                    it != pose_renderers.end();
+                    it++ )
+            {
+                boot_controller->control( it->get() );
+            }
 
             /*
              *  Run-time swathe

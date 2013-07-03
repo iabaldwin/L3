@@ -299,7 +299,7 @@ namespace L3
 
                     double innov = norm( predicted, z );
 
-                    if (innov < 2 )
+                    if (innov < 10 )
                     {
 
                         // Observe
