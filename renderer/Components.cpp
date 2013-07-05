@@ -1424,7 +1424,7 @@ namespace Visualisers
         experience_nodes_vertices.reset( new glv::Point3[ptr->sections.size()] );
         experience_nodes_colors.reset( new glv::Color[ptr->sections.size()] );
 
-        std::deque<L3::experience_section>::iterator it = ptr->sections.begin();
+        std::deque<L3::spatial_data>::iterator it = ptr->sections.begin();
 
         int counter =0;
 

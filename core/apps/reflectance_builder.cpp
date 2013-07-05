@@ -17,21 +17,21 @@ int main( int argc, char** argv )
     L3::Dataset dataset( dataset_directory );
     std::cout << dataset << std::endl;
 
-    boost::shared_ptr< L3::RoadBuilder > builder;
+    boost::shared_ptr< L3::ReflectanceBuilder > builder;
 
     switch( argc )
     {
     
         case 5:
-            builder.reset( new L3::RoadBuilder( dataset, atof( argv[2]), atof( argv[3]), atof( argv[4])  ) );
+            builder.reset( new L3::ReflectanceBuilder( dataset, atof( argv[2]), atof( argv[3]), atof( argv[4])  ) );
             break;
            
         case 6:
-            builder.reset( new L3::RoadBuilder( dataset, atof( argv[2]), atof( argv[3]), atof( argv[4]), atof( argv[5] )  ) );
+            builder.reset( new L3::ReflectanceBuilder( dataset, atof( argv[2]), atof( argv[3]), atof( argv[4]), atof( argv[5] )  ) );
             break;
 
         default:
-            builder.reset( new L3::RoadBuilder( dataset, atof( argv[2]), atof( argv[3]) ) );
+            builder.reset( new L3::ReflectanceBuilder( dataset, atof( argv[2]), atof( argv[3]) ) );
             break;
 
     };

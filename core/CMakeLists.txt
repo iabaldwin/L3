@@ -6,6 +6,7 @@ add_library( L3
     Datatypes.cpp 
     Iterator.cpp 
     SwatheBuilder.cpp 
+    Reflectance.cpp
     Windower.cpp 
     AbstractFactory.cpp 
     PointCloud.cpp 
@@ -13,6 +14,7 @@ add_library( L3
     Reader.cpp 
     Writer.cpp 
     Experience.cpp 
+    SpatialData.cpp
     Projector.cpp 
     Configuration.cpp 
     Filter.cpp 
@@ -29,7 +31,6 @@ add_library( L3
     VelocityProvider.cpp
     Performance.cpp
     Misc.cpp
-    RoadBuilder.cpp
     )
 
 target_link_libraries( L3 config++ gsl PocoFoundation tbb ICP pcl_common pcl_kdtree pcl_search pcl_features MIToolBox fftw3 lapack blas itpp_static BayesFilter flann_s )

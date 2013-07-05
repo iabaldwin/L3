@@ -115,6 +115,9 @@ target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES}  )
 add_executable( test_experience_query test_experience_query.cpp )
 target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES}  )
 
+add_executable( test_reflectance_loader test_reflectance_loader.cpp )
+target_link_libraries( test_reflectance_loader config L3 ${Boost_LIBRARIES}  )
+
 #add_executable( test_experience_pipeline test_experience_pipeline.cpp )
 #target_link_libraries( test_experience_pipeline config L3 ${Boost_LIBRARIES}  )
 

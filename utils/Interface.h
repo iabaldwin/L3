@@ -4,6 +4,10 @@
 
 #include <boost/regex.hpp>
 
+#undef luaL_dostring
+#define luaL_dostring(L,s)  \
+        (luaL_loadstring(L, s) || lua_pcall(L, 0, LUA_MULTRET, 0))
+
 extern "C"
 {
        #include "lua.h"
@@ -63,6 +67,7 @@ struct LuaInterface : Interface
         if( result )
         {
             retval.first = true;
+            //retval.second = getState();
             retval.second = "";
         }
         else
@@ -78,6 +83,9 @@ struct LuaInterface : Interface
     std::string getState()
     {
         const char* msg = lua_tostring( state, 1 );
+       
+        std::cout << msg << std::endl;
+
         lua_pop(state, 1);
         return std::string( msg );
     }

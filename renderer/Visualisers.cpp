@@ -154,20 +154,72 @@ namespace Visualisers
     void ExperienceRenderer::onDraw3D( glv::GLV& g )
     {
         // Plot experience section locations
-        std::deque<L3::experience_section>::iterator it = experience->sections.begin();
+        //std::deque<L3::experience_section>::iterator it = experience->sections.begin();
 
-        while( it != experience->sections.end() )
-        {
-            experience_nodes_vertices[ std::distance( experience->sections.begin(), it ) ]( it->x, it->y, 0 );
-            experience_nodes_colors[ std::distance( experience->sections.begin(), it ) ].set( 255, 0, 0 );
-            it++;
-        }
-        glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), experience->sections.size());
+        //while( it != experience->sections.end() )
+        //{
+            //experience_nodes_vertices[ std::distance( experience->sections.begin(), it ) ]( it->x, it->y, 0 );
+            //experience_nodes_colors[ std::distance( experience->sections.begin(), it ) ].set( 255, 0, 0 );
+            //it++;
+        //}
+        //glv::draw::paint( glv::draw::Points, experience_nodes_vertices.get(), experience_nodes_colors.get(), experience->sections.size());
 
-        // Update experience
-        L3::SE3 update = (*pose_provider)();
-        experience->update( update.X(), update.Y() );
+        //// Update experience
+        //L3::SE3 update = (*pose_provider)();
+        //experience->update( update.X(), update.Y() );
     }
+
+
+    /*
+     *  Reflectance
+     */
+    ReflectanceRenderer::ReflectanceRenderer( boost::shared_ptr<L3::Reflectance> reflectance ) 
+        : reflectance(reflectance), 
+        pose_provider(NULL)
+    {
+        pt_limit = 10*10000;
+
+        point_vertices = boost::make_shared< glv::Point3[] >(pt_limit);;
+        point_colors   = boost::make_shared< glv::Color[] >( pt_limit);
+    }
+
+    void ReflectanceRenderer::addPoseProvider( L3::PoseProvider* provider )
+    {
+        pose_provider = provider;
+    }
+
+    void ReflectanceRenderer::onDraw3D( glv::GLV& g )
+    {
+        // Plot reflectance data
+      
+        L3::ReadLock lock( reflectance->mutex );
+
+        glv::Point3 vertices[ reflectance->resident_point_cloud->num_points];
+        glv::Color  colors[ reflectance->resident_point_cloud->num_points];
+
+        int counter = 0;
+        for( PointCloudE<double>::ITERATOR it = reflectance->resident_point_cloud->begin();
+                it != reflectance->resident_point_cloud->end();
+                it++ )
+        {
+            vertices[counter]( it->x, it->y, it->z );
+       
+            float reflectance = float(it->e)/500.0;
+            colors[counter].set( reflectance, reflectance, reflectance );
+            counter++;
+        
+        }
+        lock.unlock();
+
+        glv::draw::enable( glv::draw::Blend );
+        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        glv::draw::disable( glv::draw::Blend );
+
+        // Update Reflectance
+        L3::SE3 update = (*pose_provider)();
+        reflectance->update( update.X(), update.Y() );
+    }
+
 
     /*
      * Real, or synthesized, pose provider

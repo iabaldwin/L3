@@ -102,6 +102,25 @@ struct ExperienceRenderer : Leaf
 
 };
 
+struct ReflectanceRenderer : Leaf
+{
+    ReflectanceRenderer( boost::shared_ptr<L3::Reflectance> reflectance );
+    
+    boost::shared_ptr<L3::Reflectance>   reflectance;
+
+    int                                     pt_limit, pt_counter, sample_counter; 
+    boost::shared_ptr< glv::Point3[] >      point_vertices;
+    boost::shared_ptr< glv::Color[] >       point_colors;
+    
+    L3::PoseProvider*                       pose_provider;
+
+    void addPoseProvider( L3::PoseProvider* provider );
+
+    void onDraw3D( glv::GLV& g );
+
+};
+
+
 /*
  *  Pose windower renderer
  */

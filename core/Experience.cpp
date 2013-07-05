@@ -2,18 +2,9 @@
 
 namespace L3
 {
-
-    template <typename T>
-        T norm( std::pair<T,T> a, std::pair<T,T> b)
-        {
-            return sqrt( pow( a.first-b.first,2) + pow( a.second - b.second, 2) );
-        }
-
-
-    std::ostream& operator<<( std::ostream& o, experience_section section )
+    std::ostream& operator<<( std::ostream& o, spatial_data section )
     {
         o << section.id << ":" << section.x << "," << section.y << "(" << section.stream_position << "," << section.payload_size << ")";
-
         return o;
     }
 
@@ -108,17 +99,6 @@ namespace L3
 
             m = std::for_each( scans.begin(), scans.end(),  m );
 
-            // Log the pose, always
-            //double val = matched[0].second->X();
-            //experience_poses.write( (char*)(&val ), sizeof(double) );
-            //val = matched[0].second->Y();
-            //experience_poses.write( (char*)(&val ), sizeof(double) );
-            //val = matched[0].second->Z();
-            //experience_poses.write( (char*)(&val ), sizeof(double) );
-            //val = matched[0].second->Q();
-            //experience_poses.write( (char*)(&val ), sizeof(double) );
-
-
             double increment = length_estimator( matched[0] );
 
             accumulate += increment;
@@ -190,129 +170,16 @@ namespace L3
     }
 
     /*
-     *  Selection Policies
-     */
-    bool RetrospectiveWithLookaheadPolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
-    {
-        /*
-         *  Initialise distances
-         */
-        std::vector< std::pair< double, unsigned int > > distances;
-
-        /*
-         *  Calculate distances to all sections
-         */
-        for( unsigned int i=0; i<sections->size(); i++ )
-            distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( (*sections)[i].x, (*sections)[i].y)  ), i ) ); 
-
-        /*
-         *  Sort the distances
-         */
-        std::sort( distances.begin(), distances.end() );
-
-        required_sections.clear();
-
-        int window_cpy(window);
-
-        int lookahead = 0;
-
-        int start_val = (distances.front().second + lookahead) % sections->size();
-
-        for( int i=start_val; (window_cpy)-->0; i-- )
-        {
-            int load_val = i >=0 ? i : sections->size()-i;
-            required_sections.push_front( load_val );
-        }
-
-        std::copy( required_sections.begin(),
-                required_sections.end(),
-                std::ostream_iterator<unsigned int>( std::cout, " " ) );
-
-        std::cout << std::endl;
-
-        return true;
-
-    }
-
-    bool StrictlyRetrospectivePolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
-    {
-        /*
-         *  Initialise distances
-         */
-        std::vector< std::pair< double, unsigned int > > distances;
-
-        /*
-         *  Calculate distances to all sections
-         */
-        for( unsigned int i=0; i<sections->size(); i++ )
-            distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( (*sections)[i].x, (*sections)[i].y)  ), i ) ); 
-
-        /*
-         *  Sort the distances
-         */
-        std::sort( distances.begin(), distances.end() );
-
-        required_sections.clear();
-
-        int window_cpy(window);
-
-        //Here is the magic
-        for( int i=distances.front().second; window_cpy-->0  && i>=0; i-- )
-        {
-            int load_val = i >=0 ? i : sections->size()-i;
-            required_sections.push_front( load_val );
-
-        }
-
-        return true;
-
-    }
-
-    bool KNNPolicy::operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
-    {
-        /*
-         *  Initialise distances to each section
-         */
-        std::vector< std::pair< double, unsigned int > > distances;
-
-        /*
-         *  Calculate distances to all sections
-         */
-        for( unsigned int i=0; i<sections->size(); i++ )
-            distances.push_back( std::make_pair( norm( std::make_pair( x, y ), std::make_pair( (*sections)[i].x, (*sections)[i].y)  ), i ) ); 
-
-        /*
-         *  Sort the distances
-         */
-        std::sort( distances.begin(), distances.end() );
-        std::vector< std::pair< double, unsigned int > >::iterator distances_iterator = distances.begin();
-
-        /*
-         *  Build up a list of required sections
-         */
-        required_sections.clear();
-        for( int i=0; i<window && i<(int)distances.size(); i++ )
-            required_sections.push_front( distances_iterator++->second );
-
-        return ( !required_sections.empty() );
-    }
-
-
-    /*
      *  Experience
      */
 
-    Experience::Experience( std::deque<experience_section> sections, 
-            std::string& fname, 
+    Experience::Experience( std::deque< spatial_data > sections, 
+            std::string fname, 
             boost::shared_ptr< SelectionPolicy > policy,
             int window, 
             boost::shared_ptr< flann::Index< flann::L2<float> > > index ,
             boost::shared_ptr< std::deque< L3::SE3 > > poses ) 
-        : window(window),
-        sections(sections), 
-        policy(policy),
-        running(true),
-        _x(0.0), _y(0.0),
+        : SpatialQuery( sections, fname, policy, window ),
         resident_point_cloud( new L3::PointCloud<double>() ),
         pose_lookup( index ),
         poses(poses)
@@ -503,13 +370,7 @@ namespace L3
         }
     }
 
-    bool Experience::update( double x, double y )
-    {
-        _x = x;
-        _y = y;
-        return true;
-    }
-
+    
     std::pair< long unsigned int, L3::Point<double>* > Experience::load( unsigned int id )
     {
         if( id >= sections.size() )

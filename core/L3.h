@@ -9,6 +9,7 @@
 #include "Runner.h"             // Dataset runner
 #include "Iterator.h"           // Constant-time, constant-distance, etc
 #include "PointCloud.h"         // Points, point-cloud
+#include "Reflectance.h"        // 
 #include "Projector.h"          // Convert raw LIDAR data to Point cloud
 #include "SwatheBuilder.h"      // Associate LIDAR sans with poses
 #include "Reader.h"             // Basic pose/LIDAR reader
@@ -29,7 +30,6 @@
 #include "Estimator.h"          // Pose estimation
 #include "Filter.h"             // Pose filter
 #include "Simulator.h"          // Artificial data provider
-#include "RoadBuilder.h"        // 
 #include "Misc.h"               // Everything else...
 
 #endif

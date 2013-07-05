@@ -81,7 +81,7 @@ namespace Visualisers
         // Intercept switch
         switch(e){
             case glv::Event::KeyDown:
-            if( key == 96 ){
+            if( key == '`' ){
                 return false;
 			}
 	

@@ -13,7 +13,7 @@ namespace L3
 template <typename T>
 struct MaskPolicy
 {
-    boost::shared_ptr<T> operator()( boost::shared_ptr<T> t ) 
+    virtual boost::shared_ptr<T> operator()( boost::shared_ptr<T> t ) 
     {
         return t;
     }
@@ -30,21 +30,17 @@ struct MaskPolicy< L3::LMS151 >
 
     float cull;
 
-    boost::shared_ptr<L3::LMS151> operator()( boost::shared_ptr<L3::LMS151> t ) ;
+    virtual boost::shared_ptr<L3::LMS151> operator()( boost::shared_ptr<L3::LMS151> t ) ;
 
 };
  
 template < typename T > 
 struct RoadMaskPolicy : MaskPolicy< T > 
 {
-    RoadMaskPolicy( float cull = 4 ) : cull(cull)
+    RoadMaskPolicy()
     {
-
+        MaskPolicy<T>::cull = 0.0;
     }
-
-    float cull;
-
-    boost::shared_ptr<T> operator()( boost::shared_ptr<T> t ) ;
 
 };
 
@@ -53,8 +49,12 @@ template <typename T>
 class AbstractFactory
 {
     public:
-        static std::pair< double, boost::shared_ptr<T> > produce( std::string& str, MaskPolicy<T> policy = MaskPolicy<T>() );
-        static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double> elements, MaskPolicy<T> policy = MaskPolicy<T>());
+        //static std::pair< double, boost::shared_ptr<T> > produce( std::string& str, MaskPolicy<T> policy = MaskPolicy<T>() );
+        //static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double> elements, MaskPolicy<T> policy = MaskPolicy<T>());
+        
+        static std::pair< double, boost::shared_ptr<T> > produce( std::string& str, MaskPolicy<T>* policy = NULL );
+        static std::pair< double, boost::shared_ptr<T> > produce( std::vector<double> elements, MaskPolicy<T>* policy = NULL );
+
 };
 
 template <>
@@ -64,7 +64,6 @@ class AbstractFactory<L3::Pose>
         static std::pair< double, boost::shared_ptr<L3::Pose> > produce( std::string& str );
         static std::pair< double, boost::shared_ptr<L3::Pose> > produce( std::vector<double> elements );
 };
-
 
 }
 #endif

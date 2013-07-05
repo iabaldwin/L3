@@ -49,6 +49,26 @@ struct Point
 };
 
 template< typename T>
+struct PointE : Point<T>
+{
+
+    T x,y,z;
+    T e;
+
+    PointE() : Point<T>(0,0,0),  e(0)
+    {
+    }
+
+
+    PointE( T X, T Y, T Z, T E ) : Point<T>(x,y,z), e(E)
+    {
+    }
+
+};
+
+
+
+template< typename T>
 struct PointRGB : Point<T>
 {
 
@@ -101,11 +121,45 @@ struct PointCloud  : Lockable
       
 };
 
+template< typename T>
+struct PointCloudE  : Lockable
+{
+
+    PointCloudE() : num_points(0), points(NULL)
+    {
+    }
+
+    size_t num_points;
+    L3::PointE<T>* points;
+
+    ~PointCloudE()
+    {
+        delete [] points;
+    }
+
+    typedef L3::PointE<T>* ITERATOR;
+    typedef L3::PointE<T>* const CONST_ITERATOR;
+
+    ITERATOR begin()
+    {
+        return points;
+    }
+
+    ITERATOR end()
+    {
+        return (points+num_points);
+    }
+      
+};
+
 template <typename T>
 void allocate( PointCloud<T>* cloud, size_t size  );
 
 template< typename T >
 boost::tuple<T,T,T> mean( PointCloud<T>* cloud );
+
+template< typename T >
+boost::tuple<T,T,T> mean( PointCloudE<T>* cloud );
 
 template< typename T >
 boost::tuple<T,T,T> min( PointCloud<T>* cloud );
@@ -115,6 +169,9 @@ boost::tuple<T,T,T> max( PointCloud<T>* cloud );
 
 template <typename T>
 bool join( std::list< boost::shared_ptr<L3::PointCloud<T> > > clouds, boost::shared_ptr<L3::PointCloud<T> >& result  );
+
+template <typename T>
+bool join( std::list< boost::shared_ptr<L3::PointCloudE<T> > > clouds, boost::shared_ptr<L3::PointCloudE<T> >& result  );
 
 template <typename T>
 bool sample( PointCloud<T>* input,  PointCloud<T>* output, int size, bool allocate=true );

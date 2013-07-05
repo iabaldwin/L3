@@ -1,9 +1,6 @@
 #ifndef L3_EXPERIENCE_H
 #define L3_EXPERIENCE_H
 
-#include <Poco/Thread.h>
-
-#include "Datatypes.h"
 #include "PointCloud.h"
 #include "Dataset.h"
 #include "Reader.h"
@@ -12,93 +9,50 @@
 #include "Histogram.h"
 #include "Smoother.h"
 #include "ChainBuilder.h"
+#include "SpatialData.h"
 
 #include <flann/flann.hpp>
-
-#include <map>
 
 namespace L3
 {
 
-struct experience_section
-{
-    int id;
-    double x,y;
-    unsigned int stream_position;
-    unsigned int payload_size;
-};
-
-struct SelectionPolicy
-{
-    virtual bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window ) 
-    {
-        return false;
-    }
-};
-
-struct KNNPolicy : SelectionPolicy
-{
-    bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window );
-};
-
-struct StrictlyRetrospectivePolicy : SelectionPolicy
-{
-    bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window );
-};
-
-struct RetrospectiveWithLookaheadPolicy: SelectionPolicy
-{
-    bool operator()( std::deque< experience_section>* sections, double x, double y, std::list<unsigned int>& required_sections, const int window );
-};
-
 /*
  *Core experience
  */
-struct Experience : SpatialObserver, Poco::Runnable, Lockable
-{
-    Experience( std::deque<experience_section> sections, 
-            std::string& fname, 
-            boost::shared_ptr< SelectionPolicy > policy, 
-            int WINDOW=2, 
-            boost::shared_ptr< flann::Index< flann::L2<float> > > index = boost::shared_ptr< flann::Index< flann::L2<float> > >(),
-            boost::shared_ptr< std::deque< L3::SE3 > > poses  = boost::shared_ptr< std::deque< L3::SE3 > >()) ;
-    
-    int                                     window;
-    std::ifstream                           data;
-    Poco::Thread                            thread;
-    std::deque<experience_section>          sections;
-    boost::shared_ptr< SelectionPolicy >    policy; 
-    bool                                    running;
-    double                                  _x,_y;
+struct Experience : SpatialQuery
+    {
+        Experience( std::deque< spatial_data > sections, 
+                std::string fname, 
+                boost::shared_ptr< SelectionPolicy > policy, 
+                int window_size=2, 
+                boost::shared_ptr< flann::Index< flann::L2<float> > > index = boost::shared_ptr< flann::Index< flann::L2<float> > >(),
+                boost::shared_ptr< std::deque< L3::SE3 > > poses  = boost::shared_ptr< std::deque< L3::SE3 > >()) ;
 
-    boost::shared_ptr< std::deque< L3::SE3 > > poses; 
-    boost::shared_ptr< flann::Index< flann::L2<float> > > pose_lookup;
+        boost::shared_ptr< std::deque< L3::SE3 > > poses; 
+        boost::shared_ptr< flann::Index< flann::L2<float> > > pose_lookup;
 
-    std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
-  
-    boost::shared_ptr< L3::PointCloud<double> >  resident_point_cloud;
-    boost::shared_ptr< L3::HistogramPyramid<double> > experience_pyramid;
+        std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloud<double> > > > resident_sections;
 
-    ~Experience();
+        boost::shared_ptr< L3::PointCloud<double> >  resident_point_cloud;
+        boost::shared_ptr< L3::HistogramPyramid<double> > experience_pyramid;
 
-    virtual void    run();
-    void            initialise();
-    bool            update( double x, double y );
-    void            createHistograms( const std::vector< double >& densities  );
-  
-    L3::SE3         getClosestPose( const L3::SE3& input );
+        ~Experience();
 
-    std::pair< long unsigned int, L3::Point<double>* > load( unsigned int id );
-    
-};
+        virtual void    run();
+        void            initialise();
+        void            createHistograms( const std::vector< double >& densities  );
+
+        L3::SE3         getClosestPose( const L3::SE3& input );
+
+        std::pair< long unsigned int, L3::Point<double>* > load( unsigned int id );
+
+    };
 
 /*
  *  Experience loader
  */
 struct ExperienceLoader
 {
-    std::deque<experience_section> sections;
-
     ExperienceLoader( const L3::Dataset& dataset, int window_sections = 3 ) : window_sections(window_sections)
     {
         load( dataset.path() );
@@ -110,6 +64,7 @@ struct ExperienceLoader
     }
 
     int window_sections;
+    std::deque<spatial_data> sections;
     boost::shared_ptr<Experience> experience;
 
     void load( const std::string& target )
@@ -121,7 +76,7 @@ struct ExperienceLoader
 
         std::string experience_name( target + "/experience.dat");
 
-        experience_section section;
+        spatial_data section;
 
         while( true )
         {
@@ -171,7 +126,7 @@ struct ExperienceLoader
 
         experience_poses.close();
 
-        //flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/4, 4 );
+        // Only query over x an dy
         flann::Matrix<float> flann_dataset(new float[pose_stream.size()], pose_stream.size()/2, 2 );
 
         float* ptr = flann_dataset[0];
