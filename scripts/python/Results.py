@@ -236,8 +236,8 @@ class L3Trajectories(Trajectory):
 if __name__=="__main__":
 
     #location = Global()
-    #location = Road()
-    location = Corner()
+    location = Road()
+    #location = Corner()
     
     L3 = Experience().Plot( location )
 
