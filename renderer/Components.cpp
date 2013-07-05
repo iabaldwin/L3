@@ -1451,8 +1451,8 @@ namespace Visualisers
         static int draw_counter = 0;
         glv::draw::text( "Is this the real world", draw_counter++, 40, 20 );
 
-        //bool draw_dense = true;
-        bool draw_dense = false;
+        bool draw_dense = true;
+        //bool draw_dense = false;
 
         if( enabled( glv::Maximized ) )
         {
@@ -1496,6 +1496,9 @@ namespace Visualisers
         transformCameraToPose( current );
 
         glv::draw::enable( glv::draw::Blend );
+       
+        glv::draw::pointAtten(0, 0, 1);
+        
         //glv::draw::paint( glv::draw::Points, &(*vertices)[0], &(*colors)[0], vertices->size() );
         glv::draw::paint( glv::draw::Points, vertices, colors, num_points );
 
