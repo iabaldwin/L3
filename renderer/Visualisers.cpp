@@ -204,7 +204,7 @@ namespace Visualisers
         {
             vertices[counter]( it->x, it->y, it->z );
        
-            float reflectance = float(it->e)/500.0;
+            float reflectance = float(it->e)/800.0;
             colors[counter].set( reflectance, reflectance, reflectance );
             counter++;
         
