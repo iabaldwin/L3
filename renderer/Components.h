@@ -1074,7 +1074,7 @@ namespace Visualisers
         
     };
 
-    struct ExperienceOverviewView : ExperienceView, glv::View3D, Updateable
+    struct ExperienceOverviewView : ExperienceView, glv::View3D, Updateable, Lockable
     {
         ExperienceOverviewView( const glv::Rect& rect, 
                 boost::shared_ptr<L3::Experience> experience, 

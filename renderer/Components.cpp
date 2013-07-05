@@ -19,7 +19,7 @@ namespace Visualisers
     void transformCameraToPose( L3::SE3& pose )
     {
         // SE3->GL
-        L3::SE3 rotation( 0, 0, 0, 0, -1.57, 0 );
+        L3::SE3 rotation( 0, 0, 0, 0, -M_PI/2.0, 0 );
         glMultMatrixf( rotation.getHomogeneous().data() );
 
         L3::SE3 rot( 0, 0, 0, -1*pose.R(), -1*pose.P(), -1*pose.Q() );
@@ -1402,6 +1402,8 @@ namespace Visualisers
 
     void ExperienceOverviewView::onDraw3D(glv::GLV& g)
     {
+        L3::ReadLock lock( this->mutex );
+        
         far(1000); 
 
         glv::draw::translateZ( -950 );
@@ -1449,7 +1451,8 @@ namespace Visualisers
         static int draw_counter = 0;
         glv::draw::text( "Is this the real world", draw_counter++, 40, 20 );
 
-        bool draw_dense = true;
+        //bool draw_dense = true;
+        bool draw_dense = false;
 
         if( enabled( glv::Maximized ) )
         {
@@ -1458,18 +1461,16 @@ namespace Visualisers
            
             if( draw_dense )
             {
-                //boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->load( reflectance_vertices.get(), reflectance_colors.get(), reflectance_points );
-                //boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_estimator)->load( reflectance_vertices.get(), reflectance_colors.get(), reflectance_points );
-         
                 boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->load( reflectance_colors.get(),  reflectance_vertices.get(), reflectance_points );
                 boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_estimator)->load( reflectance_colors.get(),  reflectance_vertices.get(), reflectance_points );
             }
-
 
             sub_view->enable( glv::Visible );
         }
         else
             sub_view->disable( glv::Visible );
+   
+        lock.unlock();
     }
 
     /*
@@ -1489,7 +1490,8 @@ namespace Visualisers
         L3::SE3 experience_pose;
         if( experience_ptr )
             experience_pose = experience_ptr->getClosestPose( current );
-        current.Z( experience_pose.Z() + 4.0  );
+        //current.Z( experience_pose.Z() + 4.0  );
+        current.Z( experience_pose.Z() + 2.0  );
       
         transformCameraToPose( current );
 
@@ -1589,6 +1591,7 @@ namespace Visualisers
 
         if( reflectance_ptr )
         {
+            L3::WriteLock lock( this->mutex );
             L3::copy( reflectance_ptr->resident_point_cloud.get(), &reflectance_cloud );
         
             reflectance_vertices = boost::make_shared< glv::Point3[] >( reflectance_cloud.num_points );
@@ -1607,6 +1610,8 @@ namespace Visualisers
             }
             
             reflectance_points =  reflectance_cloud.num_points;
+       
+            lock.unlock();
         }
     
     }
