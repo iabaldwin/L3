@@ -554,6 +554,7 @@ namespace L3
              *  Spatial grid
              */
             spatial_updater->provider = runner->oracle;
+            
             spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( grid.get() ) ) );
             composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( grid.get() ) );
             grid = boost::make_shared< DynamicGrid> ();
@@ -645,6 +646,19 @@ namespace L3
             experience_location->setOracle( runner->oracle );
             experience_location->setEstimator( runner->algorithm );
 
+            ReflectanceLoader loader( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/L3" );
+            reflectance = loader.reflectance; 
+          
+            spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) ) );
+            spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) );
+
+            reflectance_renderer = boost::make_shared< ReflectanceRenderer >( reflectance );
+            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(reflectance_renderer.get() ) );
+            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(reflectance_renderer.get() ) ) );
+           
+            reflectance_renderer->pose_provider = runner->oracle;
+
+
             /*
              *  Stand-alone pyramid renderer
              */
@@ -722,8 +736,7 @@ namespace L3
                 // Associate results
                  
             }
-
-       
+            
             return true;
         }
     }

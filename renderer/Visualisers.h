@@ -112,9 +112,8 @@ struct ReflectanceRenderer : Leaf
     
     boost::shared_ptr<L3::Reflectance>      reflectance;
 
-    L3::PoseProvider*                       pose_provider;
-
-    void addPoseProvider( L3::PoseProvider* provider );
+    //L3::PoseProvider*                       pose_provider;
+    boost::weak_ptr< L3::PoseProvider >     pose_provider;
 
     void onDraw3D( glv::GLV& g );
 

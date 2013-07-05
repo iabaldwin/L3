@@ -146,7 +146,7 @@ namespace Visualisers
             boost::shared_ptr< WASDManager > selection_manager;
             boost::shared_ptr< MouseQuerySelect > mouse_query;
 
-            std::map< std::string, boost::shared_ptr< L3::Visualisers::Leaf > > extras;
+            std::map< std::string, boost::shared_ptr< Leaf > > extras;
 
     };
 
@@ -181,11 +181,14 @@ namespace Visualisers
             boost::shared_ptr< ScanRenderer >                               vertical_scan_renderer;
             boost::shared_ptr< ScanRenderer >                               horizontal_scan_renderer_leaf;
             boost::shared_ptr< ScanRenderer >                               vertical_scan_renderer_leaf;
-            
+
+            boost::shared_ptr< ReflectanceRenderer >                        reflectance_renderer;
+
             boost::shared_ptr< ScanMatchingScanRenderer >                   scan_matching_renderer;
             boost::shared_ptr< ExperienceOverviewView >                     experience_location;
+            boost::shared_ptr< Reflectance >                                reflectance;
             boost::shared_ptr< DedicatedPoseRenderer>                       oracle_renderer;
-            boost::shared_ptr< L3::Visualisers::PointCloudBoundsRenderer >  point_cloud_bounds_renderer;
+            boost::shared_ptr< PointCloudBoundsRenderer >                   point_cloud_bounds_renderer;
             boost::shared_ptr< EventController >                            point_cloud_maximise_controller;
             
             boost::shared_ptr< Statistics > statistics;

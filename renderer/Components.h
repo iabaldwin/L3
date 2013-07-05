@@ -1095,7 +1095,6 @@ namespace Visualisers
         std::vector< glv::Color  >  colors;
         std::vector< glv::Point3 > vertices;
 
-
         boost::shared_ptr< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> > octree;
 
         void setExperience( boost::shared_ptr< L3::Experience > experience )

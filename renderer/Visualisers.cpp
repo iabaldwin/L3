@@ -174,8 +174,7 @@ namespace Visualisers
      *  Reflectance
      */
     ReflectanceRenderer::ReflectanceRenderer( boost::shared_ptr<L3::Reflectance> reflectance ) 
-        : reflectance(reflectance), 
-        pose_provider(NULL)
+        : reflectance(reflectance)
     {
         pt_limit = 10*10000;
 
@@ -183,15 +182,10 @@ namespace Visualisers
         point_colors   = boost::make_shared< glv::Color[] >( pt_limit);
     }
 
-    void ReflectanceRenderer::addPoseProvider( L3::PoseProvider* provider )
-    {
-        pose_provider = provider;
-    }
-
     void ReflectanceRenderer::onDraw3D( glv::GLV& g )
     {
         // Plot reflectance data
-      
+        
         L3::ReadLock lock( reflectance->mutex );
 
         glv::Point3 vertices[ reflectance->resident_point_cloud->num_points];
@@ -216,7 +210,12 @@ namespace Visualisers
         glv::draw::disable( glv::draw::Blend );
 
         // Update Reflectance
-        L3::SE3 update = (*pose_provider)();
+        boost::shared_ptr< L3::PoseProvider > provider_ptr = pose_provider.lock();
+
+        if( !provider_ptr )
+            return;
+        
+        L3::SE3 update = (*provider_ptr)();
         reflectance->update( update.X(), update.Y() );
     }
 

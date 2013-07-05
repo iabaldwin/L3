@@ -17,7 +17,7 @@ namespace L3
         Reflectance( std::deque< spatial_data > sections, 
                 std::string fname, 
                 boost::shared_ptr< SelectionPolicy > policy, 
-                int window_size=2 );
+                int window_size= 10 );
 
         std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloudE<double> > > > resident_sections;
 
@@ -53,6 +53,11 @@ namespace L3
         ReflectanceLoader( const L3::Dataset& dataset, int window_sections = 3 ) : window_sections(window_sections)
         {
             load( dataset.path() );
+        }
+
+        ReflectanceLoader( const std::string& target, int window_sections = 3 ) : window_sections(window_sections)
+        {
+            load( target );
         }
 
         int window_sections;

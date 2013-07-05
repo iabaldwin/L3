@@ -47,7 +47,9 @@ struct SlidingWindow : Poco::Runnable, TemporalObserver
     double  proximity;
     double  current_time;
     const   std::string& target;
-    
+
+    MaskPolicy< T > DEFAULT_MASK_POLICY;
+
     std::ifstream input_stream;
     
     typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
@@ -125,7 +127,7 @@ struct SlidingWindowBinary : SlidingWindow<T>
 
             this->input_stream.read( (char*)(&entry[0]), required*sizeof(double) );
 
-            tmp.push_back( L3::AbstractFactory<T>::produce( entry ) );
+            tmp.push_back( L3::AbstractFactory<T>::produce( entry, &this->DEFAULT_MASK_POLICY ) );
         }
 
         this->mutex.lock();

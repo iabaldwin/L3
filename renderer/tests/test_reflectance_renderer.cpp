@@ -47,7 +47,8 @@ int main (int argc, char ** argv)
     L3::Visualisers::ReflectanceRenderer                reflectance_renderer( reflectance );
 
     // Associate pose provider
-    reflectance_renderer.addPoseProvider( pose_provider.get() );
+    //reflectance_renderer.addPoseProvider( pose_provider.get() );
+    reflectance_renderer.pose_provider = pose_provider;
 
     // Combine
     L3::Visualisers::VisualUpdater updater;
