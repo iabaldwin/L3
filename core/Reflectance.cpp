@@ -6,7 +6,7 @@
 namespace L3
 {
 
-    ReflectanceBuilder::ReflectanceBuilder( L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold, double scan_spacing_threshold )
+    ReflectanceBuilder::ReflectanceBuilder( L3::Dataset& dataset, double start_time, double end_time, double section_threshold, double scan_spacing_threshold )
     {
         std::cout.precision(15);
 
@@ -99,7 +99,7 @@ namespace L3
             // Add pose
             swathe.push_back( std::make_pair( matched[0].second, scans[0].second ) );
 
-            if ( accumulate > experience_section_threshold )
+            if ( accumulate > section_threshold )
             {
                 // Reset
                 accumulate = 0.0;

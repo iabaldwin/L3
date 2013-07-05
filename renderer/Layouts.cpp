@@ -652,12 +652,15 @@ namespace L3
             spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) ) );
             spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) );
 
-            reflectance_renderer = boost::make_shared< ReflectanceRenderer >( reflectance );
-            composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(reflectance_renderer.get() ) );
-            this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(reflectance_renderer.get() ) ) );
-           
-            reflectance_renderer->pose_provider = runner->oracle;
-
+            //TMP
+            //reflectance_renderer = boost::make_shared< ReflectanceRenderer >( reflectance );
+            //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(reflectance_renderer.get() ) );
+            //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(reflectance_renderer.get() ) ) );
+            //reflectance_renderer->pose_provider = runner->oracle;
+            //</TMP
+          
+            experience_location->reflectance = reflectance;
+            temporal_updater->operator<<( dynamic_cast<Updateable*>(experience_location.get()) );
 
             /*
              *  Stand-alone pyramid renderer

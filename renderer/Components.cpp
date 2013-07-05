@@ -1394,8 +1394,6 @@ namespace Visualisers
         glv::draw::paint( glv::draw::LineLoop, vertices, colors, 4 );
         glv::draw::paint( glv::draw::TriangleFan, vertices, sheen, 4 );
         glv::draw::disable( glv::draw::Blend );
-
-        // Draw a bounding box, transparency, etc.
     }
 
     /*
@@ -1406,7 +1404,7 @@ namespace Visualisers
     {
         far(1000); 
 
-        glv::draw::translateZ( -850 );
+        glv::draw::translateZ( -950 );
 
         boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
         if( provider_ptr )
@@ -1451,11 +1449,23 @@ namespace Visualisers
         static int draw_counter = 0;
         glv::draw::text( "Is this the real world", draw_counter++, 40, 20 );
 
+        bool draw_dense = true;
+
         if( enabled( glv::Maximized ) )
         {
             boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->experience = experience;
             boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_estimator)->experience = experience;
-            
+           
+            if( draw_dense )
+            {
+                //boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->load( reflectance_vertices.get(), reflectance_colors.get(), reflectance_points );
+                //boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_estimator)->load( reflectance_vertices.get(), reflectance_colors.get(), reflectance_points );
+         
+                boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->load( reflectance_colors.get(),  reflectance_vertices.get(), reflectance_points );
+                boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_estimator)->load( reflectance_colors.get(),  reflectance_vertices.get(), reflectance_points );
+            }
+
+
             sub_view->enable( glv::Visible );
         }
         else
@@ -1475,17 +1485,17 @@ namespace Visualisers
 
         boost::shared_ptr< L3::Experience > experience_ptr = experience.lock();
 
+        // Adjust Z
         L3::SE3 experience_pose;
         if( experience_ptr )
             experience_pose = experience_ptr->getClosestPose( current );
-
         current.Z( experience_pose.Z() + 4.0  );
       
         transformCameraToPose( current );
 
         glv::draw::enable( glv::draw::Blend );
-        //glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], vertices.size() );
-        glv::draw::paint( glv::draw::Points, &(*vertices)[0], &(*colors)[0], vertices->size() );
+        //glv::draw::paint( glv::draw::Points, &(*vertices)[0], &(*colors)[0], vertices->size() );
+        glv::draw::paint( glv::draw::Points, vertices, colors, num_points );
 
         CoordinateSystem( current ).onDraw3D(g);
 
@@ -1573,6 +1583,34 @@ namespace Visualisers
 
     }
 
+    void ExperienceOverviewView::update()
+    {
+        boost::shared_ptr< Reflectance > reflectance_ptr = reflectance.lock();
+
+        if( reflectance_ptr )
+        {
+            L3::copy( reflectance_ptr->resident_point_cloud.get(), &reflectance_cloud );
+        
+            reflectance_vertices = boost::make_shared< glv::Point3[] >( reflectance_cloud.num_points );
+            reflectance_colors   = boost::make_shared< glv::Color[] >( reflectance_cloud.num_points );
+            
+            int counter = 0;
+            for( PointCloudE<double>::ITERATOR it = reflectance_cloud.begin();
+                    it != reflectance_cloud.end();
+                    it++ )
+            {
+                reflectance_vertices[counter]( it->x, it->y, it->z );
+                float reflectance = float(it->e)/800.0;
+                reflectance_colors[counter].set( reflectance, reflectance, reflectance );
+                counter++;
+
+            }
+            
+            reflectance_points =  reflectance_cloud.num_points;
+        }
+    
+    }
+
     void ExperienceCloudCollection::onDraw( glv::GLV& g )
     {
         glv::Table* table = dynamic_cast< glv::Table* >(child);
@@ -1609,8 +1647,6 @@ namespace Visualisers
             _estimator->height( estimator_parameters.first.second );
             _estimator->left( estimator_parameters.second.first );
             _estimator->top( estimator_parameters.second.second );
-
-        
         }
 
     }

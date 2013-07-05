@@ -198,6 +198,9 @@ template <typename T>
 bool copy( PointCloud<T>* src, PointCloud<T>* dest );
 
 template <typename T>
+bool copy( PointCloudE<T>* src, PointCloudE<T>* dest );
+
+template <typename T>
 void gaussianCloud( PointCloud<T>* cloud, double x_variance=10.0, double y_variance=10.0 );
 
 } // L3

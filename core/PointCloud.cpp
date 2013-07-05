@@ -319,6 +319,19 @@ namespace L3
         }
 
     template <typename T>
+        bool copy( PointCloudE<T>* src, PointCloudE<T>* dest )
+        {
+            if( dest->points )
+                delete [] dest->points;
+
+            dest->num_points = src->num_points;
+            dest->points = new PointE<T>[ dest->num_points ];
+            std::copy( src->begin(), src->end(), dest->begin() );
+            return ( (unsigned int)std::distance( dest->begin(), dest->end() ) == dest->num_points );
+        }
+
+
+    template <typename T>
         void gaussianCloud( PointCloud<T>* cloud, double x_variance, double y_variance )
         {
             // Generator
@@ -359,6 +372,7 @@ template void                           L3::allocate( PointCloud<double>* cloud,
 template void                           L3::transform( L3::PointCloud<double>*, L3::SE3* );
 template void                           L3::translate( L3::PointCloud<double>*, L3::SE3 const* );
 template bool                           L3::copy( PointCloud<double>*, PointCloud<double>*);
+template bool                           L3::copy( PointCloudE<double>*, PointCloudE<double>*);
 
 template boost::tuple<double, double, double>       L3::mean<double>(L3::PointCloud<double>*);
 template boost::tuple<float, float, float>          L3::mean<float>(L3::PointCloud<float>*);

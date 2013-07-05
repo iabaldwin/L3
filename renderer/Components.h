@@ -1013,17 +1013,19 @@ namespace Visualisers
 
         glv::Label label;
 
-        std::vector< glv::Color  >*  colors;
-        std::vector< glv::Point3 >* vertices;
+        int num_points;
+        glv::Color *  colors;
+        glv::Point3*  vertices;
 
-        void load( std::vector< glv::Color  >*  colors, std::vector< glv::Point3 >* vertices)
+        void load( glv::Color* colors, glv::Point3* vertices, int num_points)
         {
             this->colors = colors;
             this->vertices = vertices;
+            this->num_points = num_points; 
         }
 
-
         void onDraw3D( glv::GLV& g );
+    
     };
 
     struct ExperienceCloudCollection : glv::View
@@ -1068,13 +1070,11 @@ namespace Visualisers
             estimator_parameters.second.second = _estimator->top();
         }
 
-
-
         void onDraw( glv::GLV& g );
         
     };
 
-    struct ExperienceOverviewView : ExperienceView, glv::View3D
+    struct ExperienceOverviewView : ExperienceView, glv::View3D, Updateable
     {
         ExperienceOverviewView( const glv::Rect& rect, 
                 boost::shared_ptr<L3::Experience> experience, 
@@ -1093,16 +1093,26 @@ namespace Visualisers
         boost::shared_ptr< ExperienceCloudView > experience_point_cloud_oracle, experience_point_cloud_estimator;
 
         std::vector< glv::Color  >  colors;
-        std::vector< glv::Point3 > vertices;
+        std::vector< glv::Point3 >  vertices;
+
+        int reflectance_points;
+        boost::shared_ptr< glv::Color[] >   reflectance_colors;
+        boost::shared_ptr< glv::Point3[] >  reflectance_vertices;
+
+        L3::PointCloudE< double >   reflectance_cloud;
 
         boost::shared_ptr< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> > octree;
+
+        boost::weak_ptr< Reflectance > reflectance;
 
         void setExperience( boost::shared_ptr< L3::Experience > experience )
         {
             this->experience = experience;
+            
             load( experience );
-            this->experience_point_cloud_oracle->load( &colors, &vertices );
-            this->experience_point_cloud_estimator->load( &colors, &vertices );
+            
+            this->experience_point_cloud_oracle->load( &colors[0], &vertices[0], vertices.size() );
+            this->experience_point_cloud_estimator->load( &colors[0], &vertices[0], vertices.size() );
         }
 
         void setOracle( boost::shared_ptr< L3::PoseProvider > provider )
@@ -1120,6 +1130,7 @@ namespace Visualisers
 
         void load( boost::shared_ptr< L3::Experience > experience );
 
+        void update();
     };
 
     struct DatasetOverviewView : glv::View3D
