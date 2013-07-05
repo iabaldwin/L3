@@ -1448,12 +1448,6 @@ namespace Visualisers
         std::fill( experience_nodes_colors.get(), experience_nodes_colors.get()+ptr->sections.size(), glv::Color( .7, .7, .7 ) );
         glv::draw::paint( glv::draw::LineLoop, experience_nodes_vertices.get(), experience_nodes_colors.get(), ptr->sections.size());
 
-        static int draw_counter = 0;
-        glv::draw::text( "Is this the real world", draw_counter++, 40, 20 );
-
-        bool draw_dense = true;
-        //bool draw_dense = false;
-
         if( enabled( glv::Maximized ) )
         {
             boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->experience = experience;
@@ -1464,12 +1458,20 @@ namespace Visualisers
                 boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->load( reflectance_colors.get(),  reflectance_vertices.get(), reflectance_points );
                 boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_estimator)->load( reflectance_colors.get(),  reflectance_vertices.get(), reflectance_points );
             }
+            else
+            {
+                boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_oracle)->load( &colors[0], &vertices[0], vertices.size() );
+                boost::dynamic_pointer_cast < ExperienceCloudView >(experience_point_cloud_estimator)->load( &colors[0], &vertices[0], vertices.size() );
+            }
 
             sub_view->enable( glv::Visible );
         }
         else
             sub_view->disable( glv::Visible );
-   
+
+
+
+
         lock.unlock();
     }
 
@@ -1492,14 +1494,15 @@ namespace Visualisers
             experience_pose = experience_ptr->getClosestPose( current );
         //current.Z( experience_pose.Z() + 4.0  );
         current.Z( experience_pose.Z() + 2.0  );
-      
+     
+        // Move camera
         transformCameraToPose( current );
 
+
+        // Draw previous point cloud
         glv::draw::enable( glv::draw::Blend );
-       
-        glv::draw::pointAtten(1, 1, 1);
         
-        //glv::draw::paint( glv::draw::Points, &(*vertices)[0], &(*colors)[0], vertices->size() );
+        //glv::draw::pointAtten(.1, .1, 1);
         glv::draw::paint( glv::draw::Points, vertices, colors, num_points );
 
         CoordinateSystem( current ).onDraw3D(g);
@@ -1595,8 +1598,12 @@ namespace Visualisers
         if( reflectance_ptr )
         {
             L3::WriteLock lock( this->mutex );
+            
             L3::copy( reflectance_ptr->resident_point_cloud.get(), &reflectance_cloud );
-        
+      
+            if( reflectance_ptr->resident_point_cloud->num_points == 0 )
+                return;
+
             reflectance_vertices = boost::make_shared< glv::Point3[] >( reflectance_cloud.num_points );
             reflectance_colors   = boost::make_shared< glv::Color[] >( reflectance_cloud.num_points );
             
@@ -1704,6 +1711,12 @@ namespace Visualisers
 
             // By default, not visible
             sub_view->disable( glv::Visible );
+     
+            draw_dense = false;
+
+            // Add in handler
+            reflectance_controller = boost::make_shared< ReflectanceController >( boost::ref( draw_dense )) ;
+            this->addHandler( glv::Event::KeyDown, *reflectance_controller );
         }
 
 

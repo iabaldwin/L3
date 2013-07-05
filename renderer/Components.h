@@ -14,9 +14,10 @@
 #include <boost/date_time/local_time/local_time.hpp>
 
 #include "L3.h"
-#include "RenderingUtils.h"
-#include "ViewController.h"
 #include "Widgets.h"
+#include "ViewController.h"
+#include "RenderingUtils.h"
+#include "DatasetController.h"
 
 /*
  *Octree specific
@@ -1095,6 +1096,7 @@ namespace Visualisers
         std::vector< glv::Color  >  colors;
         std::vector< glv::Point3 >  vertices;
 
+        bool draw_dense;
         int reflectance_points;
         boost::shared_ptr< glv::Color[] >   reflectance_colors;
         boost::shared_ptr< glv::Point3[] >  reflectance_vertices;
@@ -1104,6 +1106,8 @@ namespace Visualisers
         boost::shared_ptr< pcl::octree::OctreePointCloudDensity<pcl::PointXYZ> > octree;
 
         boost::weak_ptr< Reflectance > reflectance;
+
+        boost::shared_ptr< ReflectanceController > reflectance_controller;
 
         void setExperience( boost::shared_ptr< L3::Experience > experience )
         {
