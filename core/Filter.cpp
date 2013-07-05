@@ -199,17 +199,17 @@ namespace L3
         {
             Bayesian_filter_matrix::identity(  Hx );
 
-            Zv[0] = 1;
-            Zv[1] = 1;
-            Zv[2] = 0.08;
+            //Zv[0] = 1;
+            //Zv[1] = 1;
+            //Zv[2] = 0.08;
              
             //Zv[0] = 2;
             //Zv[1] = 2;
             //Zv[2] = 0.16;
 
-            //Zv[0] = 4*1;
-            //Zv[1] = 4*1;
-            //Zv[2] = 4*0.08;
+            Zv[0] = 4*1;
+            Zv[1] = 4*1;
+            Zv[2] = 4*0.08;
             
             //Zv[0] = 10*1;
             //Zv[1] = 10*1;
@@ -243,6 +243,8 @@ namespace L3
             sigma_points.resize( (2*3 + 1)*3 );
                 
             timer.begin();
+       
+            this->fundamental_frequency = 20.0;
         }
 
         template <typename T>

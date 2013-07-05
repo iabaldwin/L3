@@ -1497,7 +1497,7 @@ namespace Visualisers
 
         glv::draw::enable( glv::draw::Blend );
        
-        glv::draw::pointAtten(0, 0, 1);
+        glv::draw::pointAtten(1, 1, 1);
         
         //glv::draw::paint( glv::draw::Points, &(*vertices)[0], &(*colors)[0], vertices->size() );
         glv::draw::paint( glv::draw::Points, vertices, colors, num_points );

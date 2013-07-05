@@ -145,7 +145,7 @@ class Experience( Trajectory ):
 
         c =  'k'
 
-        self.trajectories.append( (X,Y, datasetName(exp[0]), ':' ) )
+        self.trajectories.append( (X,Y, datasetName(exp[0]), '-' ) )
 
 
 class INSTrajectories(Trajectory):
@@ -235,9 +235,9 @@ class L3Trajectories(Trajectory):
 
 if __name__=="__main__":
 
-    location = Global()
+    #location = Global()
     #location = Road()
-    #location = Corner()
+    location = Corner()
     
     L3 = Experience().Plot( location )
 

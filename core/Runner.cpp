@@ -167,9 +167,9 @@ namespace L3
 
                 if( stand_alone )
                 {
-                    
-
                     std::stringstream ss;
+                   
+                    ss << std::setprecision(5)  ;
                     ss << "Observer update:"  << "\t" << timings[0] << std::endl;
                     ss << "Swathe update:"    << "\t\t" << timings[1] << std::endl;
                     ss << "Point generation:" << "\t" << timings[2] << std::endl;
