@@ -176,10 +176,10 @@ namespace L3
     Experience::Experience( std::deque< spatial_data > sections, 
             std::string fname, 
             boost::shared_ptr< SelectionPolicy > policy,
-            int window, 
+            int window_size, 
             boost::shared_ptr< flann::Index< flann::L2<float> > > index ,
             boost::shared_ptr< std::deque< L3::SE3 > > poses ) 
-        : SpatialQuery( sections, fname, policy, window ),
+        : SpatialQuery( sections, fname, policy, window_size ),
         resident_point_cloud( new L3::PointCloud<double>() ),
         pose_lookup( index ),
         poses(poses)

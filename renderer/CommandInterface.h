@@ -52,6 +52,7 @@ namespace L3
         std::pair< bool, std::string > runMode( const std::string& command );
         
         std::pair< bool, std::string > addTrajectory( const std::string& command );
+        std::pair< bool, std::string > addExperience( const std::string& command );
         std::pair< bool, std::string > removeTrajectory( const std::string& command );
         std::pair< bool, std::string > removeTrajectories( const std::string& command );
         std::pair< bool, std::string > clear( const std::string& command );

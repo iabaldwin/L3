@@ -89,5 +89,32 @@ namespace Visualisers
         boost::dynamic_pointer_cast< ResettableSlider<float> >(views[3])->attach( ptr->scaling_bias );                      // Bias
     }
 
+
+    PointCloudControls::PointCloudControls() : glv::Table( "x, ", 0, 0 )
+    {
+
+        boost::shared_ptr< glv::View > density_var_a = boost::make_shared< ResettableSlider<float> >( "A", 0, 10  );
+        *this << *density_var_a;
+        views.push_back( density_var_a );
+
+        boost::shared_ptr< glv::View > density_var_b = boost::make_shared< ResettableSlider<float> >( "B", 0, 10  );
+        *this << *density_var_b;
+        views.push_back( density_var_b );
+
+        boost::shared_ptr< glv::View > density_var_c = boost::make_shared< ResettableSlider<float> >( "C", 0, 10  );
+        *this << *density_var_c;
+        views.push_back( density_var_c );
+   
+        this->arrange();
+        this->fit();
+    }
+
+    void PointCloudControls::attach( float& a, float& b, float& c )
+    {
+        boost::dynamic_pointer_cast< ResettableSlider<float> >(views[0])->attach( a );
+        boost::dynamic_pointer_cast< ResettableSlider<float> >(views[1])->attach( b );
+        boost::dynamic_pointer_cast< ResettableSlider<float> >(views[2])->attach( c );
+    }
+        
 }
 }

@@ -157,11 +157,12 @@ namespace L3
             boost::weak_ptr< Composite > composite;
             boost::shared_ptr< Leaf > estimate_visualiser; 
 
+            std::list< boost::shared_ptr< Leaf > > leafs;
             std::deque < boost::shared_ptr< glv::View > > views;
             std::deque < boost::shared_ptr< glv::Label > > labels;
     
-            std::list< boost::shared_ptr< Leaf > > leafs;
             std::list< Updateable* > updateables;
+            std::deque< boost::shared_ptr< glv::Plottable >  > plottables;
             
         };
 

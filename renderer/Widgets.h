@@ -102,6 +102,23 @@ namespace Visualisers
         void associateVelocitySource( boost::shared_ptr< FilteredScanMatchingVelocityProvider> ptr);
 
     };
+
+    struct PointCloudControls : glv::Table
+    {
+
+        PointCloudControls();
+
+        std::deque< boost::shared_ptr< glv::View> > views;
+        std::deque< boost::shared_ptr< glv::Label > > labels;
+        std::deque< boost::shared_ptr< glv::Widget > > widgets;
+
+    
+        void attach( float& a, float& b, float& c );
+
+        float a, b, c;
+
+    };
+
 }
 }
 

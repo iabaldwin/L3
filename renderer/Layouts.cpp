@@ -343,15 +343,19 @@ namespace L3
              *  Statistics
              */
             statistics = boost::make_shared< Statistics >( temporal_updater.get() );
-
             (*ancillary_2) << *statistics;
 
             /*
              *  Fundamental controls
              */
-
             fundamental_controls = boost::make_shared< FundamentalControls >();
             (*ancillary_2) << *fundamental_controls;
+
+            /*
+             *Visualisation controls
+             */
+            //point_cloud_controls = boost::make_shared< PointCloudControls >( );
+            //(*ancillary_2) << *point_cloud_controls;
 
             // Arrange
             dynamic_cast< glv::Table* >(ancillary_1.get())->fit();
@@ -646,13 +650,23 @@ namespace L3
             experience_location->setOracle( runner->oracle );
             experience_location->setEstimator( runner->algorithm );
 
+            /*
+             *Reflectance
+             */
             ReflectanceLoader loader( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/L3" );
             reflectance = loader.reflectance; 
           
             spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) ) );
             spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) );
 
-            //TMP
+            /*
+             *REflectance controls
+             */
+            //point_cloud_controls->attach( experience_location->sub_view->_oracle->var_a 
+            //,experience_location->sub_view->_oracle->var_b 
+            //,experience_location->sub_view->_oracle->var_c );
+
+            //TMP - 3D
             //reflectance_renderer = boost::make_shared< ReflectanceRenderer >( reflectance );
             //composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>(reflectance_renderer.get() ) );
             //this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(reflectance_renderer.get() ) ) );
@@ -709,8 +723,10 @@ namespace L3
 
             return true;
         }
-
-            
+           
+        /*
+         *  Algorithm set/reset
+         */
         bool EstimatorLayout::algorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algorithm )
         {
             // Already there?

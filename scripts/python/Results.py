@@ -85,7 +85,8 @@ class Trajectory:
         for d in datasets:
 
             #color = cm.summer(counter*20)
-            color = cm.Paired(counter*5)
+            #color = cm.Paired(counter*5)
+            color = cm.prism(counter*10)
 
             self.colormap[ datasetName(d) ] = color
 
@@ -235,9 +236,8 @@ class L3Trajectories(Trajectory):
 
 if __name__=="__main__":
 
-    #location = Global()
-    location = Road()
-    #location = Corner()
+    #location = Road()
+    location = Corner()
     
     L3 = Experience().Plot( location )
 

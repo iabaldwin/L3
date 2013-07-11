@@ -320,6 +320,8 @@ namespace L3
                 //it = std::min_element( discrete_estimators[5]->pose_estimates->costs.begin() , discrete_estimators[5]->pose_estimates->costs.end() );
                 //refined = discrete_estimators[5]->pose_estimates->estimates[ std::distance( discrete_estimators[5]->pose_estimates->costs.begin(), it )] ;
 
+                *(this->current_prediction) = refined;
+                
                 return refined;
             }
 

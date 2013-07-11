@@ -134,9 +134,11 @@ namespace L3
             plot->range(0,100,0);
             plot->range(0,50*10,1);
 
-            *plot << iterations_label;
-            iterations_label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
-            iterations_label.setValue( "Algorithm iterations");
+            boost::shared_ptr< glv::Label > iterations_label = boost::make_shared< glv::Label >();
+            iterations_label->setValue( "Algorithm iterations");
+            iterations_label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
+            *plot << *iterations_label;
+            labels.push_back( iterations_label ) ;
 
             (*this) << *plot;
             views.push_back( plot );
@@ -908,6 +910,10 @@ namespace L3
 
             this->updater = updater;
 
+            // Re-configure arrangement
+            this->arrangement( "x -, x x, " );
+            this->paddingX( 0 );
+
             /*
              *Current estimate
              */
@@ -922,19 +928,48 @@ namespace L3
              *  Integrated
              */
             boost::shared_ptr< Leaf > check_pose = 
-                boost::make_shared< UKFPoseEstimate >( algorithm->prediction_model->check_pose, 20  );
+                boost::make_shared< UKFPoseEstimate >( algorithm->prediction_model->check_pose );
             composite->operator<<( *check_pose );
             this->leafs.push_back( check_pose ); 
 
             /*
-             *Sigma points
+             *  Sigma points
              */
-            boost::shared_ptr< Leaf > sigma_points = 
-                boost::make_shared< UKFSigmaPointsLeaf >( algorithm );
+            //boost::shared_ptr< Leaf > sigma_points = 
+                //boost::make_shared< UKFSigmaPointsLeaf >( algorithm );
 
-            composite->operator<<( *sigma_points );
-            this->leafs.push_back( sigma_points );
+            //composite->operator<<( *sigma_points );
+            //this->leafs.push_back( sigma_points );
 
+            
+            /*
+             *  Iterations
+             */
+            boost::shared_ptr< StatisticsPlottable<int> > plottable( new StatisticsPlottable<int>() ); 
+            plottable->setVariable( algorithm->minimiser->algorithm_iterations );
+
+            plottables.push_back( plottable );
+            updater->operator<<( plottable.get() );
+            updateables.push_back( plottable.get() );
+
+            boost::shared_ptr< glv::Plot > plot( new glv::Plot( glv::Rect( 525, 80), *plottable ) );
+            plot->disable( glv::Controllable );
+            plot->range(0,100,0);
+            plot->range(0,50*10,1);
+
+
+            boost::shared_ptr< glv::Label > iterations_label = boost::make_shared< glv::Label >();
+            iterations_label->setValue( "Algorithm iterations");
+            iterations_label->pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::TL ); 
+            *plot << *iterations_label;
+
+            (*this) << *plot;
+            views.push_back( plot );
+
+
+            /*
+             *  Traversals
+             */
             boost::shared_ptr< TraversalVisualiserView > minimisation_visualiser = 
                 boost::make_shared< TraversalVisualiserView >( algorithm->minimiser );
             views.push_back( minimisation_visualiser );
@@ -943,6 +978,7 @@ namespace L3
             updateables.push_back( minimisation_visualiser.get() );
 
             this->operator<<( *minimisation_visualiser );
+
 
             /*
              *  Weight stand-alone view
@@ -967,7 +1003,6 @@ namespace L3
     
         UKFVisualiser::~UKFVisualiser()
         {
-
             for( std::list< Updateable* >::iterator updateable_it =  updateables.begin();
                     updateable_it != updateables.end();
                     updateable_it++ )
@@ -978,22 +1013,19 @@ namespace L3
             boost::shared_ptr < Composite > composite_ptr = composite.lock();
 
             for( std::list< boost::shared_ptr< Leaf > >::iterator leaf_it =  leafs.begin();
-                        leaf_it != leafs.end();
-                        leaf_it++ )
-                {
-                    std::list < Leaf* >::iterator it 
-                        = std::find( composite_ptr->components.begin(), 
-                                composite_ptr->components.end(), 
-                                leaf_it->get()
-                                );
+                    leaf_it != leafs.end();
+                    leaf_it++ )
+            {
+                std::list < Leaf* >::iterator it 
+                    = std::find( composite_ptr->components.begin(), 
+                            composite_ptr->components.end(), 
+                            leaf_it->get()
+                            );
 
-                    if( it != composite_ptr->components.end() )
-                        composite_ptr->components.erase( it );
+                if( it != composite_ptr->components.end() )
+                    composite_ptr->components.erase( it );
 
-                }
-
-
+            }
         }
-    
     }
 }

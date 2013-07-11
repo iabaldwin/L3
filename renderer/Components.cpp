@@ -1277,6 +1277,7 @@ namespace Visualisers
     void PoseSequenceRenderer::onDraw3D( glv::GLV& g )
     {
         std::stringstream ss;
+        
         if ( pose_sequence)
         {
             std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator it = pose_sequence->begin();
@@ -1304,7 +1305,6 @@ namespace Visualisers
                 else
                     CoordinateSystem( *(it->second), 5, .3 ).onDraw3D(g);
 
-
                 it+=skip;
                 counter++;
             }
@@ -1317,6 +1317,16 @@ namespace Visualisers
         }
 
     }
+
+    /*
+     *  Pose positions
+     */
+    void PositionRenderer::onDraw3D( glv::GLV& g )
+    {
+        glv::draw::lineWidth( 1.0 );
+        glv::draw::paint( glv::draw::LineLoop, &vertices[0], &colors[0], vertices.size() );
+    }
+
 
     Text3D::Text3D() : scale(4)
     {
@@ -1502,7 +1512,7 @@ namespace Visualisers
         // Draw previous point cloud
         glv::draw::enable( glv::draw::Blend );
         
-        //glv::draw::pointAtten(.1, .1, 1);
+        glv::draw::pointAtten(var_a, var_b, var_c);
         glv::draw::paint( glv::draw::Points, vertices, colors, num_points );
 
         CoordinateSystem( current ).onDraw3D(g);

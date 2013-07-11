@@ -112,8 +112,8 @@ namespace Estimator
 
             L3::allocate( sampled_swathe.get(), 4*1000 );
        
-            linear_uncertainty = 2;
-            rotational_uncertainty = .2;
+            linear_uncertainty = .75;
+            rotational_uncertainty = .15;
 
         }
             

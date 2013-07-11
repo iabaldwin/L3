@@ -191,8 +191,9 @@ namespace Visualisers
             boost::shared_ptr< PointCloudBoundsRenderer >                   point_cloud_bounds_renderer;
             boost::shared_ptr< EventController >                            point_cloud_maximise_controller;
             
-            boost::shared_ptr< Statistics > statistics;
+            boost::shared_ptr< Statistics >         statistics;
             boost::shared_ptr< FundamentalControls> fundamental_controls;
+            boost::shared_ptr< PointCloudControls > point_cloud_controls;
 
             boost::shared_ptr< glv::View > ancillary_1;
             boost::shared_ptr< glv::View > ancillary_2;

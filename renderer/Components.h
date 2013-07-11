@@ -406,6 +406,9 @@ namespace Visualisers
         void onDraw3D( glv::GLV& g );
     };
 
+    /*
+     *  Sequence of poses
+     */
     struct PoseSequenceRenderer : Leaf
     { 
 
@@ -421,6 +424,28 @@ namespace Visualisers
 
         void onDraw3D(glv::GLV& g);
     };
+
+    struct PositionRenderer : Leaf
+    { 
+        PositionRenderer( boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > > > pose_sequence ) 
+        {
+     
+            for( std::vector< std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator it = pose_sequence->begin();
+                    it < pose_sequence->end();
+                    it+= 50 )
+            {
+                vertices.push_back( glv::Point3( it->second->X(), it->second->Y(), 0 ) );
+                colors.push_back( glv::Color( .5, .5, .5 ) );
+            }
+        
+        }
+
+        std::vector< glv::Color > colors;
+        std::vector< glv::Point3 > vertices;
+
+        void onDraw3D(glv::GLV& g);
+    };
+
 
     /*
      *  Pose prediction 
@@ -1010,13 +1035,20 @@ namespace Visualisers
             label.setValue( name );
             label.pos( glv::Place::BL, 0, 0 ).anchor( glv::Place::BL ); 
             *this  << label;
-       }
+      
+            var_a = 0;
+            var_b = 0;
+            var_c = 1;
+        }
 
         glv::Label label;
 
         int num_points;
         glv::Color *  colors;
         glv::Point3*  vertices;
+       
+        // Point attenuation
+        float var_a, var_b, var_c;
 
         void load( glv::Color* colors, glv::Point3* vertices, int num_points)
         {
@@ -1097,6 +1129,7 @@ namespace Visualisers
         std::vector< glv::Point3 >  vertices;
 
         bool draw_dense;
+        float var_a, var_b, var_c;
         int reflectance_points;
         boost::shared_ptr< glv::Color[] >   reflectance_colors;
         boost::shared_ptr< glv::Point3[] >  reflectance_vertices;

@@ -31,6 +31,7 @@ namespace L3
         member_function_map.insert( std::make_pair( "_mode",            std::make_pair( &CommandInterface::runMode,             "Change run mode" ) ) );
         
         member_function_map.insert( std::make_pair( "_add_traj",        std::make_pair( &CommandInterface::addTrajectory,       "Add a visual trajectory" ) ) );
+        member_function_map.insert( std::make_pair( "_add_exp",         std::make_pair( &CommandInterface::addExperience,       "Add experience reference" ) ) );
         member_function_map.insert( std::make_pair( "_add_path",        std::make_pair( &CommandInterface::addPath,             "Add a search path") ) );
         member_function_map.insert( std::make_pair( "_print_path",      std::make_pair( &CommandInterface::printPath,           "Print the search path") ) );
         member_function_map.insert( std::make_pair( "_remove_traj",     std::make_pair( &CommandInterface::removeTrajectory,    "Remove a visual trajectory") ) );
@@ -468,6 +469,55 @@ namespace L3
 
     }
 
+    std::pair< bool, std::string> CommandInterface::addExperience( const std::string& load_command )
+    {
+        if( !layout )
+            return std::make_pair( false, "CI::No associated layout" );
+
+        std::string experience_target( load_command );
+
+        ltrim(experience_target);
+        
+        // Read the poses 
+        boost::scoped_ptr <L3::IO::BinaryReader< L3::SE3 > > pose_reader( ( new L3::IO::BinaryReader<L3::SE3>() ) ) ;
+        boost::scoped_ptr< L3::Dataset > dataset;
+      
+        try
+        {
+            dataset.reset( new L3::Dataset( experience_target ) );
+
+            if (!pose_reader->open( dataset->path() + "/OxTS.ins" ) )
+                return std::make_pair( false, "CI::Failed to load <" + experience_target + ">" );
+
+            // Read all the poses
+            pose_reader->read();
+
+            // Pose sequence
+            boost::shared_ptr< std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > > poses( new std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > () );
+            
+            // And extract them
+            pose_reader->extract( *poses );
+
+            // Here, we add a new component::leaf with the poses
+            boost::shared_ptr< L3::Visualisers::PositionRenderer > sequence( new L3::Visualisers::PositionRenderer( poses ) );
+
+            // Add it in as an extra
+            layout->addExtra( experience_target, sequence );
+
+            // Keep track, in case we want to delete them
+            added_trajectories.push_back( experience_target );
+
+        }
+        catch( L3::no_such_folder& except )
+        {
+            return std::make_pair( false, "CI::Failed to add <" + experience_target + ">" + "[" + except.what() + "]"  );
+        }
+            
+        return std::make_pair( true, "CI::Added <" + experience_target + ">" );
+
+    }
+
+    
     std::pair< bool, std::string> CommandInterface::removeTrajectory( const std::string& command )
     {
         if( !layout )

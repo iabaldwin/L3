@@ -13,6 +13,8 @@ namespace L3
 
             VELOCITY_WINDOW window;
 
+            L3::ReadLock velocity_reader( iterator_ptr->mutex );
+
             if (filtered)
                 window.assign( iterator_ptr->filtered_velocities.begin(), iterator_ptr->filtered_velocities.end() );
             else
@@ -21,7 +23,10 @@ namespace L3
                 this->color ( glv::Color( .5, .5, .5 ) );
                 this->mPrim = glv::draw::Points;
             }
-            
+          
+            velocity_reader.unlock();
+
+
             glv::Data tmp;
             
             if ( window.size() > 0 )

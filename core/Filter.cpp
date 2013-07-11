@@ -430,7 +430,7 @@ namespace L3
                 if ( dt > 1 )
                     return estimate;
 
-                if( !L3::sample( swathe, this->sampled_swathe.get(), 2*1000, false ) )  
+                if( !L3::sample( swathe, this->sampled_swathe.get(), 1*1000, false ) )  
                     throw std::exception();
 
                 double q, x_vel, y_vel, velocity_delta, x, y;
