@@ -6,7 +6,8 @@ namespace Visualisers
         boost::shared_ptr< LocaleRenderer > LocaleRendererFactory::buildLocale( L3::Configuration::Locale& locale )        
         {
             std::stringstream ss;
-            ss << "/Users/ian/Documents/" << locale.name << ".png";
+            //ss << "/Users/ian/Documents/" << locale.name << ".png";
+            ss << "/Users/ian/code/L3/media/" << locale.name << ".png";
 
             ImageData data;
             ImageFactory::Image(ss.str(), data);
