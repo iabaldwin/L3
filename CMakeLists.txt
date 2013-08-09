@@ -1,9 +1,3 @@
-#set(CMAKE_CXX_COMPILER "/Users/ian/code/thirdparty/checker-274/libexec/c++-analyzer" )
-#set(CMAKE_C_COMPILER "/Users/ian/code/thirdparty/checker-274/libexec/ccc-analyzer" )
-
-#set(CMAKE_CXX_COMPILER "/usr/bin/icpc" )
-#set(CMAKE_C_COMPILER "/usr/bin/icc" )
-
 cmake_minimum_required(VERSION 2.6.4)
 
 project(L3)
@@ -39,7 +33,7 @@ link_directories( "/opt/intel/ipp/lib/" )
 include_directories( "/Users/ian/code/thirdparty/Bayes++/" )
 link_directories( "/Users/ian/code/thirdparty/Bayes++/target/BayesFilter/darwin-4.2.1/release/link-static/" )
 
-#PCL
+# PCL
 #include_directories( "/Users/ian/code/build/include/pcl-1.5/" )
 #include_directories( "/Users/ian/code/build/include/pcl-1.6/" )
 include_directories( "/Users/ian/code/build/include/pcl-1.7/" )
@@ -70,5 +64,3 @@ add_subdirectory( utils )
 
 # L3
 add_subdirectory( app )
-
-

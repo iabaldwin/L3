@@ -37,3 +37,10 @@ target_link_libraries( L3 config++ gsl PocoFoundation tbb ICP pcl_common pcl_kdt
 
 add_subdirectory( tests )
 add_subdirectory( apps )
+
+file(  GLOB L3_headers "*.h" )
+
+message( ${L3_headers} )
+
+install( TARGETS L3 DESTINATION lib/  )
+install( FILES ${L3_headers} DESTINATION include/L3  )
