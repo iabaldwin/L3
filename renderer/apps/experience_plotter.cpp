@@ -34,7 +34,6 @@ struct ColorCycler
 
 struct Section
 {
-
     Section( unsigned int SIZE, L3::Point<double>* ptr, ColorTYPE type ) : size(SIZE)
     {
         vertices = new glv::Point3[size];
@@ -63,7 +62,6 @@ struct Section
    
             };
         }
-    
     }
 
     glv::Point3*    vertices;
@@ -149,7 +147,7 @@ struct ColoredExperienceRenderer : L3::Visualisers::Leaf
 int main (int argc, char ** argv)
 {
     /*
-     *L3
+     *  L3
      */
     
     if ( argc != 2 ) 
