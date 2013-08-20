@@ -96,7 +96,6 @@ namespace L3
 
             L3::Utils::matcher< L3::SE3, L3::LMS151 > m( &poses, &matched );
 
-
             m = std::for_each( scans.begin(), scans.end(),  m );
 
             double increment = length_estimator( matched[0] );
