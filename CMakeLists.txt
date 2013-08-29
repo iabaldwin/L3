@@ -42,13 +42,15 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/utils )
 
+#find_package( POCO COMPONENTS XML Net Data )
+#include_directories(${Poco_INCLUDE_DIRS})
+#link_directories(${Poco_LIBRARY_DIR})
+
+file( GLOB POCO_LIBRARIES "/usr/local/lib/libPoco*" )
+
 # GLV custom build directory
 include_directories( $ENV{GLV_DIR} )
 link_directories( $ENV{HOME}/code/build/lib )
-
-find_package( POCO COMPONENTS XML Net Data )
-include_directories(${Poco_INCLUDE_DIRS})
-link_directories(${Poco_LIBRARY_DIR})
 
 # Core
 add_subdirectory( core )

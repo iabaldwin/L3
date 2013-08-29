@@ -534,7 +534,7 @@ namespace L3
             vertical_scan_renderer->windower = runner->vertical_LIDAR;
             
             horizontal_scan_renderer_leaf->windower = runner->horizontal_LIDAR;
-            boost::dynamic_pointer_cast< HorizontalScanRendererLeaf >( horizontal_scan_renderer_leaf) ->provider = runner->oracle;
+            //boost::dynamic_pointer_cast< HorizontalScanRendererLeaf >( horizontal_scan_renderer_leaf) ->provider = runner->oracle;    HMMM
             boost::dynamic_pointer_cast< HorizontalScanRendererLeaf >( horizontal_scan_renderer_leaf)->calibration = *(runner->horizontal_projection);
 
             //vertical_scan_renderer_leaf->windower = runner->vertical_LIDAR;
@@ -633,7 +633,8 @@ namespace L3
              *  Debug algorithm renderer
              */
             debug_algorithm_renderer = boost::make_shared< DebugAlgorithmRenderer >( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) ;
-           
+        
+               
         }
 
         bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -721,6 +722,11 @@ namespace L3
             // Load estimator runner
             statistics->load( runner );
 
+            /*
+             * Render the LIDAR fan from the estimated poses
+             */
+            boost::dynamic_pointer_cast< HorizontalScanRendererLeaf >( horizontal_scan_renderer_leaf) ->provider = runner->algorithm; 
+            
             return true;
         }
            

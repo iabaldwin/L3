@@ -3,8 +3,6 @@
 
 #include <Poco/Runnable.h>
 #include <Poco/Thread.h>
-//#include <Poco/Task.h>
-//#include <Poco/TaskManager.h>
 
 #include "Core.h"
 #include "Iterator.h"
