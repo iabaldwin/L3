@@ -39,7 +39,5 @@ add_subdirectory( apps )
 
 file(  GLOB L3_headers "*.h" )
 
-message( ${L3_headers} )
-
 install( TARGETS L3 DESTINATION lib/  )
 install( FILES ${L3_headers} DESTINATION include/L3  )

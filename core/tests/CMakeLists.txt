@@ -4,7 +4,10 @@ target_link_libraries( test_bayes config L3 ${Boost_LIBRARIES} lapack blas )
 
 #add_executable( test_itpp test_itpp.cpp )
 #target_link_libraries( test_itpp config L3 ${Boost_LIBRARIES} fftw3 lapack blas itpp_static )
+<<<<<<< HEAD
 #target_link_libraries( test_itpp config L3 ${Boost_LIBRARIES} lapack blas itpp_static )
+=======
+>>>>>>> 807b4342b9330871ca1c190ef5e392abc45d1210
 
 #add_executable( test_ipp test_ipp.cpp )
 #target_link_libraries( test_ipp config L3 ${Boost_LIBRARIES} ipps )

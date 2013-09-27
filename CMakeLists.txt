@@ -8,6 +8,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{HOME}/code/dev/cmake/find" )
 
 # Boost
 find_package( Boost COMPONENTS system filesystem unit_test_framework thread chrono regex REQUIRED )     # Filesystem, smart pointers, ...
@@ -25,6 +26,7 @@ include_directories( ${EIGEN3_INCLUDE_DIR} )                    # Matrices
 find_package( GSL REQUIRED )                                    # Math,statistics
 include_directories( ${GSL_INCLUDE_DIRS} )
 
+<<<<<<< HEAD
 # PCL
 include_directories( $ENV{PCL_INCLUDE_DIR} )
 link_directories( $ENV{PCL_LIB_DIR} )
@@ -50,12 +52,34 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/PocoConfig.cmake)
 #include_directories(${Poco_INCLUDE_DIRS})
 #link_directories(${Poco_LIBRARY_DIR})
 set( POCO_LIBRARIES PocoFoundation )
+=======
+find_package( TBB REQUIRED )                                    # Threading building blocks 
+
+find_package( BAYES++ REQUIRED )                                # Bayesian inference
+include_directories( ${BAYES++_INCLUDE_DIRS} )
+
+# PCL
+find_package(PCL REQUIRED COMPONENTS common io)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
+# POCO
+#find_package( POCO COMPONENTS XML Net Data )
+#include_directories(${Poco_INCLUDE_DIRS})
+#link_directories(${Poco_LIBRARY_DIR})
+file( GLOB POCO_LIBRARIES "/usr/local/lib/libPoco*" )
+>>>>>>> 807b4342b9330871ca1c190ef5e392abc45d1210
 
 # GLV custom build directory
 #include_directories( $ENV{GLV_DIR} )
 #link_directories( $ENV{HOME}/code/build/lib )
 
 # Core
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/utils )
+
 add_subdirectory( core )
 
 #Visuals
