@@ -480,7 +480,17 @@ namespace L3
         }
 
 
-    double dlib_minimisation_function( const dlib::matrix<double,0,1>& x )
+        
+    
+    }   // Estimator
+}       // L3
+
+#ifdef DLIB_AVAILABLE
+namespace L3
+{
+namespace Estimator
+{
+double dlib_minimisation_function( const dlib::matrix<double,0,1>& x )
     {
         BFGS<double>* minimiser = static_cast< BFGS<double>* >( DLIBParameters::global_minimiser );
   
@@ -542,10 +552,12 @@ namespace L3
             return cost[0];
         }
 
-    
-    
-    }   // Estimator
-}       // L3
+
+}
+}
+
+template L3::SE3 L3::Estimator::BFGS<double>::operator()(L3::PointCloud<double>*, L3::SE3);
+#endif
 
 // Explicit instantiations
 template double L3::Estimator::KLCostFunction<double>::operator()(L3::Histogram<double> const&, L3::Histogram<double> const&);
@@ -560,4 +572,3 @@ template L3::SE3 L3::Estimator::PassThrough<double>::operator()(L3::PointCloud<d
 template L3::SE3 L3::Estimator::IterativeDescent<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::Minimisation<double>::operator()(L3::PointCloud<double>*, L3::SE3);
 template L3::SE3 L3::Estimator::Hybrid<double>::operator()(L3::PointCloud<double>*, L3::SE3);
-template L3::SE3 L3::Estimator::BFGS<double>::operator()(L3::PointCloud<double>*, L3::SE3);

@@ -8,7 +8,9 @@
 #include <boost/bind.hpp>
 #include <boost/math/distributions/normal.hpp>
 
+#ifdef DLIB_AVAILABLE
 #include "dlib/optimization.h"
+#endif
 
 #include "Timing.h"
 #include "Smoother.h"
@@ -496,7 +498,17 @@ namespace Estimator
         }
     };
 
-    double dlib_minimisation_function( const dlib::matrix<double,0,1>& input );
+    
+}
+}
+
+#ifdef DLIB_AVAILABLE
+
+namespace L3
+{
+namespace Estimator
+{
+double dlib_minimisation_function( const dlib::matrix<double,0,1>& input );
 
     struct DLIBParameters
     {
@@ -538,5 +550,7 @@ namespace Estimator
 
 }
 }
+
+#endif
 
 #endif
