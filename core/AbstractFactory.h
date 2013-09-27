@@ -13,6 +13,13 @@ namespace L3
 template <typename T>
 struct MaskPolicy
 {
+    /**
+     * @brief A masking policy for incoming data
+     *
+     * @param t SharedPtr to data
+     *
+     * @return SharedPtr to masked data
+     */
     virtual boost::shared_ptr<T> operator()( boost::shared_ptr<T> t ) 
     {
         return t;
