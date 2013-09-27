@@ -31,14 +31,15 @@ find_package( BAYES++ REQUIRED )                                # Bayesian infer
 include_directories( ${BAYES++_INCLUDE_DIRS} )
 
 # PCL
-#include_directories( "/Users/ian/code/build/include/pcl-1.5/" )
-#include_directories( "/Users/ian/code/build/include/pcl-1.6/" )
-include_directories( "/Users/ian/code/build/include/pcl-1.7/" )
+find_package(PCL REQUIRED COMPONENTS common io)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
+# POCO
 #find_package( POCO COMPONENTS XML Net Data )
 #include_directories(${Poco_INCLUDE_DIRS})
 #link_directories(${Poco_LIBRARY_DIR})
-
 file( GLOB POCO_LIBRARIES "/usr/local/lib/libPoco*" )
 
 # GLV custom build directory
