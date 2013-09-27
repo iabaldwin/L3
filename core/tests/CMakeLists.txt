@@ -1,13 +1,9 @@
 add_executable( test_bayes test_bayes.cpp )
-#target_link_libraries( test_bayes config L3 ${Boost_LIBRARIES} fftw3 lapack blas itpp_static )
 target_link_libraries( test_bayes config L3 ${Boost_LIBRARIES} lapack blas )
 
 #add_executable( test_itpp test_itpp.cpp )
 #target_link_libraries( test_itpp config L3 ${Boost_LIBRARIES} fftw3 lapack blas itpp_static )
-<<<<<<< HEAD
 #target_link_libraries( test_itpp config L3 ${Boost_LIBRARIES} lapack blas itpp_static )
-=======
->>>>>>> 807b4342b9330871ca1c190ef5e392abc45d1210
 
 #add_executable( test_ipp test_ipp.cpp )
 #target_link_libraries( test_ipp config L3 ${Boost_LIBRARIES} ipps )
@@ -46,10 +42,10 @@ target_link_libraries( test_bayes config L3 ${Boost_LIBRARIES} lapack blas )
 #target_link_libraries( test_point_cloud_transform config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})
 
 add_executable( test_dataset_runner test_dataset_runner.cpp )
-target_link_libraries( test_dataset_runner L3 ${Boost_LIBRARIES} )
+target_link_libraries( test_dataset_runner L3 ${poco_libraries} ${Boost_LIBRARIES})
 
 add_executable( test_estimator_runner test_estimator_runner.cpp )
-target_link_libraries( test_estimator_runner config L3 ${Boost_LIBRARIES} flann_cpp_s )
+target_link_libraries( test_estimator_runner config L3 ${poco_libraries}  ${Boost_LIBRARIES} )
 
 #add_executable( test_libICP test_libICP.cpp )
 #target_link_libraries( test_libICP config L3 ${Boost_LIBRARIES} )
@@ -64,7 +60,7 @@ target_link_libraries( test_estimator_runner config L3 ${Boost_LIBRARIES} flann_
 #target_link_libraries( test_pose_homogeneous config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_windower test_windower.cpp )
-target_link_libraries( test_windower config L3 ${Boost_LIBRARIES}  )
+target_link_libraries( test_windower config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_swathe_builder_INS test_swathe_builder_INS.cpp )
 #target_link_libraries( test_swathe_builder_INS config L3 ${Boost_LIBRARIES}  )
@@ -76,7 +72,7 @@ target_link_libraries( test_windower config L3 ${Boost_LIBRARIES}  )
 #target_link_libraries( test_buffered_swathe_builder_LHLV config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_iterator test_iterator.cpp )
-target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES}  )
+target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_reader_bandwidth test_reader_bandwidth.cpp )
 #target_link_libraries( test_reader_bandwidth config L3 ${Boost_LIBRARIES}  )
@@ -118,10 +114,10 @@ target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES}  )
 #target_link_libraries( test_experience_builder config L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_experience_query test_experience_query.cpp )
-target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES}  )
+target_link_libraries( test_experience_query config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
 add_executable( test_reflectance_loader test_reflectance_loader.cpp )
-target_link_libraries( test_reflectance_loader config L3 ${Boost_LIBRARIES}  )
+target_link_libraries( test_reflectance_loader config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_experience_pipeline test_experience_pipeline.cpp )
 #target_link_libraries( test_experience_pipeline config L3 ${Boost_LIBRARIES}  )
@@ -141,8 +137,6 @@ target_link_libraries( test_reflectance_loader config L3 ${Boost_LIBRARIES}  )
 #add_executable( test_pipeline_stage_3 test_pipeline_stage_3.cpp )
 #target_link_libraries( test_pipeline_stage_3 config L3 ${Boost_LIBRARIES}  )
 
-
 #add_executable( test_histogram_smoothing test_histogram_smoothing.cpp )
 #target_link_libraries( test_histogram_smoothing config L3 ${Boost_LIBRARIES}  )
-
 

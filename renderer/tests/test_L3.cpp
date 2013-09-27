@@ -21,7 +21,6 @@ int main( int argc, char* argv[] )
     /*
      *  L3
      */
-    
     L3::Dataset* dataset;
        
     try

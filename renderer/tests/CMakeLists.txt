@@ -1,5 +1,5 @@
-add_executable( test_itpp_visual test_itpp.cpp )
-target_link_libraries( test_itpp_visual  GLV L3Vis L3 ${Boost_LIBRARIES}  ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} fftw3 lapack blas itpp_static )
+#add_executable( test_itpp_visual test_itpp.cpp )
+#target_link_libraries( test_itpp_visual  GLV L3Vis L3 ${Boost_LIBRARIES}  ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} fftw3 lapack blas itpp_static )
 
 #add_executable( test_ray_query test_ray_query.cpp )
 #target_link_libraries( test_ray_query GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES} ${FREETYPE_LIBRARIES} ${BULLET_LIBRARIES} )
@@ -35,16 +35,16 @@ target_link_libraries( test_itpp_visual  GLV L3Vis L3 ${Boost_LIBRARIES}  ${OPEN
 #target_link_libraries( test_composite GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_controller test_controller.cpp )
-target_link_libraries( test_controller GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_controller GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_imagery test_imagery.cpp )
 #target_link_libraries( test_imagery GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_iterator_visual test_iterator.cpp )
-target_link_libraries( test_iterator_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_iterator_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${poco_libraries} )
 
 add_executable( test_swathe_builder_INS_visual test_swathe_builder_INS.cpp )
-target_link_libraries( test_swathe_builder_INS_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_swathe_builder_INS_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_swathe_builder_LHLV_visual test_swathe_builder_LHLV.cpp )
 #target_link_libraries( test_swathe_builder_LHLV_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
@@ -56,7 +56,7 @@ target_link_libraries( test_swathe_builder_INS_visual GLV ${GLUT_LIBRARIES} ${OP
 #target_link_libraries( test_point_clouds_transform GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_draw_cube test_draw_cube.cpp )
-target_link_libraries( test_draw_cube GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_draw_cube GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_histogram_renderer test_histogram_renderer.cpp )
 #target_link_libraries( test_histogram_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
@@ -71,16 +71,16 @@ target_link_libraries( test_draw_cube GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} 
 #target_link_libraries( test_experience_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_reflectance_renderer test_reflectance_renderer.cpp )
-target_link_libraries( test_reflectance_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_reflectance_renderer GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_layout test_layout.cpp )
 #target_link_libraries( test_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_dataset_layout test_dataset_layout.cpp )
-target_link_libraries( test_dataset_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_dataset_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${poco_libraries} )
 
 add_executable( test_estimator_layout test_estimator_layout.cpp )
-target_link_libraries( test_estimator_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} readline curses )
+target_link_libraries( test_estimator_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} readline curses  ${poco_libraries} )
 
 #add_executable( test_algorithm_visual test_algorithm.cpp )
 #target_link_libraries( test_algorithm_visual GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
@@ -110,8 +110,8 @@ target_link_libraries( test_estimator_layout GLV ${GLUT_LIBRARIES} ${OPENGL_LIBR
 #target_link_libraries( test_estimator_prediction GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
 
 add_executable( test_camera_transform test_camera_transform.cpp )
-target_link_libraries( test_camera_transform GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES})
+target_link_libraries( test_camera_transform GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${poco_libraries} )
 
 add_executable( test_L3 test_L3.cpp )
-target_link_libraries( test_L3 GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 pcl_octree L3Vis  ${Boost_LIBRARIES} )
+target_link_libraries( test_L3 GLV ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 pcl_octree L3Vis  ${Boost_LIBRARIES} ${poco_libraries} )
 
