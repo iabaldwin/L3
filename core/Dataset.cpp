@@ -56,7 +56,6 @@ std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
 
 bool Dataset::validate()
 {
-
     /*
      *For any dataset, there should be:
      *  1.  1 x INS file

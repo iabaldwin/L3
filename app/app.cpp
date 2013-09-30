@@ -33,7 +33,13 @@ int main( int argc, char* argv[] )
         return(-1);
     }
 
-    if( !( dataset->validate() && dataset->load() ) )
+    if( !dataset->validate()  )
+    {
+        std::cerr << "Failed to validate <" << dataset_directory << ">" << std::endl;
+        return(-1);
+    }
+
+    if( !dataset->load() )
     {
         std::cerr << "Failed to load <" << dataset_directory << ">" << std::endl;
         return(-1);
