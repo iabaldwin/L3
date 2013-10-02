@@ -9,14 +9,14 @@ typedef char BYTE;
 
 namespace L3
 {
-
     template <typename T>
     class WindowerFactory
     {
-
         public:
             static boost::shared_ptr<SlidingWindow<T> > constantTimeWindow( const std::string& file, float time )
             {
+                std::cout << file << std::endl;
+
                 std::ifstream file_input( file.c_str() );
 
                 // Read N bytes, try to determine if it is binary or not

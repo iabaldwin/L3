@@ -98,7 +98,8 @@ bool Dataset::validate()
     // Validate logic
     if ( !( boost::filesystem::exists( OxTS_ins )) || 
             !( boost::filesystem::exists( OxTS_lhlv) ) || 
-                (LIDARs.size()) == 0 ) 
+            !(boost::filesystem::exists( SM_vel ) ) || 
+            (LIDARs.size()) == 0 ) 
             return false;
 
     return true;
@@ -107,17 +108,22 @@ bool Dataset::validate()
 bool Dataset::load()
 {
     // Pose Reader
+    std::cout << "OXTS" << std::endl; 
     std::cout <<  OxTS_ins.path().string() << std::endl;
     pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
     pose_reader->initialise(); 
     runnables.push_back( pose_reader );
 
     // LHLV Reader
+    std::cout << "LHLV" << std::endl; 
+    std::cout << OxTS_lhlv.path().string() << std::endl;
     LHLV_reader = L3::WindowerFactory<L3::LHLV>::constantTimeWindow( OxTS_lhlv.path().string(), 30 ) ;
     LHLV_reader->initialise(); 
     runnables.push_back( LHLV_reader );
 
     //Velocity reader
+    std::cout << "Velocity" << std::endl; 
+    std::cout << SM_vel.path().string() << std::endl;
     velocity_reader = L3::WindowerFactory<L3::SMVelocity>::constantTimeWindow( SM_vel.path().string(), 30 ) ;
     velocity_reader->initialise(); 
     runnables.push_back( velocity_reader );

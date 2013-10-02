@@ -53,7 +53,7 @@ int main( int argc, char* argv[] )
     }
     catch( std::exception& e )
     {
-        std::cerr << "Unable to load a configuration file for " << *dataset << std::endl;
+        std::cerr << "Unable to load a configuration file for " << dataset->name() << " <" << e.what() << ">"<< std::endl;
         return( -1  );
     }
 

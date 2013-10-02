@@ -75,7 +75,9 @@ struct Mission : Configuration
         p /= "missions";
         p /= dataset.name() + ".config";
         target = p.string();
-     
+   
+        std::cout << target << std::endl;
+
         loadAll( target );
     }
 
@@ -99,18 +101,33 @@ struct Mission : Configuration
 
     bool loadAll( std::string target )
     {
+#ifndef NDEBUG  
+    std::cout << "Loading target..." << std::endl;
+#endif
         if ( !load( target ) )
             throw std::exception();
 
+#ifndef NDEBUG  
+    std::cout << "Loading Description..." << std::endl;
+#endif
         if ( !loadDescription() )
             throw std::exception();
 
+#ifndef NDEBUG  
+    std::cout << "Loading LIDARS..." << std::endl;
+#endif
         if ( !loadLIDARS() )
             throw std::exception();
 
+#ifndef NDEBUG  
+    std::cout << "Loading estimation..." << std::endl;
+#endif
         if ( !loadEstimation() )
             throw std::exception();
 
+#ifndef NDEBUG  
+    std::cout << "Loading locale..." << std::endl;
+#endif
         if ( !loadLocale() )
             throw std::exception();
 
