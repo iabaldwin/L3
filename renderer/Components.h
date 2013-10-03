@@ -1451,7 +1451,6 @@ namespace Visualisers
 
         //virtual void update()
         //{
-
         //}
 
         std::deque<T> plot_data;
@@ -1463,63 +1462,63 @@ namespace Visualisers
      */
     template <typename T>
         struct StatisticsPlottable : BasicPlottable<T>
-    {
-        StatisticsPlottable() 
         {
-            this->color( glv::Color( 1, 0, 0, .5 ) );
-            this->stroke(2);
-        }
-
-        void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
-        {
-            L3::ReadLock master( this->mutex );
-            
-            while(i()){
-                double x = i[0];
-                double y = d.at<double>(0, i[0]);
-                g.addVertex(x, y);
-            }
-            
-            master.unlock();
-
-        }
-
-        boost::shared_ptr< variable_lock<T> > lock;
-
-        virtual void setVariable( T& t )
-        {
-            lock = boost::make_shared< variable_lock<T> >( boost::ref( t ) );
-        }
-
-        virtual void update()
-        {
-            if (!lock)
-                return;
-
-            L3::WriteLock master( this->mutex );
-
-            this->plot_data.push_back( lock->t );
-
-            if ( this->plot_data.size() > 100 )
-                this->plot_data.pop_front();
-
-            this->mData.resize( glv::Data::DOUBLE, 1, this->plot_data.size() );
-
-            glv::Indexer i( this->mData.size(1));
-
-            int counter = 0;
-
-            while( i() && counter< this->plot_data.size() )
+            StatisticsPlottable() 
             {
-                this->mData.assign( this->plot_data[counter]*10, i[0], i[1] );
-                counter++;
+                this->color( glv::Color( 1, 0, 0, .5 ) );
+                this->stroke(2);
             }
-            
-            master.unlock();
 
-        }
+            void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
+            {
+                L3::ReadLock master( this->mutex );
+                
+                while(i()){
+                    double x = i[0];
+                    double y = d.at<double>(0, i[0]);
+                    g.addVertex(x, y);
+                }
+                
+                master.unlock();
 
-    };
+            }
+
+            boost::shared_ptr< variable_lock<T> > lock;
+
+            virtual void setVariable( T& t )
+            {
+                lock = boost::make_shared< variable_lock<T> >( boost::ref( t ) );
+            }
+
+            virtual void update()
+            {
+                if (!lock)
+                    return;
+
+                L3::WriteLock master( this->mutex );
+
+                this->plot_data.push_back( lock->t );
+
+                if ( this->plot_data.size() > 100 )
+                    this->plot_data.pop_front();
+
+                this->mData.resize( glv::Data::DOUBLE, 1, this->plot_data.size() );
+
+                glv::Indexer i( this->mData.size(1));
+
+                int counter = 0;
+
+                while( i() && counter< this->plot_data.size() )
+                {
+                    this->mData.assign( this->plot_data[counter]*10, i[0], i[1] );
+                    counter++;
+                }
+                
+                master.unlock();
+
+            }
+
+        };
 
     template <typename T>
         struct CumulativePlottable : StatisticsPlottable<T>

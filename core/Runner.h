@@ -83,7 +83,8 @@ struct DatasetRunner : ThreadedRunner
             thread.join();
     }
 
-    std::ofstream   output;
+    std::ofstream   pose_output;
+    std::ofstream   statistics_output;
 
     Dataset*                    dataset;
     Configuration::Mission*     mission;
@@ -159,6 +160,31 @@ struct DatasetRunner : ThreadedRunner
     }
 
 
+    virtual bool openStreams()
+    {
+
+        // Poses
+        std::string path = dataset->path() + "/poses.dat";
+        pose_output.open( path.c_str(), std::ios::out );
+
+        // Stats
+        path = dataset->path() + "/stats.dat";
+
+        statistics_output.open( path.c_str(), std::ios::out );
+
+
+                    std::stringstream ss;
+        
+        ss << "Observer update"  << "\t" <<
+            "Swathe update"    << "\t" <<
+            "Point generation" << "\t" <<
+            "Estimation"       << "\t" << std::endl;
+
+        statistics_output << ss.str();
+
+        return true;
+
+    }
 };
 
 /*
@@ -214,6 +240,27 @@ struct EstimatorRunner : DatasetRunner, Lockable
             (*this) << observer;
 
         return *this;
+    }
+
+    bool openStreams()
+    {
+        std::stringstream ss;
+
+        // Poses
+        std::string path = dataset->path() + "/poses_" + algorithm->name() + ".dat";
+        pose_output.open( path.c_str(), std::ios::out );
+
+        // Stats
+        path = dataset->path() + "/stats_" + algorithm->name() + ".dat";
+
+        statistics_output.open( path.c_str(), std::ios::out );
+
+        ss << "Observer update"  << "\t" <<
+            "Swathe update"    << "\t" <<
+            "Point generation" << "\t" <<
+            "Estimation"       << "\t" << std::endl;
+
+        statistics_output << ss.str();
     }
 };
 

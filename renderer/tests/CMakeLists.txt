@@ -16,8 +16,8 @@
 #add_executable( test_controls test_controls.cpp )
 #target_link_libraries( test_controls GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES})
 
-#add_executable( test_input test_input.cpp )
-#target_link_libraries( test_input GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES})
+add_executable( test_input test_input.cpp )
+target_link_libraries( test_input GLV ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES})
 
 #add_executable( test_spatial_grid test_spatial_grid.cpp )
 #target_link_libraries( test_spatial_grid GLV L3Vis ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES}  ${GLUT_LIBRARIES} ${Boost_LIBRARIES})

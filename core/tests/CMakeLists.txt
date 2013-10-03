@@ -8,26 +8,23 @@ target_link_libraries( test_bayes config L3 ${Boost_LIBRARIES} lapack blas )
 #add_executable( test_ipp test_ipp.cpp )
 #target_link_libraries( test_ipp config L3 ${Boost_LIBRARIES} ipps )
 
-#add_executable( test_libconfig test_libconfig.cpp )
-#target_link_libraries( test_libconfig config L3 ${Boost_LIBRARIES} )
+add_executable( test_libconfig test_libconfig.cpp )
+target_link_libraries( test_libconfig config L3 ${Boost_LIBRARIES} )
 
-#add_executable( test_timer test_timer.cpp )
-#target_link_libraries( test_timer config L3 ${Boost_LIBRARIES} )
+add_executable( test_timer test_timer.cpp )
+target_link_libraries( test_timer config L3 ${Boost_LIBRARIES} )
 
-#add_executable( test_point_cloud_transform_vs_translate test_point_cloud_transform_vs_translate.cpp )
-#target_link_libraries( test_point_cloud_transform_vs_translate config L3 ${Boost_LIBRARIES} )
+add_executable( test_point_cloud_transform_vs_translate test_point_cloud_transform_vs_translate.cpp )
+target_link_libraries( test_point_cloud_transform_vs_translate config L3 ${Boost_LIBRARIES} )
 
-#add_executable( test_conversions test_conversions.cpp )
-#target_link_libraries( test_conversions config L3 ${Boost_LIBRARIES} )
-
-#add_executable( test_kl_computation test_kl_computation.cpp )
-#target_link_libraries( test_kl_computation L3 ${Boost_LIBRARIES}   )
+add_executable( test_conversions test_conversions.cpp )
+target_link_libraries( test_conversions config L3 ${Boost_LIBRARIES} )
 
 #add_executable( test_minimisation test_minimisation.cpp )
 #target_link_libraries( test_minimisation L3 ${Boost_LIBRARIES}   )
 
-#add_executable( test_configuration test_configuration.cpp )
-#target_link_libraries( test_configuration L3 ${Boost_LIBRARIES}   )
+add_executable( test_configuration test_configuration.cpp )
+target_link_libraries( test_configuration L3 ${Boost_LIBRARIES}   )
 
 #add_executable( test_dataset test_dataset.cpp )
 #target_link_libraries( test_dataset L3 ${Boost_LIBRARIES}   )
@@ -74,11 +71,11 @@ target_link_libraries( test_windower config L3 ${Boost_LIBRARIES} ${poco_librari
 add_executable( test_iterator test_iterator.cpp )
 target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
-#add_executable( test_reader_bandwidth test_reader_bandwidth.cpp )
-#target_link_libraries( test_reader_bandwidth config L3 ${Boost_LIBRARIES}  )
+add_executable( test_reader_bandwidth test_reader_bandwidth.cpp )
+target_link_libraries( test_reader_bandwidth config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
-#add_executable( test_binary_reader test_binary_reader.cpp )
-#target_link_libraries( test_binary_reader config L3 ${Boost_LIBRARIES}  )
+add_executable( test_binary_reader test_binary_reader.cpp )
+target_link_libraries( test_binary_reader config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_pose_factory test_pose_factory.cpp )
 #target_link_libraries( test_pose_factory config L3 ${Boost_LIBRARIES}  )
@@ -101,8 +98,8 @@ target_link_libraries( test_iterator config L3 ${Boost_LIBRARIES} ${poco_librari
 #add_executable( test_library_adapters test_library_adapters.cpp )
 #target_link_libraries( test_library_adapters config L3 ${Boost_LIBRARIES}  )
 
-#add_executable( test_readers test_readers.cpp )
-#target_link_libraries( test_readers config L3 ${Boost_LIBRARIES}  )
+add_executable( test_readers test_readers.cpp )
+target_link_libraries( test_readers config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_sequential_file_reader test_sequential_file_reader.cpp )
 #target_link_libraries( test_sequential_file_reader config L3 ${Boost_LIBRARIES}  )

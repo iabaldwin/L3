@@ -4,22 +4,32 @@
 #include "Configuration.h"
 #include "Utils.h"
 
-int main()
+int main( int argc, char* argv[] )
 {
+
+    if ( argc < 2 )
+    {
+        std::cerr << "Usage: " << argv[0]  << " <pose_file>" << std::endl;
+        return -1;
+    }
+
     std::auto_ptr<L3::IO::BinaryReader< L3::SE3 > > reader( new L3::IO::BinaryReader<L3::SE3>() );
-    reader->open( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/L3/OxTS.ins" );
+    
+    reader->open( std::string(argv[1]) );
     
     reader->read();
 
     std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > > poses;
     if ( reader->extract( poses ) )
     {
-        L3::Configuration::Begbroke b;
+        std::vector< std::pair< double, boost::shared_ptr<L3::SE3> > >::iterator it =  poses.begin();
+        
+        while( it != poses.end() )
+        {
+            std::cout << it->first << ", " << *it->second << std::endl;
 
-        //L3::Utils::localisePoseChain( poses.begin(), poses.end(), b );
-   
-        L3::IO::Writer w;
-        if( w.open( "test.txt" ))
-            w << poses; 
+            it++;
+        }
     }
+
 }

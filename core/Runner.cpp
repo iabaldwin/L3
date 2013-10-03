@@ -109,9 +109,11 @@ namespace L3
         if( stand_alone )
         {
             boot = 2000;
-            std::string path = dataset->path() + "/poses.dat";
-            output.open( path.c_str(), std::ios::out );
+      
+            openStreams();
         }
+
+        int total_index = 0;
 
         while( running ) // Main thread
         {
@@ -169,15 +171,23 @@ namespace L3
                 if( stand_alone )
                 {
                     std::stringstream ss;
-                   
-                    ss << std::setprecision(5)  ;
-                    ss << "Observer update:"  << "\t" << timings[0] << std::endl;
-                    ss << "Swathe update:"    << "\t\t" << timings[1] << std::endl;
-                    ss << "Point generation:" << "\t" << timings[2] << std::endl;
-                    ss << "Estimation:"       << "\t\t" << timings[3] << std::endl;
-                    std::cout << ss.str() << "------------" << std::endl;
 
-                    output << *estimated_pose << '\n';     // Buffer
+                    ss << std::setprecision(5)  ;
+                    ss << timings[0] << "," <<
+                    timings[1] << "," <<
+                    timings[2] << "," <<
+                    timings[3];
+
+                    statistics_output << ss.str() << std::endl;
+
+                    ss.str(std::string());
+
+                    pose_output << *estimated_pose << '\n';     // Buffer
+               
+                    total_index++;
+
+                    if ( total_index > 6000 )
+                        exit(0);
                 }
                 else
                 {

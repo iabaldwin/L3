@@ -1776,7 +1776,6 @@ namespace Visualisers
     /*
      * Statistics
      */
-
     struct MemoryStatistics : glv::TextView
     {
         explicit MemoryStatistics() : glv::TextView( glv::Rect(150,15 ) )
