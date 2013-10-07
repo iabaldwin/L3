@@ -57,7 +57,7 @@ struct SlidingWindow : Poco::Runnable, TemporalObserver
 
     virtual ~SlidingWindow();
 
-    virtual void initialise();
+    virtual bool initialise();
     void run();
     void stop();
 
@@ -86,7 +86,7 @@ struct SlidingWindowBinary : SlidingWindow<T>
     int required;
     std::vector<double> entry; 
 
-    void initialise()
+    bool initialise()
     {
         this->input_stream.open( this->target.c_str(), std::ios::binary ); 
     
@@ -103,7 +103,7 @@ struct SlidingWindowBinary : SlidingWindow<T>
 
             if ( entries_read != this->STACK_SIZE )
                 // End of stream, this is all we have
-                return;
+                return false;
 
             duration = this->window.back().first - this->window.front().first;
         }
@@ -111,6 +111,8 @@ struct SlidingWindowBinary : SlidingWindow<T>
         std::cout << this->window.size() << " entries read in " << t.elapsed() << "s" << std::endl;
 #endif
         this->initialised = true;
+   
+        return this->initialised;
     }
 
     int read()

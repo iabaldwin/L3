@@ -15,15 +15,30 @@ namespace L3
             run_mode( RunMode::Continuous ),
             frequency(0.0)
     {
-        // Constant time iterator over poses
+        
+        // Iterator over poses
+#ifndef NDEBUG
+        std::cout << __FILE__ << ":" << "Assigning pose iterator" << std::endl;
+#endif
         pose_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::SE3> >( dataset->pose_reader );
+        
+        // Iterator over velocity
+#ifndef NDEBUG
+        std::cout << __FILE__ << ":" << "Assigning velocity source" << std::endl;
+#endif
         LHLV_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::LHLV> >( dataset->LHLV_reader );  
      
         // LIDAR iterators
+#ifndef NDEBUG
+        std::cout << __FILE__ << ":" << "Assigning LIDAR iterators" << std::endl;
+#endif
         horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->horizontal] );
         vertical_LIDAR   = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->declined] );
-        
-        // Velocity iterator 
+       
+        // Scan-match velocity source
+#ifndef NDEBUG
+        std::cout << __FILE__ << ":" << "Assigning scan-match iterator " << std::endl;
+#endif
         velocity_source = boost::make_shared< L3::ConstantTimeIterator< L3::SMVelocity > >( dataset->velocity_reader );
 
         // Point-clouds

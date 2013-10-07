@@ -100,7 +100,7 @@ namespace L3
         }
 
     template <typename T>
-        void SlidingWindow<T>::initialise()
+        bool SlidingWindow<T>::initialise()
         {
             input_stream.open(target.c_str()); 
 
@@ -119,7 +119,7 @@ namespace L3
                 if ( entries_read != STACK_SIZE )
                 {
                     // End of stream, this is all we have
-                    return;
+                    return false;
                 }
 
                 duration = window.back().first - window.front().first;
@@ -129,6 +129,8 @@ namespace L3
 #endif
 
             initialised = true;
+       
+            return initialised;
         }
 
     template <typename T>
@@ -147,7 +149,7 @@ namespace L3
         };
 }
 
-template void L3::SlidingWindow<L3::LMS151>::initialise();
+template bool L3::SlidingWindow<L3::LMS151>::initialise();
 
 template void L3::SlidingWindow<L3::LMS151>::run();
 template bool L3::SlidingWindow<L3::LMS151>::good();

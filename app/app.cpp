@@ -53,24 +53,49 @@ int main( int argc, char* argv[] )
     }
     catch( std::exception& e )
     {
-        std::cerr << "Unable to load a configuration file for " << dataset->name() << " <" << e.what() << ">"<< std::endl;
+        std::cerr << "Unable to load/validate configuration file for " << dataset->name() << " <" << e.what() << ">"<< std::endl;
         return( -1  );
     }
 
     // Experience - Fixed
+#ifndef NDEBUG
+    std::cout << "Loading fixed experience...." << std::endl;
+#endif
     L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
     L3::ExperienceLoader experience_loader( experience_dataset );
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
+#ifndef NDEBUG
+    std::cout << "Done. " << std::endl;
+#endif
 
     // Estimator
+#ifndef NDEBUG
+    std::cout << "Loading cost function...." << std::endl;
+#endif
     L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::MICostFunction<double>();
+#ifndef NDEBUG
+    std::cout << "Done. " << std::endl;
+#endif
 
     // Create runner
+#ifndef NDEBUG
+    std::cout << "Building runner...." << std::endl;
+#endif
     boost::shared_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( dataset, mission, experience.get() ) );
-   
+#ifndef NDEBUG
+    std::cout << "Done. " << std::endl;
+#endif
+
     // Build algorithm
+#ifndef NDEBUG
+    std::cout << "Building algorithm...." << std::endl;
+#endif
     boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::UKF<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid, runner->ics_velocity_provider ) );
-    
+#ifndef NDEBUG
+    std::cout << "Done. " << std::endl;
+#endif
+
+   
     runner->setAlgorithm( algo );
     runner->start();
 
