@@ -61,44 +61,6 @@ namespace L3
     };
 
     /*
-     *  LHLV Windower
-     */
-    //template <>
-        //class ConstantTimeWindower<L3::LHLV> : public PoseWindower
-        //{
-            //public:
-
-                //ConstantTimeWindower( L3::ConstantTimeIterator<L3::LHLV>* iterator ) 
-                    //: constant_time_iterator(iterator)
-                //{
-                    //// Poses from velocity
-                    //chain_builder.reset( new L3::ChainBuilder( iterator ) );
-
-                    //// Reflection
-                    //this->window = &chain_builder->window;
-                //}
-
-                //// Iterator base
-                //L3::ConstantTimeIterator<L3::LHLV>* constant_time_iterator;
-
-                //// Chain builder - poses from velocity
-                //boost::shared_ptr< L3::ChainBuilder > chain_builder;
-
-                //// Trajectory inverter
-                //Inverter inverter;
-
-                //bool update( double t)
-                //{
-                    //// Update the chain
-                    //chain_builder->update();
-
-                    //// Reorient poses
-                    //return inverter.invert( chain_builder->window.begin(), chain_builder->window.end() );
-                //}
-
-        //};
-
-    /*
      *  Constant distance windowers
      */
     class ConstantDistanceWindower : public PoseWindower

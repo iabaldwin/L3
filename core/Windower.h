@@ -105,9 +105,9 @@ struct SlidingWindowBinary : SlidingWindow<T>
                 // End of stream, this is all we have
                 return false;
 
-            std::cout << entries_read << ":" << this->STACK_SIZE << ":" << duration << std::endl;
-
             duration = this->window.back().first - this->window.front().first;
+            
+            std::cout << entries_read << ":" << this->STACK_SIZE << ":" << duration << std::endl;
         }
 #ifndef NDEBUG
         std::cout << this->window.size() << " entries read in " << t.elapsed() << "s" << std::endl;

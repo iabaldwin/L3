@@ -117,10 +117,8 @@ namespace L3
                 int entries_read = read();
 
                 if ( entries_read != STACK_SIZE )
-                {
                     // End of stream, this is all we have
                     return false;
-                }
 
                 duration = window.back().first - window.front().first;
             }

@@ -76,7 +76,7 @@ namespace L3
 
         _window_buffer.insert( _window_buffer.end(), index, LIDAR_iterator->window.end() );
 
-//DBG
+#ifndef NDEBUG
         for( std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > >::iterator it = (_window_buffer.begin()+1);
                 it != _window_buffer.end(); 
                 it++ )
@@ -95,44 +95,50 @@ namespace L3
                 std::cout << "SMALL gap" << std::endl;
                 exit(-1);
             }
-
         }
-//DBG
-
-        L3::Iterator<L3::SE3>::WINDOW_ITERATOR it = pose_windower->window->begin() ;
+#endif
+        L3::Iterator<L3::SE3>::WINDOW_ITERATOR it = pose_windower->window->begin();
    
         // For each lidar pose, find the nearest scan
         while( it != pose_windower->window->end() )
         {
             // Nearest time
-            L3::Iterator<L3::LMS151>::WINDOW_ITERATOR index = std::lower_bound( _window_buffer.begin(), 
+            L3::Iterator<L3::LMS151>::WINDOW_ITERATOR index = 
+                std::lower_bound( _window_buffer.begin(), 
                     _window_buffer.end(),
                     it->first, 
                     LIDAR_comparator );
 
             if ( index == _window_buffer.end() )
             {
+                std::cout << "(" << __FILE__ << ")" << " Lookup failure" << std::endl;
+
                 std::cerr.precision( 15 );
                 
-                std::cerr << "LIDAR" << std::endl;
+                std::cerr << "LIDAR (" << LIDAR_iterator->window.size() << ")" << std::endl;
                 for(std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > >::iterator lidar_it = LIDAR_iterator->window.begin();
                         lidar_it != LIDAR_iterator->window.end();
                         lidar_it++)
                     std::cerr << lidar_it->first << std::endl;
-
                 std::cerr << "-------------" << std::endl;
-                std::cerr << "TMP BUFFER" << std::endl;
                 
+                std::cerr << "BUFFER (" <<  _window_buffer.size() << ")" << std::endl;
                 for(std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > >::iterator buf_it = _window_buffer.begin();
                         buf_it != _window_buffer.end();
                         buf_it++)
                     std::cerr << buf_it->first << std::endl;
                 std::cerr << "-------------" << std::endl;
-                
-                std::cerr << it->first << std::endl;
-                std::cerr << previous_update << std::endl;
 
-                std::cerr << "Missing data." << std::endl;
+                std::cerr << "Pose window(" <<  pose_windower->window->size() << ")" << std::endl;
+                for(std::deque< std::pair< double, boost::shared_ptr< L3::SE3 > > >::iterator _iterator = pose_windower->window->begin();
+                        _iterator != pose_windower->window->end();
+                        _iterator++)
+                    std::cerr << _iterator->first << std::endl;
+                std::cerr << "-------------" << std::endl;
+
+                std::cerr << "Query time: "  << it->first << std::endl;
+                std::cerr << "Previous time: " << previous_update << std::endl;
+                
                 exit(-1);
             }
 

@@ -113,22 +113,25 @@ bool Dataset::validate()
 bool Dataset::load()
 {
     // Pose Reader
-    std::cout << "OXTS" << std::endl; 
-    std::cout <<  OxTS_ins.path().string() << std::endl;
+#ifndef NDEBUG
+    std::cout << "OXTS" <<  OxTS_ins.path().string() << std::endl;
+#endif
     pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
     pose_reader->initialise(); 
     runnables.push_back( pose_reader );
 
     // LHLV Reader
-    std::cout << "LHLV" << std::endl; 
-    std::cout << OxTS_lhlv.path().string() << std::endl;
+#ifndef NDEBUG
+    std::cout << "LHLV" << OxTS_lhlv.path().string() << std::endl;
+#endif
     LHLV_reader = L3::WindowerFactory<L3::LHLV>::constantTimeWindow( OxTS_lhlv.path().string(), 30 ) ;
     LHLV_reader->initialise(); 
     runnables.push_back( LHLV_reader );
 
     //Velocity reader
-    std::cout << "Velocity" << std::endl; 
-    std::cout << SM_vel.path().string() << std::endl;
+#ifndef NDEBUG
+    std::cout << "Velocity" << SM_vel.path().string() << std::endl;
+#endif
     velocity_reader = L3::WindowerFactory<L3::SMVelocity>::constantTimeWindow( SM_vel.path().string(), 30 ) ;
     velocity_reader->initialise(); 
     runnables.push_back( velocity_reader );
@@ -142,6 +145,8 @@ bool Dataset::load()
         reader->initialise(); 
       
         std::string LIDAR_name = (*it).path().stem().string();
+
+        std::cout << "Inserting " << LIDAR_name << std::endl;
 
         LIDAR_readers.insert( std::make_pair( LIDAR_name, reader ) );
         runnables.push_back( reader );
