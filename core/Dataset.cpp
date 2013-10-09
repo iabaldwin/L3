@@ -117,24 +117,31 @@ bool Dataset::load()
     std::cout << "OXTS" <<  OxTS_ins.path().string() << std::endl;
 #endif
     pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
-    pose_reader->initialise(); 
-    runnables.push_back( pose_reader );
+    if( pose_reader->initialise() )
+        runnables.push_back( pose_reader );
+    else
+        std::cerr << "Could not initialise pose source" << std::endl;
 
     // LHLV Reader
 #ifndef NDEBUG
     std::cout << "LHLV" << OxTS_lhlv.path().string() << std::endl;
 #endif
     LHLV_reader = L3::WindowerFactory<L3::LHLV>::constantTimeWindow( OxTS_lhlv.path().string(), 30 ) ;
-    LHLV_reader->initialise(); 
-    runnables.push_back( LHLV_reader );
+    if( LHLV_reader->initialise() )
+        runnables.push_back( LHLV_reader );
+    else
+        std::cerr << "Could not initialise velocity source " << std::endl;
 
     //Velocity reader
 #ifndef NDEBUG
     std::cout << "Velocity" << SM_vel.path().string() << std::endl;
 #endif
     velocity_reader = L3::WindowerFactory<L3::SMVelocity>::constantTimeWindow( SM_vel.path().string(), 30 ) ;
-    velocity_reader->initialise(); 
-    runnables.push_back( velocity_reader );
+    if( velocity_reader->initialise() )
+        runnables.push_back( velocity_reader );
+    else
+        std::cerr << "Could not initialise scan-matching source " << std::endl;
+
 
     // Load LIDARs
     std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();
@@ -146,7 +153,9 @@ bool Dataset::load()
       
         std::string LIDAR_name = (*it).path().stem().string();
 
+#ifndef NDEBUG
         std::cout << "Inserting " << LIDAR_name << std::endl;
+#endif
 
         LIDAR_readers.insert( std::make_pair( LIDAR_name, reader ) );
         runnables.push_back( reader );

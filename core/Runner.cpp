@@ -31,10 +31,9 @@ namespace L3
         // LIDAR iterators
 #ifndef NDEBUG
         std::cout << __FILE__ << ":" << "Assigning LIDAR iterators" << std::endl;
-#endif
         std::cout << mission->horizontal << std::endl;
         std::cout << dataset->LIDAR_readers[mission->horizontal] << std::endl;
-        
+#endif
         horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->horizontal] );
         vertical_LIDAR   = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->declined] );
        

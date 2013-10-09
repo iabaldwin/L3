@@ -65,6 +65,10 @@ namespace L3
         // Rebuild swathe completely
         swathe.clear();
 
+#ifndef NDEBUG
+        std::cout << LIDAR_iterator->window.size() << ":" << pose_windower->window->size() << std::endl;
+#endif
+
         // Find the new data, between the last update time and now
         L3::Iterator<L3::LMS151>::WINDOW_ITERATOR index = std::lower_bound( LIDAR_iterator->window.begin(), 
                 LIDAR_iterator->window.end(), 

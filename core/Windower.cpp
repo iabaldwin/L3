@@ -107,7 +107,6 @@ namespace L3
 #ifndef NDEBUG
             L3::Timing::SysTimer t;
             std::cout << "Buffering...";
-
             t.begin();
 #endif
             double duration = 0;
@@ -145,6 +144,65 @@ namespace L3
         {
             return input_stream.good() ? true : false; 
         };
+
+    template <typename T>
+        bool SlidingWindowBinary<T>::initialise()
+        {
+            this->input_stream.open( this->target.c_str(), std::ios::binary ); 
+
+#ifndef NDEBUG
+            L3::Timing::SysTimer t;
+            std::cout << "Binary:" << typeid( *this ).name() << "Buffering...";
+            t.begin();
+#endif
+            double duration = 0;
+
+            while ( duration < SlidingWindow<T>::window_duration )
+            {
+                int entries_read = read();
+
+                if ( entries_read != this->STACK_SIZE )
+                    // End of stream, this is all we have
+                    return false;
+
+                duration = this->window.back().first - this->window.front().first;
+#ifndef NDEBUG
+                std::cout << entries_read << ":" << this->STACK_SIZE << ":" << duration << std::endl;
+#endif
+            }
+#ifndef NDEBUG
+            std::cout << this->window.size() << " entries read (" << this->window.size() << ") in " << t.elapsed() << "s" << std::endl;
+#endif
+            this->initialised = true;
+
+            return this->initialised;
+        }
+
+    template <typename T>
+        int SlidingWindowBinary<T>::read()
+        {
+            int i;
+
+            typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
+
+            for ( i=0; i< this->STACK_SIZE; i++ )
+            {
+                // Is the stream good?
+                if ( !this->good() )
+                    break;
+
+                this->input_stream.read( (char*)(&entry[0]), required*sizeof(double) );
+
+                tmp.push_back( L3::AbstractFactory<T>::produce( entry, &this->DEFAULT_MASK_POLICY ) );
+            }
+
+            this->mutex.lock();
+            this->window.insert( this->window.end(), tmp.begin(), tmp.end() ); 
+            this->mutex.unlock();
+
+            return i;
+        }
+
 }
 
 template bool L3::SlidingWindow<L3::LMS151>::initialise();
@@ -188,6 +246,18 @@ template int L3::SlidingWindow<L3::SMVelocity>::read();
 template bool L3::SlidingWindow<L3::SMVelocity>::update(double);
 template L3::SlidingWindow<L3::SMVelocity>::~SlidingWindow();
 template std::deque< std::pair< double, boost::shared_ptr<L3::SMVelocity> > > L3::SlidingWindow<L3::SMVelocity>::getWindow();
+
+template bool L3::SlidingWindowBinary<L3::LMS151>::initialise();
+template int L3::SlidingWindowBinary<L3::LMS151>::read();
+
+template bool L3::SlidingWindowBinary<L3::SMVelocity>::initialise();
+template int L3::SlidingWindowBinary<L3::SMVelocity >::read();
+
+template bool L3::SlidingWindowBinary<L3::SE3>::initialise();
+template int L3::SlidingWindowBinary<L3::SE3 >::read();
+
+template bool L3::SlidingWindowBinary<L3::LHLV>::initialise();
+template int L3::SlidingWindowBinary<L3::LHLV >::read();
 
 
 

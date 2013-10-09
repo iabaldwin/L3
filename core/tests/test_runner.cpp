@@ -7,10 +7,14 @@
 #include "SwatheBuilder.h"
 #include "Runner.h"
 
-int main()
+int main( int argc, char* argv[] )
 {
+
+    if ( argc < 2 )
+        return -1;
+
     // Load dataset
-    L3::Dataset dataset( "/Users/ian/code/datasets/2012-02-06-13-15-35mistsnow/" );
+    L3::Dataset dataset( argv[1] );
     
     if ( !( dataset.validate() && dataset.load() ) )
         throw std::exception();
@@ -24,8 +28,6 @@ int main()
    
     L3::ConstantTimeWindower<L3::SE3> pose_windower( &pose_iterator );
     
-    L3::SwatheBuilder swathe_builder( &pose_windower, &LIDAR_iterator );
-
     //L3::ThreadedTemporalRunner runner;
 
     //runner << &swathe_builder;

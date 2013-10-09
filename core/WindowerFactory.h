@@ -15,7 +15,9 @@ namespace L3
         public:
             static boost::shared_ptr<SlidingWindow<T> > constantTimeWindow( const std::string& file, float time )
             {
+#ifndef NDEBUG
                 std::cout << file << std::endl;
+#endif
 
                 std::ifstream file_input( file.c_str() );
 

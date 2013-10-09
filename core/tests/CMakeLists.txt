@@ -119,8 +119,8 @@ target_link_libraries( test_reflectance_loader config L3 ${Boost_LIBRARIES} ${po
 #add_executable( test_experience_pipeline test_experience_pipeline.cpp )
 #target_link_libraries( test_experience_pipeline config L3 ${Boost_LIBRARIES}  )
 
-#add_executable( test_runner test_runner.cpp )
-#target_link_libraries( test_runner config L3 ${Boost_LIBRARIES}  )
+add_executable( test_runner test_runner.cpp )
+target_link_libraries( test_runner config L3 ${Boost_LIBRARIES} ${poco_libraries} )
 
 #add_executable( test_swathe_builder_LHLV_point_cloud test_swathe_builder_LHLV_point_cloud.cpp )
 #target_link_libraries( test_swathe_builder_LHLV_point_cloud config L3 ${Boost_LIBRARIES}  )
