@@ -26,8 +26,8 @@ target_link_libraries( test_conversions config L3 ${Boost_LIBRARIES} )
 add_executable( test_configuration test_configuration.cpp )
 target_link_libraries( test_configuration L3 ${Boost_LIBRARIES}   )
 
-#add_executable( test_dataset test_dataset.cpp )
-#target_link_libraries( test_dataset L3 ${Boost_LIBRARIES}   )
+add_executable( test_dataset test_dataset.cpp )
+target_link_libraries( test_dataset L3  ${poco_libraries} ${Boost_LIBRARIES}   )
 
 #add_executable( test_point_cloud test_point_cloud.cpp )
 #target_link_libraries( test_point_cloud config L3 ${Boost_LIBRARIES} ${Boost_SYSTEM_LIBRARY}  ${Boost_FILESYSTEM_LIBRARY})

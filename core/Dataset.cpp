@@ -51,6 +51,11 @@ std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
     std::copy(boost::filesystem::directory_iterator( dataset.root_path ), 
             boost::filesystem::directory_iterator(), 
             std::ostream_iterator<boost::filesystem::directory_entry>(o, "\n")); 
+   
+    o << "Pose Reader:"     << dataset.pose_reader << std::endl;
+    o << "LHLV Reader:"     << dataset.LHLV_reader << std::endl;
+    o << "Velocity Reader:" << dataset.velocity_reader << std::endl;
+    
     return o;
 }
 
@@ -136,22 +141,7 @@ bool Dataset::load()
         boost::shared_ptr< SlidingWindow<L3::LMS151> > reader = L3::WindowerFactory<L3::LMS151>::constantTimeWindow( (*it).path().string(), 30 );
         reader->initialise(); 
       
-        /*
-         *Logging always used to be:
-         *  -> LMS_XXX_XXXX
-         *  but then at some stage, the 
-         *  logger started reporting
-         *  IP addresses as well, so 
-         *  we have to cull the string
-         *  so that we obtain only 
-         *  the LIDAR name and serial.
-         */
-        std::string raw_name = (*it).path().leaf().string();
-        
-        //std::string LIDAR_name( raw_name.begin(), raw_name.begin()+15); 
-        //std::cout << LIDAR_name << std::endl;
-
-        std::string LIDAR_name = raw_name;
+        std::string LIDAR_name = (*it).path().stem().string();
 
         LIDAR_readers.insert( std::make_pair( LIDAR_name, reader ) );
         runnables.push_back( reader );

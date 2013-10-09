@@ -92,7 +92,7 @@ struct SlidingWindowBinary : SlidingWindow<T>
     
 #ifndef NDEBUG
         L3::Timing::SysTimer t;
-        std::cout << "Buffering...";
+        std::cout << "Binary:" << "Buffering...";
         t.begin();
 #endif
         double duration = 0;
@@ -104,6 +104,8 @@ struct SlidingWindowBinary : SlidingWindow<T>
             if ( entries_read != this->STACK_SIZE )
                 // End of stream, this is all we have
                 return false;
+
+            std::cout << entries_read << ":" << this->STACK_SIZE << ":" << duration << std::endl;
 
             duration = this->window.back().first - this->window.front().first;
         }
