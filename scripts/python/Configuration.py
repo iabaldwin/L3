@@ -3,6 +3,8 @@ import sys
 import pprint 
 import random
 
+sys.path.append( os.path.expanduser( '~/code/build/lib' ) )
+
 from pylibconfig import Config
 
 class Parser:
@@ -12,8 +14,7 @@ class Parser:
 
 class Configuration(Parser):
         
-    configuration_directory = '/Users/ian/code/datasets/configuration/missions/' 
-        
+    configuration_directory = os.path.expanduser( '~/code/datasets/configuration/missions/'  )
 
     def __init__(self):
     
@@ -69,7 +70,6 @@ class Mission(Configuration):
         self.y = locale_config.value( 'datum.Y.lower' )[0]
         self.z = 73.0
 
-
     def __repr__( self ):
         return self.name
 
@@ -81,14 +81,16 @@ if __name__=="__main__":
 
     c = Configuration()
 
+    print c.configuration_directory
+
     dataset_listing = os.listdir( c.configuration_directory )
 
     for dataset in dataset_listing:
 
         if not os.path.isdir( os.path.join( c.configuration_directory, dataset ) ):
             
-            try:
-                m = Mission( os.path.join( c.configuration_directory, dataset ) )
-                print m.locale + ':' + m.name 
-            except:
-                pass
+            #try:
+            m = Mission( os.path.join( c.configuration_directory, dataset ) )
+            print m.locale + ':' + m.name 
+            #except:
+                #pass
