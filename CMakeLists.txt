@@ -39,7 +39,6 @@ set( Boost_USE_STATIC_LIBS ON )
 find_package( Boost COMPONENTS system filesystem thread regex chrono REQUIRED )     # Filesystem, smart pointers, ...
 include_directories(${Boost_INCLUDE_DIRS})
 
-
 # POCO
 include(${CMAKE_SOURCE_DIR}/cmake_modules/PocoConfig.cmake)
 include_directories( ${Poco_INCLUDE_DIRS} )
@@ -49,6 +48,9 @@ set( poco_libraries PocoFoundation PocoNet )
 # GLV custom build directory
 #include_directories( $ENV{GLV_DIR} )
 #link_directories( $ENV{HOME}/code/build/lib )
+
+find_package( Common REQUIRED )
+include_directories( ${COMMON_INCLUDE_DIRS} )
 
 # Core
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )

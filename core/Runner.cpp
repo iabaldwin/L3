@@ -34,6 +34,8 @@ namespace L3
         std::cout << mission->horizontal << std::endl;
         std::cout << dataset->LIDAR_readers[mission->horizontal] << std::endl;
 #endif
+        assert( dataset->LIDAR_readers[ mission->horizontal] );
+        assert( dataset->LIDAR_readers[ mission->declined] );
         horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->horizontal] );
         vertical_LIDAR   = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >( dataset->LIDAR_readers[ mission->declined] );
        

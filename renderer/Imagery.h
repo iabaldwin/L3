@@ -1,7 +1,7 @@
 #ifndef L3_IMAGERY_H
 #define L3_IMAGERY_H
 
-#include "Common/Imagery.h"
+#include "Common/imagery/Imagery.h"
 #include "Visualisers.h"
 #include "Components.h"
 //#include "QueryInterface.h"
@@ -16,7 +16,7 @@ namespace Visualisers
 
     struct ImageData
     {
-        IAB::Imagery::IMAGE img;
+        common::imagery::IMAGE img;
     };
 
     struct ImageFactory
@@ -25,7 +25,7 @@ namespace Visualisers
         {
             try
             {
-                data.img = IAB::Imagery::loadImage( image_target );
+                data.img = common::imagery::loadImage( image_target );
             }
             catch (...)
             {
