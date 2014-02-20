@@ -10,7 +10,7 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{HOME}/code/dev/cmake/find" )
 
-#Search for OpenMP, as it doesn't come by default
+# Search for OpenMP, as it doesn't come by default
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package( OpenMP REQUIRED )
     set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} )
@@ -40,7 +40,7 @@ find_package( Boost COMPONENTS system filesystem thread regex chrono REQUIRED ) 
 include_directories(${Boost_INCLUDE_DIRS})
 
 # POCO
-include(${CMAKE_SOURCE_DIR}/cmake_modules/PocoConfig.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake_modules/PocoConfig.cmake)     # Sockets, net, ...
 include_directories( ${Poco_INCLUDE_DIRS} )
 link_directories( ${Poco_LIBRARY_DIRS} )
 set( poco_libraries PocoFoundation PocoNet )
@@ -57,9 +57,10 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/utils )
 
+# Core
 add_subdirectory( core )
 
-#Visuals
+# Visuals
 add_subdirectory( renderer )
 
 # Learning
