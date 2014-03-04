@@ -8,7 +8,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{HOME}/code/dev/cmake/find" )
+set( PCL_DIR "$ENV{HOME}/code/thirdparty/PCL.github.build/" )
 
 # Search for OpenMP, as it doesn't come by default
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -31,7 +31,11 @@ include_directories( ${TBB_INCLUDE_DIRS} )
 find_package( BAYES++ REQUIRED )                                # Bayesian inference
 include_directories( ${BAYES++_INCLUDE_DIRS} )
 
-find_package(PCL REQUIRED COMPONENTS common io)                 # Various point-cloud tools
+find_package( MI REQUIRED )                                     # Information
+include_directories(${MI_INCLUDE_DIRS})
+link_directories(${MI_LIBRARY_DIRS})
+
+find_package(PCL REQUIRED COMPONENTS common io registration )   # Various point-cloud tools
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 
