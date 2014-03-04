@@ -1,0 +1,14 @@
+#version = "1.0";
+
+mission:
+{
+    lasers = ( 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=.66; y=3.3; z=0; r=0.00; p=0.00; q=0.00; };
+    }
+    );
+
+    offset = 1;
+};
+

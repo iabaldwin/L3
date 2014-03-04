@@ -1,0 +1,382 @@
+#version = "1.0";
+
+# ------------------------------------------------------------
+# Base configuration
+# ------------------------------------------------------------
+
+mission:
+{
+    description = "Woodstock | multiple loops ";
+
+    locale = "Woodstock";
+
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=0; y=3.3; z=0.4; r=0.0; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = false;
+        load = true;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=-90; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted = false;
+        load = true;
+    }
+    );
+
+    offset = 1;
+
+    # Extra directives for initial loading
+    directives:
+    {
+        submaps = false;
+        loops   = false;    # Automatic loop generation?
+    };
+
+    loops:
+    {
+        # If you don't want automatic loop generation, what are the loop indices? 
+        
+    };
+};
+
+# ------------------------------------------------------------
+# Common estimation parameters
+# ------------------------------------------------------------
+
+estimation:
+{
+    # Laser to use
+    laser:
+    {
+        horizontal = "LMS1xx_10420001";
+        declined   = "LMS1xx_10420002";
+    };
+
+    culling = "Far";
+};
+
+
+# ------------------------------------------------------------
+# Result generation
+# ------------------------------------------------------------
+results:
+{
+    node_map = {
+        name = "2012-02-27-11-17-51Woodstock-All";
+        session = 1;
+    };
+
+    # Refer to dataset relative time
+    sessions = (
+    {
+        start = 422;
+        end   = 806;
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 422;
+        end   = 806;
+        duration = 50; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 422;
+        end   = 806;
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 422;
+        end   = 806;
+        duration = 50; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+
+    {
+        start = 806;
+        end   = 1202;
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 806;
+        end   = 1202;
+        duration = 50; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 806;
+        end   = 1202;
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 806;
+        end   = 1202;
+        duration = 50; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+
+    {
+        start = 1202;
+        end   = 1615;
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1202;
+        end   = 1615;
+        duration = 50; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1202;
+        end   = 1615;
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1202;
+        end   = 1615;
+        duration = 50; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+
+    {
+        start = 1615;
+        end   = 2000;
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1615;
+        end   = 2000;
+        duration = 50; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1615;
+        end   = 2000;
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1615;
+        end   = 2000;
+        duration = 50; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+
+    {
+        start = 2000;
+        end   = 2439;
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 2000;
+        end   = 2439;
+        duration = 50; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 2000;
+        end   = 2439;
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 2000;
+        end   = 2439;
+        duration = 50; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+
+    {
+        start = 2439;
+        end   = 2865;
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 2439;
+        end   = 2865;
+        duration = 50; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 2439;
+        end   = 2865;
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 2439;
+        end   = 2865;
+        duration = 50; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    }
+
+    );
+};
+
+# ------------------------------------------------------------
+# Filter learning sessions
+# ------------------------------------------------------------
+# ------------------------------------------------------------
+# Erroneous regions
+# ------------------------------------------------------------
+
+errors:
+{
+  
+    sessions = (
+
+    {
+        key = "HW_1";
+        description = "HWay, traffic";
+        start = 1058;
+        end   = 1068;
+        image = {
+            time = 1061;
+            mode = "Mono";
+        };
+    },
+    
+    {
+        key = "TC";
+        description = "Huge truck in town-centre";
+        start = 1502;
+        end   = 1512;
+        image = {
+            time = 1507;
+            mode = "Mono";
+        };
+    },
+
+    {
+        key = "TJ";
+        description = "Town-centre, velocity suppression";
+        start = 1570;
+        end   = 1580;
+        image = {
+            time = 1571;
+            mode = "Mono";
+        };
+    },
+
+    {
+        key = "HW_2";
+        description = "HWay, traffic"; 
+        start = 1580;
+        end   = 1590;
+        image = {
+            time = 1588.5;
+            mode = "Mono";
+        };
+    }
+
+    );
+};
+

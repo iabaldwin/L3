@@ -1,0 +1,51 @@
+#version = "1.0";
+
+# ------------------------------------------------------------
+# Base configuration
+# ------------------------------------------------------------
+
+mission:
+{
+    description = "2 loop dataset";
+    
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=-0.67; y=3.3; z=0.4; r=-8; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = true;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=8; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = true;
+    }
+    );
+
+    offset = 1;
+
+    # Extra directives for loading
+    directives:
+    {
+        submaps = false;
+    };
+
+};
+
+# ------------------------------------------------------------
+# Common estimation parameters
+# ------------------------------------------------------------
+
+estimation:
+{
+    laser:
+    {
+        declined   = "LMS1xx_10420001";
+    };
+
+    culling = "None";
+};
+
+
+

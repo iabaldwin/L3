@@ -1,0 +1,179 @@
+#version = "1.0";
+
+# ------------------------------------------------------------
+# Base configuration
+# ------------------------------------------------------------
+
+mission:
+{
+    description = "Woodstock | multiple loops | DGPS";
+    
+    locale = "Woodstock";
+
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=0; y=3.3; z=0.4; r=0.0; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = false;
+        load = true;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=-90; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted = false;
+        load = true;
+    }
+    );
+
+    # Extra directives for initial loading
+    directives:
+    {
+        submaps = false;
+        loops   = false;    # Automatic loop generation?
+    };
+
+    loops:
+    {
+        # If you don't want automatic loop generation, what are the loop indices? 
+        
+    };
+};
+
+# ------------------------------------------------------------
+# Common estimation parameters
+# ------------------------------------------------------------
+
+estimation:
+{
+    # Laser to use
+    laser:
+    {
+        horizontal = "LMS1xx_10420001";
+        declined   = "LMS1xx_10420002";
+    };
+
+    culling = "Far";
+};
+
+
+# ------------------------------------------------------------
+# Result generation
+# ------------------------------------------------------------
+results:
+{
+    node_map = {
+        name = "2012-02-27-11-17-51Woodstock-All";
+        session = 1;
+    };
+
+    sessions = (
+    {
+        start = 425;
+        end   = 829;
+        duration = 15; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 425;
+        end   = 829;
+        duration = 40; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 425;
+        end   = 829;
+        duration = 40; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+
+    # Loop 2 
+
+    {
+        start = 829;
+        end   = 1244;
+        duration = 15; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 829;
+        end   = 1244;
+        duration = 40; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    
+    # Loop 3 
+   
+    {
+        start = 1244;
+        end   = 1649;
+        duration = 40; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1244;
+        end   = 1649;
+        duration = 40; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    
+    # Loop 4 
+
+    {
+        start = 1649;
+        end   = 2141;
+        duration = 40; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1649;
+        end   = 2141;
+        duration = 40; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Distance"; 
+        estimator   = "RelativeEntropy";
+    }
+    
+    );
+
+};
+
+# ------------------------------------------------------------
+# Filter learning sessions
+# ------------------------------------------------------------
+

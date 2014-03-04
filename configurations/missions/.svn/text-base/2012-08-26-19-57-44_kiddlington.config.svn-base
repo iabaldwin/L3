@@ -1,0 +1,123 @@
+#version = "1.0";
+
+# ------------------------------------------------------------
+# Base configuration
+# ------------------------------------------------------------
+
+mission:
+{
+    description = "Kiddlington | multiple loops | Night | ladybug failure";
+    
+    locale = "Woodstock";
+
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=0; y=3.3; z=0.4; r=0.0; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = false;
+        load = true;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=-90; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted = false;
+        load = true;
+    }
+    );
+
+    # Extra directives for initial loading
+    directives:
+    {
+        submaps = false;
+        loops   = false;    # Automatic loop generation?
+    };
+
+    loops:
+    {
+        # If you don't want automatic loop generation, what are the loop indices? 
+        
+    };
+};
+
+# ------------------------------------------------------------
+# Common estimation parameters
+# ------------------------------------------------------------
+
+estimation:
+{
+    # Laser to use
+    laser:
+    {
+        horizontal = "LMS1xx_10420001";
+        declined   = "LMS1xx_10420002";
+    };
+
+    culling = "Far";
+};
+
+
+# ------------------------------------------------------------
+# Result generation
+# ------------------------------------------------------------
+results:
+{
+    node_map = {
+        name = "2012-02-27-11-17-51Woodstock-All";
+        session = 1;
+    };
+
+    sessions = (
+    {
+        start = 1498;
+        end   = 1805;
+        duration = 15; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    },
+    {
+        start = 1805;
+        end   = 2283;
+        duration = 15; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator   = "RelativeEntropy";
+    }
+    );
+
+};
+
+# ------------------------------------------------------------
+# Filter learning sessions
+# ------------------------------------------------------------
+
+filters:
+{
+    laser = 1; 
+    sessions = ( 
+    {
+        start = 1019; 
+        duration = 1176;
+    },
+    {
+        start = 1378; 
+        duration = 1535;
+    },
+    {
+        start = 1746; 
+        duration = 1953;
+    },
+        {
+        start = 2196; 
+        duration = 2400;
+    }
+    );
+};
+
+

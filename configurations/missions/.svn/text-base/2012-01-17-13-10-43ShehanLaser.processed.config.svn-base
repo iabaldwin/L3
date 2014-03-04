@@ -1,0 +1,77 @@
+#version = "1.0";
+
+mission:
+{
+    description = "Begbroke,carpark,bridge: Double laser sensors";
+    
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=0; y=3.3; z=0.4; r=0.0; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = false;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=8; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted = false;
+    },
+    { 
+        name = "LMS1xx_11360132";
+        transform = { x=-0.67; y=1.0; z=0.4; r=-90; p=0.0; q=180.0; };
+        frequency = 50.0;
+        inverted = false;
+    },
+    { 
+        name = "LMS1xx_11360133";
+        transform = { x=-0.67; y=1.0; z=0.4; r=-90; p=0.0; q=180.0; };
+        frequency = 50.0;
+        inverted = false;
+    }
+    );
+
+    offset = 1;
+
+    # Extra directives for initial loading
+    directives:
+    {
+        submaps = false;
+    };
+};
+
+trajectory:
+{
+    # Laser to use
+    laser  = "LMS1xx_10420001";
+
+    localization = {
+        Q = "Unknown";
+    };
+
+    # Section offset, seconds
+    section_start = 10;
+    
+    # Window duration, seconds
+    section_duration = 8; 
+    
+    # Loop start 
+    loop_start = 2; 
+    
+};
+
+velocity_estimation:
+{
+    # Index into the dataset 
+    offset = 4000;
+
+    mask  = 50;
+
+    laser =  {
+        vanguard = 3;
+        follower = 4;
+    };
+
+};
+
+

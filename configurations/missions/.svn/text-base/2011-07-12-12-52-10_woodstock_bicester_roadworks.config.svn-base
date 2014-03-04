@@ -1,0 +1,28 @@
+#version = "1.0";
+
+mission:
+{
+    description = "Woodstock and bicester";
+    
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=-0.67; y=3.3; z=0.4; r=-8; p=0.0; q=0.0; };
+        frequency = 50.0;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=8; p=0.0; q=0.0; };
+        frequency = 50.0;
+    }
+    );
+
+    offset = 1;
+
+    # Extra directives for loading
+    directives:
+    {
+        submaps = false;
+    };
+};
+

@@ -1,0 +1,89 @@
+#version = "1.0";
+
+# ------------------------------------------------------------
+# Base configuration
+# ------------------------------------------------------------
+
+mission:
+{
+    description = "Begbroke | snow";
+  
+    locale = "Begbroke";
+
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=0; y=3.3; z=0.4; r=0.0; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = false;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=-90; p=0; q=0.0; };
+        frequency = 50.0;
+        inverted = false;
+    }
+    );
+
+    # Extra directives for initial loading
+    directives:
+    {
+        submaps = false;
+    };
+
+    loops:
+    {
+        # If you don't want automatic loop generation, what are the loop indices? 
+        
+    };
+};
+
+# ------------------------------------------------------------
+# Common estimation parameters
+# ------------------------------------------------------------
+
+estimation:
+{
+    # Laser to use
+    laser:
+    {
+        horizontal = "LMS1xx_10420001";
+        declined   = "LMS1xx_10420002";
+    };
+
+    culling = "Far";
+};
+
+# ------------------------------------------------------------
+# 2D Scan-matching
+# ------------------------------------------------------------
+
+sm:
+{
+    map:
+    {
+        start = 152;    # (s), relative
+        end   = 307;    # (s), relative
+    };
+
+    OpenLoop:
+    {
+        start = 35;
+        duration = 145;
+    };
+
+    Map:
+    {
+        start = 35;
+        duration = 60;
+    };
+
+    plot:
+    {
+        skip = 50;
+        #rendered_poses = 30;
+    };
+
+};
+
+

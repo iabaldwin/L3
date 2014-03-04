@@ -1,0 +1,218 @@
+#version = "1.0";
+
+# ------------------------------------------------------------
+# Base configuration
+# ------------------------------------------------------------
+
+mission:
+{
+    description = "Woodstock | night run";
+    
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=0; y=3.3; z=0.4; r=0.0; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = false;
+        load = true;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=-90; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted = false;
+        load = true;
+    }
+    );
+
+    offset = 1;
+
+    # Extra directives for initial loading
+    directives:
+    {
+        submaps = false;
+        loops   = false;    # Automatic loop generation?
+    };
+
+    loops:
+    {
+        # If you don't want automatic loop generation, what are the loop indices? 
+    };
+
+    locale = "Woodstock";
+
+};
+
+# ------------------------------------------------------------
+# Common estimation parameters
+# ------------------------------------------------------------
+
+estimation:
+{
+    # Laser to use
+    laser:
+    {
+        horizontal = "LMS1xx_10420001";
+        declined   = "LMS1xx_10420002";
+    };
+    
+    culling = "Far";
+};
+
+# ------------------------------------------------------------
+# Result generation
+# ------------------------------------------------------------
+
+results:
+{
+    node_map = {
+        name = "2012-02-27-11-17-51Woodstock-All";
+        session = 1;
+    };
+
+    # Refer to dataset relative time
+    sessions = (
+    {
+        start = 471;
+        end   = 855;
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator = "RelativeEntropy";
+    },
+    {
+        start = 471;
+        end   = 855;
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator = "RelativeEntropy";
+    },
+    {
+        start = 855;
+        end   = 1202; 
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator = "RelativeEntropy";
+    },
+    {
+        start = 855;
+        end   = 1202; 
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator = "RelativeEntropy";
+    },
+    {
+        start = 1202;
+        end   = 1556; 
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator = "RelativeEntropy";
+    },
+    {
+        start = 1202;
+        end   = 1556; 
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator = "RelativeEntropy";
+    },
+    {
+        start = 1556;
+        end   = 1934; 
+        duration = 10; 
+        step     = .5; 
+        mode     = "INS";
+        smoother = "Null"; 
+        windower = "Time"; 
+        estimator = "RelativeEntropy";
+    },
+    {
+        start = 1556;
+        end   = 1934; 
+        duration = 10; 
+        step     = .5; 
+        mode     = "ScanMatch";
+        smoother = "GP"; 
+        windower = "Time"; 
+        estimator = "RelativeEntropy";
+    }
+
+    );
+
+};
+
+# ------------------------------------------------------------
+# Filter learning sessions
+# ------------------------------------------------------------
+
+filters:
+{
+    laser = 1; 
+    sessions = ( 
+    {
+        start = 701; 
+        duration = 855;
+    },
+    {
+        start = 1076; 
+        duration = 1216;
+    },
+    {
+        start = 1412; 
+        duration = 1565;
+    },
+    {
+        start = 1793; 
+        duration = 1944;
+    }
+    );
+};
+
+# ------------------------------------------------------------
+# 2D Scan-matching
+# ------------------------------------------------------------
+
+sm:
+{
+    map:
+    {
+        start = 727;    # (s), relative
+        end   = 818;    # (s), relative
+    };
+
+    OpenLoop:
+    {
+        start = 727;
+        duration = 50;
+    };
+
+    Map:
+    {
+        start = 727;
+        duration = 50;
+    };
+
+    plot:
+    {
+        skip = 50;
+        #rendered_poses = 600;  
+    };
+
+};
+

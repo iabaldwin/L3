@@ -1,0 +1,102 @@
+#version = "1.0";
+
+mission:
+{
+    description = "Begbroke: Double laser sensors";
+    
+    lasers = ( 
+    {
+        name = "LMS1xx_10420001";
+        transform = { x=0; y=3.3; z=0.4; r=0.0; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted  = false;
+    }, 
+    { 
+        name = "LMS1xx_10420002";
+        transform = { x=0.67; y=3.3; z=0.4; r=-90; p=0.0; q=0.0; };
+        frequency = 50.0;
+        inverted = false;
+    }
+    );
+
+    offset = 1;
+
+    # Extra directives for initial loading
+    directives:
+    {
+        submaps = false;
+        loops   = false;    # Automatic loop generation?
+    };
+
+    loops:
+    {
+        # If you don't want automatic loop generation, what are the loop indices? 
+        
+    };
+};
+
+trajectory:
+{
+    # Laser to use
+    laser  = "LMS1xx_10420002";
+
+    localization = {
+        Q = "Unknown";
+    };
+
+    # Section offset, seconds
+    section_start = 10;
+    
+    # Window duration, seconds
+    section_duration = 8; 
+    
+    # Loop start 
+    loop_start = 3; 
+    
+    # Experience map to use
+    experience_map_number = 2;
+
+    culling = false;
+
+};
+
+velocity_estimation:
+{
+    # Index into the dataset 
+    offset = 4000;
+
+    mask  = 50;
+
+    laser =  {
+        vanguard = 3;
+        follower = 4;
+    };
+
+};
+
+map:
+{
+    TWOD =
+    {
+        laser = "LMS1xx_10420001";
+        loop = 2;
+        skip = 50;
+    };
+};
+
+iros:
+{
+    map = 
+    {
+        start = 10000;
+        end = 20000;
+    };
+
+    offset = 
+    {
+        x=-1.0;    
+        y=4.0;    
+    };
+
+};
+
