@@ -764,8 +764,10 @@ namespace Visualisers
             if( !provider_ptr )
                 return;
 
-
             L3::SE3 current = provider_ptr->operator()();
+
+            if ( current.X() < 0.0  )
+                return;
 
             Eigen::Matrix4f proj = current.getHomogeneous();
 

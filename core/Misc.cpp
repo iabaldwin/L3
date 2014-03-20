@@ -7,7 +7,6 @@ namespace L3
 {
 namespace Misc
 {
-
     std::list <std::string> getDatasetConfigurations()
     {
         boost::filesystem::directory_iterator itr( boost::filesystem::path( "/Users/ian/code/datasets/configuration/missions/" ) );
@@ -49,9 +48,6 @@ namespace Misc
         }
         free(strs);
     }
-
-
-
 
 }
 }

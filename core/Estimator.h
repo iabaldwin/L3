@@ -194,7 +194,7 @@ namespace Estimator
 
 
     /*
-     *Discrete hypothesis
+     *  Discrete hypothesis
      */
 
     struct Hypothesis
@@ -227,8 +227,6 @@ namespace Estimator
         void operator()();
 
     };
-
-
 
     /*
      * Estimator types
