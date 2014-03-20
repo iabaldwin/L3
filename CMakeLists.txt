@@ -40,7 +40,7 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 
 set( Boost_USE_STATIC_LIBS ON )
-find_package( Boost COMPONENTS system filesystem thread regex chrono REQUIRED )     # Filesystem, smart pointers, ...
+find_package( Boost COMPONENTS system filesystem thread regex chrono python REQUIRED )     # Filesystem, smart pointers, ...
 include_directories(${Boost_INCLUDE_DIRS})
 
 # POCO
@@ -62,16 +62,19 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/utils )
 
 # Core
-add_subdirectory( core )
+#add_subdirectory( core )
 
-# Visuals
-add_subdirectory( renderer )
+## Visuals
+#add_subdirectory( renderer )
+
+# Interfaces
+add_subdirectory( interfaces )
 
 # Learning
-add_subdirectory( learning )
+#add_subdirectory( learning )
 
-# Utilities
-add_subdirectory( utils )
+## Utilities
+#add_subdirectory( utils )
 
-# L3
-add_subdirectory( app )
+## L3
+#add_subdirectory( app )
