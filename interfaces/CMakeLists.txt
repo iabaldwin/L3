@@ -1,10 +1,10 @@
 find_package( PythonLibs REQUIRED )
 
 include_directories( ${PYTHON_INCLUDE_DIRS} )
-add_library( hello_ext SHARED hw.cpp )
+add_library( Core SHARED core.cpp )
 
-set_target_properties(hello_ext PROPERTIES PREFIX "")
-set_target_properties(hello_ext PROPERTIES OUTPUT_NAME "hello_ext.so")
-set_target_properties(hello_ext PROPERTIES SUFFIX "")
+set_target_properties(Core PROPERTIES PREFIX "")
+set_target_properties(Core PROPERTIES OUTPUT_NAME "Core.so")
+set_target_properties(Core PROPERTIES SUFFIX "")
 
-target_link_libraries( hello_ext ${PYTHON_LIBRARIES} ${Boost_LIBRARIES} )
+target_link_libraries( Core ${PYTHON_LIBRARIES} ${Boost_LIBRARIES} L3 ${poco_libraries} )
