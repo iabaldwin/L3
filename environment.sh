@@ -1,1 +1,0 @@
-export DYLD_LIBRARY_PATH=/Users/ian/code/build/lib:/Users/ian/code/thirdparty/boost_1_53_0.i386/stage/lib:/Users/ian/code/thirdparty/boost_1_53_0.i386/stage/lib:/Users/ian/code/thirdparty/boost_1_53_0.i386/stage/lib:/Users/ian/code/thirdparty/boost_1_53_0.i386/stage/lib
