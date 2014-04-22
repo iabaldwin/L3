@@ -2,6 +2,8 @@ project(L3)
 
 cmake_minimum_required(VERSION 2.6.4)
 
+include( CTest )
+
 #if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     #set(CMAKE_C_COMPILER "/usr/bin/llvm-gcc" )
     #set(CMAKE_CXX_COMPILER "/usr/bin/llvm-g++-4.2" )
@@ -36,7 +38,7 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 
 set( Boost_USE_STATIC_LIBS ON )
-find_package( Boost COMPONENTS system filesystem thread regex chrono REQUIRED )     # Filesystem, smart pointers, ...
+find_package( Boost COMPONENTS system filesystem thread regex chrono python REQUIRED )     # Filesystem, smart pointers, ...
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_package( Poco COMPONENTS Net Data Util Foundation )                        # Timing tools, ..
@@ -55,8 +57,11 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/utils )
 # Core
 add_subdirectory( core )
 
-# Visuals
+## Visuals
 add_subdirectory( renderer )
+
+# Interfaces
+add_subdirectory( interfaces )
 
 # Learning
 add_subdirectory( learning )
@@ -64,5 +69,5 @@ add_subdirectory( learning )
 # Utilities
 add_subdirectory( utils )
 
-# L3
+## L3
 add_subdirectory( app )

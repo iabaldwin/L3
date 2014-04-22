@@ -661,7 +661,7 @@ namespace L3
             spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) );
 
             /*
-             *REflectance controls
+             *Reflectance controls
              */
             //point_cloud_controls->attach( experience_location->sub_view->_oracle->var_a 
             //,experience_location->sub_view->_oracle->var_b 
