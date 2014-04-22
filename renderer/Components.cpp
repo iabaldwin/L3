@@ -956,8 +956,11 @@ namespace Visualisers
 
     void CostRenderer::onDraw3D( glv::GLV& g )
     {
-        glv::Point3 vertices[ estimates.costs.size() ];
-        glv::Color colors[ estimates.costs.size() ];
+        //glv::Point3 vertices[ estimates.costs.size() ];
+        //glv::Color colors[ estimates.costs.size() ];
+
+        std::vector<glv::Point3> vertices( estimates.costs.size() );
+        std::vector<glv::Color> colors( estimates.costs.size() );
 
         glv::Color current_color;
 
@@ -1092,8 +1095,8 @@ namespace Visualisers
             current_estimates.assign( (*it)->pose_estimates->estimates.begin(), (*it)->pose_estimates->estimates.end() );
             current_costs.assign(  (*it)->pose_estimates->costs.begin(), (*it)->pose_estimates->costs.end() );
 
-            glv::Point3 vertices[ current_estimates.size() ];
-            glv::Color  colors[ current_estimates.size() ];
+            std::vector<glv::Point3> vertices(current_estimates.size());
+            std::vector<glv::Color>  colors(current_estimates.size());
 
             int counter= 0;
             for( std::vector< L3::SE3 >::iterator it=current_estimates.begin(); 
@@ -1125,7 +1128,7 @@ namespace Visualisers
 
             layer_height += 20;
 
-            glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+            glv::draw::paint( glv::draw::Points, &vertices[0], colors, counter );
         }
 
         this->lower.x = min_x;
@@ -1237,8 +1240,8 @@ namespace Visualisers
 
         glv::draw::translateZ( -80 );
 
-        glv::Point3 putative_vertices[scan_points];
-        glv::Color  putative_colors[scan_points];
+        std::vector<glv::Point3> putative_vertices[scan_points];
+        std::vector<glv::Color> putative_colors[scan_points];
 
         iterator = &putative[0];
 
@@ -1736,8 +1739,8 @@ namespace Visualisers
 
     void DatasetOverviewView::onDraw3D( glv::GLV& g )
     {
-        glv::Point3    vertices[ poses->size() ];
-        glv::Color     colors[ poses->size() ];
+        std::vector<glv::Point3>   vertices(poses->size());
+        std::vector<glv::Color>    colors(poses->size());
 
         boost::shared_ptr< L3::PoseProvider > provider_ptr = provider.lock();
 
@@ -1767,7 +1770,7 @@ namespace Visualisers
 
         glv::draw::translate(0,0,-550);
         glv::draw::lineWidth(10.0);
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        glv::draw::paint( glv::draw::Points, &vertices[0], colors, counter );
 
         renderer->onDraw3D(g);
     }

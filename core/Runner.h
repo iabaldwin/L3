@@ -261,6 +261,8 @@ struct EstimatorRunner : DatasetRunner, Lockable
             "Estimation"       << "\t" << std::endl;
 
         statistics_output << ss.str();
+   
+        return true;
     }
 };
 
