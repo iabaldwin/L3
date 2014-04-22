@@ -1,7 +1,7 @@
 [
 
 {
-    "name": "GSL",
+    "name": "gsl",
     "type": "cpp",
     "provider": "native"
 },
