@@ -86,12 +86,6 @@ namespace L3
 
         velocity_lock.unlock();
 
-        if( rotational_velocity > 1.4 || rotational_velocity < -1.4 )
-        {
-            std::cout << rotational_velocity << std::endl;
-            exit( -1 );
-        }
-
         filtered_velocity_data.second[0] *= scaling_bias;
 
         // Log

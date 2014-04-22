@@ -2,7 +2,7 @@
 #define L3_PROJECTOR_H
 
 #include <cmath>
-#include <omp.h>
+//#include <omp.h>
 
 #include "Timing.h"
 #include "PointCloud.h"

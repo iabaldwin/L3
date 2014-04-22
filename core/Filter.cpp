@@ -192,6 +192,8 @@ namespace L3
             last_update = velocity_ptr->filtered_velocities.back().first;
        
             master.unlock();
+       
+            return true;
         }
 
         //ObservationModel::ObservationModel () : Bayesian_filter::Uncorrelated_additive_observe_model(3)

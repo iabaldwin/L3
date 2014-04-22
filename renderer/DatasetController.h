@@ -19,6 +19,9 @@ namespace Visualisers
                     runner->paused = !runner->paused;
 
             }
+       
+            //TODO
+            return true;
         }
 
     };

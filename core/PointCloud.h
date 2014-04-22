@@ -2,7 +2,7 @@
 #define L3_POINTCLOUD_H
 
 #include <vector>
-#include <omp.h>
+//#include <omp.h>
 
 #include "boost/tuple/tuple.hpp"
 

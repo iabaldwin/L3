@@ -184,39 +184,41 @@ namespace Visualisers
 
     void ReflectanceRenderer::onDraw3D( glv::GLV& g )
     {
+        //TODO
+        return;
         // Plot reflectance data
         
-        L3::ReadLock lock( reflectance->mutex );
+        //L3::ReadLock lock( reflectance->mutex );
 
-        glv::Point3 vertices[ reflectance->resident_point_cloud->num_points];
-        glv::Color  colors[ reflectance->resident_point_cloud->num_points];
+        //glv::Point3 vertices[reflectance->resident_point_cloud->num_points];
+        //glv::Color  colors[reflectance->resident_point_cloud->num_points];
 
-        int counter = 0;
-        for( PointCloudE<double>::ITERATOR it = reflectance->resident_point_cloud->begin();
-                it != reflectance->resident_point_cloud->end();
-                it++ )
-        {
-            vertices[counter]( it->x, it->y, it->z );
+        //int counter = 0;
+        //for( PointCloudE<double>::ITERATOR it = reflectance->resident_point_cloud->begin();
+                //it != reflectance->resident_point_cloud->end();
+                //it++ )
+        //{
+            //vertices[counter]( it->x, it->y, it->z );
        
-            float reflectance = float(it->e)/800.0;
-            colors[counter].set( reflectance, reflectance, reflectance );
-            counter++;
+            //float reflectance = float(it->e)/800.0;
+            //colors[counter].set( reflectance, reflectance, reflectance );
+            //counter++;
         
-        }
-        lock.unlock();
+        //}
+        //lock.unlock();
 
-        glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
-        glv::draw::disable( glv::draw::Blend );
+        //glv::draw::enable( glv::draw::Blend );
+        //glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        //glv::draw::disable( glv::draw::Blend );
 
-        // Update Reflectance
-        boost::shared_ptr< L3::PoseProvider > provider_ptr = pose_provider.lock();
+        //// Update Reflectance
+        //boost::shared_ptr< L3::PoseProvider > provider_ptr = pose_provider.lock();
 
-        if( !provider_ptr )
-            return;
+        //if( !provider_ptr )
+            //return;
         
-        L3::SE3 update = (*provider_ptr)();
-        reflectance->update( update.X(), update.Y() );
+        //L3::SE3 update = (*provider_ptr)();
+        //reflectance->update( update.X(), update.Y() );
     }
 
 

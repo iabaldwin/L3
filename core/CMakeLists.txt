@@ -31,11 +31,12 @@ add_library( L3
     Misc.cpp
     )
 
-target_link_libraries( L3 config++ gsl tbb pcl_common pcl_kdtree pcl_search pcl_features MI lapack blas BayesFilter flann_s )
+target_link_libraries( L3 ${GSL_LIBRARIES} ${TBB_LIBRARIES} ${PCL_LIBRARIES} MI lapack blas ${BAYES++_LIBRARIES} )
 
 add_subdirectory( tests )
 add_subdirectory( apps )
 
+# Installation
 file( GLOB L3_headers "*.h" )
 
 install( TARGETS L3 DESTINATION lib/  )
