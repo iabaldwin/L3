@@ -4,11 +4,6 @@ cmake_minimum_required(VERSION 2.6.4)
 
 include( CTest )
 
-#if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    #set(CMAKE_C_COMPILER "/usr/bin/llvm-gcc" )
-    #set(CMAKE_CXX_COMPILER "/usr/bin/llvm-g++-4.2" )
-#endif()
-
 # Search for OpenMP, as it doesn't come by default
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package( OpenMP REQUIRED )
@@ -45,6 +40,9 @@ find_package( Poco COMPONENTS Net Data Util Foundation )                        
 link_directories(${Poco_LIBRARY_DIRS})
 include_directories(${Poco_INCLUDE_DIRS})
 
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+
 # Commonly used code
 find_package( Common REQUIRED )
 include_directories( ${COMMON_INCLUDE_DIRS} )
@@ -53,11 +51,19 @@ include_directories( ${COMMON_INCLUDE_DIRS} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/utils )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/Common )
+
+
+# Core
+add_subdirectory( common )
 
 # Core
 add_subdirectory( core )
 
-## Visuals
+find_package( GLV REQUIRED )
+include_directories( ${GLV_INCLUDE_DIR} )
+
+# Visuals
 add_subdirectory( renderer )
 
 # Interfaces

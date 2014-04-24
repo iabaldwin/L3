@@ -26,8 +26,8 @@ namespace L3
 
                 ColorInterpolator interpolator;
 
-                glv::Point3 vertices[evaluations.size()];
-                glv::Color  colors[evaluations.size()];
+                std::vector<glv::Point3> vertices(evaluations.size());
+                std::vector<glv::Color> colors(evaluations.size());
 
                 int counter=0;
                 for( std::vector< L3::SE3 >::iterator it = evaluations.begin();
@@ -40,10 +40,10 @@ namespace L3
                 }
 
                 glv::draw::pointSize(3);
-                glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+                glv::draw::paint(glv::draw::Points, &vertices[0], &colors[0], counter);
                 glv::draw::pointSize(1);
                 glv::draw::lineWidth(.1);
-                glv::draw::paint( glv::draw::LineStrip, vertices, colors, counter );
+                glv::draw::paint(glv::draw::LineStrip, &vertices[0], &colors[0], counter);
 
                 CoordinateSystem( evaluations.front(), 1 ).onDraw3D(g);
                 CoordinateSystem( evaluations.back(), 1 ).onDraw3D(g);
@@ -304,8 +304,8 @@ namespace L3
             std::vector<double> costs( ptr->pose_estimates->costs.begin(), ptr->pose_estimates->costs.end() );
             //lock.unlock();
 
-            glv::Point3 vertices[ estimates.size()];
-            glv::Color  colors[ estimates.size()];
+            std::vector<glv::Point3> vertices(estimates.size());
+            std::vector<glv::Color> colors(estimates.size());
 
             /*
              *  Find Bounds
@@ -334,7 +334,7 @@ namespace L3
 
 
             glv::draw::enable( glv::draw::Blend );
-            glv::draw::paint( glv::draw::Points, vertices, colors, ptr->pose_estimates->estimates.size() );
+            glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], ptr->pose_estimates->estimates.size() );
             glv::draw::disable( glv::draw::Blend );
 
         }
@@ -514,15 +514,15 @@ namespace L3
                 glv::draw::translate( -1*translation.X(), -1*translation.Y(), -10.0 );
 
                 int counter = 0;
-                glv::Point3 vertices[ hypotheses.size() ];
-                glv::Color  colors[ hypotheses.size() ];
+                std::vector<glv::Point3> vertices(hypotheses.size());
+                std::vector<glv::Color> colors(hypotheses.size());
 
                 for( L3::Estimator::ParticleFilter<double>::PARTICLE_ITERATOR it = hypotheses.begin();
                         it != hypotheses.end();
                         it++ )
                     CoordinateSystem( *it, 1 ).onDraw3D( g );
 
-                glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+                glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], counter );
             }
 
         };
@@ -844,8 +844,8 @@ namespace L3
 
                 int num_sigma_points = (2*3)+1;
 
-                glv::Point3 vertices[num_sigma_points];
-                glv::Color  colors[num_sigma_points];
+                std::vector<glv::Point3> vertices(num_sigma_points);
+                std::vector<glv::Color> colors(num_sigma_points);
 
                 for( int i=0; i<num_sigma_points; i++ )
                 {
@@ -858,8 +858,7 @@ namespace L3
                 }
                
                 glv::draw::pointSize( 10 );
-                glv::draw::paint( glv::draw::Points, vertices, colors, num_sigma_points );
-
+                glv::draw::paint(glv::draw::Points, &vertices[0], &colors[0], num_sigma_points);
             }
 
         };

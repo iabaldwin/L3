@@ -31,6 +31,8 @@ namespace L3
                                     //std::numeric_limits<double>::infinity() );
         
         previous_update = t;
+   
+        return true;
     }
 
     bool Predictor::predict( const L3::SE3& current )

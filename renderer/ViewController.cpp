@@ -103,6 +103,9 @@ namespace Visualisers
             if ( ( current.r > -65 && r < 0 ) || ( current.r < 65 && r > 0 ) )
                 current.r += r;
         }
+   
+        //TODO
+        return true;
     }
 
 

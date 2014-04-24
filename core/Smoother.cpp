@@ -44,8 +44,8 @@ namespace L3
                             query_x = x+filter_index_x;
                             query_y = y+filter_index_y;
 
-                            hist_value = (query_x < hist->x_bins && query_x >= 0 ) &&
-                                            (query_y < hist->y_bins && query_y >= 0 ) ? gsl_histogram2d_get( hist->hist, query_x, query_y) : 0;
+                            hist_value = (query_x < hist->x_bins ) &&
+                                            (query_y < hist->y_bins ) ? gsl_histogram2d_get( hist->hist, query_x, query_y) : 0;
 
                             filter_element = this->filter[filter_index_x+half_step][filter_index_y+half_step];
 

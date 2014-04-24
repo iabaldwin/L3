@@ -45,6 +45,9 @@ namespace Visualisers
                 case ' ':
                     switch_val = !switch_val;
             }
+        
+            //TODO
+            return true;
         }
 
     };

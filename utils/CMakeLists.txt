@@ -7,9 +7,9 @@
 #target_link_libraries( octave_interface )
 
 #add_executable( lua_interface lua_interface.cpp )
-#target_link_libraries( lua_interface lua )
+#target_link_libraries( lua_interface ${LUA_LIBRARIES} )
 
 add_library( Interface Interface.cpp )
-target_link_libraries( Interface lua )
+target_link_libraries( Interface ${LUA_LIBRARIES} )
 
 add_subdirectory( tests )

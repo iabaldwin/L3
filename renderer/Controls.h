@@ -347,7 +347,7 @@ struct WASDController : InputManager
 
 struct SelectionManager
 {
-    SelectionManager( MouseQuerySelect* selector, InputManager* input ) : select(select), input(input)
+    SelectionManager( MouseQuerySelect* SELECT, InputManager* INPUT ) : select(SELECT), input(INPUT)
     {
         //selector->view->addHandler( glv::Event::KeyDown, *input );
         //input->controllables = &selector->current_leafs;

@@ -1,7 +1,7 @@
 #ifndef L3_IMAGERY_H
 #define L3_IMAGERY_H
 
-#include "Common/imagery/Imagery.h"
+#include "imagery/Imagery.h"
 #include "Visualisers.h"
 #include "Components.h"
 //#include "QueryInterface.h"

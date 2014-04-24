@@ -33,13 +33,13 @@ namespace Visualisers
     {
         int num_tris = 6;
 
-        glv::Point3 triangle_vertices[num_tris*6];
-        glv::Color  triangle_colors[num_tris*6];
+        std::vector<glv::Point3> triangle_vertices(num_tris*6);
+        std::vector<glv::Color>  triangle_colors(num_tris*6);
 
         glv::Point3 line_points[12*2];
         glv::Color  line_colors[12*2];
 
-        std::fill( triangle_colors, triangle_colors+(num_tris*6), glv::Color( .5, .5, .5, cube->opacity ) );
+        std::fill( triangle_colors.begin(), triangle_colors.begin()+(num_tris*6), glv::Color( .5, .5, .5, cube->opacity ) );
         std::fill( line_colors, line_colors+12*2, glv::Color( .5, .5, .5, 1-cube->opacity ) );
 
         int counter = 0;
@@ -129,7 +129,7 @@ namespace Visualisers
 
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::Triangles, triangle_vertices, triangle_colors, counter );
+        glv::draw::paint( glv::draw::Triangles, &triangle_vertices[0], &triangle_colors[0], counter );
         glv::draw::disable( glv::draw::Blend );
     }
 
@@ -348,8 +348,8 @@ namespace Visualisers
 
         static int counter = 0;
 
-        glv::Point3 vertices[num_points];
-        glv::Color colors[num_points];
+        std::vector<glv::Point3> vertices(num_points);
+        std::vector<glv::Color> colors(num_points);
 
         float angle_spacing = 2*M_PI/num_points;
         float angle = 0;
@@ -368,7 +368,7 @@ namespace Visualisers
         glv::draw::lineStippling(true);
         glv::draw::lineStipple(8, 0xAAAA );
         glv::draw::lineWidth( ( 20 -counter )/4.0 );
-        glv::draw::paint( glv::draw::LineLoop, vertices, colors, num_points );
+        glv::draw::paint( glv::draw::LineLoop, &vertices[0], &colors[0], num_points );
         glv::draw::disable( glv::draw::Blend );
         glv::draw::lineStippling(false);
 
@@ -450,8 +450,8 @@ namespace Visualisers
             return;
         lock.unlock();   
 
-        glv::Point3     vertices[ tmp.x_bins*tmp.y_bins];
-        glv::Color      colors[ tmp.x_bins*tmp.y_bins];
+        std::vector<glv::Point3> vertices( tmp.x_bins*tmp.y_bins);
+        std::vector<glv::Color> colors( tmp.x_bins*tmp.y_bins);
 
         int counter = 0;;
 
@@ -466,7 +466,7 @@ namespace Visualisers
             }
         }
 
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], counter );
     }
 
     /*
@@ -836,8 +836,8 @@ namespace Visualisers
         if( boost::shared_ptr< L3::Estimator::PoseEstimates > pose_estimates = estimates.lock() )
         {
 
-            glv::Point3 points[ pose_estimates->estimates.size() ];
-            glv::Color  colors[ pose_estimates->estimates.size() ];
+            std::vector<glv::Point3> points(pose_estimates->estimates.size());
+            std::vector<glv::Color> colors(pose_estimates->estimates.size());
 
             std::vector< L3::SE3 >::iterator it = pose_estimates->estimates.begin();
 
@@ -848,7 +848,7 @@ namespace Visualisers
                 it++;
             }
 
-            glv::draw::paint( glv::draw::Points, points, colors, counter );
+            glv::draw::paint( glv::draw::Points, &points[0], &colors[0], counter );
 
         }
     }
@@ -956,9 +956,6 @@ namespace Visualisers
 
     void CostRenderer::onDraw3D( glv::GLV& g )
     {
-        //glv::Point3 vertices[ estimates.costs.size() ];
-        //glv::Color colors[ estimates.costs.size() ];
-
         std::vector<glv::Point3> vertices( estimates.costs.size() );
         std::vector<glv::Color> colors( estimates.costs.size() );
 
@@ -982,7 +979,7 @@ namespace Visualisers
 
 
         glv::draw::pointSize( 2 );
-        glv::draw::paint( glv::draw::Points, vertices, colors, counter );
+        glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], counter );
     }
 
     /*
@@ -1128,7 +1125,7 @@ namespace Visualisers
 
             layer_height += 20;
 
-            glv::draw::paint( glv::draw::Points, &vertices[0], colors, counter );
+            glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], counter );
         }
 
         this->lower.x = min_x;
@@ -1222,8 +1219,8 @@ namespace Visualisers
                 ptr->matcher->putative.get()+putative_points*3,
                 putative.get() );
 
-        glv::Point3 scan_vertices[scan_points];
-        glv::Color  scan_colors[scan_points];
+        std::vector<glv::Point3> scan_vertices(scan_points);
+        std::vector<glv::Color> scan_colors(scan_points);
 
         double* iterator = &scan[0];
 
@@ -1240,8 +1237,8 @@ namespace Visualisers
 
         glv::draw::translateZ( -80 );
 
-        std::vector<glv::Point3> putative_vertices[scan_points];
-        std::vector<glv::Color> putative_colors[scan_points];
+        std::vector<glv::Point3> putative_vertices(scan_points);
+        std::vector<glv::Color> putative_colors(scan_points);
 
         iterator = &putative[0];
 
@@ -1261,8 +1258,8 @@ namespace Visualisers
             glv::draw::pointSize(1);
 
         glv::draw::enable( glv::draw::Blend );
-        glv::draw::paint( glv::draw::Points, scan_vertices, scan_colors, scan_points );
-        glv::draw::paint( glv::draw::Points, putative_vertices, putative_colors, putative_points );
+        glv::draw::paint( glv::draw::Points, &scan_vertices[0], &scan_colors[0], scan_points );
+        glv::draw::paint( glv::draw::Points, &putative_vertices[0], &putative_colors[0], putative_points );
         glv::draw::disable( glv::draw::Blend );
             
         boost::dynamic_pointer_cast< ScanMatchingTrajectoryRenderer >(trajectory)->engine = engine;
@@ -1770,7 +1767,7 @@ namespace Visualisers
 
         glv::draw::translate(0,0,-550);
         glv::draw::lineWidth(10.0);
-        glv::draw::paint( glv::draw::Points, &vertices[0], colors, counter );
+        glv::draw::paint( glv::draw::Points, &vertices[0], &colors[0], counter );
 
         renderer->onDraw3D(g);
     }

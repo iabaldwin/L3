@@ -195,9 +195,8 @@ struct SwatheScanRenderer : Leaf
  */
 struct EstimatorRenderer : Leaf
 {
-    EstimatorRenderer( L3::Estimator::Estimator<double>* ESTIMATOR ) : estimator(estimator)
+    EstimatorRenderer( L3::Estimator::Estimator<double>* ESTIMATOR ) : estimator(ESTIMATOR)
     {
-
     }
     
     L3::Estimator::Estimator<double>* estimator;
