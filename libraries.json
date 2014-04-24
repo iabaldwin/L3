@@ -107,7 +107,7 @@
     "type": "cpp",
     "link":
     {
-        "url": "~/Downloads/bf-C++source-2012.5-1.zip"
+        "url": "http://downloads.sourceforge.net/project/bayesclasses/Bayes%2B%2B/2014.5-1/bf-C%2B%2Bsource-2014.5-1.zip"
     },
     "build":
     {
