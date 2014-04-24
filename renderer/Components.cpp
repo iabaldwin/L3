@@ -1237,8 +1237,8 @@ namespace Visualisers
 
         glv::draw::translateZ( -80 );
 
-        std::vector<glv::Point3> putative_vertices(scan_points);
-        std::vector<glv::Color> putative_colors(scan_points);
+        std::vector<glv::Point3> putative_vertices(putative_points);
+        std::vector<glv::Color> putative_colors(putative_points);
 
         iterator = &putative[0];
 
