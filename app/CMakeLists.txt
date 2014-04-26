@@ -2,6 +2,9 @@
 ## App
 ##==========
 
+find_package( GLV REQUIRED )
+include_directories( ${GLV_INCLUDE_DIR} )
+
 find_package( GLUT REQUIRED )                                    # Rendering
 include_directories( ${GLUT_INCLUDE_DIR} )
 

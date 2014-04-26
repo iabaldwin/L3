@@ -53,15 +53,11 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/renderer )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/utils )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/Common )
 
-
 # Core
 add_subdirectory( common )
 
 # Core
 add_subdirectory( core )
-
-find_package( GLV REQUIRED )
-include_directories( ${GLV_INCLUDE_DIR} )
 
 # Visuals
 add_subdirectory( renderer )

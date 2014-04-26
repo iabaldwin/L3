@@ -1,5 +1,3 @@
-include_directories( "/Users/ian/code/thirdparty/dlib-18.2/" )
-
 find_package( Freetype REQUIRED )
 
 find_package( GLUT REQUIRED )                                    # Rendering
@@ -7,6 +5,9 @@ include_directories( ${GLUT_INCLUDE_DIR} )
 
 find_package( OpenGL REQUIRED )                                  # Rendering
 include_directories( ${OPENGL_INCLUDE_DIR} )
+
+find_package( GLV REQUIRED )
+include_directories( ${GLV_INCLUDE_DIR} )
 
 find_package( Lua51 REQUIRED )
 include_directories( ${LUA_INCLUDE_DIR} )
