@@ -203,7 +203,8 @@ namespace Estimator
                 L3::SE3 const* estimate, 
                 L3::Histogram<double> const* experience , 
                 CostFunction<double>* cost_function, 
-                __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
+                //__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator )
+                std::vector<double>::iterator result_iterator )
             : swathe(swathe), 
             estimate(estimate), 
             experience(experience), 
@@ -216,7 +217,8 @@ namespace Estimator
         L3::SE3 const*                  estimate;
         L3::Histogram<double> const*    experience;
         CostFunction<double>*           cost_function;
-        __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator ;
+        //__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > > result_iterator ;
+        std::vector<double>::iterator  result_iterator ;
 
         /*
          *Changes

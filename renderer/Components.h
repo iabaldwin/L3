@@ -219,7 +219,7 @@ namespace Visualisers
             ss.precision( 6 );
 
             if( lock )
-                ss << fixed << lock->t;
+                ss << std::fixed << lock->t;
 
             mText = ss.str();
 

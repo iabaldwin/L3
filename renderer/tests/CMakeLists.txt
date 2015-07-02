@@ -113,5 +113,6 @@ add_executable( test_camera_transform test_camera_transform.cpp )
 target_link_libraries( test_camera_transform ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} )
 
 add_executable( test_L3 test_L3.cpp )
-target_link_libraries( test_L3 ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 ${PCL_LIBRARIES} L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} )
+#target_link_libraries( test_L3 ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 ${PCL_LIBRARIES} L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} )
+target_link_libraries( test_L3 ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 ${PCL_LIBRARIES} L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES} )
 

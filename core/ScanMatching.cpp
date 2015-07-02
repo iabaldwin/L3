@@ -38,7 +38,7 @@ int do_projection( const L3::LMS151& current_scan, double* matrix, double thresh
     return counter;
 }
 
-typedef std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LMS151> >, std::pair<double, boost::shared_ptr<L3::LMS151> >&, std::pair<double, boost::shared_ptr<L3::LMS151> >*> LIDAR_ITERATOR;
+//typedef std::_Deque_iterator<std::pair<double, boost::shared_ptr<L3::LMS151> >, std::pair<double, boost::shared_ptr<L3::LMS151> >&, std::pair<double, boost::shared_ptr<L3::LMS151> >*> LIDAR_ITERATOR;
 
 namespace L3
 {

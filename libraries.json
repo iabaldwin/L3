@@ -1,3 +1,4 @@
+#version 0.1
 [
 
 {
@@ -7,74 +8,74 @@
 },
 
 {
-    "name": "Eigen",
+    "name": "libconfig",
     "type": "cpp",
     "link":
     {
-        "url": "https://bitbucket.org/eigen/eigen/",
-        "commit": "fabd880592ac"
+        "url": "http://www.hyperrealm.com/libconfig/libconfig-1.5.tar.gz"
     },
     "build":
     {
-        "configure":{ "tool": "Cmake" },
-        "build":{ "tool": "make" },
-        "install":{ "tool": "make" }
-    },
-    "env": 
-    {
-        "EIGEN3_INCLUDE_DIR": "${build.source_directory}",
-        "EIGEN_ROOT": "${build.source_directory}"
+        "configure": { "tool": "Autotools" } ,
+        "build": { "tool": "Make" } ,
+        "install": { "tool": "Make" } 
     },
     "cmake":
     {
-        "definitions":
+        "environment":
         {
-            "EIGEN3_INCLUDE_DIR": "${build.source_directory}"
+            "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
+            "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
         }
     }
-},
 
-{
-    "name": "Boost",
-    "type": "cpp",
-    "link":
-    {
-        "url": "http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.55.0%2F&ts=1396138374&use_mirror=softlayer-dal"
-    },
-    "build":
-    {
-        "configure": { "tool": "Bootstrap" },
-        "build": { "tool": "Bjam", "args": ["--without-log"] }
-    },
-    "env":
-    {
-        "BOOST_ROOT": "${build.configure.build_directory}",
-        "DYLD_LIBRARY_PATH": "${build.configure.build_directory}/stage/lib"
-    }
 },
 
 #{
-#    "name": "PCL",
-#    "type": "cpp",
-#    "link": 
-#    { 
-#        "url": "https://github.com/PointCloudLibrary/pcl.git",
-#        "commit": "87a54e62f17cfdd527fd0093aa232a8f381291ce"
-#    },
-#    "build": 
-#    {
-#        "configure": { "tool": "Cmake"},
-#        "build": { "tool": "make" },
-#        "install": { "tool": "make" }
-#    },
-#    "cmake":
-#    {
-#        "definitions":
-#        {
-#            "PCL_DIR":"${build.configure.build_directory}"
-#        }
-#    }
-#
+    #"name": "Eigen",
+    #"type": "cpp",
+    #"link":
+    #{
+        #"url": "https://bitbucket.org/eigen/eigen/",
+        #"commit": "fabd880592ac"
+    #},
+    #"build":
+    #{
+        #"configure":{ "tool": "Cmake" },
+        #"build":{ "tool": "make" },
+        #"install":{ "tool": "make" }
+    #},
+    #"env": 
+    #{
+        #"EIGEN3_INCLUDE_DIR": "${source_directory}",
+        #"EIGEN_ROOT": "${source_directory}"
+    #},
+    #"cmake":
+    #{
+        #"definitions":
+        #{
+            #"EIGEN3_INCLUDE_DIR": "${source_directory}"
+        #}
+    #}
+#},
+
+#{
+    #"name": "Boost",
+    #"type": "cpp",
+    #"link":
+    #{
+        #"url": "http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.55.0%2F&ts=1396138374&use_mirror=softlayer-dal"
+    #},
+    #"build":
+    #{
+        #"configure": { "tool": "Bootstrap" },
+        #"build": { "tool": "Bjam", "args": ["--without-log"] }
+    #},
+    #"env":
+    #{
+        #"BOOST_ROOT": "${build.configure.build_directory}",
+        #"DYLD_LIBRARY_PATH": "${build.configure.build_directory}/stage/lib"
+    #}
 #},
 
 {
@@ -83,7 +84,7 @@
     "link": 
     { 
         "url": "https://github.com/PointCloudLibrary/pcl.git",
-        "commit": "94cd21e166be8ca31ed261b73bafe42ccbb279c6"
+        "commit": "87a54e62f17cfdd527fd0093aa232a8f381291ce"
     },
     "build": 
     {
@@ -95,12 +96,36 @@
     {
         "definitions":
         {
-            "PCL_DIR":"${build.configure.build_directory}"
+            "PCL_DIR":"${build.configure.install_directory}"
         }
     }
 
-
 },
+
+#{
+    #"name": "PCL",
+    #"type": "cpp",
+    #"link": 
+    #{ 
+        #"url": "https://github.com/PointCloudLibrary/pcl.git",
+        #"commit": "94cd21e166be8ca31ed261b73bafe42ccbb279c6"
+    #},
+    #"build": 
+    #{
+        #"configure": { "tool": "Cmake"},
+        #"build": { "tool": "make" },
+        #"install": { "tool": "make" }
+    #},
+    #"cmake":
+    #{
+        #"definitions":
+        #{
+            #"PCL_DIR":"${build.configure.build_directory}"
+        #}
+    #}
+
+
+#},
 
 {
     "name": "Bayes++",
@@ -163,7 +188,7 @@
     },
     "env":
     {
-        "POCO_ROOT": "${build.source_directory}"
+        "POCO_ROOT": "${source_directory}"
     }
 },
 
@@ -186,8 +211,15 @@
         "definitions":
         {
             "GLV_ROOT": "${build.configure.install_directory}"
+        },
+        "environment":
+        {
+            "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
+            "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
         }
+
     }
+
 },
 
 {
@@ -217,4 +249,3 @@
 }
 
 ]
-

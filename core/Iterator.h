@@ -29,7 +29,7 @@ class Iterator : public TemporalObserver, public Lockable
         {
         }
         
-        Poco::Mutex m;
+        std::mutex m;
 
 
         typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;

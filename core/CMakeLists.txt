@@ -21,7 +21,6 @@ add_library( L3
     Runner.cpp 
     Histogram.cpp
     Smoother.cpp 
-    Integrator.cpp 
     Simulator.cpp 
     Predictor.cpp
     PoseWindower.cpp
@@ -31,7 +30,7 @@ add_library( L3
     Misc.cpp
     )
 
-target_link_libraries( L3 ${GSL_LIBRARIES} ${TBB_LIBRARIES} ${PCL_LIBRARIES} MI lapack blas ${BAYES++_LIBRARIES} )
+target_link_libraries( L3 ${GSL_LIBRARIES} ${TBB_LIBRARIES} ${PCL_LIBRARIES} MI lapack blas ${BAYES++_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} )
 
 add_subdirectory( tests )
 add_subdirectory( apps )

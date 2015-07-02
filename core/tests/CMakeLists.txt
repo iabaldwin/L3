@@ -1,5 +1,6 @@
 add_executable( test_bayes test_bayes.cpp )
-target_link_libraries( test_bayes ${CONFIG} L3 ${Boost_LIBRARIES} lapack blas )
+#target_link_libraries( test_bayes ${CONFIG} L3 ${Boost_LIBRARIES} lapack blas ${BAYES++_LIBRARIES} )
+target_link_libraries( test_bayes ${CONFIG} L3 ${Boost_LIBRARIES} lapack blas ${BAYES++_LIBRARIES} )
 
 #add_executable( test_itpp test_itpp.cpp )
 #target_link_libraries( test_itpp ${CONFIG} L3 ${Boost_LIBRARIES} fftw3 lapack blas itpp_static )

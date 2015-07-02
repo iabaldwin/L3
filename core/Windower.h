@@ -11,7 +11,8 @@
 #include <ctime>
 
 #include "Poco/Runnable.h"
-#include "Poco/Mutex.h"
+//#include "Poco/Mutex.h"
+#include <mutex>
 
 #include "Core.h"
 #include "Timing.h"
@@ -39,8 +40,8 @@ struct SlidingWindow : Poco::Runnable, TemporalObserver
     }
    
 
-    Poco::Mutex mutex;
-   
+    std::mutex  mutex;
+
     bool    read_required;
     bool    running;
     bool    initialised;

@@ -2,8 +2,10 @@
 ## App
 ##==========
 
-find_package( GLV REQUIRED )
-include_directories( ${GLV_INCLUDE_DIR} )
+#find_package( GLV REQUIRED )
+#include_directories( ${GLV_INCLUDE_DIR} )
+
+include_directories( "/Users/ian/code/L3/libraries/cpp/GLV.install/include/" )
 
 find_package( GLUT REQUIRED )                                    # Rendering
 include_directories( ${GLUT_INCLUDE_DIR} )
