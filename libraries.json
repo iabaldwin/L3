@@ -20,13 +20,10 @@
         "build": { "tool": "Make" } ,
         "install": { "tool": "Make" } 
     },
-    "cmake":
+    "env":
     {
-        "environment":
-        {
-            "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
-            "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
-        }
+        "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
+        "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
     }
 
 },
@@ -211,13 +208,12 @@
         "definitions":
         {
             "GLV_ROOT": "${build.configure.install_directory}"
-        },
-        "environment":
-        {
-            "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
-            "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
         }
-
+    },
+    "env":
+    {
+        "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
+        "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
     }
 
 },

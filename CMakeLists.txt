@@ -8,8 +8,6 @@ include( CTest )
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/Users/ian/code/dev/tools.cmake/find" )
 
-set( CMAKE_EXE_LINKER_FLAGS "-lstdc++" )
-
 # Search for OpenMP, as it doesn't come by default
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package( OpenMP REQUIRED )
@@ -17,9 +15,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 link_directories( $ENV{CMAKE_LINK_DIRECTORIES} )
-message( $ENV{CMAKE_LINK_DIRECTORIES} )
 include_directories( $ENV{CMAKE_INCLUDE_DIRECTORIES} )
-message( $ENV{CMAKE_INCLUDE_DIRECTORIES} )
 
 find_package( Eigen3 REQUIRED )
 include_directories( ${EIGEN3_INCLUDE_DIR} )                    # Matrices
@@ -53,8 +49,8 @@ find_package( Poco COMPONENTS Net Data Util Foundation )                        
 link_directories(${Poco_LIBRARY_DIRS})
 include_directories(${Poco_INCLUDE_DIRS})
 
-#find_package( OpenCV REQUIRED )
-#include_directories( ${OpenCV_INCLUDE_DIRS} )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 # Commonly used code
 #find_package( Common REQUIRED )
