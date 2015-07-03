@@ -41,20 +41,12 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 
 set( Boost_USE_STATIC_LIBS ON )
-#find_package( Boost COMPONENTS system filesystem thread regex chrono python REQUIRED )     # Filesystem, smart pointers, ...
-find_package( Boost COMPONENTS system filesystem thread regex chrono REQUIRED )     # Filesystem, smart pointers, ...
+find_package( Boost COMPONENTS system filesystem thread regex chrono python REQUIRED )     # Filesystem, smart pointers, ...
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_package( Poco COMPONENTS Net Data Util Foundation )                        # Timing tools, ..
 link_directories(${Poco_LIBRARY_DIRS})
 include_directories(${Poco_INCLUDE_DIRS})
-
-find_package( OpenCV REQUIRED )
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-
-# Commonly used code
-#find_package( Common REQUIRED )
-#include_directories( ${COMMON_INCLUDE_DIRS} )
 
 # Core
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/core )

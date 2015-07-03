@@ -233,15 +233,18 @@
     },
     "env":
     {
-        "PYTHONPATH": "${build.configure.install_directory}/lib/python2.7/site-packages"
+        "PYTHONPATH": "${build.configure.install_directory}/lib/python2.7/site-packages",
+        "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include",
+        "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib"
     },
     "cmake":
     {
         "definitions":
         {
-            "OpenCV_DIR": "${build.configure.build_directory}"
+            "OpenCV_DIR": "${build.configure.install_directory}"
         }
     }
+
 }
 
 ]

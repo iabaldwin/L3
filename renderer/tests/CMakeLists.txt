@@ -77,10 +77,10 @@ target_link_libraries( test_reflectance_renderer ${GLV_LIBRARY} ${GLUT_LIBRARIES
 #target_link_libraries( test_layout ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${CONFIG} )
 
 add_executable( test_dataset_layout test_dataset_layout.cpp )
-target_link_libraries( test_dataset_layout ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES}  ${CONFIG} )
+target_link_libraries( test_dataset_layout ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES}  ${CONFIG} opencv_core opencv_highgui )
 
 add_executable( test_estimator_layout test_estimator_layout.cpp )
-target_link_libraries( test_estimator_layout ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} readline curses  ${Poco_LIBRARIES}  ${CONFIG} )
+target_link_libraries( test_estimator_layout ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} readline curses  ${Poco_LIBRARIES}  ${CONFIG} opencv_core opencv_highgui )
 
 #add_executable( test_algorithm_visual test_algorithm.cpp )
 #target_link_libraries( test_algorithm_visual ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${CONFIG} )
@@ -113,5 +113,5 @@ add_executable( test_camera_transform test_camera_transform.cpp )
 target_link_libraries( test_camera_transform ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} )
 
 add_executable( test_L3 test_L3.cpp )
-target_link_libraries( test_L3 ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 ${PCL_LIBRARIES} L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} )
+target_link_libraries( test_L3 ${GLV_LIBRARY} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} L3 ${PCL_LIBRARIES} L3Vis  ${Boost_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} opencv_core opencv_highgui )
 
