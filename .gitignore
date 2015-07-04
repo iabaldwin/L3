@@ -2,8 +2,5 @@ doc
 *.swp
 *.pyc
 .DS_Store
-<<<<<<< HEAD
 libraries
-=======
 tags
->>>>>>> origin
