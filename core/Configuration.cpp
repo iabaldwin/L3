@@ -22,7 +22,6 @@ boost::filesystem::path configurationDirectory( void )
     boost::filesystem::path p;
     p /= std::string( pPath );
 
-    p /= "code";
     p /= "datasets";
     p /= "configuration";
 

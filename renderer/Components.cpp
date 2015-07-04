@@ -1330,11 +1330,6 @@ namespace Visualisers
 
     Text3D::Text3D() : scale(4)
     {
-        //glfInit();
-
-        //font_descriptor = glfLoadFont( (char*)"/Users/ian/code/thirdparty/glf_distr/fonts/courier1.glf" );
-
-        //glfSetCurrentFont(font_descriptor);
     }
 
     void Text3D::setText( std::string text )

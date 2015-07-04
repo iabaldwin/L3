@@ -152,7 +152,7 @@ namespace L3
 
         if ( !reflectance_index.good() )
         {
-            std::cerr << "No reflectance data" << std::endl;
+            std::cerr << "No reflectance data <" <<  target << ">" << std::endl;
             return; 
         }
 

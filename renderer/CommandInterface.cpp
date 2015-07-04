@@ -37,8 +37,11 @@ namespace L3
         member_function_map.insert( std::make_pair( "_remove_traj",     std::make_pair( &CommandInterface::removeTrajectory,    "Remove a visual trajectory") ) );
         member_function_map.insert( std::make_pair( "_remove_all_traj", std::make_pair( &CommandInterface::removeTrajectories,  "Remove all trajectories") ) );
         member_function_map.insert( std::make_pair( "_clear",           std::make_pair( &CommandInterface::clear,               "Clear current session") ) );
-   
-        addPath( "/Users/ian/code/L3/scripts/" );
+ 
+        char* L3_DIR;
+        L3_DIR = getenv ("L3_DIR");
+        if (L3_DIR!=NULL)
+            addPath( std::string(L3_DIR) + "/scripts/" );
     }
 
     bool CommandInterface::match( const std::string& current )

@@ -6,8 +6,6 @@ cmake_minimum_required(VERSION 2.6.4)
 
 include( CTest )
 
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/Users/ian/code/dev/tools.cmake/find" )
-
 # Search for OpenMP, as it doesn't come by default
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package( OpenMP REQUIRED )
@@ -16,7 +14,7 @@ endif()
 
 link_directories( $ENV{CMAKE_LINK_DIRECTORIES} )
 include_directories( $ENV{CMAKE_INCLUDE_DIRECTORIES} )
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{CMAKE_CACHE_DIRECTORY}/find" )
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{CMAKE_CACHE}/find" )
 
 message( ${CMAKE_MODULE_PATH} )
 
@@ -32,8 +30,8 @@ include_directories( ${TBB_INCLUDE_DIRS} )
 find_package( BAYES++ REQUIRED )                                # Bayesian inference
 include_directories( ${BAYES++_INCLUDE_DIRS} )
 
-find_library( CONFIG NAME libconfig++.dylib HINTS $ENV{CMAKE_LINK_DIRECTORIES} )  # Config files
-find_library( GLV_LIBRARY NAME libGLV.a HINTS $ENV{CMAKE_LINK_DIRECTORIES} )      # Rendering
+find_library( CONFIG NAME libconfig++.a HINTS $ENV{CMAKE_LINK_DIRECTORIES} )  # Config files
+find_library( GLV_LIBRARY NAME libGLV.a HINTS $ENV{CMAKE_LINK_DIRECTORIES} )  # Rendering
 
 find_package( MI REQUIRED )                                     # Information
 include_directories(${MI_INCLUDE_DIRS})

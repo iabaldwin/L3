@@ -9,7 +9,7 @@
 //#include "btBulletDynamicsCommon.h"
 //#include "BulletCollision/NarrowPhaseCollision/btRaycastCallback.h"
 //#include "Components.h"
-//#include "/Users/ian/code/thirdparty/bullet/Demos/OpenGL/GLDebugDrawer.h"
+//#include "bullet/Demos/OpenGL/GLDebugDrawer.h"
 
 
 static GLDebugDrawer sDebugDraw;

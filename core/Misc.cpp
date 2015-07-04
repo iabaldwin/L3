@@ -9,7 +9,13 @@ namespace Misc
 {
     std::list <std::string> getDatasetConfigurations()
     {
-        boost::filesystem::directory_iterator itr( boost::filesystem::path( "/Users/ian/code/datasets/configuration/missions/" ) );
+
+        char* HOME;
+        HOME = getenv ("HOME");
+        if (HOME==NULL)
+            return std::list<std::string>();
+
+        boost::filesystem::directory_iterator itr( boost::filesystem::path( std::string(HOME) + "/datasets/configuration/missions/" ) );
         std::list <std::string> datasets;
 
         while( itr != boost::filesystem::directory_iterator() )

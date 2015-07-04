@@ -6,8 +6,12 @@ namespace Visualisers
         boost::shared_ptr< LocaleRenderer > LocaleRendererFactory::buildLocale( L3::Configuration::Locale& locale )        
         {
             std::stringstream ss;
-            //ss << "/Users/ian/Documents/" << locale.name << ".png";
-            ss << "/Users/ian/code/L3/media/" << locale.name << ".png";
+
+            char* L3_DIR;
+            L3_DIR = getenv ("L3_DIR");
+            assert (L3_DIR!=NULL);
+
+            ss << std::string(L3_DIR) << "/media/" << locale.name << ".png";
 
             ImageData data;
             ImageFactory::Image(ss.str(), data);
@@ -16,8 +20,7 @@ namespace Visualisers
             image_bounds b;
 
             // Read from file
-
-            std::string image_parameters = "/Users/ian/code/L3/media/" + locale.name + ".dat";
+            std::string image_parameters = std::string(L3_DIR)  + "/media/" + locale.name + ".dat";
             std::ifstream stream( image_parameters.c_str() );
 
             if ( !stream.good())

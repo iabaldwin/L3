@@ -654,7 +654,12 @@ namespace L3
             /*
              *Reflectance
              */
-            ReflectanceLoader loader( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/L3" );
+
+            char* HOME;
+            HOME = getenv ("HOME");
+            assert (HOME!=NULL);
+
+            ReflectanceLoader loader( std::string(HOME) + std::string("/datasets/oxford/2012-02-27-11-17-51Woodstock-All/L3") );
             reflectance = loader.reflectance; 
           
             spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) ) );
