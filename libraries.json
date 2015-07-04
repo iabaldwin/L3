@@ -28,33 +28,35 @@
 
 },
 
-#{
-    #"name": "Eigen",
-    #"type": "cpp",
-    #"link":
-    #{
-        #"url": "https://bitbucket.org/eigen/eigen/",
-        #"commit": "fabd880592ac"
-    #},
-    #"build":
-    #{
-        #"configure":{ "tool": "Cmake" },
-        #"build":{ "tool": "make" },
-        #"install":{ "tool": "make" }
-    #},
-    #"env": 
-    #{
-        #"EIGEN3_INCLUDE_DIR": "${source_directory}",
-        #"EIGEN_ROOT": "${source_directory}"
-    #},
-    #"cmake":
-    #{
-        #"definitions":
-        #{
-            #"EIGEN3_INCLUDE_DIR": "${source_directory}"
-        #}
-    #}
-#},
+{
+    "name": "Eigen",
+    "type": "cpp",
+    "link":
+    {
+        "url": "https://bitbucket.org/eigen/eigen",
+        "type": "hg",
+        "commit": "fabd880592ac"
+    },
+    "build":
+    {
+        "configure":{ "tool": "Cmake" },
+        "build":{ "tool": "make" },
+        "install":{ "tool": "make" }
+    },
+    "env": 
+    {
+        "EIGEN3_INCLUDE_DIR": "${source_directory}",
+        "EIGEN_ROOT": "${source_directory}",
+        "Eigen3_DIR": "${source_directory}"
+    },
+    "cmake":
+    {
+        "definitions":
+        {
+            "EIGEN3_INCLUDE_DIR": "${source_directory}"
+        }
+    }
+},
 
 #{
     #"name": "Boost",
@@ -75,29 +77,29 @@
     #}
 #},
 
-{
-    "name": "PCL",
-    "type": "cpp",
-    "link": 
-    { 
-        "url": "https://github.com/PointCloudLibrary/pcl.git",
-        "commit": "87a54e62f17cfdd527fd0093aa232a8f381291ce"
-    },
-    "build": 
-    {
-        "configure": { "tool": "Cmake"},
-        "build": { "tool": "make" },
-        "install": { "tool": "make" }
-    },
-    "cmake":
-    {
-        "definitions":
-        {
-            "PCL_DIR":"${build.configure.install_directory}"
-        }
-    }
+#{
+    #"name": "PCL",
+    #"type": "cpp",
+    #"link": 
+    #{ 
+        #"url": "https://github.com/PointCloudLibrary/pcl.git",
+        #"commit": "87a54e62f17cfdd527fd0093aa232a8f381291ce"
+    #},
+    #"build": 
+    #{
+        #"configure": { "tool": "Cmake"},
+        #"build": { "tool": "make" },
+        #"install": { "tool": "make" }
+    #},
+    #"cmake":
+    #{
+        #"definitions":
+        #{
+            #"PCL_DIR":"${build.configure.install_directory}"
+        #}
+    #}
 
-},
+#},
 
 #{
     #"name": "PCL",
@@ -216,35 +218,35 @@
         "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
     }
 
-},
-
-{
-    "name": "OpenCV",
-    "type": "cpp",
-    "link": 
-    { 
-        "url": "http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.8/opencv-2.4.8.zip"
-    },
-    "build": 
-    {
-        "configure": { "tool":"Cmake", "args": "-DWITH_CUDA=OFF" },
-        "build": { "tool":"make" },
-        "install": { "tool":"make" }
-    },
-    "env":
-    {
-        "PYTHONPATH": "${build.configure.install_directory}/lib/python2.7/site-packages",
-        "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include",
-        "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib"
-    },
-    "cmake":
-    {
-        "definitions":
-        {
-            "OpenCV_DIR": "${build.configure.install_directory}"
-        }
-    }
-
 }
+
+#{
+    #"name": "OpenCV",
+    #"type": "cpp",
+    #"link": 
+    #{ 
+        #"url": "http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.8/opencv-2.4.8.zip"
+    #},
+    #"build": 
+    #{
+        #"configure": { "tool":"Cmake", "args": "-DWITH_CUDA=OFF" },
+        #"build": { "tool":"make" },
+        #"install": { "tool":"make" }
+    #},
+    #"env":
+    #{
+        #"PYTHONPATH": "${build.configure.install_directory}/lib/python2.7/site-packages",
+        #"CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include",
+        #"CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib"
+    #},
+    #"cmake":
+    #{
+        #"definitions":
+        #{
+            #"OpenCV_DIR": "${build.configure.install_directory}"
+        #}
+    #}
+
+#}
 
 ]

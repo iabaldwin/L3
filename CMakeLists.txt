@@ -16,6 +16,9 @@ endif()
 
 link_directories( $ENV{CMAKE_LINK_DIRECTORIES} )
 include_directories( $ENV{CMAKE_INCLUDE_DIRECTORIES} )
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{CMAKE_CACHE_DIRECTORY}/find" )
+
+message( ${CMAKE_MODULE_PATH} )
 
 find_package( Eigen3 REQUIRED )
 include_directories( ${EIGEN3_INCLUDE_DIR} )                    # Matrices
