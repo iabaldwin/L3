@@ -1,5 +1,4 @@
-#ifndef L3_MISC_H
-#define L3_MISC_H
+#pragma once
 
 #include <iostream>
 #include <boost/filesystem.hpp>
@@ -24,6 +23,3 @@ void print_stack_trace();
 
 }
 }
-
-#endif
-

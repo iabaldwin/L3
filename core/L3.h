@@ -1,5 +1,4 @@
-#ifndef L3_H
-#define L3_H
+#pragma once
 
 #include "Datatypes.h"          // Poses, LIDAR etc
 #include "Definitions.h"        // Useful typedefs
@@ -31,5 +30,3 @@
 #include "Filter.h"             // Pose filter
 #include "Simulator.h"          // Artificial data provider
 #include "Misc.h"               // Everything else...
-
-#endif

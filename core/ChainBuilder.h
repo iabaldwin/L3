@@ -13,46 +13,44 @@
 
 namespace L3
 {
-    class ChainBuilder 
-    {
-        public:
 
-            ChainBuilder( L3::VelocityProvider* provider ) : velocity_provider(provider)
-            {
-            }
+class ChainBuilder 
+{
+    public:
 
-            bool update()
-            {
-                // Reset
-                window.clear();
+        ChainBuilder(L3::VelocityProvider* provider) : velocity_provider(provider) {
+        }
 
-                // Allocate
-                window.resize( velocity_provider->filtered_velocities.size() );
+        bool update() {
+            // Reset
+            window.clear();
 
-                _incremental_distances.resize( velocity_provider->filtered_velocities.size() );
+            // Allocate
+            window.resize(velocity_provider->filtered_velocities.size());
 
-                double distance;
+            _incremental_distances.resize(velocity_provider->filtered_velocities.size());
 
-                // Accumulate 
-                L3::trajectoryAccumulate( velocity_provider->filtered_velocities.begin(), 
-                                            velocity_provider->filtered_velocities.end(), 
-                                            window.begin(), 
-                                            distance, 
-                                            std::numeric_limits<double>::infinity() );
+            double distance;
 
-                return true;
-            }
+            // Accumulate 
+            L3::trajectoryAccumulate(velocity_provider->filtered_velocities.begin(), 
+                                        velocity_provider->filtered_velocities.end(), 
+                                        window.begin(), 
+                                        distance, 
+                                        std::numeric_limits<double>::infinity());
 
-            std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > window;
+            return true;
+        }
 
-        private:
+        std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > window;
 
-            std::deque < double > _incremental_distances;
+    private:
 
-            L3::VelocityProvider* velocity_provider;
+        std::deque < double > _incremental_distances;
+        L3::VelocityProvider* velocity_provider;
 
-    };
+};
 
-}
+} // namespace L3
 
 #endif

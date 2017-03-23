@@ -20,7 +20,7 @@ namespace Math
 /*
  *  SE2
  */
-SE2::SE2( double x, double y, double q ) : x(x), y(y), q(q)
+SE2::SE2(double x, double y, double q) : x_(x), y_(y), q_(q)
 {
 }
 
