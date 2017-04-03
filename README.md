@@ -14,6 +14,11 @@ Requirements
 * GNU Scientific Library (GSL)
 * Point Cloud Library (PCL)
 
+
+Build
+-----
+ccmake -DPCL_DIR={PCL_DIR} ...
+
 Core
 ----
 * Core components, point-clouds, projection, swathe-building

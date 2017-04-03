@@ -45,11 +45,6 @@ namespace L3
 
         if(current_tables != num_tables)
         {
-          //page_pointer->remove();
-          //page_pointer.reset(new glv::Buttons(rect, current_tables, 1 ,false, true));
-          //this->operator<<(*page_pointer);
-          //page_pointer->maximize();
-
           num_tables = current_tables;
           page_pointer->data().resize(glv::Data::BOOL, num_tables, 1);
         }
