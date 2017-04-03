@@ -5,7 +5,6 @@
 #include "Iterator.h"
 #include "Estimator.h"
 #include "VelocityProvider.h"
-
 #include "BayesFilter/unsFlt.hpp"
 
 namespace L3
@@ -144,5 +143,5 @@ namespace Estimator
     }
   };
 
-}
-}
+} // namespace Estimator
+} // namespace L3

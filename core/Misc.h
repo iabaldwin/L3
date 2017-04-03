@@ -21,5 +21,5 @@ const char* demangle(const char* name);
 
 void print_stack_trace();
 
-}
-}
+} // namespace Misc
+} // namespace L3

@@ -6,15 +6,9 @@
 
 #include "Datatypes.h"
 
-/*
- *  <vector>
- *  For parallelization, we require random access
- */
-
 // Container types
 typedef std::vector< std::pair< double, boost::shared_ptr< L3::Pose > > >                                       POSE_SEQUENCE;
 typedef std::vector< std::pair< double, boost::shared_ptr< L3::LIDAR > > >                                      LIDAR_SEQUENCE;
-
 typedef std::vector< std::pair< boost::shared_ptr<L3::Pose>, boost::shared_ptr<L3::LIDAR> > >                   SWATHE;
 
 // Iterators

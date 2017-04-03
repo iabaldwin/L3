@@ -1,8 +1,6 @@
 #pragma once
 
 #include <vector>
-//#include <omp.h>
-
 #include "boost/tuple/tuple.hpp"
 
 #include "Utils.h"

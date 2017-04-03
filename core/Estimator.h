@@ -470,7 +470,6 @@ template <typename T>
   }
 };
 
-
 } // namespace estimator
 } // namespace L3
 

@@ -205,7 +205,6 @@ struct Woodstock : Locale {
     Woodstock() : Locale("woodstock_datum") {};
 };
 
-
 struct LocaleFactory {
 
   LocaleFactory() {
@@ -225,7 +224,6 @@ struct LocaleFactory {
   }
 
   std::map< std::string, Locale* > locales;
-
 };
 
 /*
