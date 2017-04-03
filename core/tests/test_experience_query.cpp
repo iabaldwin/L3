@@ -1,6 +1,5 @@
 #include "L3.h"
 
-
 int main( int argc, char* argv[] )
 {
     // Load datset
@@ -36,5 +35,4 @@ int main( int argc, char* argv[] )
 
         experience->getClosestPose( L3::SE3( x, y, 0, 0, 0, q ) );
     }
-
 }

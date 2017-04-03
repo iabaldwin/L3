@@ -1,5 +1,4 @@
-#ifndef L3_PREDICTOR_H
-#define L3_PREDICTOR_H
+#pragma once
 
 #include "Iterator.h"
 #include "Integrator.h"
@@ -9,30 +8,27 @@
 namespace L3
 {
 
-    class Predictor : public L3::TemporalObserver
-    {
+class Predictor : public L3::TemporalObserver
+{
+  public:
 
-        public:
+    Predictor( L3::VelocityProvider* provider ) 
+      : provider(provider),
+      previous_update(0.0)
+  {
+  }
 
-            Predictor( L3::VelocityProvider* provider ) 
-                : provider(provider),
-                    previous_update(0.0)
-            {
-            }
+    bool update( double t );
 
-            bool update( double t );
+    bool predict( const L3::SE3& current );
 
-            bool predict( const L3::SE3& current );
+  protected:
 
-        protected:
+    L3::VelocityProvider*      provider;
 
-            L3::VelocityProvider*      provider;
+    double previous_update;
 
-            double previous_update;
-    
-            std::deque< double > sink;
-    };
+    std::deque< double > sink;
+};
 
 }
-
-#endif

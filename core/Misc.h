@@ -1,5 +1,4 @@
-#ifndef L3_MISC_H
-#define L3_MISC_H
+#pragma once
 
 #include <iostream>
 #include <boost/filesystem.hpp>
@@ -22,8 +21,5 @@ const char* demangle(const char* name);
 
 void print_stack_trace();
 
-}
-}
-
-#endif
-
+} // namespace Misc
+} // namespace L3

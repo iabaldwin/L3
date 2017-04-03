@@ -1,71 +1,67 @@
-#ifndef L3_TRACKING_H
-#define L3_TRACKING_H
+#pragma once
 
 #include <iostream>
 #include "Core.h"
 
 namespace L3
 {
-    namespace Tracking
+  namespace Tracking
+  {
+    struct AlphaBetaFilter
     {
-        struct AlphaBetaFilter
+
+      struct state
+      {
+        double x,v; 
+
+        state& operator=( const state& lhs )
         {
+          this->x = lhs.x;
+          this->v = lhs.v;
 
-            struct state
-            {
-                double x,v; 
-
-                state& operator=( const state& lhs )
-                {
-                    this->x = lhs.x;
-                    this->v = lhs.v;
-
-                    return *this;
-                }
+          return *this;
+        }
 
 
-            } _state;
+      } _state;
 
-            AlphaBetaFilter( float alpha, float beta, double x=0.0, double v=0.0) 
-                : alpha(alpha), beta(beta),
-                previous_update(0.0)
-            {
-                _state.x = x;
-                _state.v = v;
-            }
+      AlphaBetaFilter( float alpha, float beta, double x=0.0, double v=0.0) 
+        : alpha(alpha), beta(beta),
+        previous_update(0.0)
+      {
+        _state.x = x;
+        _state.v = v;
+      }
 
-            float alpha, beta;
-            double previous_update;
+      float alpha, beta;
+      double previous_update;
 
-            void update( const double time, const double measurement );
-
-
-        };
+      void update( const double time, const double measurement );
 
 
-        std::ostream& operator<<( std::ostream& out, const AlphaBetaFilter::state& state );
+    };
 
-        struct KalmanFilter : Updateable
-        {
-            KalmanFilter()
-            {
 
-            }
-       
-            virtual void update( double ) = 0;
-        };
+    std::ostream& operator<<( std::ostream& out, const AlphaBetaFilter::state& state );
 
-        struct EKF
-        {
+    struct KalmanFilter : Updateable
+    {
+      KalmanFilter()
+      {
+
+      }
+
+      virtual void update( ) = 0;
+    };
+
+    struct EKF
+    {
 
 
 
 
-        };
+    };
 
-    }
+  }
 
 }
-
-#endif
-

@@ -1,5 +1,4 @@
-#ifndef L3_WINDOWER_H
-#define L3_WINDOWER_H
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -11,7 +10,6 @@
 #include <ctime>
 
 #include "Poco/Runnable.h"
-//#include "Poco/Mutex.h"
 #include <mutex>
 
 #include "Core.h"
@@ -24,21 +22,21 @@
 namespace L3
 {
 
-template <typename T>
-struct SlidingWindow : Poco::Runnable, TemporalObserver
-{
+  template <typename T>
+    struct SlidingWindow : Poco::Runnable, TemporalObserver
+  {
 
     SlidingWindow( const std::string& input, double t ) : 
-        read_required(false),
-        running(true),
-        initialised(false),
-        STACK_SIZE(_stack_size),
-        window_duration(t),
-        proximity(10.0),
-        target(input) 
+      read_required(false),
+      running(true),
+      initialised(false),
+      STACK_SIZE(_stack_size),
+      window_duration(t),
+      proximity(10.0),
+      target(input) 
     {
     }
-   
+
 
     std::mutex  mutex;
 
@@ -54,7 +52,7 @@ struct SlidingWindow : Poco::Runnable, TemporalObserver
     MaskPolicy< T > DEFAULT_MASK_POLICY;
 
     std::ifstream input_stream;
-    
+
     typename std::deque< std::pair< double, boost::shared_ptr<T> > > window;
     typename std::deque< std::pair< double, boost::shared_ptr<T> > > temp;
 
@@ -74,16 +72,16 @@ struct SlidingWindow : Poco::Runnable, TemporalObserver
 
     bool good();
 
-};
+  };
 
-template <typename T>
-struct SlidingWindowBinary : SlidingWindow<T>
-{
+  template <typename T>
+    struct SlidingWindowBinary : SlidingWindow<T>
+  {
     SlidingWindowBinary( const std::string& input, double t ) 
-        : SlidingWindow<T>( input, t )
+      : SlidingWindow<T>( input, t )
     {
-        required  = L3::Sizes<T>::elements;
-        entry.resize( required );
+      required  = L3::Sizes<T>::elements;
+      entry.resize( required );
     }
 
     int required;
@@ -92,8 +90,6 @@ struct SlidingWindowBinary : SlidingWindow<T>
     bool initialise();
 
     int read();
-};
+  };
 
 }
-
-#endif

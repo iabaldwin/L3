@@ -9,9 +9,9 @@ This example shows how to save and recall the model state of a GUI.
 */
 
 #include <math.h>
-#include "GLV/glv.h"
-#include "GLV/glv_binding.h"
-#include "GLV/glv_util.h"
+#include "glv.h"
+#include "glv_binding.h"
+#include "glv_util.h"
 
 using namespace glv;
 class MyGLV : public GLV{

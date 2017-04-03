@@ -112,7 +112,7 @@ target_link_libraries( test_readers ${CONFIG} L3 ${Boost_LIBRARIES} ${Poco_LIBRA
 #target_link_libraries( test_experience_builder ${CONFIG} L3 ${Boost_LIBRARIES}  )
 
 add_executable( test_experience_query test_experience_query.cpp )
-target_link_libraries( test_experience_query ${CONFIG} L3 ${Boost_LIBRARIES} ${Poco_LIBRARIES} )
+target_link_libraries( test_experience_query ${CONFIG} L3 ${Boost_LIBRARIES} ${Poco_LIBRARIES})
 
 add_executable( test_reflectance_loader test_reflectance_loader.cpp )
 target_link_libraries( test_reflectance_loader ${CONFIG} L3 ${Boost_LIBRARIES} ${Poco_LIBRARIES} )

@@ -1,5 +1,4 @@
-#ifndef L3_WRITER_H
-#define L3_WRITER_H
+#pragma once
 
 #include <vector>
 #include <iterator>
@@ -10,44 +9,42 @@
 
 namespace L3
 {
-    namespace IO
+  namespace IO
+  {
+
+    class Writer 
     {
 
-        class Writer 
+      public:
+        virtual bool open( const std::string& f ) = 0;
+
+        virtual ~Writer()
         {
-
-            public:
-                virtual bool open( const std::string& f ) = 0;
-
-                virtual ~Writer()
-                {
-                    if (stream.is_open())
-                        stream.close();
-                }
-
- 
-            protected:
-
-                std::ofstream stream;
-        };
+          if (stream.is_open())
+            stream.close();
+        }
 
 
-        template <typename T>
-            class BinaryWriter : Writer
-            {
-                public:
+      protected:
 
-                    virtual bool open( const std::string& f )
-                    {
-                        this->stream.open( f.c_str(), std::ios::out | std::ios::binary );
-                       
-                        return this->stream.good();
-                    }
+        std::ofstream stream;
+    };
 
-                    virtual size_t write( std::vector< std::pair< double, boost::shared_ptr<T> > >& data ) ;
 
-            };
-    }
+    template <typename T>
+      class BinaryWriter : Writer
+    {
+      public:
+
+        virtual bool open( const std::string& f )
+        {
+          this->stream.open( f.c_str(), std::ios::out | std::ios::binary );
+
+          return this->stream.good();
+        }
+
+        virtual size_t write( std::vector< std::pair< double, boost::shared_ptr<T> > >& data ) ;
+
+    };
+  }
 }
-
-#endif

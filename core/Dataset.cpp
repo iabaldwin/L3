@@ -3,18 +3,18 @@
 namespace L3
 {
 
-Dataset::Dataset( const std::string& target )  : start_time(0)
-{
+  Dataset::Dataset(const std::string& target)  : start_time(0) {
     std::string tmp(target);
 
-    if ( *(tmp.end()-1) != '/' )
-        tmp.insert( tmp.end(), '/' );
+    if (*(tmp.end()-1) != '/') {
+      tmp.insert(tmp.end(), '/');
+    }
 
     // From the root path
     root_path /= tmp;
-  
+
     root_path.remove_filename();
-    
+
     // Dataset name 
     dataset_name = root_path.leaf().string();
 
@@ -22,45 +22,45 @@ Dataset::Dataset( const std::string& target )  : start_time(0)
     root_path /= "L3";
 
     // Does the directory exist?
-    if ( !boost::filesystem::is_directory( root_path ))
-        throw L3::no_such_folder();
-    
+    if (!boost::filesystem::is_directory(root_path))
+      throw L3::no_such_folder();
+
     lookup[".ins"]   = INS_file;
     lookup[".lhlv"]  = LHLV_file;
     lookup[".lidar"] = LIDAR_file;
     lookup[".sm"]    = SM_file;
-}
+  }
 
-Dataset::~Dataset()
-{
-    if (pose_reader)
-        pose_reader->stop();
-   
-    if ( LHLV_reader )
-        LHLV_reader->stop();
+  Dataset::~Dataset() {
+    if (pose_reader) {
+      pose_reader->stop();
+    }
 
-    for ( std::map< std::string, boost::shared_ptr< SlidingWindow<L3::LMS151> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++ )
-        it->second->stop();
+    if (LHLV_reader) {
+      LHLV_reader->stop();
+    }
 
-    for( std::list< boost::shared_ptr< Poco::Thread > >::iterator it= threads.begin(); it != threads.end(); it++ )
-        (*it)->join();
-}
+    for (std::map< std::string, boost::shared_ptr< SlidingWindow<L3::LMS151> > >::iterator it = LIDAR_readers.begin(); it != LIDAR_readers.end(); it++) {
+      it->second->stop();
+    }
 
-std::ostream& operator<<( std::ostream& o, const Dataset& dataset )
-{
-    std::copy(boost::filesystem::directory_iterator( dataset.root_path ), 
-            boost::filesystem::directory_iterator(), 
-            std::ostream_iterator<boost::filesystem::directory_entry>(o, "\n")); 
-   
+    for(std::list< boost::shared_ptr< Poco::Thread > >::iterator it= threads.begin(); it != threads.end(); it++) {
+      (*it)->join();
+    }
+  }
+
+  std::ostream& operator<<(std::ostream& o, const Dataset& dataset) {
+    std::copy(boost::filesystem::directory_iterator(dataset.root_path), 
+        boost::filesystem::directory_iterator(), 
+        std::ostream_iterator<boost::filesystem::directory_entry>(o, "\n")); 
+
     o << "Pose Reader:"     << dataset.pose_reader << std::endl;
     o << "LHLV Reader:"     << dataset.LHLV_reader << std::endl;
     o << "Velocity Reader:" << dataset.velocity_reader << std::endl;
-    
     return o;
-}
+  }
 
-bool Dataset::validate()
-{
+  bool Dataset::validate() {
     /*
      *For any dataset, there should be:
      *  1.  1 x INS file
@@ -68,112 +68,108 @@ bool Dataset::validate()
      *  3.  N x LIDAR files 
      *
      */
-    boost::filesystem::directory_iterator it( root_path );
+    boost::filesystem::directory_iterator it(root_path);
 
-    while( it != boost::filesystem::directory_iterator() )
-    {
+    while(it != boost::filesystem::directory_iterator()) {
 
-        switch ( lookup[boost::filesystem::extension( *it )])
-        {
-            case INS_file:
-                OxTS_ins = *it;
-                break;
-            
-            case LIDAR_file:
-                LIDARs.push_front( *it );
-                break;
-       
-            case LHLV_file:
-                OxTS_lhlv = *it;
-                break;
+      switch (lookup[boost::filesystem::extension(*it)]) {
+        case INS_file:
+          OxTS_ins = *it;
+          break;
 
-            case SM_file:
-                SM_vel= *it;
-                break;
+        case LIDAR_file:
+          LIDARs.push_front(*it);
+          break;
 
-            default:
-                std::cout << "Unknown type, " << *it << std::endl;
-                break;
-        
-        }
-        
-        it++;
+        case LHLV_file:
+          OxTS_lhlv = *it;
+          break;
+
+        case SM_file:
+          SM_vel= *it;
+          break;
+
+        default:
+          std::cout << "Unknown type, " << *it << std::endl;
+          break;
+      }
+      it++;
     }
 
     // Validate logic
-    if ( !( boost::filesystem::exists( OxTS_ins )) || 
-            !( boost::filesystem::exists( OxTS_lhlv) ) || 
-            !(boost::filesystem::exists( SM_vel ) ) || 
-            (LIDARs.size()) == 0 ) 
-            return false;
+    if (!(boost::filesystem::exists(OxTS_ins)) || 
+        !(boost::filesystem::exists(OxTS_lhlv)) || 
+        !(boost::filesystem::exists(SM_vel)) || 
+        (LIDARs.size()) == 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
-    return true;
-}
-
-bool Dataset::load()
-{
+  bool Dataset::load() {
     // Pose Reader
 #ifndef NDEBUG
     std::cout << "OXTS" <<  OxTS_ins.path().string() << std::endl;
 #endif
-    pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow( OxTS_ins.path().string(), 30 ) ;
-    if( pose_reader->initialise() )
-        runnables.push_back( pose_reader );
-    else
-        std::cerr << "Could not initialise pose source" << std::endl;
+    pose_reader = L3::WindowerFactory<L3::SE3>::constantTimeWindow(OxTS_ins.path().string(), 30) ;
+    if(pose_reader->initialise()) {
+      runnables.push_back(pose_reader);
+    } else {
+      std::cerr << "Could not initialise pose source" << std::endl;
+    }
 
     // LHLV Reader
 #ifndef NDEBUG
     std::cout << "LHLV" << OxTS_lhlv.path().string() << std::endl;
 #endif
-    LHLV_reader = L3::WindowerFactory<L3::LHLV>::constantTimeWindow( OxTS_lhlv.path().string(), 30 ) ;
-    if( LHLV_reader->initialise() )
-        runnables.push_back( LHLV_reader );
-    else
-        std::cerr << "Could not initialise velocity source " << std::endl;
+    LHLV_reader = L3::WindowerFactory<L3::LHLV>::constantTimeWindow(OxTS_lhlv.path().string(), 30) ;
+    if(LHLV_reader->initialise()) {
+      runnables.push_back(LHLV_reader);
+    } else {
+      std::cerr << "Could not initialise velocity source " << std::endl;
+    }
 
     //Velocity reader
 #ifndef NDEBUG
     std::cout << "Velocity" << SM_vel.path().string() << std::endl;
 #endif
-    velocity_reader = L3::WindowerFactory<L3::SMVelocity>::constantTimeWindow( SM_vel.path().string(), 30 ) ;
-    if( velocity_reader->initialise() )
-        runnables.push_back( velocity_reader );
-    else
-        std::cerr << "Could not initialise scan-matching source " << std::endl;
-
+    velocity_reader = L3::WindowerFactory<L3::SMVelocity>::constantTimeWindow(SM_vel.path().string(), 30) ;
+    if(velocity_reader->initialise()) {
+      runnables.push_back(velocity_reader);
+    } else {
+      std::cerr << "Could not initialise scan-matching source " << std::endl;
+    }
 
     // Load LIDARs
     std::list< boost::filesystem::directory_entry >::iterator it = LIDARs.begin();
 
-    while ( it != LIDARs.end() )
-    {
-        boost::shared_ptr< SlidingWindow<L3::LMS151> > reader = L3::WindowerFactory<L3::LMS151>::constantTimeWindow( (*it).path().string(), 30 );
-        reader->initialise(); 
-      
-        std::string LIDAR_name = (*it).path().stem().string();
+    while (it != LIDARs.end()) {
+      boost::shared_ptr< SlidingWindow<L3::LMS151> > reader = L3::WindowerFactory<L3::LMS151>::constantTimeWindow((*it).path().string(), 30);
+      reader->initialise(); 
+
+      std::string LIDAR_name = (*it).path().stem().string();
 
 #ifndef NDEBUG
-        std::cout << "Inserting " << LIDAR_name << std::endl;
+      std::cout << "Inserting " << LIDAR_name << std::endl;
 #endif
 
-        LIDAR_readers.insert( std::make_pair( LIDAR_name, reader ) );
-        runnables.push_back( reader );
+      LIDAR_readers.insert(std::make_pair(LIDAR_name, reader));
+      runnables.push_back(reader);
 
-        it++;
+      it++;
     }
 
-    for( std::list< boost::shared_ptr<Poco::Runnable> >::iterator it = runnables.begin(); it != runnables.end(); it++ )
-    {
-        Poco::Thread* thread = new Poco::Thread();
-        thread->start( *(*it) );
-        threads.push_back( boost::shared_ptr< Poco::Thread >(thread) );
+    for(std::list< boost::shared_ptr<Poco::Runnable> >::iterator it = runnables.begin(); it != runnables.end(); it++) {
+      Poco::Thread* thread = new Poco::Thread();
+      thread->start(*(*it));
+      threads.push_back(boost::shared_ptr< Poco::Thread >(thread));
     }
 
     // Get the dataset time - by definition, this is the time of the first pose
     start_time = pose_reader->window.begin()->first;
 
     return true;
-}
+  }
 
-}
+} // namespace L3

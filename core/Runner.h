@@ -1,5 +1,4 @@
-#ifndef L3_DATASET_RUNNER_H
-#define L3_DATASET_RUNNER_H
+#pragma once
 
 #include <Poco/Runnable.h>
 #include <Poco/Thread.h>
@@ -15,33 +14,32 @@
 #include "VelocityProvider.h"
 #include "Performance.h"
 
-
 namespace L3
 {
 
-struct TemporalRunner 
-{
+  struct TemporalRunner 
+  {
     std::list < TemporalObserver* > observers;
 
-    virtual bool update( double time )
+    virtual bool update(double time)
     {
-        std::for_each( observers.begin(), observers.end(), std::bind2nd( std::mem_fun( &TemporalObserver::update ), time ) );
-   
-        return true;
+      std::for_each(observers.begin(), observers.end(), std::bind2nd(std::mem_fun(&TemporalObserver::update), time));
+
+      return true;
     }
 
-};
+  };
 
 
-/*
- *  Threaded runner
- */
-struct ThreadedRunner : TemporalRunner, Poco::Runnable
-{
+  /*
+   *  Threaded runner
+   */
+  struct ThreadedRunner : TemporalRunner, Poco::Runnable
+  {
     ThreadedRunner() 
-        : running( true ),
-        paused(false),
-        current_time(0.0)
+      : running(true),
+      paused(false),
+      current_time(0.0)
     {
     }
 
@@ -52,35 +50,35 @@ struct ThreadedRunner : TemporalRunner, Poco::Runnable
 
     void stop()
     {
-        running = false;
+      running = false;
     }
 
     void start()
     {
-        thread.start( *this );
+      thread.start(*this);
     }
-    
-};
 
-namespace RunMode
-{
+  };
+
+  namespace RunMode
+  {
     enum Mode
     {
-        Continuous, 
-        Step 
+      Continuous, 
+      Step 
     };
-}
+  }
 
-struct DatasetRunner : ThreadedRunner
-{
-    DatasetRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup=2.0 );
+  struct DatasetRunner : ThreadedRunner
+  {
+    DatasetRunner(L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup=2.0);
 
     ~DatasetRunner()
     {
-        running = false;
+      running = false;
 
-        if ( thread.isRunning() )
-            thread.join();
+      if (thread.isRunning())
+        thread.join();
     }
 
     std::ofstream   pose_output;
@@ -88,7 +86,7 @@ struct DatasetRunner : ThreadedRunner
 
     Dataset*                    dataset;
     Configuration::Mission*     mission;
-    
+
     float           speedup;
     bool            stand_alone, booted;
     double          current_time, start_time;  
@@ -97,7 +95,7 @@ struct DatasetRunner : ThreadedRunner
     RunMode::Mode   run_mode;
 
     std::list < Updater* > updaters;
-    
+
     boost::shared_ptr< L3::SE3 > estimated_pose, oracle_pose;
 
 
@@ -110,7 +108,7 @@ struct DatasetRunner : ThreadedRunner
 
     boost::shared_ptr< L3::PoseProvider >       provider;
     boost::shared_ptr< L3::PoseWindower >       pose_windower;
-    
+
     boost::shared_ptr< L3::VelocityProvider >   lhlv_velocity_provider;
     boost::shared_ptr< L3::VelocityProvider >   icp_velocity_provider;
     boost::shared_ptr< L3::VelocityProvider >   ics_velocity_provider;
@@ -121,97 +119,97 @@ struct DatasetRunner : ThreadedRunner
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LHLV > >   LHLV_iterator;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > vertical_LIDAR;
     boost::shared_ptr< L3::ConstantTimeIterator< L3::LMS151 > > horizontal_LIDAR;
-    
+
     boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > >    velocity_source;
-     
+
     boost::shared_ptr< L3::ScanMatching::Engine > engine;
-        
+
     std::vector<double> timings;
-        
+
     void run();
-    
-    virtual bool update( double time )
+
+    virtual bool update(double time)
     {
-        return true;
+      return true;
     }
 
-    DatasetRunner& operator<<( L3::TemporalObserver* observer)
+    DatasetRunner& operator<<(L3::TemporalObserver* observer)
     {
-        if ( !observer )
-        {
-            std::cout << "Erroneous observer passed!" << std::endl;
-            exit(-1);
-        }
+      if (!observer)
+      {
+        std::cout << "Erroneous observer passed!" << std::endl;
+        exit(-1);
+      }
 
-        observers.push_back( observer ); 
-        return *this;
+      observers.push_back(observer); 
+      return *this;
     }
 
-    DatasetRunner& operator<<( L3::Updater* updater )
+    DatasetRunner& operator<<(L3::Updater* updater)
     {
-        if ( !updater)
-        {
-            std::cout << "Erroneous updater passed!" << std::endl;
-            exit(-1);
-        }
+      if (!updater)
+      {
+        std::cout << "Erroneous updater passed!" << std::endl;
+        exit(-1);
+      }
 
-        updaters.push_back( updater ); 
-        return *this;
+      updaters.push_back(updater); 
+      return *this;
     }
 
 
     virtual bool openStreams()
     {
 
-        // Poses
-        std::string path = dataset->path() + "/poses.dat";
-        pose_output.open( path.c_str(), std::ios::out );
+      // Poses
+      std::string path = dataset->path() + "/poses.dat";
+      pose_output.open(path.c_str(), std::ios::out);
 
-        // Stats
-        path = dataset->path() + "/stats.dat";
+      // Stats
+      path = dataset->path() + "/stats.dat";
 
-        statistics_output.open( path.c_str(), std::ios::out );
+      statistics_output.open(path.c_str(), std::ios::out);
 
 
-                    std::stringstream ss;
-        
-        ss << "Observer update"  << "\t" <<
-            "Swathe update"    << "\t" <<
-            "Point generation" << "\t" <<
-            "Estimation"       << "\t" << std::endl;
+      std::stringstream ss;
 
-        statistics_output << ss.str();
+      ss << "Observer update"  << "\t" <<
+        "Swathe update"    << "\t" <<
+        "Point generation" << "\t" <<
+        "Estimation"       << "\t" << std::endl;
 
-        return true;
+      statistics_output << ss.str();
+
+      return true;
 
     }
-};
+  };
 
-/*
- *  Implementation specific
- */
-struct EstimatorRunner : DatasetRunner, Lockable
-{
-    EstimatorRunner( L3::Dataset* dataset, L3::Configuration::Mission* mission, L3::Experience* experience, float speedup=2.0 ) 
-        : DatasetRunner( dataset, mission, speedup ),
-            experience(experience)
+  /*
+   *  Implementation specific
+   */
+  struct EstimatorRunner : DatasetRunner, Lockable
+  {
+    EstimatorRunner(L3::Dataset* dataset, L3::Configuration::Mission* mission, L3::Experience* experience, float speedup=2.0) 
+      : DatasetRunner(dataset, mission, speedup),
+      experience(experience)
     {
 
-        // Add in the oracle performance
-        oracle_innovation = boost::make_shared< RelativeDisplacement >( experience, oracle_pose );
- 
-        performance_updater << boost::dynamic_pointer_cast< Updateable >(oracle_innovation).get();
+      // Add in the oracle performance
+      oracle_innovation = boost::make_shared< RelativeDisplacement >(experience, oracle_pose);
 
-        // Add the performance updater
-        *this << &performance_updater;
+      performance_updater << boost::dynamic_pointer_cast< Updateable >(oracle_innovation).get();
+
+      // Add the performance updater
+      *this << &performance_updater;
     }
 
     ~EstimatorRunner()
     {
-        running = false;
+      running = false;
 
-        if ( thread.isRunning() )
-            thread.join();
+      if (thread.isRunning())
+        thread.join();
     }
 
     L3::Updater         performance_updater;
@@ -219,53 +217,51 @@ struct EstimatorRunner : DatasetRunner, Lockable
     boost::shared_ptr< L3::Estimator::Algorithm<double> >   algorithm;
     boost::shared_ptr< RelativeDisplacement > oracle_innovation, estimator_innovation;
 
-    bool update( double time );
+    bool update(double time);
 
-    EstimatorRunner& setAlgorithm( boost::shared_ptr< L3::Estimator::Algorithm<double> > algo )
+    EstimatorRunner& setAlgorithm(boost::shared_ptr< L3::Estimator::Algorithm<double> > algo)
     {
-        // Remove it if it exists
-        std::list< TemporalObserver* >::iterator it = std::find( observers.begin(), observers.end(), dynamic_cast< L3::TemporalObserver* >( this->algorithm.get() ) ); 
-        if(  it != observers.end() )
-            observers.erase( it );
+      // Remove it if it exists
+      std::list< TemporalObserver* >::iterator it = std::find(observers.begin(), observers.end(), dynamic_cast< L3::TemporalObserver* >(this->algorithm.get())); 
+      if( it != observers.end())
+        observers.erase(it);
 
-        this->algorithm = algo;
-  
-        // Estimator innovation
-        performance_updater.remove( this->estimator_innovation.get() ); 
-        estimator_innovation = boost::make_shared< RelativeDisplacement >( experience, algorithm->current_prediction );
-        performance_updater <<( this->estimator_innovation.get() ); 
-     
-        // Is it updateable
-        if( L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >( algorithm.get() ) )
-            (*this) << observer;
+      this->algorithm = algo;
 
-        return *this;
+      // Estimator innovation
+      performance_updater.remove(this->estimator_innovation.get()); 
+      estimator_innovation = boost::make_shared< RelativeDisplacement >(experience, algorithm->current_prediction);
+      performance_updater <<(this->estimator_innovation.get()); 
+
+      // Is it updateable
+      if(L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >(algorithm.get()))
+        (*this) << observer;
+
+      return *this;
     }
 
     bool openStreams()
     {
-        std::stringstream ss;
+      std::stringstream ss;
 
-        // Poses
-        std::string path = dataset->path() + "/poses_" + algorithm->name() + ".dat";
-        pose_output.open( path.c_str(), std::ios::out );
+      // Poses
+      std::string path = dataset->path() + "/poses_" + algorithm->name() + ".dat";
+      pose_output.open(path.c_str(), std::ios::out);
 
-        // Stats
-        path = dataset->path() + "/stats_" + algorithm->name() + ".dat";
+      // Stats
+      path = dataset->path() + "/stats_" + algorithm->name() + ".dat";
 
-        statistics_output.open( path.c_str(), std::ios::out );
+      statistics_output.open(path.c_str(), std::ios::out);
 
-        ss << "Observer update"  << "\t" <<
-            "Swathe update"    << "\t" <<
-            "Point generation" << "\t" <<
-            "Estimation"       << "\t" << std::endl;
+      ss << "Observer update"  << "\t" <<
+        "Swathe update"    << "\t" <<
+        "Point generation" << "\t" <<
+        "Estimation"       << "\t" << std::endl;
 
-        statistics_output << ss.str();
-   
-        return true;
+      statistics_output << ss.str();
+
+      return true;
     }
-};
+  };
 
 } // L3
-#endif
-

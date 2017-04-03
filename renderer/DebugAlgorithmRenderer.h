@@ -8,69 +8,69 @@ namespace L3
 namespace Visualisers
 {
 
-    struct DebugAlgorithmRenderer : glv::Table
+  struct DebugAlgorithmRenderer : glv::Table
+  {
+
+    DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> > algorithm ) 
+      : glv::Table( "x x," ),
+      algorithm(algorithm)
     {
+      int width = 180;
 
-        DebugAlgorithmRenderer( boost::shared_ptr< L3::Estimator::PassThrough<double> > algorithm ) 
-            : glv::Table( "x x," ),
-                algorithm(algorithm)
-        {
-            int width = 180;
-            
-            // Two bar histograms
-            boost::shared_ptr< HistogramVertexRenderer > vertex_renderer_swathe( new HistogramVertexRenderer( glv::Rect(width,width), boost::shared_ptr< Histogram<double> >() ) );
-            vertex_renderers.push_back( vertex_renderer_swathe ); 
+      // Two bar histograms
+      boost::shared_ptr< HistogramVertexRenderer > vertex_renderer_swathe( new HistogramVertexRenderer( glv::Rect(width,width), boost::shared_ptr< Histogram<double> >() ) );
+      vertex_renderers.push_back( vertex_renderer_swathe ); 
 
-            boost::shared_ptr< HistogramVertexRenderer > vertex_renderer_experience( new HistogramVertexRenderer( glv::Rect(width,width), boost::shared_ptr< Histogram<double> >() ) );
-            vertex_renderers.push_back( vertex_renderer_experience ); 
+      boost::shared_ptr< HistogramVertexRenderer > vertex_renderer_experience( new HistogramVertexRenderer( glv::Rect(width,width), boost::shared_ptr< Histogram<double> >() ) );
+      vertex_renderers.push_back( vertex_renderer_experience ); 
 
-            (*this) << *vertex_renderer_swathe << *vertex_renderer_experience;
+      (*this) << *vertex_renderer_swathe << *vertex_renderer_experience;
 
-            // Two density histograms
-            boost::shared_ptr< HistogramDensityRenderer > density_renderer_swathe(  new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ));
-            density_renderers.push_back( density_renderer_swathe );
-            
-            boost::shared_ptr< HistogramDensityRenderer > density_renderer_experience( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
-            density_renderers.push_back( density_renderer_experience );
+      // Two density histograms
+      boost::shared_ptr< HistogramDensityRenderer > density_renderer_swathe(  new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ));
+      density_renderers.push_back( density_renderer_swathe );
 
-            (*this) << *density_renderer_swathe << *density_renderer_experience;
-        
-        }
-       
-        std::deque< boost::shared_ptr< HistogramVertexRenderer > >    vertex_renderers;
-        std::deque< boost::shared_ptr< HistogramDensityRenderer > >   density_renderers;
+      boost::shared_ptr< HistogramDensityRenderer > density_renderer_experience( new HistogramDensityRenderer( glv::Rect( width, width), boost::shared_ptr< Histogram<double > >() ) );
+      density_renderers.push_back( density_renderer_experience );
 
-        bool setInstance( boost::shared_ptr< L3::Estimator::PassThrough<double> > algo)
-        {
-            this->algorithm = algo;
-           
-            boost::shared_ptr< L3::Estimator::PassThrough<double> > algo_ptr = this->algorithm.lock();
+      (*this) << *density_renderer_swathe << *density_renderer_experience;
 
-            if( !algo_ptr )
-            {
-                this->disable( glv::Visible );
-                this->density_renderers[0]->disable( glv::Visible ); 
-                this->density_renderers[1]->disable( glv::Visible ); 
-                
-                this->vertex_renderers[0]->disable( glv::Visible ); 
-                this->vertex_renderers[1]->disable( glv::Visible ); 
+    }
 
-                return false;
-            }
+    std::deque< boost::shared_ptr< HistogramVertexRenderer > >    vertex_renderers;
+    std::deque< boost::shared_ptr< HistogramDensityRenderer > >   density_renderers;
 
-            this->density_renderers[0]->hist = algo_ptr->data.swathe_histogram;
-            this->density_renderers[1]->hist = algo_ptr->data.experience_histogram;
-       
+    bool setInstance( boost::shared_ptr< L3::Estimator::PassThrough<double> > algo)
+    {
+      this->algorithm = algo;
 
-            this->vertex_renderers[0]->hist = algo_ptr->data.swathe_histogram;
-            this->vertex_renderers[1]->hist = algo_ptr->data.experience_histogram;
-       
-            return true;
-        }
+      boost::shared_ptr< L3::Estimator::PassThrough<double> > algo_ptr = this->algorithm.lock();
 
-        boost::weak_ptr< L3::Estimator::PassThrough<double> > algorithm ;
+      if( !algo_ptr )
+      {
+        this->disable( glv::Visible );
+        this->density_renderers[0]->disable( glv::Visible ); 
+        this->density_renderers[1]->disable( glv::Visible ); 
 
-    };
+        this->vertex_renderers[0]->disable( glv::Visible ); 
+        this->vertex_renderers[1]->disable( glv::Visible ); 
+
+        return false;
+      }
+
+      this->density_renderers[0]->hist = algo_ptr->data.swathe_histogram;
+      this->density_renderers[1]->hist = algo_ptr->data.experience_histogram;
+
+
+      this->vertex_renderers[0]->hist = algo_ptr->data.swathe_histogram;
+      this->vertex_renderers[1]->hist = algo_ptr->data.experience_histogram;
+
+      return true;
+    }
+
+    boost::weak_ptr< L3::Estimator::PassThrough<double> > algorithm ;
+
+  };
 
 }
 }

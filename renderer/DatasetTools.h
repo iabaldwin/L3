@@ -1,72 +1,71 @@
 #ifndef L3_VISUALISERS_DATASET_TOOLS_H
 #define L3_VISUALISERS_DATASET_TOOLS_H
 
-#include <GLV/glv.h>
+#include <glv.h>
 
 #include "L3.h"
 
 namespace L3
 {
-    namespace Visualisers
+  namespace Visualisers
+  {
+
+    struct ExperienceBuilder : glv::EventHandler
     {
+      ExperienceBuilder( boost::shared_ptr< L3::Dataset > dataset, double& time ) 
+        : dataset(dataset),
+        time(time),
+        counter(0)
+      {
 
-        struct ExperienceBuilder : glv::EventHandler
+      }
+
+      int counter;
+      double experience_start, experience_end;
+
+      double& time;
+      boost::weak_ptr< L3::Dataset > dataset;
+
+      bool onEvent( glv::View& view , glv::GLV& g) 
+      {
+        const glv::Keyboard& k = g.keyboard();
+        int key = k.key();
+
+        if ( key == ' ' )
         {
-            ExperienceBuilder( boost::shared_ptr< L3::Dataset > dataset, double& time ) 
-                : dataset(dataset),
-                    time(time),
-                    counter(0)
+          boost::shared_ptr< L3::Dataset > dataset_ptr = dataset.lock();
+
+          if( dataset_ptr )
+          {
+            counter++; 
+
+            if( counter == 1 )
             {
-
+              experience_start =  (time - dataset_ptr->start_time );
             }
-
-            int counter;
-            double experience_start, experience_end;
-
-            double& time;
-            boost::weak_ptr< L3::Dataset > dataset;
-
-            bool onEvent( glv::View& view , glv::GLV& g) 
+            else if( counter == 2 )
             {
-                const glv::Keyboard& k = g.keyboard();
-                int key = k.key();
+              experience_end =  (time - dataset_ptr->start_time );
 
-                if ( key == ' ' )
-                {
-                    boost::shared_ptr< L3::Dataset > dataset_ptr = dataset.lock();
+              std::cout << experience_start << ":" << experience_end << std::endl;
 
-                    if( dataset_ptr )
-                    {
-                        counter++; 
-
-                        if( counter == 1 )
-                        {
-                            experience_start =  (time - dataset_ptr->start_time );
-                        }
-                        else if( counter == 2 )
-                        {
-                            experience_end =  (time - dataset_ptr->start_time );
-                     
-                            std::cout << experience_start << ":" << experience_end << std::endl;
-
-                            L3::ExperienceBuilder( *dataset_ptr, experience_start, experience_end );
-                        }
-                        else
-                            counter =0;
-
-
-
-                    }
-                }
-                
-                return false;
+              L3::ExperienceBuilder( *dataset_ptr, experience_start, experience_end );
             }
+            else
+              counter =0;
 
-        };
 
-    }
+
+          }
+        }
+
+        return false;
+      }
+
+    };
+
+  }
 
 }
 
 #endif
-

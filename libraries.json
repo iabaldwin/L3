@@ -2,251 +2,152 @@
 [
 
 {
-    "name": "gsl",
-    "type": "cpp",
-    "provider": "native"
+  "name": "gsl",
+  "type": "cpp",
+  "provider": "native"
 },
 
 {
-    "name": "libconfig",
-    "type": "cpp",
-    "link":
-    {
-        "url": "http://www.hyperrealm.com/libconfig/libconfig-1.5.tar.gz"
-    },
-    "build":
-    {
-        "configure": { "tool": "Autotools" } ,
-        "build": { "tool": "Make" } ,
-        "install": { "tool": "Make" } 
-    },
-    "env":
-    {
-        "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
-        "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
-    }
-
+  "name": "libconfig",
+  "type": "cpp",
+  "link":
+  {
+    "url": "http://www.hyperrealm.com/libconfig/libconfig-1.5.tar.gz"
+  },
+  "build":
+  {
+    "configure": { "tool": "Autotools" } ,
+    "build": { "tool": "Make" } ,
+    "install": { "tool": "Make" }
+  },
+  "env":
+  {
+    "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
+    "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
+  }
 },
 
 {
-    "name": "Eigen",
-    "type": "cpp",
-    "link":
+  "name": "Eigen",
+  "type": "cpp",
+  "link":
+  {
+    "url": "https://bitbucket.org/eigen/eigen",
+    "type": "hg",
+    "commit": "fabd880592ac"
+  },
+  "build":
+  {
+    "configure":{ "tool": "Cmake" },
+    "build":{ "tool": "make" },
+    "install":{ "tool": "make" }
+  },
+  "env":
+  {
+    "EIGEN3_INCLUDE_DIR": "${source_directory}",
+    "EIGEN_ROOT": "${source_directory}",
+    "Eigen3_DIR": "${source_directory}"
+  },
+  "cmake":
+  {
+    "definitions":
     {
-        "url": "https://bitbucket.org/eigen/eigen",
-        "type": "hg",
-        "commit": "fabd880592ac"
-    },
-    "build":
-    {
-        "configure":{ "tool": "Cmake" },
-        "build":{ "tool": "make" },
-        "install":{ "tool": "make" }
-    },
-    "env": 
-    {
-        "EIGEN3_INCLUDE_DIR": "${source_directory}",
-        "EIGEN_ROOT": "${source_directory}",
-        "Eigen3_DIR": "${source_directory}"
-    },
-    "cmake":
-    {
-        "definitions":
-        {
-            "EIGEN3_INCLUDE_DIR": "${source_directory}"
-        }
+      "EIGEN3_INCLUDE_DIR": "${source_directory}"
     }
+  }
 },
 
-#{
-    #"name": "Boost",
-    #"type": "cpp",
-    #"link":
-    #{
-        #"url": "http://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.55.0%2F&ts=1436738044&use_mirror=superb-dca2"
-    #},
-    #"build":
-    #{
-        #"configure": { "tool": "Bootstrap" },
-        #"build": { "tool": "Bjam", "args": ["--without-log"] }
-    #},
-    #"env":
-    #{
-        #"BOOST_ROOT": "${build.configure.build_directory}",
-        #"DYLD_LIBRARY_PATH": "${build.configure.build_directory}/stage/lib"
-    #}
-#},
-
-#{
-    #"name": "PCL",
-    #"type": "cpp",
-    #"link": 
-    #{ 
-        #"url": "https://github.com/PointCloudLibrary/pcl.git",
-        #"commit": "87a54e62f17cfdd527fd0093aa232a8f381291ce"
-    #},
-    #"build": 
-    #{
-        #"configure": { "tool": "Cmake"},
-        #"build": { "tool": "make" },
-        #"install": { "tool": "make" }
-    #},
-    #"cmake":
-    #{
-        #"definitions":
-        #{
-            #"PCL_DIR":"${build.configure.install_directory}"
-        #}
-    #}
-
-#},
-
-#{
-    #"name": "PCL",
-    #"type": "cpp",
-    #"link": 
-    #{ 
-        #"url": "https://github.com/PointCloudLibrary/pcl.git",
-        #"commit": "94cd21e166be8ca31ed261b73bafe42ccbb279c6"
-    #},
-    #"build": 
-    #{
-        #"configure": { "tool": "Cmake"},
-        #"build": { "tool": "make" },
-        #"install": { "tool": "make" }
-    #},
-    #"cmake":
-    #{
-        #"definitions":
-        #{
-            #"PCL_DIR":"${build.configure.build_directory}"
-        #}
-    #}
-
-
-#},
-
 {
-    "name": "Bayes++",
-    "type": "cpp",
-    "link":
+  "name": "Bayes++",
+  "type": "cpp",
+  "link":
+  {
+    "url": "http://downloads.sourceforge.net/project/bayesclasses/Bayes%2B%2B/2014.5-1/bf-C%2B%2Bsource-2014.5-1.zip"
+  },
+  "build":
+  {
+    "configure": { "tool": "Cmake" },
+    "build": { "tool": "make" } ,
+    "install": { "tool": "make" }
+  },
+  "cmake":
+  {
+    "definitions":
     {
-        "url": "http://downloads.sourceforge.net/project/bayesclasses/Bayes%2B%2B/2014.5-1/bf-C%2B%2Bsource-2014.5-1.zip"
-    },
-    "build":
-    {
-        "configure": { "tool": "Cmake" },
-        "build": { "tool": "make" } ,
-        "install": { "tool": "make" } 
-    },
-    "cmake":
-    {
-        "definitions":
-        {
-            "BAYES++_ROOT": "${build.configure.install_directory}"
-        }
-
+      "BAYES++_ROOT": "${build.configure.install_directory}"
     }
+
+  }
 },
 
 
 {
-    "name": "MIToolBox",
-    "type": "cpp",
-    "link":
+  "name": "MIToolBox",
+  "type": "cpp",
+  "link":
+  {
+    "url": "http://www.cs.man.ac.uk/~pococka4/software/MIToolbox.zip"
+  },
+  "build":
+  {
+    "configure": { "tool": "Cmake" },
+    "build": { "tool": "make" },
+    "install": { "tool": "make" }
+  },
+  "cmake":
+  {
+    "definitions":
     {
-        "url": "http://www.cs.man.ac.uk/~pococka4/software/MIToolbox.zip"
-    },
-    "build":
-    {
-        "configure": { "tool": "Cmake" },
-        "build": { "tool": "make" },
-        "install": { "tool": "make" }
-    },
-    "cmake":
-    {
-        "definitions":
-        {
-            "MI_ROOT": "${build.configure.install_directory}"
-        }
+      "MI_ROOT": "${build.configure.install_directory}"
     }
+  }
 },
 
 {
-    "name": "Poco",
-    "type": "cpp",
-    "link": 
-    {
-        "url": "http://pocoproject.org/releases/poco-1.4.6/poco-1.4.6p3.tar.gz"
-    },
-    "build":
-    {
-        "configure": { "tool": "Autotools", "args": ["--prefix=${build.configure.install_directory}"] },
-        "build": { "tool": "make" },
-        "install": { "tool": "make" }
-    },
-    "env":
-    {
-        "POCO_ROOT": "${source_directory}"
-    }
+  "name": "Poco",
+  "type": "cpp",
+  "link":
+  {
+    "url": "http://pocoproject.org/releases/poco-1.4.6/poco-1.4.6p3.tar.gz"
+  },
+  "build":
+  {
+    "configure": { "tool": "Autotools", "args": ["--prefix=${build.configure.install_directory}"] },
+    "build": { "tool": "make" },
+    "install": { "tool": "make" }
+  },
+  "env":
+  {
+    "POCO_ROOT": "${source_directory}"
+  }
 },
 
 {
-    "name": "GLV",
-    "type": "cpp",
-    "link": 
+  "name": "GLV",
+  "type": "cpp",
+  "link":
+  {
+    "url": "https://github.com/AlloSphere-Research-Group/GLV.git",
+    "commit": "dffb906b8f333c737ffa9d2d1a26cdc802aeb895"
+  },
+  "build":
+  {
+    "configure": { "tool": "Cmake"},
+    "build": { "tool": "make" },
+    "install": { "tool": "make" }
+  },
+  "cmake":
+  {
+    "definitions":
     {
-        "url": "https://github.com/AlloSphere-Research-Group/GLV.git",
-        "commit": "dffb906b8f333c737ffa9d2d1a26cdc802aeb895"
-    },
-    "build":
-    {
-        "configure": { "tool": "Cmake"},
-        "build": { "tool": "make" },
-        "install": { "tool": "make" }
-    },
-    "cmake":
-    {
-        "definitions":
-        {
-            "GLV_ROOT": "${build.configure.install_directory}"
-        }
-    },
-    "env":
-    {
-        "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
-        "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
+      "GLV_ROOT": "${build.configure.install_directory}"
     }
-
+  },
+  "env":
+  {
+    "CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib",
+    "CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include"
+  }
 }
-
-#{
-    #"name": "OpenCV",
-    #"type": "cpp",
-    #"link": 
-    #{ 
-        #"url": "http://downloads.sourceforge.net/project/opencvlibrary/opencv-unix/2.4.8/opencv-2.4.8.zip"
-    #},
-    #"build": 
-    #{
-        #"configure": { "tool":"Cmake", "args": "-DWITH_CUDA=OFF" },
-        #"build": { "tool":"make" },
-        #"install": { "tool":"make" }
-    #},
-    #"env":
-    #{
-        #"PYTHONPATH": "${build.configure.install_directory}/lib/python2.7/site-packages",
-        #"CMAKE_INCLUDE_DIRECTORIES": "${build.configure.install_directory}/include",
-        #"CMAKE_LINK_DIRECTORIES": "${build.configure.install_directory}/lib"
-    #},
-    #"cmake":
-    #{
-        #"definitions":
-        #{
-            #"OpenCV_DIR": "${build.configure.install_directory}"
-        #}
-    #}
-
-#}
 
 ]

@@ -1,8 +1,11 @@
 add_library( L3 
     Core.cpp
+    Estimator.cpp 
     Dataset.cpp 
     Datatypes.cpp 
+    Filter.cpp 
     Iterator.cpp 
+    Integrator.cpp 
     SwatheBuilder.cpp 
     Reflectance.cpp
     Windower.cpp 
@@ -10,14 +13,13 @@ add_library( L3
     PointCloud.cpp 
     Utils.cpp 
     Reader.cpp 
+    Runner.cpp 
     Writer.cpp 
     Experience.cpp 
     SpatialData.cpp
     Projector.cpp 
     Configuration.cpp 
-    Filter.cpp 
     Tracking.cpp 
-    Estimator.cpp 
     Runner.cpp 
     Histogram.cpp
     Smoother.cpp 
@@ -30,7 +32,7 @@ add_library( L3
     Misc.cpp
     )
 
-target_link_libraries( L3 ${GSL_LIBRARIES} ${TBB_LIBRARIES} ${PCL_LIBRARIES} MI lapack blas ${BAYES++_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} )
+target_link_libraries( L3 ${GSL_LIBRARIES} ${TBB_LIBRARIES} ${PCL_LIBRARIES} ${MI_LIBRARIES} lapack blas ${BAYES++_LIBRARIES} ${Poco_LIBRARIES} ${CONFIG} )
 
 add_subdirectory( tests )
 add_subdirectory( apps )

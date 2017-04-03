@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-#include <GLV/glv.h>
-#include <GLV/glv_binding.h>
-#include <GLV/glv_util.h>
+#include <glv.h>
+#include <glv_binding.h>
+#include <glv_util.h>
 
 #include "L3.h"
 #include "Components.h"
@@ -202,8 +202,6 @@ struct EstimatorRenderer : Leaf
     L3::Estimator::Estimator<double>* estimator;
 
     void onDraw3D( glv::GLV& g );
-
-
 };
 
 
@@ -214,17 +212,12 @@ struct PredictorRenderer : Leaf
 {
     PredictorRenderer( boost::shared_ptr< L3::Estimator::PoseEstimates > estimator ) : estimator(estimator)
     {
-
     }
     
     boost::shared_ptr< L3::Estimator::PoseEstimates > estimator;
 
     void onDraw3D( glv::GLV& g );
-
-
 };
-
-
 
 }   // ::Visualisers
 }   // ::L3

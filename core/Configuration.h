@@ -1,5 +1,4 @@
-#ifndef L3_CONFIGURATION_H
-#define L3_CONFIGURATION_H
+#pragma once
 
 #include <vector>
 #include <map>
@@ -19,16 +18,15 @@ namespace L3
 namespace Configuration
 {
 
-boost::filesystem::path configurationDirectory( void );
+boost::filesystem::path configurationDirectory(void);
 
 /*
  *Configuration structures
  */
-struct LIDARParameters
-{
+struct LIDARParameters {
     LIDARParameters()
     {
-        transform.resize( 6 );
+      transform.resize(6);
     }
 
     std::string             name;
@@ -41,20 +39,17 @@ struct INSParameters
 {
 };
 
-struct Configuration
-{
+struct Configuration {
 
-    Configuration()
-    {
+    Configuration() {
     }
 
-    bool load( const std::string& target )
-    {
-        FILE* f = fopen( target.c_str(), "r"  );
-        if ( !f )
+    bool load(const std::string& target) {
+        FILE* f = fopen(target.c_str(), "r" );
+        if (!f)
             return false;
 
-        config.read( f );
+        config.read(f);
    
         return true;
     }
@@ -64,197 +59,183 @@ struct Configuration
     libconfig::Config config;
 };
 
-struct Mission : Configuration
-{
-    Mission( const L3::Dataset& dataset )
-    {
-        // Load configuration directory 
-        p = L3::Configuration::configurationDirectory();
-        
-        // Add target
-        p /= "missions";
-        p /= dataset.name() + ".config";
-        target = p.string();
-   
-        std::cout << target << std::endl;
+struct Mission : Configuration {
 
-        loadAll( target );
-    }
+  Mission(const L3::Dataset& dataset) {
+    // Load configuration directory 
+    p = L3::Configuration::configurationDirectory();
 
-    std::string locale;
-    std::string target;
-    std::string description;
-    std::map< std::string, LIDARParameters > lidars;
+    // Add target
+    p /= "missions";
+    p /= dataset.name() + ".config";
+    target = p.string();
 
-    // Estimation
-    std::string horizontal;
-    std::string declined;
+    std::cout << target << std::endl;
+
+    loadAll(target);
+  }
+
+  std::string locale;
+  std::string target;
+  std::string description;
+  std::map< std::string, LIDARParameters > lidars;
+
+  // Estimation
+  std::string horizontal;
+  std::string declined;
 
 
-    Mission( const std::string& target )  
-    {
-        this->target = target;
-       
-        loadAll( target );
-            
-    }
+  Mission(const std::string& target) {
+    this->target = target;
 
-    bool loadAll( std::string target )
-    {
+    loadAll(target);
+  }
+
+  bool loadAll(std::string target)
+  {
 #ifndef NDEBUG  
     std::cout << "Loading target..." << std::endl;
 #endif
-        if ( !load( target ) )
-            throw std::exception();
+    if (!load(target)) {
+      throw std::exception();
+    }
 
 #ifndef NDEBUG  
     std::cout << "Loading Description..." << std::endl;
 #endif
-        if ( !loadDescription() )
-            throw std::exception();
+    if (!loadDescription()) {
+      throw std::exception();
+    }
 
 #ifndef NDEBUG  
     std::cout << "Loading LIDARS..." << std::endl;
 #endif
-        if ( !loadLIDARS() )
-            throw std::exception();
+    if (!loadLIDARS()) {
+      throw std::exception();
+    }
 
 #ifndef NDEBUG  
     std::cout << "Loading estimation..." << std::endl;
 #endif
-        if ( !loadEstimation() )
-            throw std::exception();
+    if (!loadEstimation()) {
+      throw std::exception();
+    }
 
 #ifndef NDEBUG  
     std::cout << "Loading locale..." << std::endl;
 #endif
-        if ( !loadLocale() )
-            throw std::exception();
-
-        return true;
+    if (!loadLocale()) {
+      throw std::exception();
     }
 
-    
-    bool loadDescription();
-    bool loadLocale();
-    bool loadLIDARS();
-    bool loadEstimation();
-    
-};
-
-struct Locale : Configuration
-{
-
-    Locale( const std::string& locale ) : name(locale)
-    {
-
-        // Load configuration directory 
-        p = L3::Configuration::configurationDirectory();
-   
-        // Add target
-        p /= "datums";
-        p /= locale + ".config";
+    return true;
+  }
 
 
-        if ( !load( p.string() ) && loadDatum() )
-            throw std::exception();
-    }
-
-    std::string name;
-    double x_lower, x_upper, y_lower, y_upper, z;
-
-    bool loadDatum()
-    {
-        std::stringstream ss;
-       
-        // X : Lower
-        ss <<  "datum.X.lower";
-
-        if (!config.lookupValue( ss.str(), x_lower))
-            return false; 
-
-        ss.str(std::string());
-
-        // X : Upper
-        ss <<  "datum.X.upper";
-
-        if (!config.lookupValue( ss.str(), x_upper))
-            return false; 
-
-        ss.str(std::string());
-
-        // Y : Lower
-        ss <<  "datum.Y.lower";
-        
-        if (!config.lookupValue( ss.str(), y_lower))
-            return false; 
-
-        ss.str(std::string());
- 
-        // Y : Upper
-        ss <<  "datum.Y.upper";
-        
-        if (!config.lookupValue( ss.str(), y_upper))
-            return false; 
-
-        return true;
-    }
+  bool loadDescription();
+  bool loadLocale();
+  bool loadLIDARS();
+  bool loadEstimation();
 
 };
 
-struct Begbroke : Locale
-{
+struct Locale : Configuration {
 
-    Begbroke() : Locale( "begbroke_datum" )
-    {};
+  Locale(const std::string& locale) : name(locale) {
+
+    // Load configuration directory 
+    p = L3::Configuration::configurationDirectory();
+
+    // Add target
+    p /= "datums";
+    p /= locale + ".config";
+
+
+    if (!load(p.string()) && loadDatum())
+      throw std::exception();
+  }
+
+  std::string name;
+  double x_lower, x_upper, y_lower, y_upper, z;
+
+  bool loadDatum()
+  {
+    std::stringstream ss;
+
+    // X : Lower
+    ss <<  "datum.X.lower";
+
+    if (!config.lookupValue(ss.str(), x_lower))
+      return false; 
+
+    ss.str(std::string());
+
+    // X : Upper
+    ss <<  "datum.X.upper";
+
+    if (!config.lookupValue(ss.str(), x_upper))
+      return false; 
+
+    ss.str(std::string());
+
+    // Y : Lower
+    ss <<  "datum.Y.lower";
+
+    if (!config.lookupValue(ss.str(), y_lower))
+      return false; 
+
+    ss.str(std::string());
+
+    // Y : Upper
+    ss <<  "datum.Y.upper";
+
+    if (!config.lookupValue(ss.str(), y_upper))
+      return false; 
+
+    return true;
+  }
 
 };
 
-struct Woodstock : Locale
-{
-    Woodstock() : Locale( "woodstock_datum" )
-    {};
+struct Begbroke : Locale {
+    Begbroke() : Locale("begbroke_datum") {};
 };
 
+struct Woodstock : Locale {
+    Woodstock() : Locale("woodstock_datum") {};
+};
 
-struct LocaleFactory
-{
+struct LocaleFactory {
 
-    LocaleFactory()
-    {
-        locales.insert( std::make_pair( "Woodstock", new Woodstock() ));
-        locales.insert( std::make_pair( "Begbroke", new Begbroke() ) );
+  LocaleFactory() {
+    locales.insert(std::make_pair("Woodstock", new Woodstock()));
+    locales.insert(std::make_pair("Begbroke", new Begbroke()));
+  }
+
+  Locale* getLocale(std::string locale) {
+    std::map< std::string, Locale* >::iterator it = locales.find( locale);
+
+    if(it != locales.end()) {
+      return it->second;
     }
-
-    Locale* getLocale( std::string locale )
-    {
-        std::map< std::string, Locale* >::iterator it = locales.find(  locale );
-
-        if( it != locales.end() )
-            return it->second;
-        else
-            return NULL;
+    else {
+      return nullptr;
     }
+  }
 
-    std::map< std::string, Locale* > locales;
-
+  std::map< std::string, Locale* > locales;
 };
 
 /*
  *Conversion
  */
-bool convert( const LIDARParameters& params, L3::SE3& calibration );
+bool convert(const LIDARParameters& params, L3::SE3& calibration);
 
 /*
  *  I/O
  */
-std::ostream& operator<<( std::ostream& o, const Mission& mission );
-std::ostream& operator<<( std::ostream& o, const std::pair< std::string, LIDARParameters> & parameters );
+std::ostream& operator<<(std::ostream& o, const Mission& mission);
+std::ostream& operator<<(std::ostream& o, const std::pair< std::string, LIDARParameters> & parameters);
 
-
-
-} // Configuration
-} // L3
-
-#endif
-
+} // namespace Configuration
+} // namespace L3

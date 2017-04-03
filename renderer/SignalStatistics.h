@@ -5,25 +5,22 @@
 
 #include <gsl/gsl_histogram.h>
 
-#include <GLV/glv.h>
+#include <glv.h>
 
 namespace L3
 {
-    namespace Visualisers
+  namespace Visualisers
+  {
+
+    struct SignalStatistics : L3::BasicPlottable<double>
     {
 
-        struct SignalStatistics : L3::BasicPlottable<double>
-        {
+      SignalStatistics()
+      {
 
-            SignalStatistics()
-            {
+      }
 
-            }
-
-        };
-    }
+    };
+  }
 }
-
-
 #endif
-

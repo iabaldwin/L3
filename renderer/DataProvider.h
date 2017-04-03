@@ -6,20 +6,19 @@
 template <typename T>
 struct RandomDataGenerator
 {
+  std::vector<double>  data;
 
-    std::vector<double>  data;
+  T operator()()
+  {
+    data.clear();
 
-    T operator()()
+    for ( int i=0; i < L3::Sizes<T>::elements-1; i++  )
     {
-        data.clear();
-
-        for ( int i=0; i < L3::Sizes<T>::elements-1; i++  )
-        {
-            data.push_back( random() % 100 );
-        }
-
-        return T(data);
+      data.push_back( random() % 100 );
     }
+
+    return T(data);
+  }
 };
 
 namespace L3
@@ -27,39 +26,32 @@ namespace L3
 namespace Data
 {
 
-    template <typename T>
+  template <typename T>
     struct Provider
     {
 
-        Provider( unsigned int SIZE = 20 ) : size(SIZE)
-        {
+      Provider( unsigned int SIZE = 20 ) : size(SIZE)
+      {
 
-        }
+      }
 
-        unsigned int size;
-        std::vector< T > data;
-            
-        RandomDataGenerator<T> generator;
+      unsigned int size;
+      std::vector< T > data;
 
-        std::vector< T > operator()()
-        {
-            if ( data.size() == size )
-                data.erase( data.begin() );
+      RandomDataGenerator<T> generator;
 
-            data.push_back( generator() );
-            
-            return data;
-        }
+      std::vector< T > operator()()
+      {
+        if ( data.size() == size )
+          data.erase( data.begin() );
+
+        data.push_back( generator() );
+
+        return data;
+      }
 
     };
-
-
-
 }
-
 }
-
-
 
 #endif
-
