@@ -3,6 +3,7 @@ SET(CMAKE_CXX_COMPILER g++)
 project(L3)
 
 cmake_minimum_required(VERSION 2.6.4)
+set (CMAKE_CXX_STANDARD 11)
 
 include(CTest)
 
@@ -12,12 +13,18 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS})
 endif()
 
+add_definitions(-DCOMPILE_C)
+add_definitions(-Wno-deprecated-declarations)
+
 link_directories($ENV{CMAKE_LINK_DIRECTORIES})
 include_directories($ENV{CMAKE_INCLUDE_DIRECTORIES})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{CMAKE_CACHE}/find")
 
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})                    # Matrices
+
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIR})
 
 find_package(GSL REQUIRED)                                    # Math,statistics
 include_directories(${GSL_INCLUDE_DIRS})

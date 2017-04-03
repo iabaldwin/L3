@@ -14,7 +14,6 @@
 #include "VelocityProvider.h"
 #include "Performance.h"
 
-
 namespace L3
 {
 

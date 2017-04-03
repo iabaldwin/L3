@@ -261,6 +261,4 @@ namespace L3
 
   double compute_entropy( gsl_histogram* histogram );
   double compute_entropy( gsl_histogram2d* histogram );
-
-
 }

@@ -2,9 +2,9 @@
 #include <numeric>
 #include <math.h>
 
-#include <GLV/glv.h>
-#include <GLV/glv_binding.h>
-#include <GLV/glv_util.h>
+#include <glv.h>
+#include <glv_binding.h>
+#include <glv_util.h>
 
 #include "itpp/signal/filter.h"
 #include "itpp/signal/freq_filt.h"

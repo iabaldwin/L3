@@ -10,7 +10,6 @@ namespace L3
 
   class Predictor : public L3::TemporalObserver
   {
-
     public:
 
       Predictor( L3::VelocityProvider* provider ) 

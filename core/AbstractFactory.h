@@ -52,8 +52,8 @@ template <typename T>
 class AbstractFactory
 {
     public:
-        static std::pair<double, boost::shared_ptr<T>> produce(std::string& str, MaskPolicy<T>* policy = NULL);
-        static std::pair<double, boost::shared_ptr<T>> produce(std::vector<double> elements, MaskPolicy<T>* policy = NULL);
+        static std::pair<double, boost::shared_ptr<T> > produce(std::string& str, MaskPolicy<T>* policy = NULL);
+        static std::pair<double, boost::shared_ptr<T> > produce(std::vector<double> elements, MaskPolicy<T>* policy = NULL);
 
 };
 
@@ -61,8 +61,8 @@ template <>
 class AbstractFactory<L3::Pose>
 {
     public:
-        static std::pair<double, boost::shared_ptr<L3::Pose>> produce(std::string& str);
-        static std::pair<double, boost::shared_ptr<L3::Pose>> produce(std::vector<double> elements);
+        static std::pair<double, boost::shared_ptr<L3::Pose> > produce(std::string& str);
+        static std::pair<double, boost::shared_ptr<L3::Pose> > produce(std::vector<double> elements);
 };
 
 }

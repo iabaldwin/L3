@@ -1922,7 +1922,7 @@ namespace Visualisers
         //Disable control (dragging)
         plot->disable( glv::Controllable );
         plot->showNumbering(true);
-        plot->numbering(false,0);
+        //plot->numbering(false,0);
         plot->range( 0, 100, 0 );
         plot->range( 0, 1.1, 1 );
 
@@ -1942,7 +1942,7 @@ namespace Visualisers
 
         estimator_plot->disable( glv::Controllable );
         estimator_plot->showNumbering(true);
-        estimator_plot->numbering(false,0);
+        //estimator_plot->numbering(false,0);
         estimator_plot->range( 0, 100, 0 );
         estimator_plot->range( 0, 1.1, 1 );
 
@@ -1968,7 +1968,7 @@ namespace Visualisers
 
         displacement_plot->disable( glv::Controllable );
         displacement_plot->showNumbering(true);
-        displacement_plot->numbering(false,0);
+        //displacement_plot->numbering(false,0);
         displacement_plot->range( 0, oracle_displacement->hist->n, 0 );
         displacement_plot->range( 0, 1.1, 1 );
 

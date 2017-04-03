@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 
-#include <GLV/glv.h>
-#include <GLV/glv_binding.h>
-#include <GLV/glv_util.h>
+#include <glv.h>
+#include <glv_binding.h>
+#include <glv_util.h>
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 

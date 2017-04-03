@@ -5,7 +5,6 @@
 
 namespace L3
 {
-
   struct LengthEstimator 
   {
 
@@ -52,5 +51,3 @@ namespace L3
   template <typename InputIterator, typename OutputIterator >
     void reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written );
 }
-
-#include "Integrator.hpp"

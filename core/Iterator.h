@@ -66,5 +66,4 @@ namespace L3
       bool update( double time );
   };
 
-
 } // L3

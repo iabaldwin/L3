@@ -16,38 +16,38 @@ namespace L3
 
 class ChainBuilder 
 {
-    public:
+  public:
 
-        ChainBuilder(L3::VelocityProvider* provider) : velocity_provider(provider) {
-        }
+    ChainBuilder(L3::VelocityProvider* provider) : velocity_provider(provider) {
+    }
 
-        bool update() {
-            // Reset
-            window.clear();
+    bool update() {
+      // Reset
+      window.clear();
 
-            // Allocate
-            window.resize(velocity_provider->filtered_velocities.size());
+      // Allocate
+      window.resize(velocity_provider->filtered_velocities.size());
 
-            _incremental_distances.resize(velocity_provider->filtered_velocities.size());
+      _incremental_distances.resize(velocity_provider->filtered_velocities.size());
 
-            double distance;
+      double distance;
 
-            // Accumulate 
-            L3::trajectoryAccumulate(velocity_provider->filtered_velocities.begin(), 
-                                        velocity_provider->filtered_velocities.end(), 
-                                        window.begin(), 
-                                        distance, 
-                                        std::numeric_limits<double>::infinity());
+      // Accumulate 
+      L3::trajectoryAccumulate(velocity_provider->filtered_velocities.begin(), 
+          velocity_provider->filtered_velocities.end(), 
+          window.begin(), 
+          distance, 
+          std::numeric_limits<double>::infinity());
 
-            return true;
-        }
+      return true;
+    }
 
-        std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > window;
+    std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > window;
 
-    private:
+  private:
 
-        std::deque < double > _incremental_distances;
-        L3::VelocityProvider* velocity_provider;
+    std::deque < double > _incremental_distances;
+    L3::VelocityProvider* velocity_provider;
 
 };
 

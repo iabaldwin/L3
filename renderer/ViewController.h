@@ -2,7 +2,7 @@
 #define L3_VIEW_CONTROLLERS_H
 
 #include <iostream>
-#include <GLV/glv.h>
+#include <glv.h>
 #include "L3.h"
 
 namespace L3

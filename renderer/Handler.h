@@ -6,37 +6,37 @@ namespace L3
 namespace Visualisers
 {
 
-    struct Handler
+  struct Handler
+  {
+    virtual bool onEvent( glv::Event::t e, glv::GLV& g) = 0;
+  };
+
+
+  struct Playback : Handler
+  {
+    Playback( L3::DatasetRunner* runner ) : runner(runner)
     {
-        virtual bool onEvent( glv::Event::t e, glv::GLV& g) = 0;
-    };
+    }
 
+    L3::DatasetRunner* runner;
 
-    struct Playback : Handler
+    bool onEvent( glv::Event::t e, glv::GLV& g) 
     {
-        Playback( L3::DatasetRunner* runner ) : runner(runner)
-        {
-        }
+      // Dump history
+      if ( e == glv::Event::KeyDown) 
+      {
+        const glv::Keyboard& k = g.keyboard();
 
-        L3::DatasetRunner* runner;
+        // If we just use space, have to make sure that
+        // the scripting interface is not visible, otherwise
+        // we can't type spaces without pausing the engine
 
-        bool onEvent( glv::Event::t e, glv::GLV& g) 
-        {
-            // Dump history
-           if ( e == glv::Event::KeyDown) 
-           {
-                const glv::Keyboard& k = g.keyboard();
-      
-                // If we just use space, have to make sure that
-                // the scripting interface is not visible, otherwise
-                // we can't type spaces without pausing the engine
+        //if ( k.key() 
+      }
 
-                //if ( k.key() 
-           }
+    }
 
-        }
-    
-    };
+  };
 
 }
 }

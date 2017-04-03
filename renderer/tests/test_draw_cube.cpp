@@ -1,9 +1,8 @@
 #include <iostream>
 
-#include <GLV/glv.h>
-#include <GLV/glv_binding.h>
-#include <GLV/glv_util.h>
-
+#include <glv.h>
+#include <glv_binding.h>
+#include <glv_util.h>
 
 #include "L3.h"
 #include "Visualisers.h"

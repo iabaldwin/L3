@@ -9,8 +9,8 @@ class ICocoaEventReceiver;
 
 @interface CocoaEventListener : NSObject
 {
-        @private
-                    ICocoaEventReceiver *m_receiver;
+  @private
+    ICocoaEventReceiver *m_receiver;
 }
 
 -(id) initWithReceiver: (ICocoaEventReceiver*) receiver;
@@ -21,4 +21,3 @@ class ICocoaEventReceiver;
 @end
 
 #endif // COCOAEVENTLISTENER_H
-

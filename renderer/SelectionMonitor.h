@@ -5,9 +5,6 @@ namespace L3
 {
 namespace Visualisers
 {
-
-
-
 }
 }
 

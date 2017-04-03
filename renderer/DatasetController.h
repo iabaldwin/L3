@@ -5,57 +5,53 @@ namespace L3
 {
 namespace Visualisers
 {
-    struct DatasetController : glv::EventHandler
+  struct DatasetController : glv::EventHandler
+  {
+    L3::DatasetRunner* runner;
+
+    bool onEvent( glv::View& v, glv::GLV& g)
     {
-        L3::DatasetRunner* runner;
+      const glv::Keyboard& k = g.keyboard();
 
-        bool onEvent( glv::View& v, glv::GLV& g)
-        {
-            const glv::Keyboard& k = g.keyboard();
+      switch (k.key())
+      {
+        case ' ':
+          runner->paused = !runner->paused;
 
-            switch (k.key())
-            {
-                case ' ':
-                    runner->paused = !runner->paused;
+      }
 
-            }
-       
-            //TODO
-            return true;
-        }
+      //TODO
+      return true;
+    }
 
-    };
+  };
 
-    struct ReflectanceController : glv::EventHandler
+  struct ReflectanceController : glv::EventHandler
+  {
+
+    ReflectanceController( bool& switch_val ) : switch_val(switch_val)
     {
 
-        ReflectanceController( bool& switch_val ) : switch_val(switch_val)
-        {
+    }
 
-        }
+    bool& switch_val;
 
-        bool& switch_val;
+    bool onEvent( glv::View& v, glv::GLV& g)
+    {
+      const glv::Keyboard& k = g.keyboard();
 
-        bool onEvent( glv::View& v, glv::GLV& g)
-        {
-            const glv::Keyboard& k = g.keyboard();
+      switch (k.key())
+      {
+        case ' ':
+          switch_val = !switch_val;
+      }
 
-            switch (k.key())
-            {
-                case ' ':
-                    switch_val = !switch_val;
-            }
-        
-            //TODO
-            return true;
-        }
+      //TODO
+      return true;
+    }
 
-    };
+  };
 }
 }
-
-
-
 
 #endif
-

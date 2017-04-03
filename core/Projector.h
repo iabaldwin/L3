@@ -15,8 +15,7 @@ namespace L3
     {
       Eigen::Matrix4f calibration;
 
-      public:
-
+    public:
 
       Projector( L3::SE3* calib, L3::PointCloud<T>* cloud ) 
         : cloud(cloud), 
@@ -49,9 +48,7 @@ namespace L3
     {
       Eigen::Matrix4f calibration;
 
-      public:
-
-
+    public:
       ReflectanceProjector( L3::SE3* calib, L3::PointCloudE<T>* cloud ) 
         : cloud(cloud), 
         allocated_size(500), 
@@ -77,6 +74,4 @@ namespace L3
       void project( SWATHE& swathe );
 
     };
-
-
 } // L3

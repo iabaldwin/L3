@@ -6,7 +6,6 @@ namespace L3
 {
 namespace Estimator
 {
-
   template <typename T>
   struct CostFactory {
     static boost::shared_ptr< CostFunction<T> > produce(std::string cost_function)
