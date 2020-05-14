@@ -1,5 +1,4 @@
-#ifndef L3_VISUALISERS_DATASET_TOOLS_H
-#define L3_VISUALISERS_DATASET_TOOLS_H
+#pragma once
 
 #include <glv.h>
 
@@ -31,7 +30,7 @@ namespace L3
         const glv::Keyboard& k = g.keyboard();
         int key = k.key();
 
-        if ( key == ' ' )
+        if ( key == 32 )
         {
           boost::shared_ptr< L3::Dataset > dataset_ptr = dataset.lock();
 
@@ -53,19 +52,11 @@ namespace L3
             }
             else
               counter =0;
-
-
-
           }
         }
-
         return false;
       }
-
     };
 
-  }
-
-}
-
-#endif
+  } // Visualisers
+} // L3

@@ -5,23 +5,21 @@
 
 namespace L3
 {
-
   ReflectanceBuilder::ReflectanceBuilder(L3::Dataset& dataset, double start_time, double end_time, double section_threshold, double scan_spacing_threshold) {
-    std::cout.precision(15);
-
     // Pose reader
     pose_reader = boost::make_shared< L3::IO::BinaryReader<L3::SE3> >();
 
     if (!pose_reader->open(dataset.path() + "/OxTS.ins")) {
-      std::cerr << "No poses available" << std::endl;
-      throw std::exception();
+      constexpr char error_message[] = "No poses available";
+      LOG(ERROR) << error_message;
+      throw std::runtime_error(error_message);
     }
 
     // Scan reader
     LIDAR_reader.reset(new L3::IO::SequentialBinaryReader<L3::LMS151>());
 
     if (!LIDAR_reader->open(dataset.path() + "/LMS1xx_10420002_192.168.0.50.lidar")) {
-      std::cerr << "No LIDAR available" << std::endl;
+      LOG(ERROR) << "No LIDAR available";
       throw std::exception();
     }
 
@@ -39,7 +37,7 @@ namespace L3
     SWATHE swathe;
 
     // Calibration/projection
-    L3::Configuration::Mission mission(dataset);   
+    L3::Configuration::Mission mission(dataset);
     L3::SE3 calibration = L3::SE3::ZERO();
     L3::Configuration::convert(mission.lidars[ mission.declined ], calibration);
 
@@ -105,23 +103,23 @@ namespace L3
         L3::Timing::SysTimer t;
         t.begin();
 #endif
-        // Project the points 
+        // Project the points
         projector->project(swathe);
 
 #ifndef NDEBUG
-        std::cout << point_cloud->num_points << " points in " << t.elapsed() << "s" << std::endl;
+        LOG(INFO) << point_cloud->num_points << " points in " << t.elapsed() << "s";
 #endif
         // Compute mean
         boost::tuple<double,double,double> means = mean(point_cloud.get() );
 
 #ifndef NDEBUG
-        std::cout << means.get<0>() << " " << means.get<1>() << std::endl;
+        LOG(INFO) << means.get<0>() << " " << means.get<1>();
 #endif
         //Data format:
         //XYZ Alpha
 
         //  Writing : DATA
-        //  1. Write points 
+        //  1. Write points
         unsigned int payload_size = point_cloud->num_points*sizeof(L3::PointE<double>);
         reflectance_data.write((char*)(point_cloud->points), payload_size);
         //  Writing : INDEX
@@ -143,13 +141,12 @@ namespace L3
     }
   }
 
-
   void ReflectanceLoader::load(const std::string& target) {
     std::ifstream reflectance_index((target + "/reflectance.index").c_str(), std::ios::binary);
 
     if (!reflectance_index.good()) {
-      std::cerr << "No reflectance data <" <<  target << ">" << std::endl;
-      return; 
+      LOG(ERROR) << "No reflectance data <" <<  target << ">";
+      return;
     }
 
     std::string reflectance_data(target + "/reflectance.dat");
@@ -157,7 +154,7 @@ namespace L3
     spatial_data section;
 
     while(true) {
-      reflectance_index.read((char*)(&section.id),                sizeof(int)); 
+      reflectance_index.read((char*)(&section.id),                sizeof(int));
       reflectance_index.read((char*)(&section.x),                 sizeof(double));
       reflectance_index.read((char*)(&section.y),                 sizeof(double));
       reflectance_index.read((char*)(&section.stream_position),   sizeof(unsigned int));
@@ -197,26 +194,23 @@ namespace L3
   /*
    *  Reflectance structure
    */
-  Reflectance::Reflectance(std::deque< spatial_data > sections, 
-      std::string fname, 
+  Reflectance::Reflectance(std::deque< spatial_data > sections,
+      std::string fname,
       boost::shared_ptr< SelectionPolicy > policy,
       int window)
     : SpatialQuery(sections, fname, policy, window),
     resident_point_cloud(new L3::PointCloudE<double>()) {
-    // Open 
-    data.open(fname.c_str(), std::ios::binary);
-
-    // Go
-    thread.start(*this);
-  }
+      // Open
+      data.open(fname.c_str(), std::ios::binary);
+      // Go
+      thread.start(*this);
+    }
 
   Reflectance::~Reflectance() {
-    data.close();          
-
-    running = false;        
-
+    data.close();
+    running = false;
     if(thread.isRunning())
-      thread.join();          
+      thread.join();
   }
 
   void Reflectance::run() {
@@ -228,8 +222,7 @@ namespace L3
        */
       std::list<unsigned int> required_sections;
       if (!policy->operator()(&sections, _x, _y, required_sections, window))  {
-        std::cerr << "Unable to apply selection policy, cannot continue..." << std::endl;
-        exit(-1);
+        LOG(FATAL) << "Unable to apply selection policy, cannot continue...";
       }
 
       /*
@@ -253,9 +246,9 @@ namespace L3
 
         //We need it, and don't have it
         if (map_it == resident_sections.end()) {
-          update_required = true; 
+          update_required = true;
 
-          //Load 
+          //Load
           std::pair< unsigned int, L3::PointE<double>* > load_result = load(*it);
 
           L3::PointCloudE<double>* cloud = new L3::PointCloudE<double>();
@@ -277,11 +270,11 @@ namespace L3
       std::map< unsigned int, std::pair< bool, boost::shared_ptr< L3::PointCloudE<double> > > >::iterator map_it = resident_sections.begin();
       while(map_it != resident_sections.end()) {
         if(!map_it->second.first) {
-          update_required = true; 
-          map_it->second.second.reset(); 
+          update_required = true;
+          map_it->second.second.reset();
           resident_sections.erase(map_it++);
         } else {
-          clouds.push_back(map_it++->second.second); 
+          clouds.push_back(map_it++->second.second);
         }
       }
 
@@ -309,14 +302,12 @@ namespace L3
     data.seekg(sections[id].stream_position, std::ios_base::beg);
     char* tmp = new char[sections[id].payload_size];
 
-    // Read 
+    // Read
     data.read(tmp, sections[id].payload_size);
 
     // DBG checks
-    assert(data.good()); 
-    assert(sections[id].payload_size == data.gcount());
-
+    CHECK(data.good());
+    CHECK_EQ(sections[id].payload_size, data.gcount());
     return std::make_pair(sections[id].payload_size/sizeof(L3::PointE<double>), reinterpret_cast<L3::PointE<double>*>(tmp));
   }
-
-}
+} // L3

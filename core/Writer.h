@@ -11,7 +11,6 @@ namespace L3
 {
   namespace IO
   {
-
     class Writer 
     {
 
@@ -24,9 +23,7 @@ namespace L3
             stream.close();
         }
 
-
       protected:
-
         std::ofstream stream;
     };
 
@@ -44,7 +41,6 @@ namespace L3
         }
 
         virtual size_t write( std::vector< std::pair< double, boost::shared_ptr<T> > >& data ) ;
-
     };
-  }
-}
+  } // IO
+} // L3

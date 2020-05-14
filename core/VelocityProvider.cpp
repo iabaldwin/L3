@@ -6,11 +6,9 @@ typedef std::deque <std::pair< double, boost::shared_ptr< L3::LHLV > > >::iterat
 
 namespace L3
 {
-
-  ScanMatchingVelocityProvider::ScanMatchingVelocityProvider(L3::ScanMatching::Engine* engine ) 
+  ScanMatchingVelocityProvider::ScanMatchingVelocityProvider(L3::ScanMatching::Engine* engine )
     : engine(engine){
   }
-
 
   bool ScanMatchingVelocityProvider::update(double time) {
     L3::WriteLock master(this->mutex);
@@ -29,7 +27,7 @@ namespace L3
     return true;
   }
 
-  FilteredScanMatchingVelocityProvider::FilteredScanMatchingVelocityProvider(boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider) 
+  FilteredScanMatchingVelocityProvider::FilteredScanMatchingVelocityProvider(boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider)
     : velocity_provider(velocity_provider) {
     _linear_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.1, .01);
     _rotational_velocity_filter = boost::make_shared< L3::Tracking::AlphaBetaFilter >(.5,0.1);
@@ -51,7 +49,7 @@ namespace L3
   };
 
   bool FilteredScanMatchingVelocityProvider::update(double time) {
-    boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider_ptr = velocity_provider.lock(); 
+    boost::shared_ptr< L3::ConstantTimeIterator< L3::SMVelocity > > velocity_provider_ptr = velocity_provider.lock();
 
     if(!velocity_provider_ptr || velocity_provider_ptr->window.empty()) {
       return false;
@@ -105,7 +103,7 @@ namespace L3
 
     filtered_velocities.clear();
 
-    std::transform(iterator->window.begin(), 
+    std::transform(iterator->window.begin(),
         iterator->window.end(),
         std::back_inserter(filtered_velocities),
         z);
@@ -114,4 +112,4 @@ namespace L3
 
     return (!filtered_velocities.empty());
   }
-}
+} // L3

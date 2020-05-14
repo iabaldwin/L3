@@ -1,5 +1,4 @@
-#ifndef L3_VIEW_CONTROLLERS_H
-#define L3_VIEW_CONTROLLERS_H
+#pragma once
 
 #include <iostream>
 #include <glv.h>
@@ -7,92 +6,89 @@
 
 namespace L3
 {
-namespace Visualisers
-{
+  namespace Visualisers
+  {
 
-struct control_t
-{
-    control_t();
-    
-    control_t( float x, float y, float z, float r, float p, float q );
-
-    control_t& operator +=( control_t& rhs  );
-
-    control_t& translateZ( float z );
-
-    control_t& updateHomogeneous();
-    control_t& updateEuler();
-
-    Eigen::Matrix4f homogeneous;
-
-    double x,y,z,r,p,q;
-};
-
-/*
- *  Core controller class
- */
-struct Controller 
-{
-    Controller( control_t& position ) : current(position)
+    struct control_t
     {
-    }
+      control_t();
 
-    virtual ~Controller(){}
+      control_t( float x, float y, float z, float r, float p, float q );
 
-    control_t& current;
+      control_t& operator +=( control_t& rhs  );
 
-};
+      control_t& translateZ( float z );
 
-struct SceneController : Controller
-{
+      control_t& updateHomogeneous();
+      control_t& updateEuler();
 
-    SceneController( control_t& position ) : Controller(position)
+      Eigen::Matrix4f homogeneous;
+
+      double x,y,z,r,p,q;
+    };
+
+    /*
+     *  Core controller class
+     */
+    struct Controller 
     {
-    }
+      Controller( control_t& position ) : current(position)
+      {
+      }
 
-    bool onEvent( glv::Event::t type, glv::GLV& g );
+      virtual ~Controller(){}
 
-};
+      control_t& current;
 
+    };
 
-/*
- *  Basic panning motion
- */
-struct BasicPanController : Controller
-{
-    BasicPanController( control_t& position ) : Controller(position)
+    struct SceneController : Controller
     {
-    }
 
-    bool onEvent( glv::Event::t type, glv::GLV& g );
-    //bool onEvent(glv::View&, glv::GLV&);
-    
+      SceneController( control_t& position ) : Controller(position)
+      {
+      }
 
-};
+      bool onEvent( glv::Event::t type, glv::GLV& g );
 
-/*
- *  FPS Motion
- */
-struct FPSController : Controller
-{
-    FPSController( control_t& control ) : Controller(control)
+    };
+
+
+    /*
+     *  Basic panning motion
+     */
+    struct BasicPanController : Controller
     {
-    }
+      BasicPanController( control_t& position ) : Controller(position)
+      {
+      }
 
-    bool onEvent(glv::View&, glv::GLV&);
-};
+      bool onEvent( glv::Event::t type, glv::GLV& g );
+    };
 
-
-struct CompositeController : Controller
-{
-    
-    double origin_x, origin_y;
-
-    struct MouseDownController : glv::EventHandler
+    /*
+     *  FPS Motion
+     */
+    struct FPSController : Controller
     {
+      FPSController( control_t& control ) : Controller(control)
+      {
+      }
+
+      bool onEvent(glv::View&, glv::GLV&);
+    };
+
+
+    struct CompositeController : Controller
+    {
+
+      double origin_x, origin_y;
+
+      struct MouseDownController : glv::EventHandler
+      {
 
         MouseDownController( double& origin_x, double& origin_y ) 
-            : origin_x(origin_x), origin_y(origin_y)
+          : origin_x(origin_x), origin_y(origin_y)
         {
 
         }
@@ -102,18 +98,18 @@ struct CompositeController : Controller
 
         bool onEvent(glv::View&, glv::GLV& g)
         {
-            origin_x = g.mouse().x();
-            origin_y = g.mouse().y();
-       
-            return false;
+          origin_x = g.mouse().x();
+          origin_y = g.mouse().y();
+
+          return false;
         }
 
-    };
+      };
 
-    struct MouseDragController : glv::EventHandler
-    {
+      struct MouseDragController : glv::EventHandler
+      {
         MouseDragController( control_t& current, double& origin_x, double& origin_y ) 
-            : current(current), origin_x(origin_x), origin_y(origin_y)
+          : current(current), origin_x(origin_x), origin_y(origin_y)
         {
 
         }
@@ -123,26 +119,20 @@ struct CompositeController : Controller
         double& origin_y;
 
         bool onEvent(glv::View&, glv::GLV& g);
-    };
+      };
 
-    boost::shared_ptr< MouseDownController >    mouse_down_controller;
-    boost::shared_ptr< MouseDragController >    mouse_drag_controller;
+      boost::shared_ptr< MouseDownController >    mouse_down_controller;
+      boost::shared_ptr< MouseDragController >    mouse_drag_controller;
 
-    CompositeController( glv::View3D* view, control_t& position ) : Controller(position)
-    {
+      CompositeController( glv::View3D* view, control_t& position ) : Controller(position)
+      {
         mouse_down_controller = boost::make_shared< MouseDownController >( boost::ref( origin_x), boost::ref( origin_y ));
         mouse_drag_controller = boost::make_shared< MouseDragController >( boost::ref( current), boost::ref( origin_x ), boost::ref( origin_y ) );
 
         view->addHandler( glv::Event::MouseDown, *mouse_down_controller );
         view->addHandler( glv::Event::MouseDrag, *mouse_drag_controller );
-    }
+      }
+    };
 
-};
-
-
-
-}
-}
-
-
-#endif
+  } // Visualisers
+} // L3

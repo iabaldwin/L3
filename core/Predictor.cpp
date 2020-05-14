@@ -13,5 +13,4 @@ namespace L3
   bool Predictor::predict(const L3::SE3& current) {
     return true;
   }
-}
-
+} // L3

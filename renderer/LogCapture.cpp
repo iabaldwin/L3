@@ -2,15 +2,12 @@
 
 std::streamsize OutputSink::write(const char* s, std::streamsize n)
 {
-
   if ( n>0)
   {
     if ( RING_BUFFER.size() > RING_SIZE )
       RING_BUFFER.pop_back();
     else
-    {
       RING_BUFFER.push_front( std::string( s, s+n ) );
-    }
   }
 
   std::clog <<  n << std::endl;

@@ -12,7 +12,7 @@ namespace L3
 
       struct state
       {
-        double x,v; 
+        double x,v;
 
         state& operator=( const state& lhs )
         {
@@ -25,7 +25,7 @@ namespace L3
 
       } _state;
 
-      AlphaBetaFilter( float alpha, float beta, double x=0.0, double v=0.0) 
+      AlphaBetaFilter( float alpha, float beta, double x=0.0, double v=0.0)
         : alpha(alpha), beta(beta),
         previous_update(0.0)
       {
@@ -37,31 +37,9 @@ namespace L3
       double previous_update;
 
       void update( const double time, const double measurement );
-
-
     };
-
 
     std::ostream& operator<<( std::ostream& out, const AlphaBetaFilter::state& state );
 
-    struct KalmanFilter : Updateable
-    {
-      KalmanFilter()
-      {
-
-      }
-
-      virtual void update( ) = 0;
-    };
-
-    struct EKF
-    {
-
-
-
-
-    };
-
-  }
-
-}
+  } // Tracking
+} // L3

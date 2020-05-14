@@ -1,5 +1,4 @@
-#ifndef L3_CHAIN_BUILDER_H
-#define L3_CHAIN_BUILDER_H
+#pragma once
 
 #include <cmath>
 #include <numeric>
@@ -14,11 +13,12 @@
 namespace L3
 {
 
-class ChainBuilder 
+class ChainBuilder
 {
   public:
 
     ChainBuilder(L3::VelocityProvider* provider) : velocity_provider(provider) {
+      CHECK_NOTNULL(provider);
     }
 
     bool update() {
@@ -32,25 +32,20 @@ class ChainBuilder
 
       double distance;
 
-      // Accumulate 
-      L3::trajectoryAccumulate(velocity_provider->filtered_velocities.begin(), 
-          velocity_provider->filtered_velocities.end(), 
-          window.begin(), 
-          distance, 
-          std::numeric_limits<double>::infinity());
-
+      // Accumulate
+      L3::trajectoryAccumulate(velocity_provider->filtered_velocities.begin(),
+                               velocity_provider->filtered_velocities.end(),
+                               window.begin(),
+                               distance,
+                               std::numeric_limits<double>::infinity());
       return true;
     }
 
     std::deque< std::pair< double, boost::shared_ptr<L3::SE3> > > window;
 
   private:
-
     std::deque < double > _incremental_distances;
-    L3::VelocityProvider* velocity_provider;
-
+    L3::VelocityProvider* velocity_provider{nullptr};
 };
 
-} // namespace L3
-
-#endif
+} // L3

@@ -9,9 +9,7 @@ namespace L3
 {
   class SwatheBuilder : public TemporalObserver
   {
-
     public:
-
       SWATHE swathe;
 
     protected:
@@ -51,13 +49,10 @@ namespace L3
 
       bool update( double );
 
-
     private:
 
       double previous_update;
 
       std::deque< std::pair< double, boost::shared_ptr< L3::LMS151 > > > _window_buffer;
   };
-
-
-}
+} // L3

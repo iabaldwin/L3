@@ -4,8 +4,7 @@
 
 namespace L3
 {
-
-  template <bool> 
+  template <bool>
     struct StaticCheck;
   template <>
     struct StaticCheck<true>{};
@@ -64,26 +63,26 @@ namespace L3
     {
 
       this->filter[0][0] = 0.0030;
-      this->filter[0][1] = 0.0133; 
+      this->filter[0][1] = 0.0133;
       this->filter[0][2] = 0.0219;
       this->filter[0][3] = 0.0133;
       this->filter[0][4] = 0.0030;
 
 
-      this->filter[1][0] = 0.0133; 
+      this->filter[1][0] = 0.0133;
       this->filter[1][1] = 0.0596;
       this->filter[1][2] = 0.0983;
       this->filter[1][3] = 0.0596;
       this->filter[1][4] = 0.0133;
 
 
-      this->filter[2][0] = 0.0219; 
-      this->filter[2][1] = 0.0983; 
+      this->filter[2][0] = 0.0219;
+      this->filter[2][1] = 0.0983;
       this->filter[2][2] = 0.1621;
       this->filter[2][3] = 0.0983;
       this->filter[2][4] = 0.0219;
 
-      this->filter[3][0] = 0.0133; 
+      this->filter[3][0] = 0.0133;
       this->filter[3][1] = 0.0596;
       this->filter[3][2] = 0.0983;
       this->filter[3][3] = 0.0596;
@@ -102,7 +101,7 @@ namespace L3
     {
       Smoother<T,5>::smooth(hist);
     }
-
   };
+} // L3
 
-}
+#include "Smoother.hpp"

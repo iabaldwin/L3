@@ -1,41 +1,26 @@
-#ifndef COMMON_IMAGERY_H
-#define COMMON_IMAGERY_H
+#pragma once
 
-#include <flann/flann.hpp>
-#include <opencv/cv.h>
-#include <opencv2/highgui/highgui.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/make_shared.hpp>
+#include "boost/shared_ptr.hpp"
+#include "boost/filesystem.hpp"
+#include "boost/make_shared.hpp"
 
 namespace common
 {
-namespace imagery
-{
+  namespace imagery
+  {
+    struct Image {
+      Image( unsigned char* data , int width, int height, int channels ) : imageData(data),
+             width{width}, height{height},
+             widthStep{channels * width} {
+      }
 
-  struct Image {
-    Image( IplImage* image ) : _image(image), 
-    width(image->width), height(image->height), 
-    widthStep(image->widthStep ), 
-    imageData(image->imageData) {
-    }
+      unsigned char* imageData{nullptr};
+      int width{-1}, height{-1}, widthStep{-1};
+    };
 
-    IplImage* _image;
-    char* imageData;
-    int width, height, widthStep;
+    typedef boost::shared_ptr< Image > IMAGE;
+  
+    IMAGE loadImage( const std::string& target );
 
-    ~Image() {
-      cvReleaseImage(&_image);
-    }
-
-  };
-
-  typedef boost::shared_ptr< Image > IMAGE;
-
-  // Loading
-  IMAGE loadImage( const std::string& target ) ;
-
-}
-}
-
-#endif
+  } // imagery
+} // common

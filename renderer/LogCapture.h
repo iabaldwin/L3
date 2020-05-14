@@ -1,11 +1,11 @@
-#ifndef L3_VISUALISERS_LOG_CAPTURE_H
-#define L3_VISUALISERS_LOG_CAPTURE_H
+#pragma once
 
 #include <iostream>
 #include <sstream>
 #include <list>
 
-#include <boost/iostreams/concepts.hpp> 
+#include <boost/next_prior.hpp>
+#include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/stream_buffer.hpp>
 
 #include <glv.h>
@@ -14,7 +14,7 @@ class OutputSink : public boost::iostreams::sink
 {
   public:
 
-    OutputSink( unsigned int RING_SIZE = 100 ) : RING_SIZE(RING_SIZE) 
+    OutputSink( unsigned int RING_SIZE = 100 ) : RING_SIZE(RING_SIZE)
   {
   }
 
@@ -28,32 +28,29 @@ class OutputSink : public boost::iostreams::sink
 
 namespace L3
 {
-namespace Visualisers
-{
-
-  struct LogCapture : glv::TextView
+  namespace Visualisers
   {
-    LogCapture() : glv::TextView( glv::Rect( 600,300 ) )
+
+    struct LogCapture : glv::TextView
     {
-      //sb.open(OutputSink());
-      sb.open(sink);
-      previous_buffer = std::cout.rdbuf(&sb); 
-    }
+      LogCapture() : glv::TextView( glv::Rect( 600,300 ) )
+      {
+        sb.open(sink);
+        previous_buffer = std::cout.rdbuf(&sb);
+      }
 
-    ~LogCapture()
-    {
-      std::cout.rdbuf(previous_buffer);
-    }
+      ~LogCapture()
+      {
+        std::cout.rdbuf(previous_buffer);
+      }
 
-    OutputSink sink;
+      OutputSink sink;
 
-    boost::iostreams::stream_buffer<OutputSink> sb;
+      boost::iostreams::stream_buffer<OutputSink> sb;
 
-    std::streambuf* previous_buffer;
+      std::streambuf* previous_buffer;
 
-    void onDraw( glv::GLV& g );
-  };
-}
-}
-
-#endif
+      void onDraw( glv::GLV& g );
+    };
+  } // Visualisers
+} // L3

@@ -47,11 +47,9 @@ namespace L3
       double elapsed()
       {
         boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
-        //return( boost::chrono::duration<double>( boost::chrono::system_clock::now() - start ) );
-        return sec.count(); 
+        return sec.count();
       }
-
     };
 
-  } // Tools  
+  } // Timing
 } // L3

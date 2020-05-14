@@ -1,5 +1,4 @@
-#ifndef L3_VISUALISERS_PLOTTERS_H
-#define L3_VISUALISERS_PLOTTERS_H
+#pragma once
 
 #include "L3.h"
 
@@ -29,22 +28,22 @@ namespace L3
 
 
       int index;
-      bool filtered; 
+      bool filtered;
       double x_limit, y_centroid;
       boost::shared_ptr< variable_lock<double> > time_lock;
 
-      boost::weak_ptr< glv::Plot > plot_parent; 
-      boost::weak_ptr< L3::VelocityProvider > iterator; 
+      boost::weak_ptr< glv::Plot > plot_parent;
+      boost::weak_ptr< L3::VelocityProvider > iterator;
 
       void setTime( double& time )
       {
-        time_lock = boost::make_shared< variable_lock<double> >( boost::ref(time) ); 
+        time_lock = boost::make_shared< variable_lock<double> >( boost::ref(time) );
       }
 
       void onMap( glv::GraphicsData& g, const glv::Data& d, const glv::Indexer& i)
       {
         L3::ReadLock reader( this->mutex );
-        int counter = 0; 
+        int counter = 0;
 
         while(i()){
           double x = d.at<double>(0, counter );
@@ -77,8 +76,5 @@ namespace L3
         this->color( glv::Color( 0,1,0 ) );
       }
     };
-
   }   // Visualisers
-}       // L3
-
-#endif
+}     // L3

@@ -1,5 +1,4 @@
-#ifndef COCOAEVENTLISTENER_H
-#define COCOAEVENTLISTENER_H
+#pragma once
 
 #undef slots // needed because Qt defines "slots", and Cocoa.h has "slots" as a variable name
 #import <Cocoa/Cocoa.h>
@@ -19,5 +18,3 @@ class ICocoaEventReceiver;
 -(void) eventReceived: (NSNotification*) note;
 
 @end
-
-#endif // COCOAEVENTLISTENER_H

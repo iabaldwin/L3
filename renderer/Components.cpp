@@ -4,11 +4,14 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/scoped_array.hpp>
 
-#include <mach/vm_statistics.h>
-#include <mach/mach_types.h> 
-#include <mach/mach_init.h>
-#include <mach/mach_host.h>
-#include <mach/mach.h> 
+
+#if defined(__APPLE__)
+  #include <mach/vm_statistics.h>
+  #include <mach/mach_types.h> 
+  #include <mach/mach_init.h>
+  #include <mach/mach_host.h>
+  #include <mach/mach.h> 
+#endif
 
 #include <gsl/gsl_histogram.h>
 
@@ -1726,6 +1729,7 @@ namespace Visualisers
       this->disable( glv::DrawBorder );
     }
 
+#if defined (__APPLE__)
     vm_size_t page_size;
     mach_port_t mach_port;
     mach_msg_type_number_t count;
@@ -1748,10 +1752,8 @@ namespace Visualisers
 
         return std::make_pair( used_memory, myFreeMemory );
       }
-
       return std::make_pair( 0, 0);
     }
-
 
     std::pair< int64_t, int64_t > getApplicationMemoryUsage()
     {
@@ -1768,6 +1770,19 @@ namespace Visualisers
         return std::make_pair( t_info.resident_size, t_info.virtual_size ) ;
 
     }
+#else
+
+    std::pair< int64_t, int64_t > getApplicationMemoryUsage()
+    {
+      return std::make_pair( 0, 0);
+    }
+
+    std::pair< int64_t, int64_t > getSystemMemoryUsage() {
+      return std::make_pair( 0, 0);
+    }
+#endif
+
+    
 
 
     void onDraw(glv::GLV& g)

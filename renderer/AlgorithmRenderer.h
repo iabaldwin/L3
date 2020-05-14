@@ -1,5 +1,4 @@
-#ifndef L3_VISUALISERS_ALGORITHM_H
-#define L3_VISUALISERS_ALGORITHM_H
+#pragma once
 
 #include <glv.h>
 
@@ -191,16 +190,8 @@ namespace L3
         if( boost::shared_ptr< L3::Estimator::UKF<double> > ptr = boost::dynamic_pointer_cast<L3::Estimator::UKF<double> >( algorithm ) )
           return boost::dynamic_pointer_cast< AlgorithmVisualiser >( boost::make_shared< UKFVisualiser >( ptr, updater, composite ) );
 
-
         return boost::shared_ptr<AlgorithmVisualiser>();
-
       }
-
     };
-
-  }
-
-}
-
-#endif
-
+  } // Visualisers
+} // L3 

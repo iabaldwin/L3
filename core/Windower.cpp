@@ -17,7 +17,7 @@ namespace L3
 
   template <typename T>
     bool SlidingWindow<T>::update(double time) {
-      assert(initialised);
+      CHECK(initialised);
       current_time = time;
 
       mutex.lock();
@@ -34,7 +34,7 @@ namespace L3
   template <typename T>
     std::deque< std::pair< double, boost::shared_ptr<T> > > SlidingWindow<T>::getWindow() {
       mutex.lock();
-      temp = window;   
+      temp = window;
       mutex.unlock();
       return temp;
     }
@@ -42,13 +42,13 @@ namespace L3
 
   template <typename T>
     void SlidingWindow<T>::run() {
-      if (!initialised) {
-        throw std::exception();
+      if (not initialised) {
+        throw std::runtime_error("Not initialized!");
       }
 
       while(running) {
         if (read_required) {
-          read_required = false;  
+          read_required = false;
           read();
           purge();
           if (!good()) {
@@ -62,7 +62,7 @@ namespace L3
   template <typename T>
     int SlidingWindow<T>::read() {
       int i;
-      std::string line; 
+      std::string line;
 
       typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
 
@@ -82,42 +82,42 @@ namespace L3
       }
 
       mutex.lock();
-      window.insert(window.end(), tmp.begin(), tmp.end()); 
+      window.insert(window.end(), tmp.begin(), tmp.end());
       mutex.unlock();
       return i;
     }
 
   template <typename T>
     bool SlidingWindow<T>::initialise() {
-      input_stream.open(target.c_str()); 
-
+      input_stream.open(target.c_str());
+      CHECK(this->good());
 #ifndef NDEBUG
       L3::Timing::SysTimer t;
-      std::cout << "Buffering...";
+      LOG(INFO) << "Buffering...";
       t.begin();
 #endif
       double duration = 0;
 
       while (duration < window_duration) {
+        CHECK(this->good());
         int entries_read = read();
-
         if (entries_read != STACK_SIZE) {
           // End of stream, this is all we have
+          LOG(ERROR) << "Read: [" << entries_read << "], expected: [" << STACK_SIZE << "]";
           return false;
         }
         duration = window.back().first - window.front().first;
       }
 #ifndef NDEBUG
-      std::cout << window.size() << " entries read in " << t.elapsed() << "s" << std::endl;
+      LOG(INFO) << window.size() << " entries read in " << t.elapsed() << "s";
 #endif
-
       initialised = true;
       return initialised;
     }
 
   template <typename T>
     void SlidingWindow<T>::purge() {
-      mutex.lock(); 
+      mutex.lock();
       while((current_time  - window.front().first > window_duration) && (window.size() != 0)) {
         window.pop_front();
       }
@@ -126,17 +126,30 @@ namespace L3
 
   template <typename T>
     bool SlidingWindow<T>::good() {
-      return input_stream.good() ? true : false; 
+      if (not input_stream.good()) {
+        if (input_stream.fail()) {
+          LOG(ERROR) << "Read failure!";
+        }
+        if (input_stream.eof()) {
+          LOG(ERROR) << "End of stream!";
+        }
+        if (input_stream.bad()) {
+          LOG(ERROR) << "Bad state!";
+        }
+        return false;
+      }
+      return true;
     };
 
   template <typename T>
     bool SlidingWindowBinary<T>::initialise()
     {
-      this->input_stream.open(this->target.c_str(), std::ios::binary); 
+      this->input_stream.open(this->target.c_str(), std::ios::binary);
+      CHECK(this->good()) << "[" << this->target << "] could not be accessed..";
 
 #ifndef NDEBUG
       L3::Timing::SysTimer t;
-      std::cout << "Binary:" << typeid(*this).name() << "Buffering...";
+      LOG(INFO) << "Binary: (" << typeid(*this).name() << ") Buffering...";
       t.begin();
 #endif
       double duration = 0;
@@ -146,15 +159,16 @@ namespace L3
 
         if (entries_read != this->STACK_SIZE) {
           // End of stream, this is all we have
+          LOG(ERROR) << "Read: (binary) [" << entries_read << "], expected: [" << this->STACK_SIZE << "]";
           return false;
         }
         duration = this->window.back().first - this->window.front().first;
 #ifndef NDEBUG
-        std::cout << entries_read << ":" << this->STACK_SIZE << ":" << duration << std::endl;
+        LOG(INFO) << entries_read << ":" << this->STACK_SIZE << ":" << duration;
 #endif
       }
 #ifndef NDEBUG
-      std::cout << this->window.size() << " entries read (" << this->window.size() << ") in " << t.elapsed() << "s" << std::endl;
+      LOG(INFO) << this->window.size() << " entries read (" << this->window.size() << ") in " << t.elapsed() << "s";
 #endif
       this->initialised = true;
       return this->initialised;
@@ -162,26 +176,32 @@ namespace L3
 
   template <typename T>
     int SlidingWindowBinary<T>::read() {
-      int i;
+      CHECK_GT(this->STACK_SIZE, 0);
+      int i{0};
 
       typename std::deque< std::pair< double, boost::shared_ptr<T> > > tmp;
 
       for (i=0; i< this->STACK_SIZE; i++) {
         // Is the stream good?
-        if (!this->good()) {
+        if (not this->good()) {
+          LOG(INFO) << "Stream has finished";
           break;
         }
-        this->input_stream.read((char*)(&entry[0]), required*sizeof(double));
 
+        const int bytes_required = required*sizeof(double);
+        this->input_stream.read((char*)(&entry[0]), bytes_required);
+        if (this->input_stream.gcount() != bytes_required) {
+          break;
+        }
         tmp.push_back(L3::AbstractFactory<T>::produce(entry, &this->DEFAULT_MASK_POLICY));
       }
 
       this->mutex.lock();
-      this->window.insert(this->window.end(), tmp.begin(), tmp.end()); 
+      this->window.insert(this->window.end(), tmp.begin(), tmp.end());
       this->mutex.unlock();
       return i;
     }
-}
+} // L3
 
 template bool L3::SlidingWindow<L3::LMS151>::initialise();
 template void L3::SlidingWindow<L3::LMS151>::run();

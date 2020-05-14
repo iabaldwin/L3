@@ -1,5 +1,4 @@
-#ifndef L3_DATA_PROVIDER
-#define L3_DATA_PROVIDER
+#pragma once
 
 #include "L3.h"
 
@@ -23,35 +22,33 @@ struct RandomDataGenerator
 
 namespace L3
 {
-namespace Data
-{
+  namespace Data
+  {
 
-  template <typename T>
-    struct Provider
-    {
-
-      Provider( unsigned int SIZE = 20 ) : size(SIZE)
+    template <typename T>
+      struct Provider
       {
 
-      }
+        Provider( unsigned int SIZE = 20 ) : size(SIZE)
+        {
 
-      unsigned int size;
-      std::vector< T > data;
+        }
 
-      RandomDataGenerator<T> generator;
+        unsigned int size;
+        std::vector< T > data;
 
-      std::vector< T > operator()()
-      {
-        if ( data.size() == size )
-          data.erase( data.begin() );
+        RandomDataGenerator<T> generator;
 
-        data.push_back( generator() );
+        std::vector< T > operator()()
+        {
+          if ( data.size() == size )
+            data.erase( data.begin() );
 
-        return data;
-      }
+          data.push_back( generator() );
 
-    };
-}
-}
+          return data;
+        }
 
-#endif
+      };
+  } // Data
+} // L3

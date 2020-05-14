@@ -2,6 +2,7 @@
 
 #include <Poco/Runnable.h>
 #include <Poco/Thread.h>
+#include "glog/logging.h"
 
 #include "Core.h"
 #include "Iterator.h"
@@ -17,26 +18,23 @@
 namespace L3
 {
 
-  struct TemporalRunner 
+  struct TemporalRunner
   {
     std::list < TemporalObserver* > observers;
 
     virtual bool update(double time)
     {
       std::for_each(observers.begin(), observers.end(), std::bind2nd(std::mem_fun(&TemporalObserver::update), time));
-
       return true;
     }
-
   };
-
 
   /*
    *  Threaded runner
    */
   struct ThreadedRunner : TemporalRunner, Poco::Runnable
   {
-    ThreadedRunner() 
+    ThreadedRunner()
       : running(true),
       paused(false),
       current_time(0.0)
@@ -47,7 +45,6 @@ namespace L3
     bool            running, paused;
     double          start_time, current_time;
 
-
     void stop()
     {
       running = false;
@@ -57,26 +54,24 @@ namespace L3
     {
       thread.start(*this);
     }
-
   };
 
   namespace RunMode
   {
     enum Mode
     {
-      Continuous, 
-      Step 
+      Continuous,
+      Step
     };
   }
 
   struct DatasetRunner : ThreadedRunner
   {
-    DatasetRunner(L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup=2.0);
+    DatasetRunner(L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup=2.0, bool stand_alone=false);
 
     ~DatasetRunner()
     {
       running = false;
-
       if (thread.isRunning())
         thread.join();
     }
@@ -84,12 +79,12 @@ namespace L3
     std::ofstream   pose_output;
     std::ofstream   statistics_output;
 
-    Dataset*                    dataset;
-    Configuration::Mission*     mission;
+    Dataset*                    dataset{nullptr};
+    Configuration::Mission*     mission{nullptr};
 
     float           speedup;
     bool            stand_alone, booted;
-    double          current_time, start_time;  
+    double          current_time, start_time;
     double          frequency;
 
     RunMode::Mode   run_mode;
@@ -128,35 +123,19 @@ namespace L3
 
     void run();
 
-    virtual bool update(double time)
-    {
-      return true;
-    }
-
     DatasetRunner& operator<<(L3::TemporalObserver* observer)
     {
-      if (!observer)
-      {
-        std::cout << "Erroneous observer passed!" << std::endl;
-        exit(-1);
-      }
-
-      observers.push_back(observer); 
+      CHECK_NOTNULL(observer);
+      observers.push_back(observer);
       return *this;
     }
 
     DatasetRunner& operator<<(L3::Updater* updater)
     {
-      if (!updater)
-      {
-        std::cout << "Erroneous updater passed!" << std::endl;
-        exit(-1);
-      }
-
-      updaters.push_back(updater); 
+      CHECK_NOTNULL(updater);
+      updaters.push_back(updater);
       return *this;
     }
-
 
     virtual bool openStreams()
     {
@@ -169,7 +148,6 @@ namespace L3
       path = dataset->path() + "/stats.dat";
 
       statistics_output.open(path.c_str(), std::ios::out);
-
 
       std::stringstream ss;
 
@@ -190,7 +168,7 @@ namespace L3
    */
   struct EstimatorRunner : DatasetRunner, Lockable
   {
-    EstimatorRunner(L3::Dataset* dataset, L3::Configuration::Mission* mission, L3::Experience* experience, float speedup=2.0) 
+    EstimatorRunner(L3::Dataset* dataset, L3::Configuration::Mission* mission, L3::Experience* experience, float speedup=2.0)
       : DatasetRunner(dataset, mission, speedup),
       experience(experience)
     {
@@ -207,13 +185,12 @@ namespace L3
     ~EstimatorRunner()
     {
       running = false;
-
       if (thread.isRunning())
         thread.join();
     }
 
     L3::Updater         performance_updater;
-    L3::Experience*     experience;
+    L3::Experience*     experience{nullptr};
     boost::shared_ptr< L3::Estimator::Algorithm<double> >   algorithm;
     boost::shared_ptr< RelativeDisplacement > oracle_innovation, estimator_innovation;
 
@@ -222,16 +199,16 @@ namespace L3
     EstimatorRunner& setAlgorithm(boost::shared_ptr< L3::Estimator::Algorithm<double> > algo)
     {
       // Remove it if it exists
-      std::list< TemporalObserver* >::iterator it = std::find(observers.begin(), observers.end(), dynamic_cast< L3::TemporalObserver* >(this->algorithm.get())); 
-      if( it != observers.end())
+      std::list< TemporalObserver* >::iterator it = std::find(observers.begin(), observers.end(), dynamic_cast< L3::TemporalObserver* >(this->algorithm.get()));
+      if( it != observers.end()) {
         observers.erase(it);
+      }
 
       this->algorithm = algo;
 
       // Estimator innovation
-      performance_updater.remove(this->estimator_innovation.get()); 
       estimator_innovation = boost::make_shared< RelativeDisplacement >(experience, algorithm->current_prediction);
-      performance_updater <<(this->estimator_innovation.get()); 
+      performance_updater <<(this->estimator_innovation.get());
 
       // Is it updateable
       if(L3::TemporalObserver* observer = dynamic_cast< L3::TemporalObserver* >(algorithm.get()))
@@ -247,6 +224,9 @@ namespace L3
       // Poses
       std::string path = dataset->path() + "/poses_" + algorithm->name() + ".dat";
       pose_output.open(path.c_str(), std::ios::out);
+      if (not pose_output.good()) {
+        return false;
+      }
 
       // Stats
       path = dataset->path() + "/stats_" + algorithm->name() + ".dat";

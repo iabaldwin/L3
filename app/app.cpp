@@ -21,7 +21,7 @@ int main( int argc, char* argv[] )
     /*
      *  L3
      */
-    L3::Dataset* dataset;
+    L3::Dataset* dataset{nullptr};
        
     try
     {
@@ -29,73 +29,64 @@ int main( int argc, char* argv[] )
     }
     catch(...)
     {
-        std::cerr << "No such dataset <" << dataset_directory  << ">" << std::endl;
-        return(-1);
+        LOG(ERROR) << "No such dataset <" << dataset_directory  << ">";
+        return(EXIT_FAILURE);
     }
 
-    if( !dataset->validate()  )
+    if( not dataset->validate()  )
     {
-        std::cerr << "Failed to validate <" << dataset_directory << ">" << std::endl;
-        return(-1);
+        LOG(ERROR) << "Failed to validate <" << dataset_directory << ">";
+        return(EXIT_FAILURE);
     }
 
     if( !dataset->load() )
     {
-        std::cerr << "Failed to load <" << dataset_directory << ">" << std::endl;
+        LOG(ERROR) << "Failed to load <" << dataset_directory << ">";
         return(-1);
     }
 
     // Configuration
-    L3::Configuration::Mission* mission;
+    L3::Configuration::Mission* mission{nullptr};
     try
     {
         mission = new L3::Configuration::Mission( *dataset ) ;
     }
     catch( std::exception& e )
     {
-        std::cerr << "Unable to load/validate configuration file for " << dataset->name() << " <" << e.what() << ">"<< std::endl;
-        return( -1  );
+        LOG(ERROR) << "Unable to load/validate configuration file for " << dataset->name() << " <" << e.what() << ">";
+        return(EXIT_FAILURE);
     }
 
     // Experience - Fixed
 #ifndef NDEBUG
-    std::cout << "Loading fixed experience...." << std::endl;
+    LOG(INFO) << "Loading fixed experience....";
 #endif
-    L3::Dataset experience_dataset( "/Users/ian/code/datasets/2012-02-27-11-17-51Woodstock-All/" );
+
+    char * pPath;
+    pPath = getenv ("L3");
+    if (pPath==NULL) {
+      LOG(ERROR) << "Failed to find L3 root (export L3=...)";
+      exit(EXIT_FAILURE);
+    }
+
+    constexpr char default_dataset[] = "2012-04-16-20-05-30NightWoodstock1";
+
+    L3::Dataset experience_dataset( std::string{pPath} + "/" +  default_dataset);
     L3::ExperienceLoader experience_loader( experience_dataset );
     boost::shared_ptr<L3::Experience> experience = experience_loader.experience;
-#ifndef NDEBUG
-    std::cout << "Done. " << std::endl;
-#endif
 
     // Estimator
-#ifndef NDEBUG
-    std::cout << "Loading cost function...." << std::endl;
-#endif
     L3::Estimator::CostFunction<double>* cost_function = new L3::Estimator::MICostFunction<double>();
-#ifndef NDEBUG
-    std::cout << "Done. " << std::endl;
-#endif
+    CHECK_NOTNULL(cost_function);
 
     // Create runner
-#ifndef NDEBUG
-    std::cout << "Building runner...." << std::endl;
-#endif
     boost::shared_ptr< L3::EstimatorRunner > runner( new L3::EstimatorRunner( dataset, mission, experience.get() ) );
-#ifndef NDEBUG
-    std::cout << "Done. " << std::endl;
-#endif
+    CHECK_NOTNULL(runner);
 
     // Build algorithm
-#ifndef NDEBUG
-    std::cout << "Building algorithm...." << std::endl;
-#endif
     boost::shared_ptr< L3::Estimator::Algorithm<double> > algo( new L3::Estimator::UKF<double>( boost::shared_ptr< L3::Estimator::CostFunction<double> >(cost_function), experience->experience_pyramid, runner->ics_velocity_provider ) );
-#ifndef NDEBUG
-    std::cout << "Done. " << std::endl;
-#endif
+    CHECK_NOTNULL(algo);
 
-   
     runner->setAlgorithm( algo );
     runner->start();
 
@@ -112,12 +103,13 @@ int main( int argc, char* argv[] )
     L3::Visualisers::EstimatorLayout layout( win );
     
     L3::Interface* command_interface = new L3::CommandInterface( &layout, container );
+    CHECK_NOTNULL(command_interface);
     L3::Interface* lua_interface = new L3::LuaInterface();
+    CHECK_NOTNULL(lua_interface);
 
     (*static_cast< L3::Visualisers::GLVInterface* >( layout.scripting_interface.get() ) ) << command_interface << lua_interface;
 
     layout.load( runner.get(), experience );
 
     layout.run();
-
 }

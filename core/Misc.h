@@ -5,21 +5,13 @@
 
 namespace L3
 {
-namespace Misc
-{
+  namespace Misc
+  {
+    std::list <std::string> getDatasetConfigurations();
 
-/*
- *  Configuration
- */
-    
-std::list <std::string> getDatasetConfigurations();
+    const char* demangle(const char* name);
 
-/*
- *  Code related
- */
-const char* demangle(const char* name);
+    void print_stack_trace();
 
-void print_stack_trace();
-
-} // namespace Misc
-} // namespace L3
+  } // Misc
+} // L3

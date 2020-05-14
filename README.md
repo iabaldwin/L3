@@ -8,22 +8,29 @@ See:
     lidar and 3D priors.  In Proc. IEEE International Conference on Robotics and
     Automation (ICRA), St. Paul, MN. 
 
+Preview
+-------
+![L3](/media/screenshots/4.png)
+
 Requirements
 ------------
-
-* GNU Scientific Library (GSL)
-* Point Cloud Library (PCL)
-
+* bazel (0.18.0)
+* Eigen (3.3.4)
+* Poco (1.8.0)
+* libconfig (1.5.0)
+* lua (5.1.0)
+* tbb (2017-U7-8)
+* GNU Scientific Library (GSL) (2.4)
+* Point Cloud Library (PCL) (1.8.1)
 
 Build
 -----
-ccmake -DPCL_DIR={PCL_DIR} ...
+```
+$ bazel build -c opt "..."
+```
 
-Core
-----
-* Core components, point-clouds, projection, swathe-building
-* Render 
-
-Renderer
---------
-* GLV-based renderer
+Run 
+-----
+```
+$ bazel run -c opt //app:app -- --path/to/dataset
+```

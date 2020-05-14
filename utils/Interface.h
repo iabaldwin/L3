@@ -1,106 +1,97 @@
-#ifndef L3_LUA_INTERFACE_H
-#define L3_LUA_INTERFACE_H
+#pragma once
+
 #include <iostream>
 
-#include <boost/regex.hpp>
+#include "boost/regex.hpp"
 
 #undef luaL_dostring
 #define luaL_dostring(L,s)  \
-        (luaL_loadstring(L, s) || lua_pcall(L, 0, LUA_MULTRET, 0))
+  (luaL_loadstring(L, s) || lua_pcall(L, 0, LUA_MULTRET, 0))
 
 extern "C"
 {
-       #include "lua.h"
-       #include "lauxlib.h"
-       #include "lualib.h"
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
 }
 
 namespace L3
 {
 
-struct Interface
-{
+  struct Interface
+  {
     boost::shared_ptr<boost::regex> expression;
-        
+
     virtual std::pair< bool, std::string>  execute( const std::string& ) = 0;
 
     virtual std::string getState() = 0;
-  
+
     virtual bool match( const std::string&  ) = 0;
 
-    virtual ~Interface()
-    {
+    virtual ~Interface() {}
 
-    }
+  };
 
-};
-
-struct LuaInterface : Interface
-{
+  struct LuaInterface : Interface
+  {
     LuaInterface() 
     {
-        /* initialize lua */
-        state = lua_open();
+      /* initialize lua */
+      state = lua_open();
 
-        /* load lua libraries */
-        luaL_openlibs(state);
-   
-        setPath();
-   
-        expression.reset( new boost::regex("^_" ) );
+      /* load lua libraries */
+      luaL_openlibs(state);
+
+      setPath();
+
+      expression.reset( new boost::regex("^_" ) );
     }
 
     lua_State* state;
 
     bool match( const std::string& current )
     {
-        return !boost::regex_search( current, (*expression) );
+      return !boost::regex_search( current, (*expression) );
 
     }
 
     std::pair< bool, std::string> execute( const std::string& str ) 
     {
-        bool result = luaL_dostring( state, str.c_str() ) == 0 ? true : false;
-     
-        std::pair< bool, std::string> retval;
+      bool result = luaL_dostring( state, str.c_str() ) == 0 ? true : false;
 
-        if( result )
-        {
-            retval.first = true;
-            //retval.second = getState();
-            retval.second = "";
-        }
-        else
-        {
-            retval.first = false;
-            retval.second = getState();
-        }
-       
+      std::pair< bool, std::string> retval;
 
-        return retval;
+      if( result )
+      {
+        retval.first = true;
+        retval.second = "";
+      }
+      else
+      {
+        retval.first = false;
+        retval.second = getState();
+      }
+
+
+      return retval;
     }
 
     std::string getState()
     {
-        const char* msg = lua_tostring( state, 1 );
-       
-        std::cout << msg << std::endl;
+      const char* msg = lua_tostring( state, 1 );
 
-        lua_pop(state, 1);
-        return std::string( msg );
+      std::cout << msg << std::endl;
+
+      lua_pop(state, 1);
+      return std::string( msg );
     }
 
     void setPath();
 
     ~LuaInterface()
     {
-        if( state )
-            lua_close(state);
+      if( state )
+        lua_close(state);
     }
-
-};
-
+  };
 }
-
-#endif
-

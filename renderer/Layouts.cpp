@@ -443,6 +443,7 @@ namespace L3
 
       composite->components.remove( dynamic_cast<L3::Visualisers::Leaf*>( map_view.get() ) );
       map_view = L3::Visualisers::LocaleRendererFactory::buildLocale( *config );
+      CHECK_NOTNULL(map_view);
       this->composite->operator<<( *(dynamic_cast<L3::Visualisers::Leaf*>(map_view.get() ) ) );
 
       /*
@@ -605,8 +606,6 @@ namespace L3
        *  Debug algorithm renderer
        */
       debug_algorithm_renderer = boost::make_shared< DebugAlgorithmRenderer >( boost::shared_ptr< L3::Estimator::PassThrough<double> >()) ;
-
-
     }
 
     bool EstimatorLayout::load( L3::EstimatorRunner* runner, boost::shared_ptr<L3::Experience> experience )
@@ -622,22 +621,6 @@ namespace L3
       experience_location->setExperience( experience );
       experience_location->setOracle( runner->oracle );
       experience_location->setEstimator( runner->algorithm );
-
-      /*
-       *Reflectance
-       */
-
-      char* HOME;
-      HOME = getenv ("HOME");
-      assert (HOME!=NULL);
-
-      ReflectanceLoader loader( std::string(HOME) + std::string("/datasets/oxford/2012-02-27-11-17-51Woodstock-All/L3") );
-      reflectance = loader.reflectance; 
-
-      spatial_updater->observers.remove( (dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) ) );
-      spatial_updater->operator<< ( dynamic_cast<L3::SpatialObserver*>( reflectance.get() ) );
-      experience_location->reflectance = reflectance;
-      temporal_updater->operator<<( dynamic_cast<Updateable*>(experience_location.get()) );
 
       /*
        *  Stand-alone pyramid renderer

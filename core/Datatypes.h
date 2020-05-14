@@ -6,240 +6,225 @@
 #include <vector>
 #include <list>
 #include <iterator>
-#include <assert.h>
 
 #include <Eigen/Core>
 
 namespace L3
 {
 
-class Pose 
-{
-  public:
+  class Pose
+  {
+    public:
 
-    virtual ~Pose(){}
+      virtual ~Pose(){}
 
-    Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
-    Pose& setHomogeneous(Eigen::Matrix4f homogeneous){ this->homogeneous = homogeneous; return *this; };
+      Eigen::Matrix4f& getHomogeneous(){ return homogeneous; };
+      Pose& setHomogeneous(Eigen::Matrix4f homogeneous){ this->homogeneous = homogeneous; return *this; };
 
-  protected:
+    protected:
 
-    virtual void updateHomogeneous()  = 0;
-    virtual void updateEuler()  = 0;
+      virtual void updateHomogeneous()  = 0;
 
-    Eigen::Matrix4f homogeneous;
+      Eigen::Matrix4f homogeneous;
+  };
+
+  class SE2 : public Pose
+  {
+
+    public:
+
+      SE2(double X, double Y, double Q);
+      SE2(std::vector<double> input);
+
+      double& X()
+      {
+        return x_;
+      }
+
+      void X(double x)
+      {
+        x_ = x;
+      }
+
+      double& Y()
+      {
+        return y_;
+      }
+
+      void Y(double y)
+      {
+        y_ = y;
+      }
 
 
-};
+    private:
 
-class SE2 : public Pose
-{
+      double x_,y_,q_;
 
-  public:
+      void updateHomogeneous();
+  };
 
-    SE2(double X, double Y, double Q);
-    SE2(std::vector<double> input);
+  class SE3 : public Pose
+  {
 
-    double& X()
+    public:
+
+      static SE3 ZERO();
+      static SE3 UNIT_X();
+      static SE3 UNIT_Y();
+      static SE3 UNIT_Z();
+
+      SE3();
+      SE3(double X, double Y, double Z, double R, double P, double Q);
+      SE3(const std::vector<double> v);
+
+      double  X() const;
+      void    X(double x);
+      double  Y() const;
+      void    Y(double y);
+      double  Z() const;
+      void    Z(double z);
+      double  R() const;
+      void    R(double r);
+      double  P() const;
+      void    P(double P);
+      double  Q() const;
+      void    Q(double q);
+
+
+    private:
+
+      double x,y,z;
+      double r,p,q;
+
+      void updateHomogeneous();
+
+  };
+
+  bool operator==(const L3::SE3& lhs,  const L3::SE3& rhs);
+
+  struct LHLV
+  {
+    typedef std::vector<double>::iterator ITERATOR;
+
+    LHLV(const std::vector<double> v)
     {
-      return x_;
+      data.assign(v.begin(), v.end());
     }
 
-    void X(double x)
+    std::vector< double > data;
+  };
+
+  struct LIDAR
+  {
+    std::vector<float> ranges;
+    std::vector<float> reflectances;
+
+    LIDAR(double start, double end, int scans) :
+      angle_start(start), angle_end(end), num_scans(scans)
+    {}
+
+    double angle_start{-1};
+    double angle_end{-1};
+    double angle_spacing{-1};
+    int num_scans{-1};
+  };
+
+  struct LMS151 : LIDAR
+  {
+    LMS151() : LIDAR(-1*M_PI/4, M_PI+(M_PI/4), 541)
     {
-      x_ = x;
+      angle_spacing = (angle_end - angle_start) / (double)num_scans;
+      ranges.resize(num_scans, 0);
+      reflectances.resize(num_scans, 0);
     }
 
-    double& Y()
+    LMS151(std::vector<double> vec)  : LIDAR(-1*M_PI/4, M_PI+(M_PI/4), 541)
     {
-      return y_;
+      angle_spacing = (angle_end - angle_start) / (double)num_scans;
+      ranges.resize(num_scans, -1);
+      ranges.assign(vec.begin(), vec.begin()+(541));
+      reflectances.resize(num_scans, -1);
+      reflectances.assign(vec.begin()+(541+1), vec.end());
     }
 
-    void Y(double y)
+    void print(std::ostream& o) const {
+      o << angle_start << ":" << angle_end << ":" << angle_spacing;
+      o << std::endl;
+      std::copy(ranges.begin(), ranges.end(), std::ostream_iterator<double>(o, " "));
+      o << std::endl;
+      std::copy(reflectances.begin(), reflectances.end(), std::ostream_iterator<double>(o, " "));
+      o << std::endl;
+    }
+  };
+
+  struct SMVelocity
+  {
+    typedef std::vector<double>::iterator ITERATOR;
+
+    SMVelocity(const std::vector<double> v)
     {
-      y_ = y;
+      data.assign(v.begin(), v.end());
     }
 
-
-  private:
-
-    double x_,y_,q_;
-
-    void updateHomogeneous();
-    void updateEuler();
-
-};
-
-class SE3 : public Pose
-{
-
-  public:
-
-    static SE3 ZERO();
-    static SE3 UNIT_X();
-    static SE3 UNIT_Y();
-    static SE3 UNIT_Z();
-
-    SE3();
-    SE3(double X, double Y, double Z, double R, double P, double Q);
-    SE3(const std::vector<double> v);
-
-    double  X() const;
-    void    X(double x);
-    double  Y() const;
-    void    Y(double y);
-    double  Z() const;
-    void    Z(double z);
-    double  R() const;
-    void    R(double r);
-    double  P() const;
-    void    P(double P);
-    double  Q() const;
-    void    Q(double q);
-
-
-  private:
-
-    double x,y,z;
-    double r,p,q;
-
-    void updateHomogeneous();
-    void updateEuler();
-
-};
-
-bool operator==(const L3::SE3& lhs,  const L3::SE3& rhs);
-
-struct LHLV  
-{
-  typedef std::vector<double>::iterator ITERATOR;
-
-  LHLV(const std::vector<double> v) 
-  {
-    data.assign(v.begin(), v.end());
-  }
-
-  std::vector< double > data;
-};
-
-struct LIDAR 
-{
-  std::vector<float> ranges;
-  std::vector<float> reflectances;
-
-  LIDAR(double start, double end) : 
-    angle_start(start), angle_end(end)
-  {}
-
-  double angle_start;
-  double angle_end;
-  double angle_spacing;
-
-  int num_scans;
-};
-
-struct LMS151 : LIDAR
-{
-  LMS151() : LIDAR(-1*M_PI/4, M_PI+(M_PI/4))
-  {
-    num_scans = 541;
-
-    angle_spacing = (angle_end - angle_start) / (double)num_scans;
-
-    ranges.resize(num_scans, 0);
-    reflectances.resize(num_scans, 0);
-  }
-
-  LMS151(std::vector<double> vec)  : LIDAR(-1*M_PI/4, M_PI+(M_PI/4)) 
-  {
-    num_scans = 541;
-
-    angle_spacing = (angle_end - angle_start) / (double)num_scans;
-
-    ranges.resize(num_scans);
-    //ranges.assign(vec.begin(), vec.end());
-    ranges.assign(vec.begin(), vec.begin()+(541+1));
-
-    reflectances.resize(num_scans, 0);
-    reflectances.assign(vec.begin()+(541+1), vec.end());
-  }
-
-  void print(std::ostream& o) const {
-
-    o << angle_start << ":" << angle_end << ":" << angle_spacing;
-    o << std::endl;
-    std::copy(ranges.begin(), ranges.end(), std::ostream_iterator<double>(o, " "));
-  }
-
-};
-
-struct SMVelocity  
-{
-  typedef std::vector<double>::iterator ITERATOR;
-
-  SMVelocity(const std::vector<double> v) 
-  {
-    data.assign(v.begin(), v.end());
-  }
-
-  std::vector< double > data;
-};
-
-template <typename T>
-  struct Sizes
-  {
-    const static int elements = 0;
+    std::vector< double > data;
   };
 
-template <>
-  struct Sizes<L3::SE3>
+  template <typename T>
+    struct Sizes
+    {
+      const static int elements = 0;
+    };
+
+  template <>
+    struct Sizes<L3::SE3>
+    {
+      const static int elements = 6+1;
+    };
+
+  template <>
+    struct Sizes<L3::LMS151>
+    {
+      const static int elements = (2*541)+1;
+    };
+
+  template <>
+    struct Sizes<L3::LHLV>
+    {
+      const static int elements = 11+1;
+    };
+
+  template <>
+    struct Sizes<L3::SMVelocity>
+    {
+      const static int elements = 4+1;
+    };
+
+  /*
+   *  Frequencies
+   */
+  template <typename T>
+    struct Frequency
+    {
+      const static int frequency = 0;
+    };
+
+  /*
+   *  I/O
+   */
+  std::ostream& operator<<(std::ostream& o, const L3::SE2& pose);
+  std::ostream& operator<<(std::ostream& o, const L3::SE3& pose);
+  std::ostream& operator<<(std::ostream& o, const L3::LIDAR& scan);
+  std::ostream& operator<<(std::ostream& o, const L3::LMS151& scan);
+  std::ostream& operator<<(std::ostream& o, const L3::LHLV& lhlv);
+
+  /*
+   *  Intrinsic math
+   */
+  namespace Math
   {
-    const static int elements = 6+1;
-  };
+    double norm(const L3::SE3& a, const L3::SE3& b);
+    double SE2Metric(const L3::SE3& a, const L3::SE3& b);
 
-template <>
-  struct Sizes<L3::LMS151>
-  {
-    const static int elements = (2*541)+1;
-  };
-
-template <>
-  struct Sizes<L3::LHLV>
-  {
-    const static int elements = 11+1;
-  };
-
-template <>
-  struct Sizes<L3::SMVelocity>
-  {
-    const static int elements = 4+1;
-  };
-
-/*
- *  Frequencies
- */
-template <typename T>
-  struct Frequency
-  {
-    const static int frequency = 0;
-  };
-
-/*
- *  I/O
- */
-std::ostream& operator<<(std::ostream& o, const L3::SE2& pose);
-std::ostream& operator<<(std::ostream& o, const L3::SE3& pose);
-std::ostream& operator<<(std::ostream& o, const L3::LIDAR& scan);
-std::ostream& operator<<(std::ostream& o, const L3::LMS151& scan);
-std::ostream& operator<<(std::ostream& o, const L3::LHLV& lhlv);
-
-/*
- *  Intrinsic math
- */
-namespace Math
-{
-  double norm(const L3::SE3& a, const L3::SE3& b);
-  double SE2Metric(const L3::SE3& a, const L3::SE3& b);
-
-} //Math
+  } //Math
 } //L3

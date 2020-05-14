@@ -21,22 +21,20 @@
 
 namespace L3
 {
-
   template <typename T>
     struct SlidingWindow : Poco::Runnable, TemporalObserver
   {
 
-    SlidingWindow( const std::string& input, double t ) : 
+    SlidingWindow( const std::string& input, double t ) :
       read_required(false),
       running(true),
       initialised(false),
       STACK_SIZE(_stack_size),
       window_duration(t),
       proximity(10.0),
-      target(input) 
+      target(input)
     {
     }
-
 
     std::mutex  mutex;
 
@@ -59,7 +57,9 @@ namespace L3
     virtual ~SlidingWindow();
 
     virtual bool initialise();
+
     void run();
+   
     void stop();
 
     bool update( double time );
@@ -71,7 +71,6 @@ namespace L3
     void purge();
 
     bool good();
-
   };
 
   template <typename T>
@@ -91,5 +90,4 @@ namespace L3
 
     int read();
   };
-
-}
+} // L3

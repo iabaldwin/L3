@@ -1,5 +1,4 @@
-#ifndef L3_COMMAND_INTERFACE_H
-#define L3_COMMAND_INTERFACE_H
+#pragma once
 
 #include <map>
 
@@ -19,7 +18,6 @@ namespace L3
 
     typedef std::pair< bool, std::string > (CommandInterface::*command_interpreter)( const std::string& );
 
-    //std::map< std::string, command_interpreter > member_function_map;
     std::map< std::string, std::pair< command_interpreter, std::string> > member_function_map;
 
     std::pair< bool, std::string> execute( const std::string& );
@@ -61,7 +59,4 @@ namespace L3
     std::pair< bool, std::string > addPath( const std::string& command );
     std::pair< bool, std::string > printPath( const std::string& command );
   };
-
-}
-
-#endif
+} // L3

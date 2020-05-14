@@ -13,9 +13,9 @@ namespace L3
 {
   struct Reflectance : SpatialQuery
   {
-    Reflectance( std::deque< spatial_data > sections, 
-        std::string fname, 
-        boost::shared_ptr< SelectionPolicy > policy, 
+    Reflectance( std::deque< spatial_data > sections,
+        std::string fname,
+        boost::shared_ptr< SelectionPolicy > policy,
         int window_size );
 
     std::map< unsigned int, std::pair< bool, boost::shared_ptr<L3::PointCloudE<double> > > > resident_sections;
@@ -37,7 +37,7 @@ namespace L3
    */
   struct ReflectanceBuilder
   {
-    ReflectanceBuilder( L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold=10.0, double scan_spacing_threshold=0.2  );    
+    ReflectanceBuilder( L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold=10.0, double scan_spacing_threshold=0.2  );
 
     boost::shared_ptr<L3::IO::BinaryReader< L3::SE3 > >                 pose_reader;
     boost::shared_ptr<L3::IO::SequentialBinaryReader< L3::LMS151 > >    LIDAR_reader;

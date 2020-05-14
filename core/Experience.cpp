@@ -15,20 +15,18 @@ namespace L3
    *  Builder
    */
   ExperienceBuilder::ExperienceBuilder(L3::Dataset& dataset, double start_time, double end_time, double experience_section_threshold, double scan_spacing_threshold) {
-    std::cout.precision(15);
-
     // Pose reader
     pose_reader.reset(new L3::IO::BinaryReader<L3::SE3>());
     if (!pose_reader->open(dataset.path() + "/OxTS.ins"))
     {
-      std::cerr << "No poses available" << std::endl;
+      LOG(ERROR) << "No poses available";
       throw std::exception();
     }
 
     // Scan reader
     LIDAR_reader.reset(new L3::IO::SequentialBinaryReader<L3::LMS151>());
     if (!LIDAR_reader->open(dataset.path() + "/LMS1xx_10420002_192.168.0.50.lidar")) {
-      std::cerr << "No LIDAR available" << std::endl;
+      LOG(ERROR) << "No LIDAR available";
       throw std::exception();
     }
 
@@ -38,6 +36,8 @@ namespace L3
     // Read *all* the poses
     pose_reader->read();
     pose_reader->extract(poses);
+
+    LOG(INFO) << poses.size() << " poses";
 
     // Structure for calculating pose chain length
     LengthEstimatorInterface length_estimator;
@@ -63,21 +63,27 @@ namespace L3
 
     unsigned int stream_position = 0;
 
-    double absolute_start_time = 0;
+    double absolute_start_time = -1;
 
     double spacing = scan_spacing_threshold;
 
-    // Read LIDAR data, element at a time
-    while(LIDAR_reader->read()) {
-      // Extract scan
-      LIDAR_reader->extract(scans);
+    MaskPolicy<L3::LMS151> policy(3);
 
-      // Initialisatino condition
-      if (absolute_start_time == 0)
+    // Read LIDAR data, element at a time
+    while(std::size_t read = LIDAR_reader->read()) {
+      // Extract scan
+      LIDAR_reader->extract(scans, policy);
+      // Initialisation condition
+      if (absolute_start_time < 0) {
         absolute_start_time = scans[0].first;
+      }
 
       // Compute relative time
       double current_relative_time = scans[0].first - absolute_start_time;
+
+      if (current_relative_time < 0) {
+        throw std::runtime_error("Invalid time!");
+      }
 
       // Still to go, i.e. t_k < t_L?
       if (current_relative_time < start_time) {
@@ -102,7 +108,7 @@ namespace L3
       spacing -= increment;
 
       //So, here we have estimated the accumulate. Once we have gone X metres, add it back
-      std::cout << accumulate / scan_spacing_threshold << "[" << scan_spacing_threshold << "," << accumulate << "," << experience_section_threshold << "]" << std::endl;
+      LOG(INFO) << accumulate / scan_spacing_threshold << "[" << scan_spacing_threshold << "," << accumulate << "," << experience_section_threshold << "]" << std::endl;
 
       if(spacing <= 0.0) {
         swathe.push_back(std::make_pair(matched[0].second, scans[0].second));
@@ -129,19 +135,29 @@ namespace L3
         projector->project(swathe);
 
 #ifndef NDEBUG
-        std::cout << point_cloud->num_points << " points in " << t.elapsed() << "s" << std::endl;
+        LOG(INFO) << point_cloud->num_points << " points in " << t.elapsed() << "s";
 #endif
         // Compute mean
         boost::tuple<double,double,double> means = mean(point_cloud.get());
 
 #ifndef NDEBUG
-        std::cout << means.get<0>() << " " << means.get<1>() << std::endl;
+        LOG(INFO) means.get<0>() << " " << means.get<1>();
 #endif
 
         //  Writing : DATA
         //  1. Write points
         unsigned int payload_size = point_cloud->num_points*sizeof(L3::Point<double>);
+        if (point_cloud->num_points ==0) {
+          LOG(ERROR) << "Failed to populate points!";
+          exit(EXIT_FAILURE);
+        }
         experience_data.write((char*)(point_cloud->points), payload_size);
+        if (experience_data.fail()) {
+          LOG(ERROR) << "Write fail!";
+          exit(EXIT_FAILURE);
+        } else {
+          LOG(INFO) << "Wrote: " << payload_size << " bytes";
+        }
         //  Writing : INDEX
         //  1. Write the ID
         experience_index.write((char*)(&id), sizeof(int)); id++;
@@ -159,7 +175,11 @@ namespace L3
         swathe.clear();
       }
     }
-    std::cout << "Done. Wrote " <<  scans.back().first - absolute_start_time << "s" << std::endl;
+    experience_index.close();
+    experience_data.close();
+    experience_poses.close();
+
+    LOG(INFO) << "Done. Wrote " <<  scans.back().first - absolute_start_time << "s";
   }
 
   /*
@@ -237,7 +257,7 @@ namespace L3
 
       std::list<unsigned int> required_sections;
       if (!policy->operator()(&sections, _x, _y, required_sections, window)) {
-        std::cerr << "Unable to apply selection policy, cannot continue..." << std::endl;
+        LOG(ERROR) << "Unable to apply selection policy, cannot continue...";
         exit(EXIT_FAILURE);
       }
 
@@ -337,7 +357,6 @@ namespace L3
 
       master.unlock();
 
-      // Play nice
       usleep(.15*1e6);
     }
   }
@@ -355,9 +374,9 @@ namespace L3
     data.read(tmp, sections[id].payload_size);
 
     // DBG checks
-    assert(data.good());
-    assert(sections[id].payload_size == data.gcount());
+    CHECK(data.good());
+    CHECK_EQ(sections[id].payload_size, data.gcount());
 
     return std::make_pair(sections[id].payload_size/sizeof(L3::Point<double>), reinterpret_cast<L3::Point<double>*>(tmp));
   }
-}
+} // L3

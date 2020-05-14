@@ -26,7 +26,6 @@ struct randomate
  */
 namespace L3
 {
-
   /*
    *Point types
    */

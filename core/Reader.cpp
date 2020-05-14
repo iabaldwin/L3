@@ -2,22 +2,22 @@
 
 namespace L3
 {
-namespace IO
-{
-  template <typename T>
-    void BinaryExtractor<T>::operator()(double datum) {
-      index = (counter % L3::Sizes<T>::elements);
+  namespace IO
+  {
+    template <typename T>
+      void BinaryExtractor<T>::operator()(double datum) {
+        index = (counter % L3::Sizes<T>::elements);
 
-      counter++;
+        counter++;
 
-      buffer[index] = datum;
+        buffer[index] = datum;
 
-      if (index == L3::Sizes<T>::elements -1) {
-        elements.push_back(AbstractFactory<T>::produce(buffer));
+        if (index == L3::Sizes<T>::elements -1) {
+          elements.push_back(AbstractFactory<T>::produce(buffer, &policy));
+        }
       }
-    }
-}
-}
+  } // IO
+} // L3
 
 template void L3::IO::BinaryExtractor<L3::SE3>::operator()(double);
 template void L3::IO::BinaryExtractor<L3::LMS151>::operator()(double);

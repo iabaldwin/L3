@@ -45,13 +45,11 @@ struct Configuration {
     }
 
     bool load(const std::string& target) {
-        FILE* f = fopen(target.c_str(), "r" );
-        if (!f)
-            return false;
-
-        config.read(f);
-   
-        return true;
+      FILE* f = fopen(target.c_str(), "r" );
+      if (!f)
+        return false;
+      config.read(f);
+      return true;
     }
 
     boost::filesystem::path p;
@@ -62,16 +60,12 @@ struct Configuration {
 struct Mission : Configuration {
 
   Mission(const L3::Dataset& dataset) {
-    // Load configuration directory 
+    // Load configuration directory
     p = L3::Configuration::configurationDirectory();
-
     // Add target
     p /= "missions";
     p /= dataset.name() + ".config";
     target = p.string();
-
-    std::cout << target << std::endl;
-
     loadAll(target);
   }
 
@@ -84,50 +78,28 @@ struct Mission : Configuration {
   std::string horizontal;
   std::string declined;
 
-
   Mission(const std::string& target) {
     this->target = target;
-
     loadAll(target);
   }
 
   bool loadAll(std::string target)
   {
-#ifndef NDEBUG  
-    std::cout << "Loading target..." << std::endl;
-#endif
     if (!load(target)) {
-      throw std::exception();
+      throw std::runtime_error("Failed to load: [" + target + "]");
     }
-
-#ifndef NDEBUG  
-    std::cout << "Loading Description..." << std::endl;
-#endif
     if (!loadDescription()) {
-      throw std::exception();
+      throw std::runtime_error("Failed to load description: [" + target + "]");
     }
-
-#ifndef NDEBUG  
-    std::cout << "Loading LIDARS..." << std::endl;
-#endif
     if (!loadLIDARS()) {
-      throw std::exception();
+      throw std::runtime_error("Failed to load LIDARS : [" + target + "]");
     }
-
-#ifndef NDEBUG  
-    std::cout << "Loading estimation..." << std::endl;
-#endif
     if (!loadEstimation()) {
-      throw std::exception();
+      throw std::runtime_error("Failed to load estimation : [" + target + "]");
     }
-
-#ifndef NDEBUG  
-    std::cout << "Loading locale..." << std::endl;
-#endif
     if (!loadLocale()) {
-      throw std::exception();
+      throw std::runtime_error("Failed to load locale: [" + target + "]");
     }
-
     return true;
   }
 
@@ -143,16 +115,15 @@ struct Locale : Configuration {
 
   Locale(const std::string& locale) : name(locale) {
 
-    // Load configuration directory 
+    // Load configuration directory
     p = L3::Configuration::configurationDirectory();
 
     // Add target
     p /= "datums";
     p /= locale + ".config";
 
-
     if (!load(p.string()) && loadDatum())
-      throw std::exception();
+      throw std::runtime_error("Failed to load: " + locale);
   }
 
   std::string name;
@@ -166,7 +137,7 @@ struct Locale : Configuration {
     ss <<  "datum.X.lower";
 
     if (!config.lookupValue(ss.str(), x_lower))
-      return false; 
+      return false;
 
     ss.str(std::string());
 
@@ -174,7 +145,7 @@ struct Locale : Configuration {
     ss <<  "datum.X.upper";
 
     if (!config.lookupValue(ss.str(), x_upper))
-      return false; 
+      return false;
 
     ss.str(std::string());
 
@@ -182,7 +153,7 @@ struct Locale : Configuration {
     ss <<  "datum.Y.lower";
 
     if (!config.lookupValue(ss.str(), y_lower))
-      return false; 
+      return false;
 
     ss.str(std::string());
 
@@ -190,7 +161,7 @@ struct Locale : Configuration {
     ss <<  "datum.Y.upper";
 
     if (!config.lookupValue(ss.str(), y_upper))
-      return false; 
+      return false;
 
     return true;
   }
@@ -237,5 +208,5 @@ bool convert(const LIDARParameters& params, L3::SE3& calibration);
 std::ostream& operator<<(std::ostream& o, const Mission& mission);
 std::ostream& operator<<(std::ostream& o, const std::pair< std::string, LIDARParameters> & parameters);
 
-} // namespace Configuration
-} // namespace L3
+} // Configuration
+} // L3
