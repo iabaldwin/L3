@@ -1,5 +1,4 @@
 cc_binary(
-
     name = "app",
     srcs = [
         "app.cpp",
@@ -22,4 +21,23 @@ cc_binary(
     linkopts = [
         "-lglut"
     ],
+)
+
+cc_binary(
+    name = "headless",
+    srcs = [
+        "headless.cpp",
+    ],
+
+    deps = [
+        "//core:L3",
+        "@poco",
+        "@boost//:thread",
+        "@boost//:filesystem",
+        "@boost//:regex",
+        "@config",
+        "@gsl",
+        "@tbb",
+        "@com_github_google_glog//:glog",
+        ],
 )

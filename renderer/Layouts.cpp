@@ -371,7 +371,7 @@ namespace L3
     bool DatasetLayout::load( L3::DatasetRunner* runner )
     {
       /*
-       *  Add the updater to the runenr
+       *  Add the updater to the runner
        */
       (*runner) << temporal_updater.get();
 

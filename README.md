@@ -6,7 +6,7 @@ Long-term Localisation with LIDAR.
 See:
 *   Baldwin, I.A, Newman, P. (2011) Road vehicle localization with 2D push-broom
     lidar and 3D priors.  In Proc. IEEE International Conference on Robotics and
-    Automation (ICRA), St. Paul, MN. 
+    Automation (ICRA), St. Paul, MN.
 
 Preview
 -------
@@ -31,8 +31,14 @@ Build
 $ bazel build -c opt "..."
 ```
 
-Run 
+Run
 -----
 ```
 $ bazel run -c opt //app:app -- --path/to/dataset
+```
+
+or:
+```
+$ docker build -t ian:l3
+$ docker run ian:l3
 ```

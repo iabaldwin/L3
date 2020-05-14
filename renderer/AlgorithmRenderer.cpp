@@ -594,16 +594,6 @@ namespace L3
       /*
        *  Stand-alone components
        */
-      /*
-       *Weight visualiser     
-       */
-      //TODO
-      //  How can we make this look better? Everything is looking very homogeneous
-      //weight_visualiser = boost::make_shared< ParticleWeightOverview >( algorithm, updater );
-      //*this << *weight_visualiser;
-      //updater->operator<<( (boost::dynamic_pointer_cast< Updateable >(weight_visualiser)).get() );
-      //updateables.push_back(dynamic_cast< Updateable* >(weight_visualiser.get() ) ); 
-      //views.push_back( weight_visualiser );
 
       /*
        *Overhead visualiser
@@ -802,14 +792,6 @@ namespace L3
         boost::make_shared< UKFPoseEstimate >( algorithm->prediction_model->check_pose );
       composite->operator<<( *check_pose );
       this->leafs.push_back( check_pose ); 
-
-      /*
-       *  Sigma points
-       */
-      //boost::shared_ptr< Leaf > sigma_points = 
-      //boost::make_shared< UKFSigmaPointsLeaf >( algorithm );
-      //composite->operator<<( *sigma_points );
-      //this->leafs.push_back( sigma_points );
 
       /*
        *  Iterations

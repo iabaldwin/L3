@@ -78,7 +78,6 @@ class SE2 : public Pose
 
         void updateHomogeneous();
         void updateEuler();
-
 };
 
 /*
@@ -121,7 +120,6 @@ class SE3 : public Pose
    
         void updateHomogeneous();
         void updateEuler();
-        
 };
 
 SE2 SE3ToSE2( SE3& pose  );

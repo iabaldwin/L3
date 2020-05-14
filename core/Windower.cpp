@@ -118,7 +118,7 @@ namespace L3
   template <typename T>
     void SlidingWindow<T>::purge() {
       mutex.lock();
-      while((current_time  - window.front().first > window_duration) && (window.size() != 0)) {
+      while((not window.empty()) and (current_time  - window.front().first > window_duration) ) {
         window.pop_front();
       }
       mutex.unlock();
@@ -127,13 +127,13 @@ namespace L3
   template <typename T>
     bool SlidingWindow<T>::good() {
       if (not input_stream.good()) {
-        if (input_stream.fail()) {
+        if (input_stream.eof()) {
+          // This is ok
+        }
+        else if (input_stream.fail()) {
           LOG(ERROR) << "Read failure!";
         }
-        if (input_stream.eof()) {
-          LOG(ERROR) << "End of stream!";
-        }
-        if (input_stream.bad()) {
+        else if (input_stream.bad()) {
           LOG(ERROR) << "Bad state!";
         }
         return false;

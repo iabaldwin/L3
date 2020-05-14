@@ -4,7 +4,6 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/scoped_array.hpp>
 
-
 #if defined(__APPLE__)
   #include <mach/vm_statistics.h>
   #include <mach/mach_types.h> 

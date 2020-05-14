@@ -178,7 +178,7 @@ namespace L3
 
       void control( Leaf* leaf )
       {
-        assert( leaf );
+        CHECK_NOTNULL( leaf );
         controlled_leafs.push_back( leaf );
 
       }
@@ -1071,7 +1071,7 @@ namespace L3
 
       void oracle( ExperienceCloudView * view )
       {
-        assert( view );
+        CHECK_NOTNULL( view );
         _oracle = view;
 
         oracle_parameters.first.first = _oracle->width();
@@ -1086,7 +1086,7 @@ namespace L3
 
       void estimator( ExperienceCloudView * view )
       {
-        assert( view );
+        CHECK_NOTNULL( view );
         _estimator = view;
 
         estimator_parameters.first.first = _estimator->width();

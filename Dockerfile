@@ -21,4 +21,4 @@ COPY . /l3
 RUN wget https://github.com/bazelbuild/bazel/releases/download/0.18.0/bazel_0.18.0-linux-x86_64.deb && apt install -y ./bazel*
 RUN cd l3 && bazel build -c opt "..."
 ENV L3 /l3/data/
-ENTRYPOINT cd l3 && bazel run -c opt //app:app $L3/2012-04-16-20-05-30NightWoodstock1/
+ENTRYPOINT cd l3 && bazel run -c opt //app:headless $L3/2012-04-16-20-05-30NightWoodstock1/

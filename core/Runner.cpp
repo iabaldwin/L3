@@ -137,7 +137,6 @@ namespace L3
 
     int boot = 800;
     if(stand_alone) {
-      boot = 2000;
       openStreams();
     }
 
@@ -205,8 +204,6 @@ namespace L3
 
           statistics_output << ss.str() << std::endl;
 
-          ss.str(std::string());
-
           pose_output << *estimated_pose << '\n';     // Buffer
 
           total_index++;
@@ -246,8 +243,6 @@ namespace L3
     /*
      *  Do estimation
      */
-    static int counter = 0;
-
     *oracle_pose = oracle->operator()();
 
     /*
@@ -256,10 +251,12 @@ namespace L3
     if(not booted) {
       *estimated_pose = experience->getClosestPose(oracle->operator()());
       estimated_pose->Q(oracle_pose->Q());
-      //*estimated_pose = *oracle_pose;
     } else {
       L3::ReadLock algo_lock(this->mutex);
       *estimated_pose = algorithm->operator()(projector->cloud, *estimated_pose);
+      if (stand_alone) {
+        LOG_EVERY_N(INFO, 50) << *estimated_pose;
+      }
     }
     return true;
   }
