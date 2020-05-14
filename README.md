@@ -12,6 +12,8 @@ Preview
 -------
 ![L3](/media/screenshots/4.png)
 
+See: [Overview](https://vimeo.com/81037811)
+
 Requirements
 ------------
 * bazel (0.18.0)
