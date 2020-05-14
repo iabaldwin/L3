@@ -10,7 +10,6 @@
 
 namespace L3
 {
-
   /*
    *  Provider mixin
    */
@@ -88,5 +87,4 @@ namespace L3
       return pose;
     }
   };
-
-}
+} // L3

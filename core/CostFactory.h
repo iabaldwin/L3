@@ -4,32 +4,32 @@
 
 namespace L3
 {
-namespace Estimator
-{
-
-template <typename T>
-struct CostFactory {
-  static boost::shared_ptr< CostFunction<T> > produce(std::string cost_function)
+  namespace Estimator
   {
-    if(cost_function == "MI") {
-      return boost::make_shared< MICostFunction<T> >();
-    }
 
-    if(cost_function == "NMI") {
-      return boost::make_shared< NMICostFunction<T> >();
-    }
+    template <typename T>
+      struct CostFactory {
+        static boost::shared_ptr< CostFunction<T> > produce(std::string cost_function)
+        {
+          if(cost_function == "MI") {
+            return boost::make_shared< MICostFunction<T> >();
+          }
 
-    if(cost_function == "KL") {
-      return boost::make_shared< KLCostFunction<T> >();
-    }
+          if(cost_function == "NMI") {
+            return boost::make_shared< NMICostFunction<T> >();
+          }
 
-    if(cost_function == "SSD") {
-      return boost::make_shared< SSDCostFunction<T> >();
-    }
+          if(cost_function == "KL") {
+            return boost::make_shared< KLCostFunction<T> >();
+          }
 
-    return boost::shared_ptr< CostFunction<T> >(); 
-  }
-};
+          if(cost_function == "SSD") {
+            return boost::make_shared< SSDCostFunction<T> >();
+          }
 
-} // namespace Estimator
-} // namespace L3
+          return boost::shared_ptr< CostFunction<T> >();
+        }
+      };
+
+  } // Estimator
+} // L3

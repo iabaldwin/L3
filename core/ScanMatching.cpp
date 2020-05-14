@@ -6,8 +6,8 @@
 
 #include <pcl/features/normal_3d.h>
 
-#define TRAJECTORY_LIMIT 500 
-            
+#define TRAJECTORY_LIMIT 500
+
 int do_projection(const L3::LMS151& current_scan, double* matrix, double threshold = 5.0) {
   double* matrix_ptr = matrix;
 
@@ -16,9 +16,9 @@ int do_projection(const L3::LMS151& current_scan, double* matrix, double thresho
   int counter = 0;
 
   for (int scan_counter=0; scan_counter<541; scan_counter++)  {
-    // Compute angle 
-    angle = scan_counter*current_scan.angle_spacing +  current_scan.angle_start; 
-    range = current_scan.ranges[scan_counter];  
+    // Compute angle
+    angle = scan_counter*current_scan.angle_spacing +  current_scan.angle_start;
+    range = current_scan.ranges[scan_counter];
 
     if (range < threshold || range > 20.0) {
       continue;
@@ -27,9 +27,9 @@ int do_projection(const L3::LMS151& current_scan, double* matrix, double thresho
     x = range*cos(angle);
     y = range*sin(angle);
 
-    *matrix_ptr++ = x; 
-    *matrix_ptr++ = y; 
-    *matrix_ptr++ = z; 
+    *matrix_ptr++ = x;
+    *matrix_ptr++ = y;
+    *matrix_ptr++ = z;
 
     counter++;
   }
@@ -91,13 +91,13 @@ namespace L3 {
 
       ne.setKSearch (30);
 
-      ne.setInputCloud (cloud_out);    
+      ne.setInputCloud (cloud_out);
       pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals_out(new pcl::PointCloud<pcl::PointNormal>);
 
       // Compute the features
       ne.compute (*cloud_normals_out);
 
-      ne.setInputCloud (cloud_in);    
+      ne.setInputCloud (cloud_in);
       pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals_in(new pcl::PointCloud<pcl::PointNormal>);
 
       // Compute the features
@@ -141,5 +141,5 @@ namespace L3 {
       write_lock.unlock();
       return true;
     }
-  }
-}
+  } // ScanMatching
+} // L3

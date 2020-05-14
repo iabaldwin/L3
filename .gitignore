@@ -2,5 +2,5 @@ doc
 *.swp
 *.pyc
 .DS_Store
-libraries
-tags
+bazel*
+data

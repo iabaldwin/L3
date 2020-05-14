@@ -1,8 +1,6 @@
 #pragma once
 
 #include <flann/flann.hpp>
-#include <opencv/cv.h>
-#include <opencv2/highgui/highgui.hpp>
 
 #include "PointCloud.h"
 #include "Dataset.h"
@@ -76,6 +74,7 @@ namespace L3
       std::ifstream experience_index((target + "/experience.index").c_str(), std::ios::binary);
 
       if (!experience_index.good()) {
+        LOG(ERROR) << target + "/experience.index does not exist!";
         throw L3::no_such_file();
       }
 
@@ -84,7 +83,7 @@ namespace L3
       spatial_data section;
 
       while(true) {
-        experience_index.read((char*)(&section.id),                sizeof(int)); 
+        experience_index.read((char*)(&section.id),                sizeof(int));
         experience_index.read((char*)(&section.x),                 sizeof(double));
         experience_index.read((char*)(&section.y),                 sizeof(double));
         experience_index.read((char*)(&section.stream_position),   sizeof(unsigned int));
@@ -102,7 +101,7 @@ namespace L3
       // Read experience poses
       std::ifstream experience_poses((target + "/experience.pose").c_str(), std::ios::binary);
 
-      boost::shared_ptr<deque<L3::SE3> > poses = boost::make_shared<deque<L3::SE3> >();  
+      boost::shared_ptr<deque<L3::SE3> > poses = boost::make_shared<deque<L3::SE3> >();
 
       int counter = 0;
       vector<double> tmp(4);
@@ -112,7 +111,7 @@ namespace L3
         double datum;
 
         experience_poses.read((char*)(&datum), sizeof(double));
-        tmp[counter++] = datum; 
+        tmp[counter++] = datum;
 
         if(counter == 4) {
           poses->push_back(L3::SE3(tmp[0], tmp[1], tmp[2] , 0, 0, tmp[3]));
@@ -150,4 +149,4 @@ namespace L3
     boost::shared_ptr<L3::IO::SequentialBinaryReader<L3::LMS151> >    LIDAR_reader;
 
   };
-}
+} // L3

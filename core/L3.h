@@ -8,7 +8,7 @@
 #include "Runner.h"             // Dataset runner
 #include "Iterator.h"           // Constant-time, constant-distance, etc
 #include "PointCloud.h"         // Points, point-cloud
-#include "Reflectance.h"        // 
+#include "Reflectance.h"        // Reflectance container
 #include "Projector.h"          // Convert raw LIDAR data to Point cloud
 #include "SwatheBuilder.h"      // Associate LIDAR sans with poses
 #include "Reader.h"             // Basic pose/LIDAR reader
@@ -17,7 +17,6 @@
 #include "Utils.h"              // Path management, locales, etc.
 #include "ChainBuilder.h"       // Poses from rotational data
 #include "Experience.h"         // Experience generation
-#include "LibraryAdapters.h"    // PCL, ...
 #include "PoseProvider.h"       // Pose sources
 #include "Histogram.h"          // Custom histogram type
 #include "Estimator.h"          // Core estimator
@@ -26,7 +25,5 @@
 #include "Smoother.h"           // Histogram smoothing
 #include "Integrator.h"         // Chain integration
 #include "Predictor.h"          // Pose predcition
-#include "Estimator.h"          // Pose estimation
 #include "Filter.h"             // Pose filter
-#include "Simulator.h"          // Artificial data provider
 #include "Misc.h"               // Everything else...

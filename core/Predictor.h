@@ -5,30 +5,31 @@
 #include "VelocityProvider.h"
 #include "Datatypes.h"
 
+#include "glog/logging.h"
+
 namespace L3
 {
-
-class Predictor : public L3::TemporalObserver
-{
-  public:
-
-    Predictor( L3::VelocityProvider* provider ) 
-      : provider(provider),
-      previous_update(0.0)
+  class Predictor : public L3::TemporalObserver
   {
-  }
+    public:
 
-    bool update( double t );
+      Predictor( L3::VelocityProvider* provider ) 
+        : provider(provider),
+        previous_update(0.0)
+    {
+      CHECK_NOTNULL(provider);
+    }
 
-    bool predict( const L3::SE3& current );
+      bool update( double t );
 
-  protected:
+      bool predict( const L3::SE3& current );
 
-    L3::VelocityProvider*      provider;
+    protected:
 
-    double previous_update;
+      L3::VelocityProvider*      provider;
 
-    std::deque< double > sink;
-};
+      double previous_update;
 
-}
+      std::deque< double > sink;
+  };
+} // L3

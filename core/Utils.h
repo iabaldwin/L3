@@ -14,18 +14,15 @@
 
 namespace L3
 {
-
   namespace Utils
   {
-
     namespace Math
     {
       double degreesToRadians( double degrees );
       double radiansToDegrees( double radians );
 
       L3::SE3 poseFromRotation( const Eigen::Matrix4f& mat );
-
-    }
+    } // Math
 
     struct Accumulator
     {
@@ -53,11 +50,10 @@ namespace L3
       }
     };
 
-
     template <typename Iterator>
       void localisePoseChainToMean( Iterator begin, Iterator end )
       {
-        // Average 
+        // Average
         Accumulator a;
         a = std::for_each( begin, end, a );
         std::vector<double> centroid = a.centroid();
@@ -68,19 +64,15 @@ namespace L3
         {
           (*it).second->x -= centroid[0];
           (*it).second->y -= centroid[1];
-
-          // Regenerate homogeneous - this is poor
           (*it).second->_update();
-
           it++;
         }
-
       }
 
     template <typename Iterator>
       void localisePoseChainToMean( Iterator input_begin, Iterator input_end, Iterator output_begin )
       {
-        // Average 
+        // Average
         Accumulator a;
         a = std::for_each( input_begin, input_end, a );
         std::vector<double> centroid = a.centroid();
@@ -100,7 +92,6 @@ namespace L3
 
           current_input++; current_output++;
         }
-
       }
 
     /*
@@ -111,7 +102,7 @@ namespace L3
       {
 
         matcher( std::vector< std::pair< double, boost::shared_ptr<T1> > >* ELEMENTS,
-            std::vector< std::pair< double, boost::shared_ptr<T1> > >* MATCHED ) 
+            std::vector< std::pair< double, boost::shared_ptr<T1> > >* MATCHED )
           : elements( ELEMENTS ), matched(MATCHED)
         {
 
@@ -122,42 +113,36 @@ namespace L3
         // Search by time
         void operator()( std::pair< double, boost::shared_ptr<T2> > data  )
         {
-          typename std::vector< std::pair< double, boost::shared_ptr<T1> > >::iterator index = std::lower_bound( (*elements).begin(), 
-              (*elements).end(), 
+          typename std::vector< std::pair< double, boost::shared_ptr<T1> > >::iterator index = std::lower_bound( (*elements).begin(),
+              (*elements).end(),
               data.first,
               comparator );
 
           matched->push_back( *index );
         }
 
-        std::vector< std::pair< double, boost::shared_ptr<T1> > >* elements; 
-        std::vector< std::pair< double, boost::shared_ptr<T1> > >* matched; 
-
+        std::vector< std::pair< double, boost::shared_ptr<T1> > >* elements;
+        std::vector< std::pair< double, boost::shared_ptr<T1> > >* matched;
       };
 
     template <typename T1, typename T2>
       struct threader : std::binary_function< std::pair< double, boost::shared_ptr<T1> >,
-      std::pair< double, boost::shared_ptr<T2> >, 
+      std::pair< double, boost::shared_ptr<T2> >,
       std::pair< boost::shared_ptr<T1>, boost::shared_ptr<T2> > >
     {
-      std::pair< boost::shared_ptr<T1>, boost::shared_ptr<T2> > operator()( std::pair< double, boost::shared_ptr<T1> > a, std::pair< double, boost::shared_ptr<T2> > b ) 
+      std::pair< boost::shared_ptr<T1>, boost::shared_ptr<T2> > operator()( std::pair< double, boost::shared_ptr<T1> > a, std::pair< double, boost::shared_ptr<T2> > b )
       {
-        return std::make_pair( a.second, b.second );        
+        return std::make_pair( a.second, b.second );
       }
 
       std::vector< std::pair< boost::shared_ptr<T1>, boost::shared_ptr<T2> > > threaded;
     };
 
-    /*
-     *Configuration tools
-     */
     template <typename T>
       void calibrationToEigen( const std::vector<T>& calib, Eigen::Matrix4f& eig )
       {
-
         L3::SE3 pose( calib );
         eig = pose.getHomogeneous();
       }
-
-  }
-}
+  } // Utils
+} // L3

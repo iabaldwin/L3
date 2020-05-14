@@ -55,10 +55,10 @@ namespace L3
 
           this->stream.write((char*)(&(*it->second).data[0]), sizeof(double)*(it->second->data.size()));
           written += sizeof(double)*(it->second->data.size());
-        }            
+        }
         return written;
       }
-  }
-}
+  } // IO
+} // L3
 
 template size_t L3::IO::BinaryWriter<L3::SE3>::write(std::vector<std::pair<double, boost::shared_ptr<L3::SE3> >, std::allocator<std::pair<double, boost::shared_ptr<L3::SE3> > > >&);

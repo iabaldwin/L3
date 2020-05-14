@@ -1,47 +1,48 @@
 #include "Runner.h"
 
-#include <boost/make_shared.hpp>
+#include "boost/make_shared.hpp"
 
 namespace L3
 {
-  DatasetRunner::DatasetRunner(L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup) 
+  DatasetRunner::DatasetRunner(L3::Dataset* dataset, L3::Configuration::Mission* mission, float speedup, bool stand_alone)
     : mission(mission),
-    dataset(dataset), 
+    dataset(dataset),
     speedup(speedup),
     current_time(0.0),
     start_time(dataset->start_time),
-    stand_alone(false),
+    stand_alone(stand_alone),
     booted(false),
     run_mode(RunMode::Continuous),
     frequency(0.0) {
+
       // Iterator over poses
-#ifndef NDEBUG
-      std::cout << __FILE__ << ":" << "Assigning pose iterator" << std::endl;
-#endif
       pose_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::SE3> >(dataset->pose_reader);
+      CHECK_NOTNULL(pose_iterator);
+      pose_iterator->name = "PoseIterator";
 
       // Iterator over velocity
-#ifndef NDEBUG
-      std::cout << __FILE__ << ":" << "Assigning velocity source" << std::endl;
-#endif
-      LHLV_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::LHLV> >(dataset->LHLV_reader);  
+      LHLV_iterator = boost::make_shared< L3::ConstantTimeIterator<L3::LHLV> >(dataset->LHLV_reader);
+      LHLV_iterator->name = "LHLVIterator";
+      CHECK_NOTNULL(LHLV_iterator);
 
       // LIDAR iterators
-#ifndef NDEBUG
-      std::cout << __FILE__ << ":" << "Assigning LIDAR iterators" << std::endl;
-      std::cout << mission->horizontal << std::endl;
-      std::cout << dataset->LIDAR_readers[mission->horizontal] << std::endl;
-#endif
-      assert(dataset->LIDAR_readers[ mission->horizontal]);
-      assert(dataset->LIDAR_readers[ mission->declined]);
-      horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >(dataset->LIDAR_readers[ mission->horizontal]);
-      vertical_LIDAR   = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >(dataset->LIDAR_readers[ mission->declined]);
+      LOG(INFO) << "Assigning LIDAR iterators";
+      LOG(INFO) << "Horizontal: " << mission->horizontal;
+      LOG(INFO) << "Declined: " << mission->declined;
+
+      CHECK(dataset->LIDAR_readers[ mission->horizontal]);
+      CHECK(dataset->LIDAR_readers[ mission->declined]);
+      horizontal_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >(dataset->LIDAR_readers[mission->horizontal]);
+      horizontal_LIDAR->name = "HorizontalLidar";
+      CHECK_NOTNULL(horizontal_LIDAR);
+      vertical_LIDAR = boost::make_shared< L3::ConstantTimeIterator<L3::LMS151> >(dataset->LIDAR_readers[mission->declined]);
+      CHECK_NOTNULL(vertical_LIDAR);
+      vertical_LIDAR->name = "VerticalLidar";
 
       // Scan-match velocity source
-#ifndef NDEBUG
-      std::cout << __FILE__ << ":" << "Assigning scan-match iterator " << std::endl;
-#endif
       velocity_source = boost::make_shared< L3::ConstantTimeIterator< L3::SMVelocity > >(dataset->velocity_reader);
+      CHECK_NOTNULL(velocity_source);
+      velocity_source->name = "SMVelocity";
 
       // Point-clouds
       point_cloud = boost::make_shared< L3::PointCloud<double> >();
@@ -54,26 +55,43 @@ namespace L3
 
       // Point projector
       projector = boost::make_shared< L3::Projector<double> >(vertical_projection.get(), point_cloud.get());
+      CHECK_NOTNULL(projector);
 
       // Scan matching engine
       engine = boost::make_shared< L3::ScanMatching::Engine >(horizontal_LIDAR.get());
+      CHECK_NOTNULL(engine);
 
       // Velocity providers
       lhlv_velocity_provider = boost::make_shared< L3::LHLVVelocityProvider >(LHLV_iterator.get());                 // INS
+      CHECK_NOTNULL(lhlv_velocity_provider);
+      lhlv_velocity_provider->name = "LHLVVelocity";
+
       icp_velocity_provider  = boost::make_shared< L3::ScanMatchingVelocityProvider >(engine.get());                // ICP
+      CHECK_NOTNULL(icp_velocity_provider);
+      icp_velocity_provider->name = "ICPVelocity";
+
       ics_velocity_provider  = boost::make_shared< L3::FilteredScanMatchingVelocityProvider>(velocity_source);      // ICS
+      CHECK_NOTNULL(ics_velocity_provider);
+      ics_velocity_provider->name = "ICSVelocity";
 
       // Pose Provider
       pose_windower = boost::make_shared< L3::ConstantDistanceWindower > (ics_velocity_provider.get(), 30);
+      CHECK_NOTNULL(pose_windower);
+      pose_windower->name = "PoseWindower";
 
       // Swathe generator
       swathe_builder = boost::make_shared< L3::BufferedSwatheBuilder >(pose_windower.get(), vertical_LIDAR.get());
+      CHECK_NOTNULL(swathe_builder);
+      swathe_builder->name = "SwatheBuilder";
 
       // INS pose
       oracle = boost::make_shared< L3::ConstantTimeWindower< L3::SE3 > > (pose_iterator.get());
+      CHECK_NOTNULL(oracle);
 
       // Predictor
       predictor = boost::make_shared< L3::Predictor >(ics_velocity_provider.get());
+      CHECK_NOTNULL(predictor);
+      predictor->name = "Predictor";
 
       //  Zero-th pose
       estimated_pose = boost::make_shared< L3::SE3 >();
@@ -85,16 +103,16 @@ namespace L3
       /*
        *  Note: order is important here
        */
-      (*this) << pose_iterator.get() 
+      (*this) << pose_iterator.get()
         << velocity_source.get()
-        << LHLV_iterator.get() 
-        << vertical_LIDAR.get() 
-        << horizontal_LIDAR.get() 
+        << LHLV_iterator.get()
+        << vertical_LIDAR.get()
+        << horizontal_LIDAR.get()
         << lhlv_velocity_provider.get()
-        << ics_velocity_provider.get() 
-        << icp_velocity_provider.get() 
-        << engine.get() 
-        << pose_windower.get() 
+        << ics_velocity_provider.get()
+        << icp_velocity_provider.get()
+        << engine.get()
+        << pose_windower.get()
         << swathe_builder.get()
         << predictor.get();
     }
@@ -117,9 +135,7 @@ namespace L3
 
     int counts = 0;
 
-    //int boot = 200;
     int boot = 800;
-
     if(stand_alone) {
       boot = 2000;
       openStreams();
@@ -138,12 +154,12 @@ namespace L3
           case RunMode::Continuous:
             // Get the delta
             current_time += (system_timer.elapsed() - real_time_elapsed)*speedup;
-            real_time_elapsed = system_timer.elapsed(); 
+            real_time_elapsed = system_timer.elapsed();
             break;
 
-          case RunMode::Step: 
+          case RunMode::Step:
             current_time += .1;
-            paused = true; 
+            paused = true;
             break;
 
           default:
@@ -194,9 +210,6 @@ namespace L3
           pose_output << *estimated_pose << '\n';     // Buffer
 
           total_index++;
-
-          if (total_index > 6000)
-            exit(0);
         } else {
           double _frequency = 1.0/frequency_timer.elapsed();
 
@@ -205,16 +218,17 @@ namespace L3
           }
         }
 
-        /* 
+        /*
          * Perform post-update, don't care about how long this takes. In headless mode,
-         * there wouldn't be anything here except for a publisher. 
+         * there wouldn't be anything here except for a publisher.
          */
         std::for_each(updaters.begin(), updaters.end(), std::mem_fun(&Updater::update));
 
         boot--;
 
-        if(boot == 0)
+        if(boot == 0) {
           booted = true;
+        }
       } else {
         usleep(.1*1e6);
         real_time_elapsed = system_timer.elapsed();
@@ -239,14 +253,14 @@ namespace L3
     /*
      *  Boot
      */
-    if(!booted) {
+    if(not booted) {
       *estimated_pose = experience->getClosestPose(oracle->operator()());
-      estimated_pose->Q(oracle_pose->Q()); 
+      estimated_pose->Q(oracle_pose->Q());
       //*estimated_pose = *oracle_pose;
     } else {
-      L3::ReadLock algo_lock(this->mutex); 
+      L3::ReadLock algo_lock(this->mutex);
       *estimated_pose = algorithm->operator()(projector->cloud, *estimated_pose);
     }
     return true;
   }
-}
+} // L3

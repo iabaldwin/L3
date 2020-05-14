@@ -15,4 +15,4 @@ namespace L3
       previous_update = current;
     }
   }
-}
+} // L3

@@ -1,5 +1,4 @@
-#ifndef L3_EXTERNAL_INTERFACE_H
-#define L3_EXTERNAL_INTERFACE_H
+#pragma once
 
 #include <glv.h>
 
@@ -40,8 +39,5 @@ namespace L3
       void selectAll();
     };
 
-  }
-}
-
-#endif
-
+  } // Visualisers
+} // L3

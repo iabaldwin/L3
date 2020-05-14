@@ -1,6 +1,4 @@
-#ifndef L3_VISUALISERS_HANDLER_H
-#define L3_VISUALISERS_HANDLER_H
-
+#pragma once
 namespace L3
 {
 namespace Visualisers
@@ -22,25 +20,7 @@ namespace Visualisers
 
     bool onEvent( glv::Event::t e, glv::GLV& g) 
     {
-      // Dump history
-      if ( e == glv::Event::KeyDown) 
-      {
-        const glv::Keyboard& k = g.keyboard();
-
-        // If we just use space, have to make sure that
-        // the scripting interface is not visible, otherwise
-        // we can't type spaces without pausing the engine
-
-        //if ( k.key() 
-      }
-
     }
-
   };
-
-}
-}
-
-
-#endif
-
+} // Visualisers
+} // L3

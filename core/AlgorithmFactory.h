@@ -1,5 +1,4 @@
-#ifndef L3_ALGORITHM_FACTORY
-#define L3_ALGORITHM_FACTORY
+#pragma once
 
 #include "Runner.h"
 #include "Filter.h"
@@ -13,7 +12,7 @@ namespace Estimator
 template <typename T>
 struct AlgorithmFactory
 {
-  static boost::shared_ptr< Algorithm<T> > produce(std::string algorithm, 
+  static boost::shared_ptr< Algorithm<T> > produce(std::string algorithm,
       boost::shared_ptr< CostFunction<T> > cost_function = boost::shared_ptr< CostFunction<T> >(),
       boost::shared_ptr< L3::HistogramPyramid<T> > pyramid = boost::shared_ptr<L3::HistogramPyramid<T> >(),
       boost::shared_ptr< L3::EstimatorRunner > runner = boost::shared_ptr< L3::EstimatorRunner >())
@@ -48,13 +47,9 @@ struct AlgorithmFactory
     if(algorithm == "UKF" && runner) {
       return boost::make_shared< UKF<T> >(cost_function, pyramid, runner->ics_velocity_provider);
     }
-
-    return boost::shared_ptr< Algorithm<T> >(); 
+    return boost::shared_ptr< Algorithm<T> >();
   }
-
 };
 
-} // namespace Estimator
-} // namespace L3
-
-#endif
+} // Estimator
+} // L3

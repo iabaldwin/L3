@@ -5,7 +5,6 @@
 
 namespace L3
 {
-
   /*
    *I/O
    */
@@ -25,11 +24,11 @@ namespace L3
 
       while(it != cloud->end())
       {
-        // X 
+        // X
         x += it->x;
-        // Y 
+        // Y
         y += it->y;
-        // Z 
+        // Z
         z += it->z;
         it++;
       }
@@ -46,11 +45,11 @@ namespace L3
       T z(0);
 
       while(it != cloud->end()) {
-        // X 
+        // X
         x += it->x;
-        // Y 
+        // Y
         y += it->y;
-        // Z 
+        // Z
         z += it->z;
 
         it++;
@@ -68,12 +67,12 @@ namespace L3
       T z = std::numeric_limits<T>::infinity();
 
       while(it != cloud->end()) {
-        // X 
-        x = std::min(x, it->x); 
-        // Y 
-        y = std::min(y, it->y); 
-        // Z 
-        z = std::min(z, it->z); 
+        // X
+        x = std::min(x, it->x);
+        // Y
+        y = std::min(y, it->y);
+        // Z
+        z = std::min(z, it->z);
 
         it++;
       }
@@ -90,12 +89,12 @@ namespace L3
       T z = -1* std::numeric_limits<T>::infinity();
 
       while(it != cloud->end()) {
-        // X 
-        x = std::max(x, it->x); 
-        // Y 
-        y = std::max(y, it->y); 
-        // Z 
-        z = std::max(z, it->z); 
+        // X
+        x = std::max(x, it->x);
+        // Y
+        y = std::max(y, it->y);
+        // Z
+        z = std::max(z, it->z);
 
         it++;
       }
@@ -208,7 +207,7 @@ namespace L3
       for(size_t i=0; i<cloud.num_points; i++) {
         o << cloud.points[i] << std::endl;
       }
-      return o; 
+      return o;
     }
 
   template <typename T>
@@ -242,8 +241,7 @@ namespace L3
       Eigen::Matrix4f rot = Eigen::Matrix4f::Identity();
 
       Point<T>* tmp = cloud->begin();
-
-#pragma omp parallel private(point_counter, rot) shared(num_points, tmp, t)
+#pragma omp parallel private(point_counter, rot) shared(num_points, tmp)
       {
         Eigen::Matrix4f XYZ = Eigen::Matrix4f::Identity();
 
@@ -318,23 +316,21 @@ namespace L3
 
   template <typename T>
     void allocate(PointCloud<T>* cloud, size_t size) {
-      assert(!cloud->points);
-      assert(cloud->num_points == 0);
-
+      CHECK(not cloud->points);
+      CHECK_EQ(cloud->num_points, 0);
       cloud->points = new L3::Point<T>[ size ];
       cloud->num_points = size;
     }
-}
+} // L3
 
 /*
  *Explicit Instantiations
  */
-        
-template void                           L3::allocate(PointCloud<double>* cloud, size_t size);
-template void                           L3::transform(L3::PointCloud<double>*, L3::SE3*);
-template void                           L3::translate(L3::PointCloud<double>*, L3::SE3 const*);
-template bool                           L3::copy(PointCloud<double>*, PointCloud<double>*);
-template bool                           L3::copy(PointCloudE<double>*, PointCloudE<double>*);
+template void L3::allocate(PointCloud<double>* cloud, size_t size);
+template void L3::transform(L3::PointCloud<double>*, L3::SE3*);
+template void L3::translate(L3::PointCloud<double>*, L3::SE3 const*);
+template bool L3::copy(PointCloud<double>*, PointCloud<double>*);
+template bool L3::copy(PointCloudE<double>*, PointCloudE<double>*);
 
 template boost::tuple<double, double, double>       L3::mean<double>(L3::PointCloud<double>*);
 template boost::tuple<float, float, float>          L3::mean<float>(L3::PointCloud<float>*);
@@ -346,13 +342,11 @@ template boost::tuple<float, float, float>          L3::mean<float>(L3::PointClo
 template bool L3::join(std::list< boost::shared_ptr<L3::PointCloud<double> > > clouds, boost::shared_ptr<L3::PointCloud<double> >& result);
 template bool L3::join(std::list< boost::shared_ptr<L3::PointCloudE<double> > > clouds, boost::shared_ptr<L3::PointCloudE<double> >& result);
 
-//template void                           L3::centerPointCloud<double>(PointCloud<double>* cloud);
-
 template bool                           L3::sample(L3::PointCloud<double>*,  L3::PointCloud<double>*, int, bool);
 template boost::tuple<double,double,double>       L3::max(PointCloud<double>*);
 template boost::tuple<double,double,double>       L3::min(PointCloud<double>*);
 
-template void                           L3::gaussianCloud(PointCloud<double>*, double, double);
+template void L3::gaussianCloud(PointCloud<double>*, double, double);
 
 template std::ostream& L3::operator<<(std::ostream& o, const L3::Point<double>& pt);
 template std::ostream& L3::operator<<(std::ostream& o, const L3::PointCloud<double>& cloud);

@@ -5,48 +5,50 @@
 
 namespace L3
 {
-
-struct LengthEstimator 
-{
-
-  LengthEstimator() : initialised(false), previous( L3::SE3::ZERO() )
+  struct LengthEstimator
   {
-  }
 
-  bool initialised;
-  L3::SE3 previous;
-
-  double operator()( L3::SE3 current )
-  {
-    if ( !initialised )  
+    LengthEstimator() : initialised(false), previous( L3::SE3::ZERO() )
     {
-      previous = current;
-      initialised = true;
-      return 0.0;
-    }
-    else
-    {
-      double n = L3::Math::norm( previous, current );
-      previous = current;
-      return n;
     }
 
-  }
-};
-struct LengthEstimatorInterface : L3::LengthEstimator
-{
-  L3::LengthEstimator estimator;
+    bool initialised;
+    L3::SE3 previous;
 
-  double operator()( std::pair< double, boost::shared_ptr<L3::SE3> > element )
+    double operator()( L3::SE3 current )
+    {
+      if ( !initialised )
+      {
+        previous = current;
+        initialised = true;
+        return 0.0;
+      }
+      else
+      {
+        double n = L3::Math::norm( previous, current );
+        previous = current;
+        return n;
+      }
+
+    }
+  };
+
+  struct LengthEstimatorInterface : L3::LengthEstimator
   {
-    return estimator( *element.second );
-  }
+    L3::LengthEstimator estimator;
 
-};
+    double operator()( std::pair< double, boost::shared_ptr<L3::SE3> > element )
+    {
+      return estimator( *element.second );
+    }
 
-template <typename InputIterator, typename OutputIterator >
-  OutputIterator trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double& distance, double required_distance, L3::SE3 start_pose = L3::SE3::ZERO() );
+  };
 
-template <typename InputIterator, typename OutputIterator >
-  void reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written );
-}
+  template <typename InputIterator, typename OutputIterator >
+    OutputIterator trajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double& distance, double required_distance, L3::SE3 start_pose = L3::SE3::ZERO() );
+
+  template <typename InputIterator, typename OutputIterator >
+    void reverseTrajectoryAccumulate( InputIterator begin, InputIterator end, OutputIterator output, double required_increment, double total_distance, int& written );
+} // L3
+
+#include "Integrator.hpp"

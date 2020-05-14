@@ -24,7 +24,7 @@ namespace L3
 
   struct SelectionPolicy
   {
-    virtual bool operator()( std::deque< spatial_data >* sections, double x, double y, std::list<unsigned int>& required_sections, const int window ) 
+    virtual bool operator()( std::deque< spatial_data >* sections, double x, double y, std::list<unsigned int>& required_sections, const int window )
     {
       return false;
     }
@@ -47,11 +47,11 @@ namespace L3
 
   struct SpatialQuery : SpatialObserver, Poco::Runnable, Lockable
   {
-    SpatialQuery( std::deque< spatial_data > sections, 
-        std::string fname, 
-        boost::shared_ptr< SelectionPolicy > policy, 
+    SpatialQuery( std::deque< spatial_data > sections,
+        std::string fname,
+        boost::shared_ptr< SelectionPolicy > policy,
         int window_size = 2 ) :
-      sections(sections), 
+      sections(sections),
       policy(policy),
       window(window_size),
       running(true),
@@ -62,7 +62,7 @@ namespace L3
     std::ifstream                           data;
     Poco::Thread                            thread;
     std::deque< spatial_data >              sections;
-    boost::shared_ptr< SelectionPolicy >    policy; 
+    boost::shared_ptr< SelectionPolicy >    policy;
 
     int                                     window;
     bool                                    running;
@@ -75,6 +75,5 @@ namespace L3
       _y = y;
       return true;
     }
-
   };
-}
+} // L3

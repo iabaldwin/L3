@@ -9,23 +9,22 @@
 
 namespace L3
 {
-
   template <typename T>
     class Projector
     {
       Eigen::Matrix4f calibration;
 
-    public:
+      public:
 
-      Projector( L3::SE3* calib, L3::PointCloud<T>* cloud ) 
-        : cloud(cloud), 
-        allocated_size(500), 
+      Projector( L3::SE3* calib, L3::PointCloud<T>* cloud )
+        : cloud(cloud),
+        allocated_size(500),
         skip(1)
       {
-        calibration = calib->getHomogeneous(); 
+        calibration = calib->getHomogeneous();
 
         // Pre-allocate
-        cloud->points = new L3::Point<T>[ allocated_size*541 ]; 
+        cloud->points = new L3::Point<T>[ allocated_size*541 ];
       }
 
       L3::PointCloud<T>* cloud;
@@ -35,7 +34,7 @@ namespace L3
       void reallocate( size_t size )
       {
         delete [] cloud->points;
-        cloud->points = new L3::Point<T>[ size*541 ]; 
+        cloud->points = new L3::Point<T>[ size*541 ];
         allocated_size = size;
       }
 
@@ -48,16 +47,15 @@ namespace L3
     {
       Eigen::Matrix4f calibration;
 
-    public:
-      ReflectanceProjector( L3::SE3* calib, L3::PointCloudE<T>* cloud ) 
-        : cloud(cloud), 
-        allocated_size(500), 
+      public:
+      ReflectanceProjector( L3::SE3* calib, L3::PointCloudE<T>* cloud )
+        : cloud(cloud),
+        allocated_size(500),
         skip(1)
       {
-        calibration = calib->getHomogeneous(); 
-
+        calibration = calib->getHomogeneous();
         // Pre-allocate
-        cloud->points = new L3::PointE<T>[ allocated_size*541 ]; 
+        cloud->points = new L3::PointE<T>[ allocated_size*541 ];
       }
 
       L3::PointCloudE<T>* cloud;
@@ -67,11 +65,10 @@ namespace L3
       void reallocate( size_t size )
       {
         delete [] cloud->points;
-        cloud->points = new L3::PointE<T>[ size*541 ]; 
+        cloud->points = new L3::PointE<T>[ size*541 ];
         allocated_size = size;
       }
 
       void project( SWATHE& swathe );
-
     };
 } // L3

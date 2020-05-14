@@ -20,7 +20,7 @@ namespace L3
      *  Calculate distances to all sections
      */
     for(unsigned int i=0; i<sections->size(); i++) {
-      distances.push_back(std::make_pair(norm(std::make_pair(x, y), std::make_pair((*sections)[i].x, (*sections)[i].y) ), i)); 
+      distances.push_back(std::make_pair(norm(std::make_pair(x, y), std::make_pair((*sections)[i].x, (*sections)[i].y) ), i));
     }
 
     /*
@@ -40,13 +40,6 @@ namespace L3
       int load_val = i >=0 ? i : sections->size()-i;
       required_sections.push_front(load_val);
     }
-
-    std::copy(required_sections.begin(),
-        required_sections.end(),
-        std::ostream_iterator<unsigned int>(std::cout, " "));
-
-    std::cout << std::endl;
-
     return true;
   }
 
@@ -60,7 +53,7 @@ namespace L3
      *  Calculate distances to all sections
      */
     for(unsigned int i=0; i<sections->size(); i++) {
-      distances.push_back(std::make_pair(norm(std::make_pair(x, y), std::make_pair((*sections)[i].x, (*sections)[i].y) ), i)); 
+      distances.push_back(std::make_pair(norm(std::make_pair(x, y), std::make_pair((*sections)[i].x, (*sections)[i].y) ), i));
     }
 
     /*
@@ -91,7 +84,7 @@ namespace L3
      *  Calculate distances to all sections
      */
     for(unsigned int i=0; i<sections->size(); i++) {
-      distances.push_back(std::make_pair(norm(std::make_pair(x, y), std::make_pair((*sections)[i].x, (*sections)[i].y) ), i)); 
+      distances.push_back(std::make_pair(norm(std::make_pair(x, y), std::make_pair((*sections)[i].x, (*sections)[i].y) ), i));
     }
 
     /*
@@ -110,4 +103,4 @@ namespace L3
 
     return (!required_sections.empty());
   }
-}
+} // L3

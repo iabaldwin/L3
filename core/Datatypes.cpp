@@ -1,5 +1,7 @@
 #include "Datatypes.h"
 
+#include "glog/logging.h"
+
 namespace L3
 {
   namespace Math {
@@ -10,7 +12,7 @@ namespace L3
     double SE2Metric(const L3::SE3& a, const L3::SE3& b) {
       return sqrt(pow(a.X() - b.X(), 2.0) + pow(a.Y() -b.Y(), 2.0));
     }
-  }
+  } // Math
 
 
   /*
@@ -20,9 +22,6 @@ namespace L3
   }
 
   SE2::SE2(std::vector<double> input) {
-  }
-
-  void SE2::updateEuler() {
   }
 
   void SE2::updateHomogeneous() {
@@ -48,17 +47,17 @@ namespace L3
   }
 
   SE3::SE3() {
-    x = y = z = r = p = q = 0;        
+    x = y = z = r = p = q = 0;
   }
 
   SE3::SE3(double x, double y, double z, double r, double p, double q)
-    : x(x), y(y), z(z), 
+    : x(x), y(y), z(z),
     r(r), p(p), q(q) {
       updateHomogeneous();
     }
 
   SE3::SE3(const std::vector<double> v) {
-    assert(v.size() == 6);
+    CHECK_EQ(v.size(), 6);
     x = v[0];
     y = v[1];
     z = v[2];
@@ -123,10 +122,6 @@ namespace L3
     updateHomogeneous();
   }
 
-  void SE3::updateEuler() {
-    //L3::SE3 pose = poseFromRotation(const Eigen::Matrix4f& mat);
-  }
-
   void SE3::updateHomogeneous() {
     Eigen::Matrix4f Rz = Eigen::Matrix4f::Identity();
     Rz(0,0) = cos(q);
@@ -162,23 +157,25 @@ namespace L3
         (lhs.R() == rhs.R()) &&
         (lhs.P() == rhs.P()) &&
         (lhs.Q() == rhs.Q()));
-
   }
 
   std::ostream& operator<<(std::ostream& o, const L3::LHLV& lhlv) {
-    std::copy(lhlv.data.begin(), 
+    std::copy(lhlv.data.begin(),
         lhlv.data.end(),
         std::ostream_iterator<double>(o, " "));
-
     o << std::endl;
-
     return o;
   }
 
   std::ostream& operator<<(std::ostream& o, const L3::SE3& pose) {
-    o << pose.X() << " " << pose.Y() << " " << pose.Z() << " " 
+    o << pose.X() << " " << pose.Y() << " " << pose.Z() << " "
       << pose.R() << " " << pose.P() << " " << pose.Q();
     return o;
   }
 
-} //namespace L3
+  std::ostream& operator<<(std::ostream& o, const L3::LMS151& lidar) {
+    lidar.print(o);
+    return o;
+  }
+
+} //L3

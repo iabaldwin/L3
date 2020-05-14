@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "Core.h"
 #include "Datatypes.h"
@@ -17,7 +17,7 @@ namespace L3
 {
   namespace ScanMatching
   {
-    class ScanMatcher  
+    class ScanMatcher
     {
       public:
 
@@ -58,8 +58,8 @@ namespace L3
     };
 
     struct Engine : L3::TemporalObserver, Lockable
-    { 
-      Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) : 
+    {
+      Engine( L3::ConstantTimeIterator<L3::LMS151>* windower ) :
         windower(windower),
         matcher( new ICP() ),
         current_transformation( Eigen::Matrix4f::Identity() )
@@ -86,6 +86,5 @@ namespace L3
 
       bool update( double time );
     };
-
-  }
-}
+  } // ScanMatching
+} // L3
