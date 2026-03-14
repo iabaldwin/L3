@@ -4,9 +4,9 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 http_archive(
     name = "com_github_eigen_eigen",
     build_file = "eigen.BUILD",
-    sha256 = "dd254beb0bafc695d0f62ae1a222ff85b52dbaa3a16f76e781dce22d0d20a4a6",
-    strip_prefix = "eigen-eigen-5a0156e40feb",
-    urls = ["http://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2",],
+    sha256 = "b170583f59d6778be4bfeae88583c77ed610df5b803ce5cb4aa850d0e8017c2f",
+    strip_prefix = "eigen-3.3.4",
+    urls = ["https://gitlab.com/libeigen/eigen/-/archive/3.3.4/eigen-3.3.4.tar.bz2"],
 )
 
 new_local_repository(
@@ -16,27 +16,76 @@ new_local_repository(
 cc_library(
   name = "pcl",
   hdrs = glob([
-    "include/pcl-1.8/pcl/**/*",
+    "include/pcl-1.14/pcl/**/*",
   ]),
   srcs = glob([
     "lib/x86_64-linux-gnu/libpcl_*",
   ]),
   includes = [
-  "include/pcl-1.8/",
+  "include/pcl-1.14/",
   ],
   visibility = ["//visibility:public"],
   )
 """
 )
 
-git_repository(
-    name = "com_github_nelhage_rules_boost",
-    commit = "5c39b9edd63374fbe4e541c0aca15fddc60752aa",
-    remote = "https://github.com/nelhage/rules_boost.git",
+new_local_repository(
+    name = "boost",
+    path = "/usr",
+    build_file_content = """
+cc_library(
+  name = "headers",
+  hdrs = glob(["include/boost/**/*"]),
+  includes = ["include/"],
+  visibility = ["//visibility:public"],
 )
-
-load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
-boost_deps()
+cc_library(
+  name = "thread",
+  srcs = ["lib/x86_64-linux-gnu/libboost_thread.so"],
+  deps = [":headers"],
+  visibility = ["//visibility:public"],
+)
+cc_library(
+  name = "system",
+  srcs = ["lib/x86_64-linux-gnu/libboost_system.so"],
+  deps = [":headers"],
+  visibility = ["//visibility:public"],
+)
+cc_library(
+  name = "filesystem",
+  srcs = ["lib/x86_64-linux-gnu/libboost_filesystem.so"],
+  deps = [":headers"],
+  visibility = ["//visibility:public"],
+)
+cc_library(
+  name = "regex",
+  srcs = ["lib/x86_64-linux-gnu/libboost_regex.so"],
+  deps = [":headers"],
+  visibility = ["//visibility:public"],
+)
+cc_library(
+  name = "smart_ptr",
+  deps = [":headers"],
+  visibility = ["//visibility:public"],
+)
+cc_library(
+  name = "shared_ptr",
+  deps = [":headers"],
+  visibility = ["//visibility:public"],
+)
+cc_library(
+  name = "numeric_ublas",
+  deps = [":headers"],
+  visibility = ["//visibility:public"],
+)
+cc_library(
+  name = "chrono",
+  srcs = ["lib/x86_64-linux-gnu/libboost_chrono.so"],
+  deps = [":headers"],
+  visibility = ["//visibility:public"],
+)
+"""
+)
 
 new_local_repository(
     name = "poco",
@@ -48,7 +97,7 @@ cc_library(
     "include/Poco/**/*",
   ]),
   srcs = glob([
-    "lib/libPoco*",
+    "lib/x86_64-linux-gnu/libPoco*",
   ]),
   includes = [
   "include/",

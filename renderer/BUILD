@@ -51,7 +51,9 @@ cc_library(
         "@boost//:system",
     ],
     copts = [
-        "-std=c++14"
+        "-std=c++17",
+        "-DBOOST_TIMER_ENABLE_DEPRECATED",
+        "-Wno-deprecated-declarations",
     ],
     visibility = ["//visibility:public"],
     linkopts = [

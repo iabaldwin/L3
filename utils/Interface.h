@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "boost/shared_ptr.hpp"
 #include "boost/regex.hpp"
 
 #undef luaL_dostring

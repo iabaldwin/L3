@@ -244,7 +244,7 @@ namespace L3
       boost::shared_ptr< L3::PointCloud<double> > hypothesis;
 
       void operator()() const {
-        boost::scoped_ptr< L3::PointCloud<double> > hypothesis(new L3::PointCloud<double>());
+        std::unique_ptr< L3::PointCloud<double> > hypothesis(new L3::PointCloud<double>());
 
         /*
          *  Copy point cloud

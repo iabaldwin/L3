@@ -1,0 +1,3 @@
+build --cxxopt=-std=c++17
+build --cxxopt=-DBOOST_TIMER_ENABLE_DEPRECATED
+build --cxxopt=-Wno-deprecated-declarations
