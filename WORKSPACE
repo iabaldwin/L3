@@ -4,9 +4,12 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 http_archive(
     name = "com_github_eigen_eigen",
     build_file = "eigen.BUILD",
-    sha256 = "b170583f59d6778be4bfeae88583c77ed610df5b803ce5cb4aa850d0e8017c2f",
-    strip_prefix = "eigen-3.3.4",
-    urls = ["https://gitlab.com/libeigen/eigen/-/archive/3.3.4/eigen-3.3.4.tar.bz2"],
+    sha256 = "8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72",
+    strip_prefix = "eigen-3.4.0",
+    urls = [
+        "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2",
+        "https://storage.googleapis.com/mirror.tensorflow.org/gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2",
+    ],
 )
 
 new_local_repository(
@@ -19,7 +22,7 @@ cc_library(
     "include/pcl-1.14/pcl/**/*",
   ]),
   srcs = glob([
-    "lib/x86_64-linux-gnu/libpcl_*",
+    "lib/*/libpcl_*",
   ]),
   includes = [
   "include/pcl-1.14/",
@@ -41,25 +44,25 @@ cc_library(
 )
 cc_library(
   name = "thread",
-  srcs = ["lib/x86_64-linux-gnu/libboost_thread.so"],
+  srcs = glob(["lib/*/libboost_thread.so"]),
   deps = [":headers"],
   visibility = ["//visibility:public"],
 )
 cc_library(
   name = "system",
-  srcs = ["lib/x86_64-linux-gnu/libboost_system.so"],
+  srcs = glob(["lib/*/libboost_system.so"]),
   deps = [":headers"],
   visibility = ["//visibility:public"],
 )
 cc_library(
   name = "filesystem",
-  srcs = ["lib/x86_64-linux-gnu/libboost_filesystem.so"],
+  srcs = glob(["lib/*/libboost_filesystem.so"]),
   deps = [":headers"],
   visibility = ["//visibility:public"],
 )
 cc_library(
   name = "regex",
-  srcs = ["lib/x86_64-linux-gnu/libboost_regex.so"],
+  srcs = glob(["lib/*/libboost_regex.so"]),
   deps = [":headers"],
   visibility = ["//visibility:public"],
 )
@@ -80,7 +83,7 @@ cc_library(
 )
 cc_library(
   name = "chrono",
-  srcs = ["lib/x86_64-linux-gnu/libboost_chrono.so"],
+  srcs = glob(["lib/*/libboost_chrono.so"]),
   deps = [":headers"],
   visibility = ["//visibility:public"],
 )
@@ -97,7 +100,7 @@ cc_library(
     "include/Poco/**/*",
   ]),
   srcs = glob([
-    "lib/x86_64-linux-gnu/libPoco*",
+    "lib/*/libPoco*",
   ]),
   includes = [
   "include/",
@@ -117,7 +120,7 @@ cc_library(
     "include/gsl/**/*",
   ]),
   srcs = glob([
-    "lib/x86_64-linux-gnu/libgsl*",
+    "lib/*/libgsl*",
   ]),
   includes = [
   "include/",
@@ -136,9 +139,9 @@ cc_library(
   hdrs = [
     "include/libconfig.h++",
   ],
-  srcs = [
-    "lib/x86_64-linux-gnu/libconfig++.a"
-  ],
+  srcs = glob([
+    "lib/*/libconfig++.a",
+  ]),
   includes = [
   "include/",
   ],
@@ -153,9 +156,9 @@ new_local_repository(
     build_file_content = """
 cc_library(
   name = "z4",
-  srcs = [
-    "x86_64-linux-gnu/liblz4.so"
-  ],
+  srcs = glob([
+    "*/liblz4.so",
+  ]),
   visibility = ["//visibility:public"],
   )
 """
@@ -174,7 +177,7 @@ cc_library(
     "include/lua5.1",
   ],
   srcs = glob([
-    "lib/x86_64-linux-gnu/liblua5.1.so"
+    "lib/*/liblua5.1.so"
   ]),
   visibility = ["//visibility:public"],
   )
@@ -188,7 +191,7 @@ new_local_repository(
 cc_library(
   name = "tbb",
   srcs = glob([
-    "x86_64-linux-gnu/libtbb*",
+    "*/libtbb*",
   ]),
   visibility = ["//visibility:public"],
   )
@@ -197,19 +200,19 @@ cc_library(
 
 http_archive(
     name = "com_github_gflags_gflags",
-    sha256 = "6e16c8bc91b1310a44f3965e616383dbda48f83e8c1eaa2370a215057b00cabe",
-    strip_prefix = "gflags-77592648e3f3be87d6c7123eb81cbad75f9aef5a",
+    sha256 = "34af2f15cf7367513b352bdcd2493ab14ce43692d2dcd9dfc499492966c64dcf",
+    strip_prefix = "gflags-2.2.2",
     urls = [
-        "https://mirror.bazel.build/github.com/gflags/gflags/archive/77592648e3f3be87d6c7123eb81cbad75f9aef5a.tar.gz",
-        "https://github.com/gflags/gflags/archive/77592648e3f3be87d6c7123eb81cbad75f9aef5a.tar.gz",
+        "https://github.com/gflags/gflags/archive/v2.2.2.tar.gz",
+        "https://mirror.bazel.build/github.com/gflags/gflags/archive/v2.2.2.tar.gz",
     ],
 )
 
 http_archive(
     name = "com_github_google_glog",
-    sha256 = "7083af285bed3995b5dc2c982f7de39bced9f0e6fd78d631f3285490922a0c3d",
-    strip_prefix = "glog-3106945d8d3322e5cbd5658d482c9ffed2d892c0",
+    sha256 = "122fb6b712f82b7a6a33b0e3a78eb4e309c3e1b05f5c3587eb091a39e7e86900",
+    strip_prefix = "glog-0.7.1",
     urls = [
-        "https://github.com/drigz/glog/archive/3106945d8d3322e5cbd5658d482c9ffed2d892c0.tar.gz",
+        "https://github.com/google/glog/archive/v0.7.1.tar.gz",
     ],
 )

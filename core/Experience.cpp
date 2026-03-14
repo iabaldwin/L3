@@ -141,7 +141,7 @@ namespace L3
         boost::tuple<double,double,double> means = mean(point_cloud.get());
 
 #ifndef NDEBUG
-        LOG(INFO) means.get<0>() << " " << means.get<1>();
+        LOG(INFO) << means.get<0>() << " " << means.get<1>();
 #endif
 
         //  Writing : DATA

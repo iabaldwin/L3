@@ -16,14 +16,14 @@ See: [Overview](https://vimeo.com/81037811)
 
 Requirements
 ------------
-* bazel (0.18.0)
-* Eigen (3.3.4)
-* Poco (1.8.0)
-* libconfig (1.5.0)
-* lua (5.1.0)
-* tbb (2017-U7-8)
-* GNU Scientific Library (GSL) (2.4)
-* Point Cloud Library (PCL) (1.8.1)
+* bazel (7.x+)
+* Eigen (3.4.0, fetched by Bazel)
+* Poco (1.11+)
+* libconfig (1.5+)
+* lua (5.1)
+* tbb
+* GNU Scientific Library (GSL)
+* Point Cloud Library (PCL) (1.14+)
 
 Build
 -----

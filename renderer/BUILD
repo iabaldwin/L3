@@ -50,11 +50,7 @@ cc_library(
         "@boost//:regex",
         "@boost//:system",
     ],
-    copts = [
-        "-std=c++17",
-        "-DBOOST_TIMER_ENABLE_DEPRECATED",
-        "-Wno-deprecated-declarations",
-    ],
+    copts = [],
     visibility = ["//visibility:public"],
     linkopts = [
         "-lGLEW",

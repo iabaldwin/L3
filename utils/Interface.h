@@ -38,7 +38,7 @@ namespace L3
     LuaInterface() 
     {
       /* initialize lua */
-      state = lua_open();
+      state = luaL_newstate();
 
       /* load lua libraries */
       luaL_openlibs(state);

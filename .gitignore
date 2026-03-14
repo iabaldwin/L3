@@ -2,6 +2,5 @@ doc
 *.swp
 *.pyc
 .DS_Store
-bazel*
-MODULE.bazel
+bazel-*
 data
