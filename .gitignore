@@ -3,4 +3,5 @@ doc
 *.pyc
 .DS_Store
 bazel*
+MODULE.bazel
 data
