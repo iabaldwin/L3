@@ -50,12 +50,18 @@ cc_library(
         "@boost//:regex",
         "@boost//:system",
     ],
-    copts = [],
     visibility = ["//visibility:public"],
-    linkopts = [
-        "-lGLEW",
-        "-lGL",
-        "-lGLU",
-        "-lglut",
-    ]
+    linkopts = select({
+        "@bazel_tools//src/conditions:darwin": [
+            "-lGLEW",
+            "-framework", "OpenGL",
+            "-framework", "GLUT",
+        ],
+        "//conditions:default": [
+            "-lGLEW",
+            "-lGL",
+            "-lGLU",
+            "-lglut",
+        ],
+    })
 )

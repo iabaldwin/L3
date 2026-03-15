@@ -19,9 +19,10 @@ cc_binary(
         "@tbb",
         "@com_github_google_glog//:glog",
         ],
-    linkopts = [
-        "-lglut"
-    ],
+    linkopts = select({
+        "@bazel_tools//src/conditions:darwin": ["-framework", "GLUT"],
+        "//conditions:default": ["-lglut"],
+    }),
 )
 
 cc_binary(

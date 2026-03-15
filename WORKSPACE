@@ -1,5 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+load("//tools:local_deps.bzl", "boost_repository", "lua_repository", "pcl_repository", "simple_lib_repository", "tbb_repository", "z4_repository")
 
 http_archive(
     name = "com_github_eigen_eigen",
@@ -12,191 +13,39 @@ http_archive(
     ],
 )
 
-new_local_repository(
-    name = "pcl",
-    path = "/usr",
-    build_file_content = """
-cc_library(
-  name = "pcl",
-  hdrs = glob([
-    "include/pcl-1.14/pcl/**/*",
-  ]),
-  srcs = glob([
-    "lib/*/libpcl_*",
-  ]),
-  includes = [
-  "include/pcl-1.14/",
-  ],
-  visibility = ["//visibility:public"],
-  )
-"""
-)
+pcl_repository(name = "pcl")
 
-new_local_repository(
-    name = "boost",
-    path = "/usr",
-    build_file_content = """
-cc_library(
-  name = "headers",
-  hdrs = glob(["include/boost/**/*"]),
-  includes = ["include/"],
-  visibility = ["//visibility:public"],
-)
-cc_library(
-  name = "thread",
-  srcs = glob(["lib/*/libboost_thread.so"]),
-  deps = [":headers"],
-  visibility = ["//visibility:public"],
-)
-cc_library(
-  name = "system",
-  srcs = glob(["lib/*/libboost_system.so"]),
-  deps = [":headers"],
-  visibility = ["//visibility:public"],
-)
-cc_library(
-  name = "filesystem",
-  srcs = glob(["lib/*/libboost_filesystem.so"]),
-  deps = [":headers"],
-  visibility = ["//visibility:public"],
-)
-cc_library(
-  name = "regex",
-  srcs = glob(["lib/*/libboost_regex.so"]),
-  deps = [":headers"],
-  visibility = ["//visibility:public"],
-)
-cc_library(
-  name = "smart_ptr",
-  deps = [":headers"],
-  visibility = ["//visibility:public"],
-)
-cc_library(
-  name = "shared_ptr",
-  deps = [":headers"],
-  visibility = ["//visibility:public"],
-)
-cc_library(
-  name = "numeric_ublas",
-  deps = [":headers"],
-  visibility = ["//visibility:public"],
-)
-cc_library(
-  name = "chrono",
-  srcs = glob(["lib/*/libboost_chrono.so"]),
-  deps = [":headers"],
-  visibility = ["//visibility:public"],
-)
-"""
-)
+boost_repository(name = "boost")
 
-new_local_repository(
+simple_lib_repository(
     name = "poco",
-    path = "/usr",
-    build_file_content = """
-cc_library(
-  name = "poco",
-  hdrs = glob([
-    "include/Poco/**/*",
-  ]),
-  srcs = glob([
-    "lib/*/libPoco*",
-  ]),
-  includes = [
-  "include/",
-  ],
-  visibility = ["//visibility:public"],
-  )
-"""
+    lib_name = "poco",
+    hdrs_glob = ["root/include/Poco/**/*"],
+    srcs_glob = ["root/{lib_dir}/libPoco*.{ext}*"],
+    extra_includes = ["root/include/"],
 )
 
-new_local_repository(
+simple_lib_repository(
     name = "gsl",
-    path = "/usr",
-    build_file_content = """
-cc_library(
-  name = "gsl",
-  hdrs = glob([
-    "include/gsl/**/*",
-  ]),
-  srcs = glob([
-    "lib/*/libgsl*",
-  ]),
-  includes = [
-  "include/",
-  ],
-  visibility = ["//visibility:public"],
-  )
-"""
+    lib_name = "gsl",
+    hdrs_glob = ["root/include/gsl/**/*"],
+    srcs_glob = ["root/{lib_dir}/libgsl*.{ext}*"],
+    extra_includes = ["root/include/"],
 )
 
-new_local_repository(
+simple_lib_repository(
     name = "config",
-    path = "/usr",
-    build_file_content = """
-cc_library(
-  name = "config",
-  hdrs = [
-    "include/libconfig.h++",
-  ],
-  srcs = glob([
-    "lib/*/libconfig++.a",
-  ]),
-  includes = [
-  "include/",
-  ],
-  visibility = ["//visibility:public"],
-  )
-"""
+    lib_name = "config",
+    hdrs_glob = ["root/include/libconfig.h++"],
+    srcs_glob = ["root/{lib_dir}/libconfig++.a", "root/{lib_dir}/libconfig++.{ext}*"],
+    extra_includes = ["root/include/"],
 )
 
-new_local_repository(
-    name = "z4",
-    path = "/usr/lib",
-    build_file_content = """
-cc_library(
-  name = "z4",
-  srcs = glob([
-    "*/liblz4.so",
-  ]),
-  visibility = ["//visibility:public"],
-  )
-"""
-)
+z4_repository(name = "z4")
 
-new_local_repository(
-    name = "lua",
-    path = "/usr",
-    build_file_content = """
-cc_library(
-  name = "lua",
-  hdrs = glob([
-    "include/lua5.1/**/*"
-  ]),
-  includes = [
-    "include/lua5.1",
-  ],
-  srcs = glob([
-    "lib/*/liblua5.1.so"
-  ]),
-  visibility = ["//visibility:public"],
-  )
-"""
-)
+lua_repository(name = "lua")
 
-new_local_repository(
-    name = "tbb",
-    path = "/usr/lib",
-    build_file_content = """
-cc_library(
-  name = "tbb",
-  srcs = glob([
-    "*/libtbb*",
-  ]),
-  visibility = ["//visibility:public"],
-  )
-"""
-)
+tbb_repository(name = "tbb")
 
 http_archive(
     name = "com_github_gflags_gflags",

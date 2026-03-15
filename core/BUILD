@@ -86,10 +86,12 @@ cc_library(
         "@config",
     ],
     visibility = ["//visibility:public"],
-    copts = [
-        "-fopenmp",
-    ],
-    linkopts = [
-        "-lgomp",
-    ],
+    copts = select({
+        "@bazel_tools//src/conditions:darwin": ["-Xpreprocessor", "-fopenmp"],
+        "//conditions:default": ["-fopenmp"],
+    }),
+    linkopts = select({
+        "@bazel_tools//src/conditions:darwin": ["-lomp"],
+        "//conditions:default": ["-lgomp"],
+    }),
 )
